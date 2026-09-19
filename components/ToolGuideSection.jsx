@@ -39,6 +39,12 @@ const allTools = [
     desc: "احسب صاع زكاة الفطر بالكيلوجرام (أرز وحبوب) أو نقداً لجميع أفراد الأسرة.",
     icon: "🌾",
   },
+  {
+    href: "/kaffara-calculator",
+    title: "حاسبة الكفارات والفدية",
+    desc: "احسب كفارة اليمين وفدية صيام رمضان والنذر عيناً بالأرز أو نقداً.",
+    icon: "📜",
+  },
 ];
 
 export default function ToolGuideSection({

@@ -40,6 +40,14 @@ const tools = [
     badge: "جديد",
   },
   {
+    href: "/kaffara-calculator",
+    title: "حاسبة الكفارات والفدية",
+    desc: "احسب كفارة اليمين وفدية صيام رمضان والنذر عيناً بالأرز أو نقداً.",
+    icon: "📜",
+    live: true,
+    badge: "جديد",
+  },
+  {
     href: "/currency-converter",
     title: "محول العملات",
     desc: "حوّل بين الريال والدرهم والدولار واليورو وأكثر من ١٢ عملة فوراً.",
@@ -50,7 +58,7 @@ const tools = [
 ];
 
 const stats = [
-  { value: "٦", label: "أدوات مجانية" },
+  { value: "٧", label: "أدوات مجانية" },
   { value: "١٢+", label: "عملة مدعومة" },
   { value: "٠", label: "تسجيل مطلوب" },
 ];
