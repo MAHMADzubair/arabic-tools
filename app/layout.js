@@ -35,6 +35,7 @@ function Header() {
         {/* Nav */}
         <nav className="flex items-center gap-1 sm:gap-2">
           <NavLink href="/zakat-calculator" label="الزكاة" shortLabel="زكاة" />
+          <NavLink href="/vat-calculator" label="الضريبة" shortLabel="ضريبة" />
           <NavLink href="/inheritance-calculator" label="الميراث" shortLabel="ميراث" />
           <NavLink href="/loan-calculator" label="القروض" shortLabel="قروض" />
           <NavLink href="/currency-converter" label="العملات" shortLabel="عملات" />
@@ -70,8 +71,9 @@ function Footer() {
           <p className="text-xs text-ink-muted">
             جميع الأدوات مجانية. النتائج تقديرية وليست استشارة مالية أو شرعية رسمية.
           </p>
-          <div className="flex gap-4 text-xs text-ink-muted">
+          <div className="flex gap-3 sm:gap-4 text-xs text-ink-muted flex-wrap justify-center">
             <a href="/zakat-calculator" className="hover:text-brand">حاسبة الزكاة</a>
+            <a href="/vat-calculator" className="hover:text-brand">حاسبة الضريبة</a>
             <a href="/inheritance-calculator" className="hover:text-brand">حاسبة الميراث</a>
             <a href="/loan-calculator" className="hover:text-brand">حاسبة القروض</a>
             <a href="/currency-converter" className="hover:text-brand">محول العملات</a>

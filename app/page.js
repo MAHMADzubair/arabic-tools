@@ -24,6 +24,14 @@ const tools = [
     badge: null,
   },
   {
+    href: "/vat-calculator",
+    title: "حاسبة ضريبة القيمة المضافة",
+    desc: "احسب الضريبة المضافة (١٥٪ أو ٥٪) أو استخرج السعر الأصلي بدقة.",
+    icon: "🧾",
+    live: true,
+    badge: "جديد",
+  },
+  {
     href: "/currency-converter",
     title: "محول العملات",
     desc: "حوّل بين الريال والدرهم والدولار واليورو وأكثر من ١٢ عملة فوراً.",
@@ -34,7 +42,7 @@ const tools = [
 ];
 
 const stats = [
-  { value: "٤", label: "أدوات مجانية" },
+  { value: "٥", label: "أدوات مجانية" },
   { value: "١٢+", label: "عملة مدعومة" },
   { value: "٠", label: "تسجيل مطلوب" },
 ];

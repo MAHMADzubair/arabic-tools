@@ -27,6 +27,12 @@ const allTools = [
     desc: "حوّل بين الريال والدرهم والدولار واليورو وأكثر من ١٢ عملة بأسعار محدثة.",
     icon: "💱",
   },
+  {
+    href: "/vat-calculator",
+    title: "حاسبة ضريبة القيمة المضافة",
+    desc: "احسب الضريبة المضافة (١٥٪ أو ٥٪) أو استخرج السعر الأصلي بسهولة.",
+    icon: "🧾",
+  },
 ];
 
 export default function ToolGuideSection({
