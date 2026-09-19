@@ -40,6 +40,7 @@ function Header() {
           <NavLink href="/umrah-calculator" label="تكلفة العمرة" shortLabel="عمرة" />
           <NavLink href="/salary-calculator" label="الراتب الصافي" shortLabel="راتب" />
           <NavLink href="/gratuity-calculator" label="نهاية الخدمة" shortLabel="خدمة" />
+          <NavLink href="/hijri-age-calculator" label="حاسبة العمر" shortLabel="عمر" />
           <NavLink href="/mortgage-calculator" label="التمويل العقاري" shortLabel="عقار" />
           <NavLink href="/compound-interest" label="الفائدة المركبة" shortLabel="مركبة" />
           <NavLink href="/vat-calculator" label="الضريبة" shortLabel="ضريبة" />
@@ -85,6 +86,7 @@ function Footer() {
             <a href="/umrah-calculator" className="hover:text-brand">تكلفة العمرة</a>
             <a href="/salary-calculator" className="hover:text-brand">الراتب الصافي</a>
             <a href="/gratuity-calculator" className="hover:text-brand">مكافأة نهاية الخدمة</a>
+            <a href="/hijri-age-calculator" className="hover:text-brand">حاسبة العمر بالهجري</a>
             <a href="/mortgage-calculator" className="hover:text-brand">التمويل العقاري</a>
             <a href="/compound-interest" className="hover:text-brand">الفائدة المركبة</a>
             <a href="/vat-calculator" className="hover:text-brand">حاسبة الضريبة</a>
