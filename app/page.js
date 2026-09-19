@@ -8,6 +8,14 @@ const tools = [
     badge: null,
   },
   {
+    href: "/inheritance-calculator",
+    title: "حاسبة الميراث",
+    desc: "احسب توزيع التركة بدقة وفق الفرائض والعصبات والعول والرد الشرعي.",
+    icon: "⚖️",
+    live: true,
+    badge: "جديد",
+  },
+  {
     href: "/loan-calculator",
     title: "حاسبة القروض",
     desc: "احسب القسط الشهري وإجمالي الفائدة وجدول السداد الكامل لأي قرض.",
@@ -26,7 +34,7 @@ const tools = [
 ];
 
 const stats = [
-  { value: "٣", label: "أدوات مجانية" },
+  { value: "٤", label: "أدوات مجانية" },
   { value: "١٢+", label: "عملة مدعومة" },
   { value: "٠", label: "تسجيل مطلوب" },
 ];

@@ -35,6 +35,7 @@ function Header() {
         {/* Nav */}
         <nav className="flex items-center gap-1 sm:gap-2">
           <NavLink href="/zakat-calculator" label="الزكاة" shortLabel="زكاة" />
+          <NavLink href="/inheritance-calculator" label="الميراث" shortLabel="ميراث" />
           <NavLink href="/loan-calculator" label="القروض" shortLabel="قروض" />
           <NavLink href="/currency-converter" label="العملات" shortLabel="عملات" />
         </nav>
@@ -71,6 +72,7 @@ function Footer() {
           </p>
           <div className="flex gap-4 text-xs text-ink-muted">
             <a href="/zakat-calculator" className="hover:text-brand">حاسبة الزكاة</a>
+            <a href="/inheritance-calculator" className="hover:text-brand">حاسبة الميراث</a>
             <a href="/loan-calculator" className="hover:text-brand">حاسبة القروض</a>
             <a href="/currency-converter" className="hover:text-brand">محول العملات</a>
           </div>
