@@ -1,4 +1,4 @@
-﻿import UmrahCalculator from "../../components/UmrahCalculator";
+import UmrahCalculator from "../../components/UmrahCalculator";
 import ToolGuideSection from "../../components/ToolGuideSection";
 
 export const metadata = {
