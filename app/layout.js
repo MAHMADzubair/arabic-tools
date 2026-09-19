@@ -37,6 +37,7 @@ function Header() {
           <NavLink href="/zakat-calculator" label="الزكاة" shortLabel="زكاة" />
           <NavLink href="/zakat-al-fitr" label="زكاة الفطر" shortLabel="فطر" />
           <NavLink href="/kaffara-calculator" label="الكفارات" shortLabel="كفارة" />
+          <NavLink href="/umrah-calculator" label="تكلفة العمرة" shortLabel="عمرة" />
           <NavLink href="/vat-calculator" label="الضريبة" shortLabel="ضريبة" />
           <NavLink href="/inheritance-calculator" label="الميراث" shortLabel="ميراث" />
           <NavLink href="/loan-calculator" label="القروض" shortLabel="قروض" />
@@ -77,6 +78,7 @@ function Footer() {
             <a href="/zakat-calculator" className="hover:text-brand">حاسبة الزكاة</a>
             <a href="/zakat-al-fitr" className="hover:text-brand">زكاة الفطر</a>
             <a href="/kaffara-calculator" className="hover:text-brand">الكفارات والفدية</a>
+            <a href="/umrah-calculator" className="hover:text-brand">تكلفة العمرة</a>
             <a href="/vat-calculator" className="hover:text-brand">حاسبة الضريبة</a>
             <a href="/inheritance-calculator" className="hover:text-brand">حاسبة الميراث</a>
             <a href="/loan-calculator" className="hover:text-brand">حاسبة القروض</a>

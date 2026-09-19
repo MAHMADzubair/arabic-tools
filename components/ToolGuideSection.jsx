@@ -45,6 +45,12 @@ const allTools = [
     desc: "احسب كفارة اليمين وفدية صيام رمضان والنذر عيناً بالأرز أو نقداً.",
     icon: "📜",
   },
+  {
+    href: "/umrah-calculator",
+    title: "حاسبة تكلفة العمرة",
+    desc: "قدّر تكلفة رحلتك للعمرة شاملاً الطيران والفندق والتأشيرة والطعام لأي عدد من المسافرين.",
+    icon: "🕋",
+  },
 ];
 
 export default function ToolGuideSection({
