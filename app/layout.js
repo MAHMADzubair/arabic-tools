@@ -1,4 +1,4 @@
-﻿import "./globals.css";
+import "./globals.css";
 
 export const metadata = {
   title: "أدوات مالية مجانية | حاسبات ومحولات",
@@ -33,12 +33,13 @@ function Header() {
         </a>
 
         {/* Nav */}
-        <nav className="flex items-center gap-1 sm:gap-2">
+        <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto max-w-full py-1">
           <NavLink href="/zakat-calculator" label="الزكاة" shortLabel="زكاة" />
           <NavLink href="/zakat-al-fitr" label="زكاة الفطر" shortLabel="فطر" />
           <NavLink href="/kaffara-calculator" label="الكفارات" shortLabel="كفارة" />
           <NavLink href="/umrah-calculator" label="تكلفة العمرة" shortLabel="عمرة" />
           <NavLink href="/salary-calculator" label="الراتب الصافي" shortLabel="راتب" />
+          <NavLink href="/gratuity-calculator" label="نهاية الخدمة" shortLabel="خدمة" />
           <NavLink href="/mortgage-calculator" label="التمويل العقاري" shortLabel="عقار" />
           <NavLink href="/compound-interest" label="الفائدة المركبة" shortLabel="مركبة" />
           <NavLink href="/vat-calculator" label="الضريبة" shortLabel="ضريبة" />
@@ -55,7 +56,7 @@ function NavLink({ href, label, shortLabel }) {
   return (
     <a
       href={href}
-      className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-ink-secondary transition hover:bg-brand-light hover:text-brand sm:px-3 sm:text-sm"
+      className="shrink-0 rounded-lg px-2 py-1 text-xs font-semibold text-ink-secondary transition hover:bg-brand-light hover:text-brand sm:px-3 sm:py-1.5 sm:text-sm"
     >
       <span className="hidden sm:inline">{label}</span>
       <span className="sm:hidden">{shortLabel}</span>
@@ -83,6 +84,7 @@ function Footer() {
             <a href="/kaffara-calculator" className="hover:text-brand">الكفارات والفدية</a>
             <a href="/umrah-calculator" className="hover:text-brand">تكلفة العمرة</a>
             <a href="/salary-calculator" className="hover:text-brand">الراتب الصافي</a>
+            <a href="/gratuity-calculator" className="hover:text-brand">مكافأة نهاية الخدمة</a>
             <a href="/mortgage-calculator" className="hover:text-brand">التمويل العقاري</a>
             <a href="/compound-interest" className="hover:text-brand">الفائدة المركبة</a>
             <a href="/vat-calculator" className="hover:text-brand">حاسبة الضريبة</a>
