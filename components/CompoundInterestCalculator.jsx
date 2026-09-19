@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 
@@ -399,7 +399,7 @@ export default function CompoundInterestCalculator() {
           {/* Detailed table */}
           {showTable && (
             <div className="overflow-x-auto rounded-xl border border-brand-border mt-4">
-              <table className="w-full text-xs">
+              <table className="w-full min-w-[480px] text-xs">
                 <thead className="bg-brand-surface/60">
                   <tr>
                     <th className="p-3 text-right font-bold text-ink-secondary">السنة</th>
