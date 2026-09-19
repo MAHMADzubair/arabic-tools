@@ -33,6 +33,12 @@ const allTools = [
     desc: "احسب الضريبة المضافة (١٥٪ أو ٥٪) أو استخرج السعر الأصلي بسهولة.",
     icon: "🧾",
   },
+  {
+    href: "/zakat-al-fitr",
+    title: "حاسبة زكاة الفطر",
+    desc: "احسب صاع زكاة الفطر بالكيلوجرام (أرز وحبوب) أو نقداً لجميع أفراد الأسرة.",
+    icon: "🌾",
+  },
 ];
 
 export default function ToolGuideSection({

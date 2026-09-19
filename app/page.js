@@ -32,6 +32,14 @@ const tools = [
     badge: "جديد",
   },
   {
+    href: "/zakat-al-fitr",
+    title: "حاسبة زكاة الفطر",
+    desc: "احسب صاع زكاة الفطر بالكيلوجرام (أرز وحبوب) أو نقداً للأسرة.",
+    icon: "🌾",
+    live: true,
+    badge: "جديد",
+  },
+  {
     href: "/currency-converter",
     title: "محول العملات",
     desc: "حوّل بين الريال والدرهم والدولار واليورو وأكثر من ١٢ عملة فوراً.",
@@ -42,7 +50,7 @@ const tools = [
 ];
 
 const stats = [
-  { value: "٥", label: "أدوات مجانية" },
+  { value: "٦", label: "أدوات مجانية" },
   { value: "١٢+", label: "عملة مدعومة" },
   { value: "٠", label: "تسجيل مطلوب" },
 ];
