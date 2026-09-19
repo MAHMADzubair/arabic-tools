@@ -43,6 +43,7 @@ function Header() {
           <NavLink href="/hijri-age-calculator" label="حاسبة العمر" shortLabel="عمر" />
           <NavLink href="/date-converter" label="تحويل التاريخ" shortLabel="تاريخ" />
           <NavLink href="/bmi-calculator" label="كتلة الجسم" shortLabel="وزن" />
+          <NavLink href="/profit-margin-calculator" label="هامش الربح" shortLabel="ربح" />
           <NavLink href="/mortgage-calculator" label="التمويل العقاري" shortLabel="عقار" />
           <NavLink href="/compound-interest" label="الفائدة المركبة" shortLabel="مركبة" />
           <NavLink href="/vat-calculator" label="الضريبة" shortLabel="ضريبة" />
@@ -91,6 +92,7 @@ function Footer() {
             <a href="/hijri-age-calculator" className="hover:text-brand">حاسبة العمر بالهجري</a>
             <a href="/date-converter" className="hover:text-brand">تحويل التاريخ</a>
             <a href="/bmi-calculator" className="hover:text-brand">حاسبة كتلة الجسم (BMI)</a>
+            <a href="/profit-margin-calculator" className="hover:text-brand">حاسبة هامش الربح</a>
             <a href="/mortgage-calculator" className="hover:text-brand">التمويل العقاري</a>
             <a href="/compound-interest" className="hover:text-brand">الفائدة المركبة</a>
             <a href="/vat-calculator" className="hover:text-brand">حاسبة الضريبة</a>

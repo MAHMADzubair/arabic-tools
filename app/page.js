@@ -112,6 +112,14 @@ const tools = [
     badge: "جديد",
   },
   {
+    href: "/profit-margin-calculator",
+    title: "حاسبة هامش الربح والتسعير",
+    desc: "احسب هامش الربح والمارك اب وسعر البيع لمتجرك مع تكاليف الشحن وعمولات الدفع والإعلانات.",
+    icon: "📊",
+    live: true,
+    badge: "جديد",
+  },
+  {
     href: "/currency-converter",
     title: "محول العملات",
     desc: "حوّل بين الريال والدرهم والدولار واليورو وأكثر من ١٢ عملة فوراً.",
@@ -122,7 +130,7 @@ const tools = [
 ];
 
 const stats = [
-  { value: "١٥", label: "أدوات مجانية" },
+  { value: "١٦", label: "أدوات مجانية" },
   { value: "١٢+", label: "عملة مدعومة" },
   { value: "٠", label: "تسجيل مطلوب" },
 ];
