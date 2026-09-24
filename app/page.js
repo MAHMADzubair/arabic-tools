@@ -23,6 +23,12 @@ const categories = [
         icon: "🎖️",
       },
       {
+        href: "/overtime-calculator",
+        title: "حاسبة الأوفرتايم",
+        desc: "احسب أجر ساعات العمل الإضافي وفق قوانين العمل الخليجية لكل دولة.",
+        icon: "⏱️",
+      },
+      {
         href: "/vat-calculator",
         title: "حاسبة ضريبة القيمة المضافة",
         desc: "احسب الضريبة المضافة (١٥٪ أو ٥٪) أو استخرج السعر الأصلي بدقة.",
@@ -80,6 +86,84 @@ const categories = [
     comingSoon: false,
   },
   {
+    id: "islamic",
+    icon: "🌙",
+    titleAr: "الأدوات الإسلامية",
+    titleEn: "Islamic Tools",
+    color: "from-teal-500 to-emerald-700",
+    bg: "bg-teal-50",
+    border: "border-teal-200",
+    tools: [
+      {
+        href: "/zakat-calculator",
+        title: "حاسبة الزكاة",
+        desc: "احسب زكاتك بدقة بناءً على نصاب الفضة الحالي مع دعم الأصول والالتزامات.",
+        icon: "🕌",
+      },
+      {
+        href: "/zakat-al-fitr",
+        title: "حاسبة زكاة الفطر",
+        desc: "احسب صاع زكاة الفطر بالكيلوجرام (أرز وحبوب) أو نقداً للأسرة.",
+        icon: "🌾",
+      },
+      {
+        href: "/kaffara-calculator",
+        title: "حاسبة الكفارات والفدية",
+        desc: "احسب كفارة اليمين وفدية صيام رمضان والنذر عيناً بالأرز أو نقداً.",
+        icon: "📜",
+      },
+      {
+        href: "/umrah-calculator",
+        title: "حاسبة تكلفة العمرة",
+        desc: "قدّر تكلفة رحلة العمرة شاملاً الطيران والفندق والتأشيرة والطعام لأي عدد من المسافرين.",
+        icon: "🕋",
+      },
+      {
+        href: "/inheritance-calculator",
+        title: "حاسبة الميراث",
+        desc: "احسب توزيع التركة بدقة وفق الفرائض والعصبات والعول والرد الشرعي.",
+        icon: "⚖️",
+      },
+    ],
+    comingSoon: false,
+  },
+  {
+    id: "everyday",
+    icon: "🌐",
+    titleAr: "الحياة اليومية",
+    titleEn: "Everyday Tools",
+    color: "from-violet-500 to-purple-600",
+    bg: "bg-violet-50",
+    border: "border-violet-200",
+    tools: [
+      {
+        href: "/hijri-age-calculator",
+        title: "حاسبة العمر بالهجري",
+        desc: "احسب عمرك الدقيق بالهجري والميلادي وفق تقويم أم القرى مع موعد ميلادك القادم.",
+        icon: "🌙",
+      },
+      {
+        href: "/date-converter",
+        title: "محول التاريخ الهجري والميلادي",
+        desc: "حوّل بين التاريخين الهجري والميلادي بدقة تقويم أم القرى مع معرفة تاريخ اليوم وأسماء الأيام.",
+        icon: "🔄",
+      },
+      {
+        href: "/bmi-calculator",
+        title: "حاسبة مؤشر كتلة الجسم (BMI)",
+        desc: "احسب مؤشر كتلة جسمك والوزن المثالي واحتياج السعرات والماء وفق معايير منظمة الصحة العالمية.",
+        icon: "⚖️",
+      },
+      {
+        href: "/unit-converter",
+        title: "محول الوحدات الشامل",
+        desc: "حوّل بين مقاييس الطول والوزن ودرجة الحرارة والمساحة والحجم بين النظامين المتري والإمبراطوري.",
+        icon: "📐",
+      },
+    ],
+    comingSoon: false,
+  },
+  {
     id: "business",
     icon: "💼",
     titleAr: "الأعمال",
@@ -94,7 +178,7 @@ const categories = [
   {
     id: "media",
     icon: "🎬",
-    titleAr: "الميديا",
+    titleAr: "الوسائط",
     titleEn: "Media",
     color: "from-purple-500 to-violet-600",
     bg: "bg-purple-50",
@@ -142,7 +226,7 @@ const categories = [
   {
     id: "developer",
     icon: "👨‍💻",
-    titleAr: "المطورون",
+    titleAr: "المطورين",
     titleEn: "Developer",
     color: "from-slate-600 to-gray-700",
     bg: "bg-slate-50",
@@ -151,77 +235,11 @@ const categories = [
     comingSoon: true,
     comingSoonDesc: "أدوات JSON وBase64 والألوان وتوليد الكود",
   },
-  {
-    id: "everyday",
-    icon: "🌙",
-    titleAr: "الحياة اليومية",
-    titleEn: "Everyday",
-    color: "from-violet-500 to-purple-600",
-    bg: "bg-violet-50",
-    border: "border-violet-200",
-    tools: [
-      {
-        href: "/zakat-calculator",
-        title: "حاسبة الزكاة",
-        desc: "احسب زكاتك بدقة بناءً على نصاب الفضة الحالي مع دعم الأصول والالتزامات.",
-        icon: "🕌",
-      },
-      {
-        href: "/zakat-al-fitr",
-        title: "حاسبة زكاة الفطر",
-        desc: "احسب صاع زكاة الفطر بالكيلوجرام (أرز وحبوب) أو نقداً للأسرة.",
-        icon: "🌾",
-      },
-      {
-        href: "/kaffara-calculator",
-        title: "حاسبة الكفارات والفدية",
-        desc: "احسب كفارة اليمين وفدية صيام رمضان والنذر عيناً بالأرز أو نقداً.",
-        icon: "📜",
-      },
-      {
-        href: "/umrah-calculator",
-        title: "حاسبة تكلفة العمرة",
-        desc: "قدّر تكلفة رحلة العمرة شاملاً الطيران والفندق والتأشيرة والطعام لأي عدد من المسافرين.",
-        icon: "🕋",
-      },
-      {
-        href: "/inheritance-calculator",
-        title: "حاسبة الميراث",
-        desc: "احسب توزيع التركة بدقة وفق الفرائض والعصبات والعول والرد الشرعي.",
-        icon: "⚖️",
-      },
-      {
-        href: "/hijri-age-calculator",
-        title: "حاسبة العمر بالهجري",
-        desc: "احسب عمرك الدقيق بالهجري والميلادي وفق تقويم أم القرى مع موعد ميلادك القادم.",
-        icon: "🌙",
-      },
-      {
-        href: "/date-converter",
-        title: "محول التاريخ الهجري والميلادي",
-        desc: "حوّل بين التاريخين الهجري والميلادي بدقة تقويم أم القرى مع معرفة تاريخ اليوم وأسماء الأيام.",
-        icon: "🔄",
-      },
-      {
-        href: "/bmi-calculator",
-        title: "حاسبة مؤشر كتلة الجسم (BMI)",
-        desc: "احسب مؤشر كتلة جسمك والوزن المثالي واحتياج السعرات والماء وفق معايير منظمة الصحة العالمية.",
-        icon: "⚖️",
-      },
-      {
-        href: "/unit-converter",
-        title: "محول الوحدات الشامل",
-        desc: "حوّل بين مقاييس الطول والوزن ودرجة الحرارة والمساحة والحجم بين النظامين المتري والإمبراطوري.",
-        icon: "📐",
-      },
-    ],
-    comingSoon: false,
-  },
 ];
 
 const stats = [
-  { value: "١٨", label: "أداة وحاسبة متخصصة" },
-  { value: "٩", label: "تصنيف شامل" },
+  { value: "١٩", label: "أداة وحاسبة متخصصة" },
+  { value: "١٠", label: "تصنيف شامل" },
   { value: "٠", label: "تسجيل مطلوب" },
 ];
 
@@ -238,7 +256,7 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-3xl text-center text-white">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
             <span>✨</span>
-            <span>١٨ أداة مجانية — بدون تسجيل</span>
+            <span>١٩ أداة مجانية — بدون تسجيل</span>
           </div>
           <h1 className="mb-4 text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">
             أدوات عربية شاملة
@@ -246,7 +264,7 @@ export default function HomePage() {
             <span className="text-accent">سريعة ودقيقة</span>
           </h1>
           <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
-            ١٨ أداة ومحول مالي وشرعي ويومي مبنية للمستخدم العربي — مصنّفة في ٩ تصنيفات، دقيقة وسريعة ومجانية تماماً.
+            ١٩ أداة ومحول مالي وإسلامي ويومي مبنية للمستخدم العربي — مصنّفة في ١٠ تصنيفات، دقيقة وسريعة ومجانية تماماً.
           </p>
 
           <div className="flex justify-center gap-6 sm:gap-12">
