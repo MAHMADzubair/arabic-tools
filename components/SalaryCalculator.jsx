@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 
@@ -109,8 +109,8 @@ function calcSocial(gross, country) {
 }
 
 /* ─── Component ─────────────────────────────────────────────────────────── */
-export default function SalaryCalculator() {
-  const [countryId, setCountryId] = useState("sa");
+export default function SalaryCalculator({ initialCountry = "sa" }) {
+  const [countryId, setCountryId] = useState(initialCountry);
   const [grossSalary, setGrossSalary] = useState(10000);
   const [housingAllowance, setHousingAllowance] = useState(0);
   const [transportAllowance, setTransportAllowance] = useState(0);

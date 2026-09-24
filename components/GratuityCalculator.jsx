@@ -329,8 +329,8 @@ function fmt(n, sym) {
   return `${Math.round(n).toLocaleString("ar-EG")} ${sym}`;
 }
 
-export default function GratuityCalculator() {
-  const [countryId, setCountryId] = useState("sa");
+export default function GratuityCalculator({ initialCountry = "sa" }) {
+  const [countryId, setCountryId] = useState(initialCountry);
   const [reasonId, setReasonId] = useState("terminate");
   const [wageBaseType, setWageBaseType] = useState("total"); // "total" | "basic"
   const [basicSalary, setBasicSalary] = useState(8000);

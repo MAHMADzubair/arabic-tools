@@ -43,5 +43,14 @@ export default function sitemap() {
     priority: 0.8,
   }));
 
-  return [homePage, ...toolPages];
+  // ── Static pages (Trust & Legal) ──────────────────────────────────
+  const staticRoutes = ["/about", "/privacy", "/contact", "/terms", "/disclaimer"];
+  const staticPages = staticRoutes.map((route) => ({
+    url: `${BASE_URL}${route}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.5,
+  }));
+
+  return [homePage, ...toolPages, ...staticPages];
 }

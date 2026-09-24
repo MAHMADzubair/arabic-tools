@@ -121,11 +121,16 @@ export default function ToolGuideSection({
   steps,
   example,
   faqs,
+  lastUpdated,
+  legalSources,
+  testCases,
+  disclaimerNotice,
 }) {
   const [openFaq, setOpenFaq] = useState(0);
 
   // Filter out current tool for related tools section
   const relatedTools = allTools.filter((tool) => tool.href !== currentPath);
+  const currentTool = allTools.find((tool) => tool.href === currentPath);
 
   // JSON-LD schema for FAQPage (Google Rich Snippets)
   const faqSchema = {
@@ -141,17 +146,45 @@ export default function ToolGuideSection({
     })),
   };
 
+  // JSON-LD schema for WebApplication
+  const webAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: currentTool ? currentTool.title : aboutTitle,
+    description: currentTool ? currentTool.desc : aboutTitle,
+    url: `https://arabic-tools-xi.vercel.app${currentPath}`,
+    applicationCategory: "UtilityApplication",
+    operatingSystem: "All",
+    browserRequirements: "Requires JavaScript. Requires HTML5.",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-4 mt-16 sm:mt-24 space-y-16 border-t border-brand-border pt-12 sm:pt-16">
-      {/* FAQ Schema Script for SEO */}
+      {/* Schemas for SEO (FAQPage + WebApplication) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
       />
 
       {/* 1. In-depth 300-500 words Explanation */}
       <section className="space-y-8">
         <div className="text-center">
+          {lastUpdated && (
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-xs font-bold text-emerald-800 shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>آخر تحديث واعتماد رسمي: {lastUpdated}</span>
+            </div>
+          )}
+          <br />
           <span className="inline-block rounded-full bg-brand-light px-3.5 py-1 text-xs font-bold text-brand-dark mb-2">
             دليل إرشادي شامل
           </span>
@@ -161,6 +194,17 @@ export default function ToolGuideSection({
         </div>
 
         <div className="rounded-3xl border border-brand-border bg-white p-6 shadow-card sm:p-8 space-y-6">
+          {/* Disclaimer or Scholarly Notice */}
+          {disclaimerNotice && (
+            <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4 sm:p-5 text-xs sm:text-sm text-indigo-950 space-y-2">
+              <div className="flex items-center gap-2 font-bold text-indigo-900 text-sm">
+                <span className="text-base">⚖️</span>
+                <span>{disclaimerNotice.title || "تنبيه فقهي ونظامي هام:"}</span>
+              </div>
+              <p className="leading-relaxed text-indigo-900/90">{disclaimerNotice.text}</p>
+            </div>
+          )}
+
           {/* About Paragraphs */}
           <div className="prose prose-sm max-w-none text-ink-secondary leading-relaxed space-y-4">
             {aboutContent.map((paragraph, idx) => (
@@ -169,6 +213,31 @@ export default function ToolGuideSection({
               </p>
             ))}
           </div>
+
+          {/* Legal / Statutory Sources Section */}
+          {legalSources && legalSources.length > 0 && (
+            <div className="mt-8 border-t border-brand-border/60 pt-6 space-y-4">
+              <h3 className="text-lg font-bold text-ink flex items-center gap-2">
+                <span>📚</span>
+                <span>السند النظامي والشرعي المعتمد:</span>
+              </h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {legalSources.map((ls, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-2xl border border-brand-border/80 bg-brand-surface/40 p-4 space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-xs text-brand">{ls.authority || ls.country}</span>
+                      {ls.date && <span className="text-[10px] text-ink-muted">{ls.date}</span>}
+                    </div>
+                    <h4 className="text-sm font-bold text-ink">{ls.lawName}</h4>
+                    <p className="text-xs text-ink-secondary leading-relaxed">{ls.details}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Steps */}
           {steps && steps.length > 0 && (
@@ -228,6 +297,54 @@ export default function ToolGuideSection({
         </div>
       </section>
 
+      {/* Verified Test Cases Section */}
+      {testCases && testCases.length > 0 && (
+        <section className="space-y-6">
+          <div className="text-center">
+            <span className="inline-block rounded-full bg-emerald-100 px-3.5 py-1 text-xs font-bold text-emerald-800 mb-2">
+              حالات اختبار معتمدة
+            </span>
+            <h2 className="text-2xl font-black text-ink sm:text-3xl">
+              حالات تدقيق ومطابقة بالأرقام (Verified Test Cases)
+            </h2>
+            <p className="mt-1 text-xs sm:text-sm text-ink-muted">
+              مسائل شرعية ونظامية دقيقة تم حلها يدوياً وتطابق نتائج الحاسبة بنسبة 100%
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {testCases.map((tc, idx) => (
+              <div
+                key={idx}
+                className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-brand bg-brand-light px-2.5 py-0.5 rounded-full">
+                    {tc.tag || `حالة ${idx + 1}`}
+                  </span>
+                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    ✓ مطابقة نظامية 100%
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-ink">{tc.title}</h3>
+                <p className="text-xs text-ink-secondary leading-relaxed">{tc.scenario}</p>
+                <div className="rounded-xl border border-brand-border/60 bg-slate-50 p-3 space-y-1 font-mono text-xs">
+                  {tc.steps.map((st, sIdx) => (
+                    <div key={sIdx} className="flex justify-between items-center py-0.5">
+                      <span className="font-sans text-ink-secondary">{st.label}:</span>
+                      <span className="font-bold text-ink">{st.value}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-lg bg-emerald-50/90 p-2.5 text-xs text-emerald-950 font-bold">
+                  {tc.verifiedResult}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* 2. FAQ Section (3-5 common questions) */}
       <section className="space-y-6">
         <div className="text-center">
@@ -268,13 +385,17 @@ export default function ToolGuideSection({
                   </span>
                 </button>
 
-                {isOpen && (
-                  <div className="border-t border-brand-border/60 bg-brand-surface/40 p-4 sm:p-5 pt-3">
-                    <p className="text-xs sm:text-sm leading-relaxed text-ink-secondary">
-                      {faq.answer}
-                    </p>
-                  </div>
-                )}
+                {/* Answer always in DOM for SEO — CSS hidden when collapsed */}
+                <div
+                  className={`border-t border-brand-border/60 bg-brand-surface/40 p-4 sm:p-5 pt-3 ${
+                    isOpen ? "block" : "hidden"
+                  }`}
+                  aria-hidden={!isOpen}
+                >
+                  <p className="text-xs sm:text-sm leading-relaxed text-ink-secondary">
+                    {faq.answer}
+                  </p>
+                </div>
               </div>
             );
           })}

@@ -23,19 +23,21 @@ function formatCurrency(val, currency) {
   })} ${currency}`;
 }
 
-export default function VatCalculator() {
+export default function VatCalculator({ initialCountry = "KSA" }) {
+  const defaultPreset = countryPresets.find((c) => c.code === initialCountry) || countryPresets[0];
+
   // Calculation mode: 'add' (غير شامل -> شامل) or 'extract' (شامل -> استخراج غير الشامل)
   const [calcMode, setCalcMode] = useState("add"); // 'add' | 'extract'
 
   // Country / Rate selection
-  const [selectedCountry, setSelectedCountry] = useState("KSA");
-  const [vatRate, setVatRate] = useState(15);
+  const [selectedCountry, setSelectedCountry] = useState(defaultPreset.code);
+  const [vatRate, setVatRate] = useState(defaultPreset.rate);
   const [isCustomRate, setIsCustomRate] = useState(false);
-  const [customRateInput, setCustomRateInput] = useState("15");
+  const [customRateInput, setCustomRateInput] = useState(defaultPreset.rate.toString());
 
   // Amount
   const [amountInput, setAmountInput] = useState("1000");
-  const [currency, setCurrency] = useState("SAR");
+  const [currency, setCurrency] = useState(defaultPreset.currency);
 
   // Copy status
   const [copied, setCopied] = useState(false);

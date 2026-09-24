@@ -1,7 +1,14 @@
 import "./globals.css";
 import Header from "../components/Header";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
+
 export const metadata = {
+  metadataBase: new URL(BASE_URL),
+  alternates: {
+    canonical: "./",
+  },
   title: "أدوات مالية ومحولات مجانية | حاسبات إسلامية ومالية وتجارية",
   description:
     "مجموعة متكاملة من 18 أداة وحاسبة مجانية باللغة العربية: حاسبة الزكاة، الميراث، القروض، الراتب، نهاية الخدمة، مؤشر كتلة الجسم، محول العملات، تحويل التاريخ ومحول الوحدات.",
@@ -39,7 +46,7 @@ function Footer() {
         </div>
 
         {/* Categorized Footer Links */}
-        <div className="mt-8 pt-6 border-t border-brand-border/60 grid grid-cols-2 gap-4 sm:grid-cols-4 text-xs">
+        <div className="mt-8 pt-6 border-t border-brand-border/60 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-5 text-xs">
           <div className="space-y-2">
             <p className="font-bold text-brand-dark">💰 أدوات مالية وتجارية</p>
             <ul className="space-y-1 text-ink-secondary">
@@ -81,10 +88,32 @@ function Footer() {
               <li><a href="/vat-calculator" className="hover:text-brand">حاسبة الضريبة المضافة</a></li>
             </ul>
           </div>
+
+          <div className="space-y-2 col-span-2 sm:col-span-1">
+            <p className="font-bold text-brand-dark">⚖️ معلومات وقانونية</p>
+            <ul className="space-y-1 text-ink-secondary">
+              <li><a href="/about" className="hover:text-brand">عن الموقع والرسالة</a></li>
+              <li><a href="/privacy" className="hover:text-brand">سياسة الخصوصية</a></li>
+              <li><a href="/terms" className="hover:text-brand">شروط الاستخدام</a></li>
+              <li><a href="/disclaimer" className="hover:text-brand">إخلاء المسؤولية</a></li>
+              <li><a href="/contact" className="hover:text-brand">تواصل معنا</a></li>
+            </ul>
+          </div>
         </div>
 
-        <div className="mt-8 pt-4 border-t border-brand-border/40 text-center text-[11px] text-ink-muted">
-          © {new Date().getFullYear()} أدوات مالية — جميع الحقوق محفوظة
+        <div className="mt-8 pt-4 border-t border-brand-border/40 flex flex-col items-center gap-3 sm:flex-row sm:justify-between text-[11px] text-ink-muted">
+          <span>© {new Date().getFullYear()} أدوات مالية — جميع الحقوق محفوظة</span>
+          <nav className="flex flex-wrap justify-center gap-x-4 gap-y-1" aria-label="روابط قانونية">
+            <a href="/about" className="hover:text-brand transition-colors">عن الموقع</a>
+            <span aria-hidden="true">·</span>
+            <a href="/privacy" className="hover:text-brand transition-colors">سياسة الخصوصية</a>
+            <span aria-hidden="true">·</span>
+            <a href="/terms" className="hover:text-brand transition-colors">شروط الاستخدام</a>
+            <span aria-hidden="true">·</span>
+            <a href="/disclaimer" className="hover:text-brand transition-colors">إخلاء المسؤولية</a>
+            <span aria-hidden="true">·</span>
+            <a href="/contact" className="hover:text-brand transition-colors">تواصل معنا</a>
+          </nav>
         </div>
       </div>
     </footer>
