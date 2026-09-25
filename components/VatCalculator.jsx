@@ -100,7 +100,7 @@ export default function VatCalculator({ initialCountry = "KSA" }) {
       `مبلغ الضريبة: ${formatCurrency(result.vatAmount, currency)}\n` +
       `المبلغ الإجمالي شامل الضريبة: ${formatCurrency(result.totalAmount, currency)}\n` +
       `------------------------------------\n` +
-      `حُسبت بواسطة: أدوات مالية عربية`;
+      `حُسبت بواسطة: أدوات عربية`;
 
     navigator.clipboard.writeText(text);
     setCopied(true);

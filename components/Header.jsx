@@ -1,69 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-export const CATEGORIES = [
-  {
-    id: "finance",
-    title: "💰 أدوات مالية وتجارية",
-    tools: [
-      { href: "/salary-calculator", title: "حاسبة الراتب الصافي", icon: "💵" },
-      { href: "/gratuity-calculator", title: "مكافأة نهاية الخدمة", icon: "🎖️" },
-      { href: "/loan-calculator", title: "حاسبة القروض والتمويل", icon: "🏦" },
-      { href: "/mortgage-calculator", title: "حاسبة التمويل العقاري", icon: "🏠" },
-      { href: "/profit-margin-calculator", title: "هامش الربح والتسعير", icon: "📊" },
-      { href: "/roi-calculator", title: "العائد على الاستثمار ROI", icon: "💼" },
-      { href: "/compound-interest", title: "حاسبة الفائدة المركبة", icon: "📈" },
-    ],
-  },
-  {
-    id: "islamic",
-    title: "🕌 أدوات إسلامية وشرعية",
-    tools: [
-      { href: "/zakat-calculator", title: "حاسبة الزكاة الشرعية", icon: "🕌" },
-      { href: "/zakat-al-fitr", title: "حاسبة زكاة الفطر", icon: "🌾" },
-      { href: "/kaffara-calculator", title: "حاسبة الكفارات والفدية", icon: "📜" },
-      { href: "/umrah-calculator", title: "حاسبة تكلفة العمرة", icon: "🕋" },
-      { href: "/inheritance-calculator", title: "حاسبة الميراث الشرعية", icon: "⚖️" },
-    ],
-  },
-  {
-    id: "calendar",
-    title: "📅 التاريخ والتقويم",
-    tools: [
-      { href: "/hijri-age-calculator", title: "حاسبة العمر بالهجري", icon: "🌙" },
-      { href: "/date-converter", title: "تحويل التاريخ هجري/ميلادي", icon: "🔄" },
-    ],
-  },
-  {
-    id: "utilities",
-    title: "📐 محولات وصحة يومية",
-    tools: [
-      { href: "/bmi-calculator", title: "حاسبة كتلة الجسم (BMI)", icon: "⚖️" },
-      { href: "/currency-converter", title: "محول العملات الفوري", icon: "💱" },
-      { href: "/unit-converter", title: "محول الوحدات الشامل", icon: "📐" },
-      { href: "/vat-calculator", title: "حاسبة ضريبة القيمة المضافة", icon: "🧾" },
-    ],
-  },
-];
+import { useState, useEffect, useMemo } from "react";
+import { CATEGORIES, getActiveTools } from "@/lib/registry";
 
 // Top quick tools for desktop bar
 const TOP_TOOLS = [
-  { href: "/zakat-calculator", label: "الزكاة" },
   { href: "/salary-calculator", label: "الراتب" },
   { href: "/gratuity-calculator", label: "نهاية الخدمة" },
+  { href: "/zakat-calculator", label: "الزكاة" },
+  { href: "/loan-calculator", label: "القروض" },
   { href: "/hijri-age-calculator", label: "العمر" },
   { href: "/date-converter", label: "تحويل التاريخ" },
   { href: "/bmi-calculator", label: "BMI" },
   { href: "/profit-margin-calculator", label: "هامش الربح" },
   { href: "/unit-converter", label: "محول الوحدات" },
-  { href: "/loan-calculator", label: "القروض" },
 ];
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const activeTools = useMemo(() => getActiveTools(), []);
+  const toolCount = activeTools.length;
+
+  const activeCategories = useMemo(() => {
+    return CATEGORIES.map((cat) => ({
+      ...cat,
+      tools: activeTools.filter((t) => t.category === cat.id),
+    })).filter((cat) => cat.tools.length > 0);
+  }, [activeTools]);
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
@@ -78,14 +44,22 @@ export default function Header() {
   }, [mobileMenuOpen]);
 
   // Filter tools by search
-  const filteredCategories = CATEGORIES.map((cat) => ({
-    ...cat,
-    tools: cat.tools.filter(
-      (t) =>
-        t.title.includes(searchQuery.trim()) ||
-        cat.title.includes(searchQuery.trim())
-    ),
-  })).filter((cat) => cat.tools.length > 0);
+  const filteredCategories = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return activeCategories;
+    return activeCategories
+      .map((cat) => ({
+        ...cat,
+        tools: cat.tools.filter(
+          (t) =>
+            t.nameAr.toLowerCase().includes(query) ||
+            (t.nameEn && t.nameEn.toLowerCase().includes(query)) ||
+            (t.descAr && t.descAr.toLowerCase().includes(query)) ||
+            cat.nameAr.toLowerCase().includes(query)
+        ),
+      }))
+      .filter((cat) => cat.tools.length > 0);
+  }, [activeCategories, searchQuery]);
 
   return (
     <>
@@ -94,14 +68,14 @@ export default function Header() {
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 group shrink-0">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-hero-gradient shadow-sm group-hover:shadow-md transition-all">
-              <span className="text-white text-base font-black">م</span>
+              <span className="text-white text-base font-black">ع</span>
             </div>
             <div>
               <span className="text-base sm:text-lg font-black text-brand-dark block leading-tight">
-                أدوات مالية
+                أدوات عربية
               </span>
               <span className="text-[10px] text-ink-muted hidden sm:block">
-                ١٨ أداة وحاسبة مجانية
+                {toolCount.toLocaleString("ar-EG")} أداة وحاسبة مجانية
               </span>
             </div>
           </a>
@@ -125,7 +99,7 @@ export default function Header() {
                 onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
                 className="inline-flex items-center gap-1 rounded-xl bg-brand-light px-3 py-1.5 text-xs font-bold text-brand-dark hover:bg-brand hover:text-white transition-all shadow-sm"
               >
-                <span>جميع الأدوات (١٨)</span>
+                <span>جميع الأدوات ({toolCount.toLocaleString("ar-EG")})</span>
                 <span className="text-[10px]">▼</span>
               </button>
 
@@ -135,9 +109,11 @@ export default function Header() {
                     className="fixed inset-0 z-40"
                     onClick={() => setDesktopDropdownOpen(false)}
                   />
-                  <div className="absolute left-0 mt-2 z-50 w-[480px] rounded-2xl border border-brand-border bg-white p-4 shadow-xl space-y-3 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute left-0 mt-2 z-50 w-[520px] rounded-2xl border border-brand-border bg-white p-4 shadow-xl space-y-3 animate-in fade-in zoom-in-95 duration-150">
                     <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                      <span className="text-xs font-black text-brand-dark">دليل جميع الأدوات (18 أداة)</span>
+                      <span className="text-xs font-black text-brand-dark">
+                        دليل جميع الأدوات ({toolCount} أداة)
+                      </span>
                       <button
                         type="button"
                         onClick={() => setDesktopDropdownOpen(false)}
@@ -147,11 +123,12 @@ export default function Header() {
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 max-h-[380px] overflow-y-auto p-1">
-                      {CATEGORIES.map((cat) => (
+                    <div className="grid grid-cols-2 gap-3.5 max-h-[380px] overflow-y-auto p-1">
+                      {activeCategories.map((cat) => (
                         <div key={cat.id} className="space-y-1.5">
-                          <h4 className="text-[11px] font-bold text-ink-muted pb-0.5 border-b border-brand-border/40">
-                            {cat.title}
+                          <h4 className="text-[11px] font-bold text-ink-muted pb-0.5 border-b border-brand-border/40 flex items-center gap-1">
+                            <span>{cat.icon}</span>
+                            <span>{cat.nameAr}</span>
                           </h4>
                           <div className="space-y-1">
                             {cat.tools.map((t) => (
@@ -162,7 +139,7 @@ export default function Header() {
                                 className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-ink hover:bg-brand-light hover:text-brand-dark transition-all"
                               >
                                 <span>{t.icon}</span>
-                                <span className="truncate">{t.title}</span>
+                                <span className="truncate">{t.nameAr}</span>
                               </a>
                             ))}
                           </div>
@@ -175,7 +152,7 @@ export default function Header() {
             </div>
           </nav>
 
-          {/* Mobile Hamburger & Quick Search Button */}
+          {/* Mobile Hamburger Button */}
           <div className="flex md:hidden items-center gap-2">
             <button
               type="button"
@@ -184,12 +161,12 @@ export default function Header() {
               aria-label="فتح قائمة الأدوات"
             >
               <span>☰</span>
-              <span>الأدوات (١٨)</span>
+              <span>الأدوات ({toolCount.toLocaleString("ar-EG")})</span>
             </button>
           </div>
         </div>
 
-        {/* Mobile Horizontal Quick Bar (Top 6 Most Used) */}
+        {/* Mobile Horizontal Quick Bar */}
         <div className="flex md:hidden items-center gap-1.5 overflow-x-auto px-4 py-1.5 border-t border-brand-border/40 bg-brand-surface/30 scrollbar-none">
           {TOP_TOOLS.map((t) => (
             <a
@@ -218,11 +195,13 @@ export default function Header() {
             <div className="flex items-center justify-between p-4 border-b border-brand-border bg-brand-surface/50">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-hero-gradient">
-                  <span className="text-white text-xs font-black">م</span>
+                  <span className="text-white text-xs font-black">ع</span>
                 </div>
                 <div>
-                  <span className="text-sm font-bold text-ink block">جميع الأدوات والحاسبات</span>
-                  <span className="text-[10px] text-ink-muted">١٨ أداة مجانية</span>
+                  <span className="text-sm font-bold text-ink block">أدوات عربية</span>
+                  <span className="text-[10px] text-ink-muted">
+                    {toolCount.toLocaleString("ar-EG")} أداة وحاسبة مجانية
+                  </span>
                 </div>
               </div>
 
@@ -259,8 +238,9 @@ export default function Header() {
               ) : (
                 filteredCategories.map((cat) => (
                   <div key={cat.id} className="space-y-2">
-                    <h3 className="text-xs font-bold text-brand-dark pb-1 border-b border-brand-border/60">
-                      {cat.title}
+                    <h3 className="text-xs font-bold text-brand-dark pb-1 border-b border-brand-border/60 flex items-center gap-1.5">
+                      <span>{cat.icon}</span>
+                      <span>{cat.nameAr}</span>
                     </h3>
                     <div className="grid grid-cols-1 gap-1.5">
                       {cat.tools.map((t) => (
@@ -273,7 +253,7 @@ export default function Header() {
                           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-surface text-base shrink-0">
                             {t.icon}
                           </span>
-                          <span className="truncate">{t.title}</span>
+                          <span className="truncate">{t.nameAr}</span>
                         </a>
                       ))}
                     </div>

@@ -1,13 +1,34 @@
-﻿import { CATEGORIES, getToolsByCategory, getToolCount, categoryHasTools } from "@/lib/registry";
+import { CATEGORIES, getToolsByCategory, getToolCount, categoryHasTools } from "@/lib/registry";
 
-// ─── Page ──────────────────────────────────────────────────────────────────────
+export const metadata = {
+  title: "أدوات عربية مجانية | حاسبات ومحولات وأدوات PDF وصور ومال",
+  description:
+    "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية دقيقة وسريعة 100% بدون تسجيل وبأعلى معايير الخصوصية.",
+  openGraph: {
+    title: "أدوات عربية مجانية | حاسبات ومحولات وأدوات PDF وصور ومال",
+    description:
+      "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية دقيقة وسريعة 100% بدون تسجيل.",
+    siteName: "أدوات عربية",
+    locale: "ar_AR",
+    type: "website",
+  },
+};
 
 export default function HomePage() {
   const totalTools = getToolCount();
 
+  const activeCategories = CATEGORIES.map((cat) => ({
+    ...cat,
+    tools: getToolsByCategory(cat.id),
+  })).filter((cat) => cat.tools.length > 0);
+
+  const upcomingCategories = CATEGORIES.filter(
+    (cat) => getToolsByCategory(cat.id).length === 0
+  );
+
   const stats = [
     { value: totalTools.toLocaleString("ar-EG"), label: "أداة وحاسبة متخصصة" },
-    { value: "١٠", label: "تصنيف شامل" },
+    { value: CATEGORIES.length.toLocaleString("ar-EG"), label: "تصنيف شامل" },
     { value: "٠", label: "تسجيل مطلوب" },
   ];
 
@@ -29,7 +50,7 @@ export default function HomePage() {
             <span className="text-accent">سريعة ودقيقة</span>
           </h1>
           <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
-            {totalTools} أداة ومحول مالي وإسلامي ويومي مبنية للمستخدم العربي — مصنّفة في ١٠ تصنيفات، دقيقة وسريعة ومجانية تماماً.
+            {totalTools} أداة ومحول مالي وإسلامي ويومي مبنية للمستخدم العربي — مصنّفة في {CATEGORIES.length.toLocaleString("ar-EG")} تصنيفات، دقيقة وسريعة ومجانية تماماً.
           </p>
 
           <div className="flex justify-center gap-6 sm:gap-12">
@@ -51,7 +72,7 @@ export default function HomePage() {
             return (
               <a
                 key={cat.id}
-                href={`#${cat.id}`}
+                href={hasTools ? `#${cat.id}` : "#upcoming"}
                 className="flex shrink-0 items-center gap-1.5 rounded-full border border-brand-border bg-white px-3 py-1.5 text-xs font-semibold text-ink-secondary shadow-sm transition-all hover:border-brand-300 hover:bg-brand-light hover:text-brand"
               >
                 <span>{cat.icon}</span>
@@ -69,51 +90,101 @@ export default function HomePage() {
 
       {/* ── Categories ── */}
       <main className="mx-auto max-w-5xl space-y-14 px-4 py-12 sm:py-16">
-        {CATEGORIES.map((cat) => {
-          const tools = getToolsByCategory(cat.id);
-          const hasTools = tools.length > 0;
+        {/* Full Active Sections */}
+        {activeCategories.map((cat) => (
+          <section key={cat.id} id={cat.id} className="scroll-mt-20">
+            {/* Section header */}
+            <div className="mb-6 flex items-center gap-3">
+              <div
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${cat.color} text-xl shadow-md`}
+              >
+                {cat.icon}
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-xl font-extrabold text-ink sm:text-2xl">
+                  {cat.nameAr}
+                </h2>
+                <span className="rounded-full border border-brand-border px-2 py-0.5 text-xs font-semibold text-ink-muted">
+                  {cat.nameEn}
+                </span>
+                <span className="rounded-full bg-brand-light px-2.5 py-0.5 text-xs font-bold text-brand">
+                  {cat.tools.length} أدوات
+                </span>
+              </div>
+              <div className={`h-px flex-1 bg-gradient-to-l ${cat.color} opacity-20`} />
+            </div>
 
-          return (
-            <section key={cat.id} id={cat.id} className="scroll-mt-20">
-              {/* Section header */}
-              <div className="mb-6 flex items-center gap-3">
-                <div
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${cat.color} text-xl shadow-md`}
-                >
-                  {cat.icon}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {cat.tools.map((tool) => (
+                <ToolCard key={tool.id} tool={tool} />
+              ))}
+            </div>
+          </section>
+        ))}
+
+        {/* Compact Coming Soon Section */}
+        {upcomingCategories.length > 0 && (
+          <section id="upcoming" className="scroll-mt-20 pt-2">
+            <div className="rounded-3xl border border-brand-border/80 bg-gradient-to-b from-white to-brand-surface/40 p-6 sm:p-8 shadow-card">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-border/60 pb-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-hero-gradient text-2xl shadow-sm text-white">
+                    🚀
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black text-ink">
+                      قريباً في أدوات عربية
+                    </h2>
+                    <p className="text-xs sm:text-sm text-ink-secondary mt-0.5">
+                      نعمل على تطوير باقة متكاملة من الأدوات الرقمية لتغطية كافة احتياجاتك
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-xl font-extrabold text-ink sm:text-2xl">
-                    {cat.nameAr}
-                  </h2>
-                  <span className="rounded-full border border-brand-border px-2 py-0.5 text-xs font-semibold text-ink-muted">
-                    {cat.nameEn}
-                  </span>
-                  {hasTools ? (
-                    <span className="rounded-full bg-brand-light px-2.5 py-0.5 text-xs font-bold text-brand">
-                      {tools.length} أدوات
-                    </span>
-                  ) : (
-                    <span className="rounded-full bg-ink-subtle px-2.5 py-0.5 text-xs font-bold text-ink-secondary">
-                      قريباً
-                    </span>
-                  )}
+                <div className="inline-flex items-center gap-2 self-start sm:self-auto rounded-full bg-brand-light px-3 py-1 text-xs font-bold text-brand">
+                  <span className="h-2 w-2 rounded-full bg-brand animate-pulse" />
+                  <span>{upcomingCategories.length} أقسام قيد التطوير</span>
                 </div>
-                <div className={`h-px flex-1 bg-gradient-to-l ${cat.color} opacity-20`} />
               </div>
 
-              {hasTools ? (
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {tools.map((tool) => (
-                    <ToolCard key={tool.id} tool={tool} />
-                  ))}
-                </div>
-              ) : (
-                <ComingSoonCard cat={cat} />
-              )}
-            </section>
-          );
-        })}
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {upcomingCategories.map((cat) => (
+                  <div
+                    key={cat.id}
+                    className="group relative flex flex-col justify-between rounded-2xl border border-dashed border-brand-border bg-white p-4 transition-all hover:border-brand hover:shadow-sm"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-2.5">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-2xl">{cat.icon}</span>
+                          <div>
+                            <h3 className="font-bold text-ink text-sm sm:text-base">
+                              {cat.nameAr}
+                            </h3>
+                            <span className="text-[11px] font-semibold text-ink-muted">
+                              {cat.nameEn}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-ink-muted">
+                          قريباً
+                        </span>
+                      </div>
+                      {cat.comingSoonDesc && (
+                        <p className="text-xs text-ink-secondary leading-relaxed">
+                          {cat.comingSoonDesc}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-ink-muted font-medium">
+                      <span>جاري إعداد الأدوات</span>
+                      <span className="text-brand opacity-0 group-hover:opacity-100 transition-opacity">⚡</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
       {/* ── Features Strip ── */}
@@ -157,33 +228,6 @@ function ToolCard({ tool }) {
         <span>←</span>
       </div>
     </a>
-  );
-}
-
-function ComingSoonCard({ cat }) {
-  return (
-    <div
-      className={`relative overflow-hidden rounded-2xl border-2 border-dashed ${cat.border} ${cat.bg} px-8 py-10 text-center`}
-    >
-      <div className="pointer-events-none absolute -top-6 -right-6 text-[80px] opacity-10 select-none">
-        {cat.icon}
-      </div>
-      <div
-        className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${cat.color} text-3xl shadow-md`}
-      >
-        {cat.icon}
-      </div>
-      <p className="mb-1 text-base font-bold text-ink">
-        قسم <span className="text-brand">{cat.nameAr}</span> قادم قريباً
-      </p>
-      {cat.comingSoonDesc && (
-        <p className="text-sm text-ink-secondary">{cat.comingSoonDesc}</p>
-      )}
-      <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-ink-subtle px-4 py-1.5 text-xs font-bold text-ink-muted opacity-60">
-        <span>🔔</span>
-        <span>سيتم الإطلاق قريباً</span>
-      </div>
-    </div>
   );
 }
 

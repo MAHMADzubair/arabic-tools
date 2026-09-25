@@ -409,7 +409,7 @@ export default function ToolGuideSection({
             أدوات مفيدة
           </span>
           <h2 className="text-xl font-black text-ink sm:text-2xl">
-            أدوات مالية وإسلامية ذات صلة
+            أدوات عربية ذات صلة
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-ink-muted">
             استكشف باقي حاسباتنا المجانية المصممة لتسهيل حساباتك اليومية
