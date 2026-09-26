@@ -942,7 +942,7 @@ https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
             className="flex items-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-dark shadow-sm transition-all"
           >
             <span>📄</span>
-            <span>إصدار وثيقة المخالصة الرسمية</span>
+            <span>إنشاء نموذج مخالصة نهائية قابل للطباعة</span>
           </button>
           <button
             type="button"
@@ -1001,7 +1001,7 @@ https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
           <div className="relative w-full max-w-2xl my-4 rounded-2xl bg-white shadow-2xl">
             {/* Modal Toolbar */}
             <div className="sticky top-0 bg-white border-b border-brand-border px-5 py-3 flex justify-between items-center rounded-t-2xl z-10">
-              <span className="font-extrabold text-ink text-sm">وثيقة المخالصة النهائية — Saudi Final Settlement</span>
+              <span className="font-extrabold text-ink text-sm">نموذج مخالصة نهائية تقديرية — Saudi Final Settlement</span>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
@@ -1032,9 +1032,9 @@ https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
               {/* Doc Header */}
               <div className="text-center border-b-2 border-ink pb-5 space-y-1">
                 <div className="text-3xl">📋</div>
-                <h2 className="text-2xl font-black text-ink">وثيقة المخالصة النهائية</h2>
-                <p className="text-sm text-ink-secondary">Final Employment Settlement Certificate</p>
-                <p className="text-xs text-ink-muted">وفق أحكام نظام العمل السعودي الصادر بالمرسوم الملكي رقم (م/51) وتعديلاته 2025</p>
+                <h2 className="text-2xl font-black text-ink">نموذج مخالصة نهائية تقديرية</h2>
+                <p className="text-sm text-ink-secondary">Estimated Final Employment Settlement Statement</p>
+                <p className="text-xs text-ink-muted">وفق أحكام نظام العمل السعودي الصادر بالمرسوم الملكي رقم (م/51) وتعديلاته 2026</p>
               </div>
 
               {/* Parties Info */}
@@ -1085,12 +1085,20 @@ https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
                     <DocTableRow label="١. آخر راتب مستحق (نسبي)" value={`${fmt(calc.lastMonthPay)}`} />
                     <DocTableRow label="٢. مكافأة نهاية الخدمة" value={`${fmt(calc.eosb)}`} />
                     <DocTableRow label="٣. بدل رصيد الإجازة السنوية" value={`${fmt(calc.leavePay)}`} />
-                    <DocTableRow label="٤. بدل مهلة الإشعار" value={`${fmt(calc.noticePay)}`} />
+                    {calc.noticeAddition > 0 && (
+                      <DocTableRow label="٤. بدل مهلة الإشعار (لصالح الموظف +)" value={fmt(calc.noticeAddition)} />
+                    )}
+                    {calc.noticePay === 0 && (
+                      <DocTableRow label="٤. بدل مهلة الإشعار" value="0.00" />
+                    )}
                     {calc.unpaidSalary > 0 && <DocTableRow label="رواتب متأخرة غير مصروفة" value={fmt(calc.unpaidSalary)} />}
                     {calc.overtimeAmount > 0 && <DocTableRow label="بدل أوفر تايم مستحق" value={fmt(calc.overtimeAmount)} />}
                     {calc.bonuses > 0 && <DocTableRow label="مكافآت ومنح" value={fmt(calc.bonuses)} />}
                     {calc.otherAdditions > 0 && <DocTableRow label="إضافات أخرى" value={fmt(calc.otherAdditions)} />}
                     <DocTableRow label="إجمالي المستحقات" value={fmt(calc.grossDues)} isGross />
+                    {calc.noticeDeduction > 0 && (
+                      <DocTableRow label="(−) خصم مهلة الإشعار (لصاحب العمل)" value={`(${fmt(calc.noticeDeduction)})`} isDeduct />
+                    )}
                     {calc.loans > 0 && <DocTableRow label="(−) سلف وقروض مستحقة" value={`(${fmt(calc.loans)})`} isDeduct />}
                     {calc.companyAssets > 0 && <DocTableRow label="(−) عهد وأصول شركة" value={`(${fmt(calc.companyAssets)})`} isDeduct />}
                     {calc.otherDeductions > 0 && <DocTableRow label="(−) خصومات أخرى" value={`(${fmt(calc.otherDeductions)})`} isDeduct />}
@@ -1141,11 +1149,11 @@ https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
               </div>
 
               {/* Doc Footer */}
-              <div className="border-t border-slate-200 pt-4 text-center text-[11px] text-ink-muted space-y-1">
-                <p>تاريخ إصدار الوثيقة: {calcDate}</p>
+              <div className="border-t border-slate-200 pt-4 text-center text-[11px] text-ink-muted space-y-1.5">
+                <p>تاريخ إصدار النموذج: {calcDate}</p>
                 <p>أُنشئت بواسطة حاسبة المخالصة النهائية — منصة الأدوات العربية</p>
-                <p className="text-amber-700 font-medium">
-                  ⚖️ هذه الوثيقة تقديرية وتستلزم مراجعة ومصادقة أطراف العلاقة العمالية للاعتداد بها قانونياً.
+                <p className="text-amber-700 font-medium max-w-xl mx-auto leading-relaxed">
+                  ⚖️ تنبيه قانوني: الحسابات والوثائق الناتجة هي نماذج تقديرية استرشادية مبنية على المدخلات، ولا تُعد مستنداً رسمياً حكومياً أو بديلاً عن السجلات الرسمية لصاحب العمل أو الاستشارة القانونية المتخصصة.
                 </p>
               </div>
             </div>

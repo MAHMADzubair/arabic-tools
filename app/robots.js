@@ -8,11 +8,7 @@ export default function robots() {
       {
         userAgent: "*",
         allow: "/",
-        disallow: [
-          "/api/",          // Block all API routes from crawling
-          "/_next/",        // Next.js internal assets
-          "/static/",       // Static assets (already served differently)
-        ],
+        disallow: ["/api/"],
       },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,
