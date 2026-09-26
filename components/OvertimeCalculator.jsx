@@ -60,8 +60,8 @@ function toNum(v) {
   return isNaN(n) || n < 0 ? 0 : n;
 }
 
-export default function OvertimeCalculator() {
-  const [countryId, setCountryId] = useState("sa");
+export default function OvertimeCalculator({ initialCountry = "sa" }) {
+  const [countryId, setCountryId] = useState(initialCountry);
   const [salary, setSalary] = useState("8000");
   const [dayHours, setDayHours] = useState("10");
   const [nightHours, setNightHours] = useState("0");

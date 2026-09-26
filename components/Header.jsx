@@ -82,7 +82,21 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1.5 lg:gap-2">
-            {TOP_TOOLS.slice(0, 7).map((t) => (
+            <a
+              href="/ar/sa/"
+              className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 border border-emerald-200/80 px-2.5 py-1.5 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 shadow-2xs"
+            >
+              <span>🇸🇦</span>
+              <span>السعودية</span>
+            </a>
+            <a
+              href="/ar/ae/"
+              className="inline-flex items-center gap-1 rounded-xl bg-red-50 border border-red-200/80 px-2.5 py-1.5 text-xs font-bold text-red-800 transition hover:bg-red-100 shadow-2xs"
+            >
+              <span>🇦🇪</span>
+              <span>الإمارات</span>
+            </a>
+            {TOP_TOOLS.slice(0, 5).map((t) => (
               <a
                 key={t.href}
                 href={t.href}
@@ -168,6 +182,18 @@ export default function Header() {
 
         {/* Mobile Horizontal Quick Bar */}
         <div className="flex md:hidden items-center gap-1.5 overflow-x-auto px-4 py-1.5 border-t border-brand-border/40 bg-brand-surface/30 scrollbar-none">
+          <a
+            href="/ar/sa/"
+            className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 border border-emerald-200/80"
+          >
+            🇸🇦 السعودية
+          </a>
+          <a
+            href="/ar/ae/"
+            className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-800 border border-red-200/80"
+          >
+            🇦🇪 الإمارات
+          </a>
           {TOP_TOOLS.map((t) => (
             <a
               key={t.href}
