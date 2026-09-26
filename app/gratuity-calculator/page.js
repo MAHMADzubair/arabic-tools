@@ -1,3 +1,4 @@
+import Link from "next/link";
 import GratuityCalculator from "../../components/GratuityCalculator";
 import ToolGuideSection from "../../components/ToolGuideSection";
 
@@ -157,6 +158,34 @@ export default function GratuityCalculatorPage() {
   return (
     <div className="py-6 sm:py-10">
       <GratuityCalculator />
+
+      {/* Complete Settlement CTA Banner */}
+      <div className="mx-auto max-w-2xl px-4 mt-6">
+        <div className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-50 via-white to-brand-surface p-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <span className="text-3xl">📋</span>
+              <div>
+                <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">تصفية شاملة لجميع المستحقات والخصومات</p>
+                <h3 className="text-base font-extrabold text-ink mt-0.5">
+                  هل تحتاج إلى تصفية شاملة؟ (Need Complete Settlement?)
+                </h3>
+                <p className="text-xs text-ink-muted mt-1 leading-relaxed">
+                  احسب مكافأة نهاية الخدمة + راتب آخر شهر + بدل الإجازات السنوية (م/111) + تعويض مهلة الإشعار (م/75) + الخصومات + وثيقة مخالصة رسمية جاهزة للطباعة.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/ar/sa/final-settlement-calculator"
+              className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 text-xs font-bold shadow-md transition-all"
+            >
+              <span>حاسبة المخالصة النهائية</span>
+              <span>←</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <ToolGuideSection {...guideData} />
     </div>
   );

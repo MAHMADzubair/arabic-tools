@@ -846,6 +846,26 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
               </div>
             )}
 
+            {/* Complete Settlement Link for Saudi Arabia */}
+            {countryId === "sa" && (
+              <div className="rounded-2xl border-2 border-brand/40 bg-gradient-to-br from-brand-surface to-brand-light/40 p-4 text-xs space-y-2">
+                <div className="flex items-center gap-1.5 font-bold text-brand-dark">
+                  <span>📋</span>
+                  <span>هل تحتاج إلى تصفية شاملة؟ (Complete Settlement)</span>
+                </div>
+                <p className="text-ink-secondary text-[11px] leading-relaxed">
+                  احسب كامل مستحقاتك: مكافأة نهاية الخدمة + راتب آخر شهر + بدل الإجازات (م/111) + مهلة الإشعار (م/75) + الخصومات، مع إصدار وثيقة مخالصة رسمية للطباعة.
+                </p>
+                <a
+                  href="/ar/sa/final-settlement-calculator"
+                  className="inline-flex items-center gap-1 rounded-xl bg-brand px-3 py-2 text-xs font-bold text-white hover:bg-brand-dark transition-all w-full justify-center"
+                >
+                  <span>الانتقال لحاسبة المخالصة النهائية بالسعودية</span>
+                  <span>←</span>
+                </a>
+              </div>
+            )}
+
           </div>
         </div>
       </div>

@@ -79,3 +79,17 @@ input[type="number"] {
 tbody tr:hover {
   background-color: #EEF2FF !important;
 }
+
+/* ── Print Optimizations ────────────────────────── */
+@media print {
+  header, footer, nav, .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .shadow-card, .shadow-xl, .shadow-2xl, .shadow-result {
+    box-shadow: none !important;
+  }
+}

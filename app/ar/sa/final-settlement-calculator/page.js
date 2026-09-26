@@ -267,13 +267,75 @@ export default function FinalSettlementPage() {
           </div>
         </section>
 
-        {/* ── PART 4: Related Tools ──────────────────────────────────────────────── */}
+        {/* ── PART 4: Related Tools & Tool Chain ──────────────────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 pb-12">
-          <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-2">🔗 أدوات ذات صلة</h2>
-            <p className="text-sm text-ink-muted mb-5">
-              استكمل احتياجاتك المالية والعمالية بهذه الحاسبات المتخصصة
-            </p>
+          <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
+            
+            {/* Dedicated Tool Chain */}
+            <div className="rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-brand-surface border-2 border-brand/40 p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-2xl">🔗</span>
+                <div>
+                  <h2 className="text-base sm:text-lg font-extrabold text-brand-dark">
+                    سلسلة أدوات سوق العمل والموظف السعودي (Saudi Tool Chain)
+                  </h2>
+                  <p className="text-xs text-ink-secondary mt-0.5">
+                    تتكامل هذه الحاسبة الشاملة مع الحاسبات المتخصصة الثلاث لحساب كل بند بدقة وتفصيل مستقل:
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3 mt-4">
+                <Link
+                  href="/gratuity-calculator/saudi"
+                  className="rounded-xl border border-emerald-200 bg-white p-4 hover:border-brand hover:shadow-md transition-all group"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">🏆</span>
+                    <h3 className="text-xs font-black text-ink group-hover:text-brand">حاسبة مكافأة نهاية الخدمة</h3>
+                  </div>
+                  <p className="text-[11px] text-ink-muted leading-relaxed">
+                    حساب تفصيلي للمادتين 84 و 85 وتدرج الاستقالة وسنوات الخدمة.
+                  </p>
+                  <span className="mt-2 inline-block text-[10px] font-bold text-emerald-700">فتح الأداة ←</span>
+                </Link>
+
+                <Link
+                  href="/overtime-calculator/saudi"
+                  className="rounded-xl border border-amber-200 bg-white p-4 hover:border-brand hover:shadow-md transition-all group"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">⏱️</span>
+                    <h3 className="text-xs font-black text-ink group-hover:text-brand">حاسبة الأوفر تايم السعودي</h3>
+                  </div>
+                  <p className="text-[11px] text-ink-muted leading-relaxed">
+                    حساب الساعات الإضافية بنسبة 150٪ وفق المادة 107 من نظام العمل.
+                  </p>
+                  <span className="mt-2 inline-block text-[10px] font-bold text-amber-700">فتح الأداة ←</span>
+                </Link>
+
+                <Link
+                  href="/salary-calculator/saudi"
+                  className="rounded-xl border border-blue-200 bg-white p-4 hover:border-brand hover:shadow-md transition-all group"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">💼</span>
+                    <h3 className="text-xs font-black text-ink group-hover:text-brand">حاسبة الراتب الصافي</h3>
+                  </div>
+                  <p className="text-[11px] text-ink-muted leading-relaxed">
+                    حساب استقطاعات التأمينات الاجتماعية GOSI وساند وصافي الراتب.
+                  </p>
+                  <span className="mt-2 inline-block text-[10px] font-bold text-blue-700">فتح الأداة ←</span>
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-extrabold text-ink mb-1">📌 أدوات مالية وإدارية أخرى ذات صلة</h2>
+              <p className="text-xs text-ink-muted mb-4">
+                حاسبات إضافية معتمدة لإدارة مستحقاتك المالية والضريبية
+              </p>
+            </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               {[
@@ -353,11 +415,11 @@ export default function FinalSettlementPage() {
             <div className="mt-6 rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-ink-muted flex items-start gap-2">
               <span className="text-base">📅</span>
               <p>
-                <strong className="text-ink">آخر مراجعة قانونية:</strong> فبراير 2025 — المصدر الرسمي: وزارة الموارد البشرية والتنمية الاجتماعية (
+                <strong className="text-ink">تاريخ آخر مراجعة قانونية:</strong> 2026م — متوافق مع نظام العمل السعودي الصادر بالمرسوم الملكي رقم (م/51) وتعديلاته الصادرة بالمرسوم الملكي رقم (م/14) واللوائح التنفيذية لوزارة الموارد البشرية والتنمية الاجتماعية (
                 <a href="https://www.hrsd.gov.sa" target="_blank" rel="noopener noreferrer" className="text-brand underline hover:text-brand-dark">
                   hrsd.gov.sa
                 </a>
-                ). قد تطرأ تعديلات تشريعية، يُنصح دائماً بمراجعة النص الرسمي أو استشارة مختص قانوني للتحقق من آخر التحديثات.
+                ). الحاسبة استرشادية، ويُنصح دائماً بالرجوع للمنصة العمالية الرسمية (ودي) في حال وجود نزاع تعاقدي.
               </p>
             </div>
           </div>

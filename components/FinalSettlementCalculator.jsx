@@ -216,6 +216,7 @@ export default function FinalSettlementCalculator() {
   const [terminationReason, setTerminationReason] = useState("terminate");
   const [joiningDate, setJoiningDate] = useState("2021-01-01");
   const [lastWorkingDate, setLastWorkingDate] = useState(new Date().toISOString().slice(0, 10));
+  const [customLastMonthDays, setCustomLastMonthDays] = useState("");
 
   // — Wage —
   const [basicSalary, setBasicSalary] = useState("8000");
@@ -262,7 +263,8 @@ export default function FinalSettlementCalculator() {
     const serviceYears = serviceMonths / 12;
 
     // ── Block 1: Last Month Partial Salary ────────────────────────────────────
-    const daysWorked = getLastMonthDays(lastWorkingDate);
+    const defaultDaysWorked = getLastMonthDays(lastWorkingDate);
+    const daysWorked = customLastMonthDays !== "" ? toNum(customLastMonthDays) : defaultDaysWorked;
     const lastMonthPay = dailyWage * daysWorked;
 
     // ── Block 2: EOSB — Article 84 + 85 ──────────────────────────────────────
@@ -361,7 +363,7 @@ export default function FinalSettlementCalculator() {
     };
   }, [
     basicSalary, housingAllowance, transportAllowance, otherAllowances, monthlyDivisor,
-    joiningDate, lastWorkingDate, terminationReason, contractType,
+    joiningDate, lastWorkingDate, customLastMonthDays, terminationReason, contractType,
     unusedLeaveDays, leaveWageBase,
     noticeRequired, noticeServed,
     unpaidSalary, overtimeAmount, bonuses, otherAdditions,
@@ -391,7 +393,7 @@ export default function FinalSettlementCalculator() {
             </div>
           </div>
           <span className="shrink-0 rounded-full bg-white/20 px-3 py-1 text-xs font-bold whitespace-nowrap">
-            محدث فبراير 2025
+            محدث 2026 — نظام العمل السعودي
           </span>
         </div>
       </div>
@@ -449,9 +451,15 @@ export default function FinalSettlementCalculator() {
         </div>
 
         {/* Dates */}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-3">
           <DateInput label="تاريخ الالتحاق بالعمل" value={joiningDate} onChange={setJoiningDate} />
           <DateInput label="آخر يوم عمل فعلي" value={lastWorkingDate} onChange={setLastWorkingDate} />
+          <NumInput
+            label="أيام عمل الشهر الأخير (لآخر راتب)"
+            value={customLastMonthDays !== "" ? customLastMonthDays : calc.daysWorked}
+            onChange={setCustomLastMonthDays}
+            note="تُحتسب تلقائياً من تاريخ الخروج، ويمكن تعديلها"
+          />
         </div>
 
         {/* Service Duration Display */}
@@ -798,7 +806,7 @@ export default function FinalSettlementCalculator() {
 
         {/* Legal Disclaimer */}
         <div className="mx-5 mb-4 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-800 leading-relaxed">
-          ⚖️ <strong>ملاحظة قانونية:</strong> هذه الحاسبة تقديرية واسترشادية وليست بديلاً عن الاستشارة القانونية أو التسوية الرسمية مع جهة العمل. للنزاعات العمالية، توجه إلى منصة <strong>ودي</strong> التابعة لوزارة الموارد البشرية والتنمية الاجتماعية. آخر مراجعة: فبراير 2025 وفق التعديلات الرسمية لنظام العمل.
+          ⚖️ <strong>ملاحظة وإخلاء مسؤولية قانوني:</strong> هذه الحاسبة تقديرية واسترشادية لتصفية مستحقات العامل وفق المواد (75، 84، 85، 111) من نظام العمل السعودي الصادر بالمرسوم الملكي (م/51) وتعديلاته. ليست بديلاً عن الاستشارة القانونية أو التسوية الرسمية المعتمدة من جهة العمل. للنزاعات العمالية، يُرجى الرجوع لمنصة <strong>ودي</strong> التابعة لوزارة الموارد البشرية والتنمية الاجتماعية (hrsd.gov.sa). <strong>تاريخ آخر مراجعة:</strong> 2026م.
         </div>
 
         {/* Action Buttons */}
