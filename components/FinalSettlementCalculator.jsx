@@ -232,6 +232,18 @@ export default function FinalSettlementCalculator() {
   // — Notice Period —
   const [noticeRequired, setNoticeRequired] = useState("60");
   const [noticeServed, setNoticeServed] = useState("0");
+  const [noticeBeneficiary, setNoticeBeneficiary] = useState("employee"); // "employee" = addition | "employer" = deduction
+
+  const handleTerminationChange = (rId) => {
+    setTerminationReason(rId);
+    if (rId === "resign") {
+      setNoticeBeneficiary("employer");
+      setNoticeRequired("30");
+    } else if (rId === "terminate") {
+      setNoticeBeneficiary("employee");
+      setNoticeRequired("60");
+    }
+  };
 
   // — Other Additions —
   const [unpaidSalary, setUnpaidSalary] = useState("0");
@@ -317,20 +329,27 @@ export default function FinalSettlementCalculator() {
       } else if (missedDays === 0) {
         noticeNote = "فترة الإشعار خُدمت كاملة — لا تعويض إضافي";
       } else {
-        noticeNote = `تعويض عن ${missedDays} يوماً من فترة الإشعار غير المخدومة`;
+        noticeNote =
+          noticeBeneficiary === "employee"
+            ? `${missedDays} يوم اشعار غير مخدوم — تعويض للموظف (+)`
+            : `${missedDays} يوم اشعار غير مخدوم — خصم لصاحب العمل (-)`;
       }
     } else {
-      noticeNote = "عقد محدد المدة — أحكام مهلة الإشعار (م/75) لا تنطبق";
+      noticeNote = "عقد محدد المدة — احكام مهلة الاشعار (م/75) لا تنطبق";
     }
+
+    const noticeAddition = (contractType === "indefinite" && noticeBeneficiary === "employee") ? noticePay : 0;
+    const noticeDeduction = (contractType === "indefinite" && noticeBeneficiary === "employer") ? noticePay : 0;
 
     // ── Block 5: Other Additions & Deductions ─────────────────────────────────
     const addTotal =
       toNum(unpaidSalary) + toNum(overtimeAmount) + toNum(bonuses) + toNum(otherAdditions);
-    const dedTotal = toNum(loans) + toNum(companyAssets) + toNum(otherDeductions);
+    const dedBase = toNum(loans) + toNum(companyAssets) + toNum(otherDeductions);
+    const totalDeductions = dedBase + noticeDeduction;
 
     // ── Grand Totals ──────────────────────────────────────────────────────────
-    const grossDues = lastMonthPay + eosb + leavePay + noticePay + addTotal;
-    const netSettlement = grossDues - dedTotal;
+    const grossDues = lastMonthPay + eosb + leavePay + noticeAddition + addTotal;
+    const netSettlement = grossDues - totalDeductions;
 
     return {
       // Wage
@@ -348,9 +367,10 @@ export default function FinalSettlementCalculator() {
       leaveDays, leaveDailyRate, leavePay, leaveBase,
       // Block 4
       noticePay, noticeNote, missedDays,
+      noticeBeneficiary, noticeAddition, noticeDeduction,
       required: toNum(noticeRequired),
       // Block 5
-      addTotal, dedTotal,
+      addTotal, dedBase, dedTotal: totalDeductions,
       unpaidSalary: toNum(unpaidSalary),
       overtimeAmount: toNum(overtimeAmount),
       bonuses: toNum(bonuses),
@@ -365,7 +385,7 @@ export default function FinalSettlementCalculator() {
     basicSalary, housingAllowance, transportAllowance, otherAllowances, monthlyDivisor,
     joiningDate, lastWorkingDate, customLastMonthDays, terminationReason, contractType,
     unusedLeaveDays, leaveWageBase,
-    noticeRequired, noticeServed,
+    noticeRequired, noticeServed, noticeBeneficiary,
     unpaidSalary, overtimeAmount, bonuses, otherAdditions,
     loans, companyAssets, otherDeductions,
   ]);
@@ -437,7 +457,7 @@ export default function FinalSettlementCalculator() {
               <button
                 key={r.id}
                 type="button"
-                onClick={() => setTerminationReason(r.id)}
+                onClick={() => handleTerminationChange(r.id)}
                 className={`rounded-xl border p-2.5 text-[11px] font-semibold text-right transition-all ${
                   terminationReason === r.id
                     ? "border-brand bg-brand-light text-brand-dark shadow-sm font-bold"
@@ -623,36 +643,79 @@ export default function FinalSettlementCalculator() {
         ) : (
           <>
             <div className="rounded-xl bg-blue-50 border border-blue-200 px-3 py-2.5 text-xs text-blue-800 leading-relaxed">
-              📜 <strong>المادة (75):</strong> للعقد غير المحدد مع الراتب الشهري — مهلة الإشعار 30 يوماً (إشعار من الموظف) أو 60 يوماً (إنهاء من صاحب العمل). الطرف الذي لا يُخطر يلتزم بدفع مقابل الأجر عن فترة الإشعار.
+              📜 <strong>المادة (75):</strong> للعقد غير المحدد مع الراتب الشهري — مهلة الاشعار 30 يوماً (استقالة الموظف) او 60 يوماً (انهاء صاحب العمل). الطرف المخل بالمهلة يلتزم بتعويض الطرف الاخر بأجر المدة غير المخدومة.
             </div>
+
+            <div>
+              <label className="block text-xs font-bold text-ink-secondary mb-2">التعويض لصالح:</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setNoticeBeneficiary("employee")}
+                  className={`rounded-xl border p-3 text-right transition-all ${
+                    noticeBeneficiary === "employee"
+                      ? "border-emerald-600 bg-emerald-50 text-emerald-900 font-bold shadow-sm"
+                      : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
+                  }`}
+                >
+                  <span className="block text-xs font-extrabold text-emerald-800">للموظف (اضافة +)</span>
+                  <span className="block text-[11px] font-normal text-ink-muted mt-1 leading-snug">عند انهاء المنشأة للعقد دون اعطاء الموظف مهلة الاشعار كاملة</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNoticeBeneficiary("employer")}
+                  className={`rounded-xl border p-3 text-right transition-all ${
+                    noticeBeneficiary === "employer"
+                      ? "border-rose-600 bg-rose-50 text-rose-900 font-bold shadow-sm"
+                      : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
+                  }`}
+                >
+                  <span className="block text-xs font-extrabold text-rose-800">لصاحب العمل (خصم -)</span>
+                  <span className="block text-[11px] font-normal text-ink-muted mt-1 leading-snug">عند استقالة الموظف وتركه العمل فوراً قبل انقضاء مهلة الاشعار</span>
+                </button>
+              </div>
+            </div>
+
             <div className="grid gap-3 sm:grid-cols-2">
               <NumInput
-                label="مهلة الإشعار المطلوبة (بالأيام)"
+                label="مهلة الاشعار المطلوبة نظاماً (بالايام)"
                 value={noticeRequired}
                 onChange={setNoticeRequired}
-                note="30 يوماً للاستقالة • 60 يوماً لإنهاء صاحب العمل (الحد الأدنى)"
+                note="30 يوماً للاستقالة — 60 يوماً لانهاء صاحب العمل (الحد الادنى)"
               />
               <NumInput
-                label="فترة الإشعار المخدومة فعلياً (بالأيام)"
+                label="فترة الاشعار المخدومة فعلياً (بالايام)"
                 value={noticeServed}
                 onChange={setNoticeServed}
               />
             </div>
 
             {calc.missedDays > 0 ? (
-              <div className="rounded-xl bg-rose-50 border border-rose-200 p-4 space-y-2 text-sm">
+              <div
+                className={`rounded-xl p-4 space-y-2 text-sm border ${
+                  noticeBeneficiary === "employee"
+                    ? "bg-emerald-50 border-emerald-200"
+                    : "bg-rose-50 border-rose-200"
+                }`}
+              >
                 <div className="flex justify-between">
-                  <span className="text-ink-secondary">أيام الإشعار غير المخدومة</span>
+                  <span className="text-ink-secondary">ايام الاشعار غير المخدومة:</span>
                   <span className="font-bold">{calc.missedDays} يوم</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-ink-secondary">الحساب: {calc.missedDays} × {fmt(calc.daily)} ر.س</span>
-                  <span className="font-bold text-rose-800">{fmt(calc.noticePay)} ر.س</span>
+                <div className="flex justify-between items-center pt-1 border-t border-brand-border/40">
+                  <span className="text-ink-secondary font-medium">
+                    {noticeBeneficiary === "employee" ? "تعويض يُضاف لمستحقات الموظف (+):" : "تعويض يُخصم من مستحقات الموظف (-):"}
+                  </span>
+                  <span className={`font-black text-base ${
+                    noticeBeneficiary === "employee" ? "text-emerald-800" : "text-rose-700"
+                  }`}>
+                    {noticeBeneficiary === "employer" ? "-" : "+"}{fmt(calc.noticePay)} ر.س
+                  </span>
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800">
-                ✓ {calc.noticeNote || "لا تعويض إشعار مستحق"}
+              <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 font-medium">
+                ✓ {calc.noticeNote || "فترة الاشعار خُدمت كاملة"}
               </div>
             )}
           </>
@@ -720,29 +783,47 @@ export default function FinalSettlementCalculator() {
             }
             amount={calc.leavePay}
           />
-          <BreakdownRow
-            label="بدل مهلة الإشعار"
-            sub={calc.noticeNote}
-            amount={calc.noticePay}
-          />
+          {calc.noticeAddition > 0 && (
+            <BreakdownRow
+              label="بدل مهلة الاشعار (لصالح الموظف)"
+              sub={calc.noticeNote}
+              amount={calc.noticeAddition}
+            />
+          )}
+          {calc.noticePay === 0 && (
+            <BreakdownRow
+              label="بدل مهلة الاشعار"
+              sub={calc.noticeNote}
+              amount={0}
+            />
+          )}
           {calc.addTotal > 0 && (
-            <BreakdownRow label="مستحقات أخرى" sub="" amount={calc.addTotal} />
+            <BreakdownRow label="مستحقات اخرى" sub="" amount={calc.addTotal} />
           )}
 
           <div className="border-t-2 border-brand-border/60 pt-1.5">
             <BreakdownRow
-              label="إجمالي المستحقات"
+              label="اجمالي المستحقات"
               sub=""
               amount={calc.grossDues}
               type="gross"
             />
           </div>
 
-          {calc.dedTotal > 0 && (
+          {calc.noticeDeduction > 0 && (
             <BreakdownRow
-              label="إجمالي الخصومات والاستقطاعات"
-              sub={`سلف وعهد وخصومات`}
-              amount={calc.dedTotal}
+              label="خصم مهلة الاشعار غير المخدومة (لصاحب العمل)"
+              sub={`${calc.missedDays} يوماً غير مخدومة`}
+              amount={calc.noticeDeduction}
+              type="deduct"
+            />
+          )}
+
+          {calc.dedBase > 0 && (
+            <BreakdownRow
+              label="اجمالي الخصومات الاخرى"
+              sub="سلف وعهد مستحقة"
+              amount={calc.dedBase}
               type="deduct"
             />
           )}
@@ -796,9 +877,9 @@ export default function FinalSettlementCalculator() {
                 />
               )}
               <CalcExplain
-                title="٥. الإجمالي والصافي"
-                formula={`إجمالي المستحقات ${fmt(calc.grossDues)} − الخصومات ${fmt(calc.dedTotal)} = صافي المخالصة ${fmt(calc.netSettlement)} ر.س`}
-                law="التصفية الإجمالية النهائية لجميع حقوق ومديونيات الطرفين"
+                title="٥. الاجمالي والصافي"
+                formula={`اجمالي المستحقات ${fmt(calc.grossDues)} - اجمالي الخصومات ${fmt(calc.dedTotal)} = صافي المخالصة ${fmt(calc.netSettlement)} ر.س`}
+                law="التصفية الاجمالية النهائية لجميع حقوق ومديونيات الطرفين"
               />
             </div>
           )}
