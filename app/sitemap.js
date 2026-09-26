@@ -36,6 +36,7 @@ export default function sitemap() {
   const saudiDeepPages = [
     "/ar/sa/final-settlement-calculator",
     "/ar/sa/annual-leave-calculator",
+    "/ar/sa/article-77-calculator",
   ];
 
   const now = new Date();

@@ -259,6 +259,7 @@ export default function FinalSettlementCalculator() {
   // — UI State —
   const [showDocument, setShowDocument] = useState(false);
   const [expandedCalc, setExpandedCalc] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // ─── Core Calculation ──────────────────────────────────────────────────────────
   const calc = useMemo(() => {
@@ -410,6 +411,23 @@ export default function FinalSettlementCalculator() {
       });
     }
   }, [calc.netSettlement, terminationReason, contractType]);
+
+  // Share text for WhatsApp and Clipboard
+  const shareText = useMemo(() => {
+    return `📋 ملخص تصفية المخالصة النهائية (Saudi Final Settlement):
+• مدة الخدمة: ${calc.serviceDurationLabel} (${calc.serviceYears.toFixed(2)} سنة)
+• الأجر الفعلي الشهري: ${fmt(calc.totalWage)} ر.س
+• مكافأة نهاية الخدمة (م/84 و85): ${fmt(calc.eosb)} ر.س
+• آخر راتب مستحق: ${fmt(calc.lastMonthPay)} ر.س
+• بدل رصيد الإجازات (م/111): ${fmt(calc.leavePay)} ر.س
+• بدل مهلة الإشعار: ${calc.noticeAddition > 0 ? `+${fmt(calc.noticeAddition)} ر.س (للموظف)` : calc.noticeDeduction > 0 ? `-${fmt(calc.noticeDeduction)} ر.س (خصم)` : "0 ر.س"}
+• إجمالي الخصومات (سلف وعهد): -${fmt(calc.dedBase)} ر.س
+═════════════════════════
+💎 صافي المخالصة النهائية المستحقة: ${fmt(calc.netSettlement)} ر.س
+
+احسب مخالصتك وأصدر مسيرك المعتمد مجاناً:
+https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
+  }, [calc]);
 
   // ─── Render ────────────────────────────────────────────────────────────────────
   return (
@@ -942,6 +960,37 @@ export default function FinalSettlementCalculator() {
           >
             <span>🖨️</span>
             <span>طباعة</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+              window.open(url, "_blank");
+              if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+                window.trackEvent("share_clicked", { tool: "final-settlement", method: "whatsapp" });
+              }
+            }}
+            className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all"
+          >
+            <span>📲</span>
+            <span>واتساب</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2500);
+                if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+                  window.trackEvent("share_clicked", { tool: "final-settlement", method: "clipboard" });
+                }
+              }
+            }}
+            className="flex items-center gap-2 rounded-xl border border-brand-border bg-white px-4 py-2.5 text-sm font-bold text-ink hover:bg-brand-surface shadow-sm transition-all"
+          >
+            <span>{copied ? "✓" : "📋"}</span>
+            <span>{copied ? "تم النسخ!" : "نسخ الملخص"}</span>
           </button>
         </div>
       </div>

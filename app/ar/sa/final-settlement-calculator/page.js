@@ -359,6 +359,22 @@ export default function FinalSettlementPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               {[
                 {
+                  href: "/ar/sa/article-77-calculator",
+                  icon: "⚖️",
+                  title: "حاسبة تعويض المادة 77",
+                  desc: "احسب تعويض الفصل التعسفي والإنهاء غير المشروع (حد شهرين)",
+                  badge: "المادة 77",
+                  badgeColor: "bg-rose-100 text-rose-700 font-bold",
+                },
+                {
+                  href: "/ar/sa/annual-leave-calculator",
+                  icon: "🏖️",
+                  title: "حاسبة رصيد الإجازات السنوية",
+                  desc: "احسب التعويض النقدي لرصيد الإجازات وفق المادتين 109 و111",
+                  badge: "المادة 111",
+                  badgeColor: "bg-sky-100 text-sky-700 font-bold",
+                },
+                {
                   href: "/gratuity-calculator/saudi",
                   icon: "🏆",
                   title: "حاسبة مكافأة نهاية الخدمة",
