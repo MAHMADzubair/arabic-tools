@@ -9,7 +9,7 @@ export default function sitemap() {
     "/compound-interest", "/profit-margin-calculator", "/roi-calculator",
     "/hijri-age-calculator", "/date-converter", "/bmi-calculator",
     "/unit-converter", "/currency-converter", "/vat-calculator",
-    "/overtime-calculator",
+    "/overtime-calculator", "/annual-leave-calculator",
   ];
 
   // Country-specific sub-pages (high SEO priority — country revenue cluster)
