@@ -5,6 +5,9 @@ export const metadata = {
   title: "حاسبة الراتب الصافي في السعودية 2026 | خصم التأمينات GOSI وساند",
   description:
     "احسب صافي راتبك في السعودية بدقة بعد استقطاع التأمينات الاجتماعية (GOSI 10%) ونظام ساند، مع تفصيل بدل السكن والنقل ومنصة قوى ونظام حماية الأجور.",
+  alternates: {
+    canonical: "https://arabic-tools-xi.vercel.app/salary-calculator/saudi",
+  },
 };
 
 const guideData = {

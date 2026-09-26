@@ -8,10 +8,14 @@ export default function robots() {
       {
         userAgent: "*",
         allow: "/",
-        // Future: add disallow for API/admin routes here, e.g.:
-        // disallow: ["/api/", "/admin/"],
+        disallow: [
+          "/api/",          // Block all API routes from crawling
+          "/_next/",        // Next.js internal assets
+          "/static/",       // Static assets (already served differently)
+        ],
       },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,
+    host: BASE_URL,
   };
 }

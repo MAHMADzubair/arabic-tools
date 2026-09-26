@@ -1,14 +1,33 @@
 import "./globals.css";
 import Header from "../components/Header";
+import Script from "next/script";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
 
+// ─── Root Structured Data (WebSite + WebApplication) ─────────────────────────
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "أدوات عربية",
+  url: BASE_URL,
+  description: "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية.",
+  inLanguage: "ar",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${BASE_URL}/?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export const metadata = {
   metadataBase: new URL(BASE_URL),
   alternates: {
-    canonical: "./",
+    canonical: BASE_URL,
   },
   title: {
     default: "أدوات عربية مجانية | حاسبات ومحولات وأدوات PDF وصور ومال",
@@ -25,12 +44,48 @@ export const metadata = {
     locale: "ar_AR",
     type: "website",
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+  },
 };
 
 export default function RootLayout({ children }) {
+  const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "";
+
   return (
     <html lang="ar" dir="rtl">
       <body suppressHydrationWarning={true} className="bg-slate-50 text-ink min-h-screen flex flex-col">
+        {/* WebSite Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+
+        {/* GA4 Analytics */}
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}', { page_path: window.location.pathname });
+
+                // Arabic Tools — GA4 Event Helpers
+                window.trackEvent = function(eventName, params) {
+                  if (typeof gtag !== 'undefined') {
+                    gtag('event', eventName, params || {});
+                  }
+                };
+              `}
+            </Script>
+          </>
+        )}
+
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

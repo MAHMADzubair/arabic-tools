@@ -5,6 +5,9 @@ export const metadata = {
   title: "حاسبة العمل الإضافي في السعودية 2026 | المادة 107 من نظام العمل",
   description:
     "احسب أجر ساعات العمل الإضافي (الأوفر تايم) في السعودية بدقة وفق المادة (107) من نظام العمل بنسبة 150% لساعات العمل النهارية والليلية والعطلات الأسبوعية والأعياد.",
+  alternates: {
+    canonical: "https://arabic-tools-xi.vercel.app/overtime-calculator/saudi",
+  },
 };
 
 const guideData = {

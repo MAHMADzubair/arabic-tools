@@ -78,13 +78,28 @@ const faqJsonLd = {
   ],
 };
 
+const softwareAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "حاسبة المخالصة النهائية في السعودية 2026",
+  operatingSystem: "All",
+  applicationCategory: "BusinessApplication",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "SAR",
+  },
+  description:
+    "احسب مخالصتك وتصفية مستحقاتك بدقة وفق نظام العمل السعودي 2026: مكافأة نهاية الخدمة، رصيد الإجازات، آخر راتب، وبدل الإشعار مع طباعة مسير مخالصة رسمي.",
+};
+
 const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "الرئيسية", item: "https://arabic-tools-xi.vercel.app" },
     { "@type": "ListItem", position: 2, name: "أدوات السعودية", item: "https://arabic-tools-xi.vercel.app/ar/sa/" },
-    { "@type": "ListItem", position: 3, name: "حاسبة المخالصة النهائية", item: "https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator/" },
+    { "@type": "ListItem", position: 3, name: "حاسبة المخالصة النهائية", item: "https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator" },
   ],
 };
 
@@ -100,6 +115,10 @@ export default function FinalSettlementPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }}
       />
 
       <main className="min-h-screen bg-page-bg" dir="rtl">

@@ -5,6 +5,9 @@ export const metadata = {
   title: "حاسبة ضريبة القيمة المضافة في السعودية 15% | هيئة الزكاة والضريبة ZATCA",
   description:
     "احسب ضريبة القيمة المضافة 15% في السعودية بدقة، واستخرج السعر قبل وبعد الضريبة وفق لوائح هيئة الزكاة والضريبة والجمارك (ZATCA) ومنظومة الفوترة الإلكترونية فاتورة.",
+  alternates: {
+    canonical: "https://arabic-tools-xi.vercel.app/vat-calculator/saudi",
+  },
 };
 
 const guideData = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function toNum(v) {
@@ -393,6 +393,23 @@ export default function FinalSettlementCalculator() {
   const calcDate = new Date().toLocaleDateString("ar-SA", {
     year: "numeric", month: "long", day: "numeric",
   });
+
+  // Track calculator usage and result generation
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+      window.trackEvent("calculator_used", {
+        tool: "final-settlement",
+        termination_reason: terminationReason,
+        contract_type: contractType,
+      });
+      window.trackEvent("result_generated", {
+        tool: "final-settlement",
+        net_amount: Math.round(calc.netSettlement),
+        eosb: Math.round(calc.eosb),
+        leave_pay: Math.round(calc.leavePay),
+      });
+    }
+  }, [calc.netSettlement, terminationReason, contractType]);
 
   // ─── Render ────────────────────────────────────────────────────────────────────
   return (
@@ -894,7 +911,16 @@ export default function FinalSettlementCalculator() {
         <div className="border-t border-brand-border px-5 pb-5 pt-4 flex flex-wrap gap-3">
           <button
             type="button"
-            onClick={() => setShowDocument(true)}
+            onClick={() => {
+              setShowDocument(true);
+              if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+                window.trackEvent("print_download_clicked", {
+                  tool: "final-settlement",
+                  action: "view_document",
+                  net_settlement: Math.round(calc.netSettlement),
+                });
+              }
+            }}
             className="flex items-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-dark shadow-sm transition-all"
           >
             <span>📄</span>
@@ -902,7 +928,16 @@ export default function FinalSettlementCalculator() {
           </button>
           <button
             type="button"
-            onClick={() => window.print()}
+            onClick={() => {
+              if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+                window.trackEvent("print_download_clicked", {
+                  tool: "final-settlement",
+                  action: "print_pdf",
+                  net_settlement: Math.round(calc.netSettlement),
+                });
+              }
+              window.print();
+            }}
             className="flex items-center gap-2 rounded-xl border border-brand-border bg-white px-4 py-2.5 text-sm font-bold text-ink-secondary hover:bg-brand-light hover:text-brand transition-all"
           >
             <span>🖨️</span>
@@ -920,7 +955,16 @@ export default function FinalSettlementCalculator() {
               <span className="font-extrabold text-ink text-sm">وثيقة المخالصة النهائية — Saudi Final Settlement</span>
               <div className="flex gap-2">
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => {
+                    if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+                      window.trackEvent("print_download_clicked", {
+                        tool: "final-settlement",
+                        action: "modal_print_pdf",
+                        net_settlement: Math.round(calc.netSettlement),
+                      });
+                    }
+                    window.print();
+                  }}
                   className="rounded-xl bg-brand px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-dark"
                 >
                   🖨️ طباعة / PDF

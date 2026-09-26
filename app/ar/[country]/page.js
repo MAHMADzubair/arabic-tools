@@ -7,6 +7,9 @@ import {
   getActiveTools,
 } from "@/lib/registry";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
+
 export function generateStaticParams() {
   return COUNTRY_CODES.map((code) => ({ country: code }));
 }
@@ -93,17 +96,49 @@ const COUNTRY_HUBS = {
           "فصل الإجمالي والضريبة لبيانات الفاتورة",
         ],
       },
+      {
+        id: "final-settlement",
+        nameAr: "حاسبة المخالصة النهائية الشاملة",
+        nameEn: "Saudi Final Settlement Calculator",
+        icon: "📋",
+        badge: "تصفية كاملة 2026",
+        badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200 font-black",
+        href: "/ar/sa/final-settlement-calculator",
+        desc: "تصفية شاملة لجميع مستحقات العامل: مكافأة نهاية الخدمة، كسر آخر راتب، رصيد الإجازات (م/111)، وبدل الإشعار مع نموذج رسمي للطباعة.",
+        highlights: [
+          "تصفية متكاملة لكسور الشهر الأخير",
+          "حساب رصيد الإجازات السنوية بدقة",
+          "مكافأة نهاية الخدمة بالأجر الفعلي",
+          "إصدار سند مخالصة عمالية معتمد",
+        ],
+      },
+      {
+        id: "annual-leave",
+        nameAr: "حاسبة بدل الإجازات السنوية",
+        nameEn: "Saudi Annual Leave Calculator",
+        icon: "🏖️",
+        badge: "المادتان 109 و111",
+        badgeColor: "bg-sky-50 text-sky-800 border-sky-200",
+        href: "/ar/sa/annual-leave-calculator",
+        desc: "احسب رصيد إجازتك السنوية وأجر أيام الإجازة والتعويض النقدي عن رصيد الإجازات غير المستنفدة وفق نظام العمل السعودي.",
+        highlights: [
+          "21 يوماً أو 30 يوماً بعد 5 سنوات",
+          "احتساب الأجر اليومي على الأجر الفعلي",
+          "صرف كامل الرصيد في المخالصة",
+          "متوافق مع قرارات وزارة الموارد البشرية",
+        ],
+      },
     ],
     upcomingTool: {
       tag: "الأداة القادمة — قيد التطوير والإطلاق",
-      title: "حاسبة المخالصة النهائية في السعودية (Saudi Final Settlement Calculator)",
-      desc: "الأداة الأكثر طلباً في سوق العمل السعودي لتصفية كامل مستحقات العامل عند انتهاء العلاقة العمالية، وتجمع تلقائياً: الراتب المتبقي لأيام الشهر الأخير + مكافأة نهاية الخدمة (م 84/85) + التعويض المالي عن رصيد الإجازات السنوية غير المستنفدة + بدل مهلة الإنذار وخصم السلف والعهد في مسير مخالصة عمالية رسمي معتمد.",
+      title: "حاسبة التعويض عن إنهاء العقد غير المشروع (المادة 77)",
+      desc: "حساب التعويض المستحق عند إنهاء عقد العمل لسبب غير مشروع بموجب المادة (77) من نظام العمل السعودي، مع احتساب الحد الأدنى المقرر نظاماً (أجر شهرين).",
       status: "قريباً جداً في هذا المجمع",
       plannedFeatures: [
-        "تصفية شاملة لكسور الشهر الأخير",
-        "حساب رصيد الإجازات السنوية المتبقية بالأيام",
-        "تسوية مكافأة نهاية الخدمة بالأجر الفعلي",
-        "خصم السلف والعهد وإصدار سند المخالصة",
+        "العقود محددة المدة (أجر المدة المتبقية)",
+        "العقود غير محددة المدة (15 يوماً عن كل سنة)",
+        "تطبيق الحد الأدنى القانوني (أجر شهرين)",
+        "تحديد الطرف المنهي للعقد (صاحب العمل أو العامل)",
       ],
     },
     guideTitle: "الدليل الشامل للأنظمة المالية وحقوق العمل في المملكة العربية السعودية",
@@ -328,7 +363,7 @@ export function generateMetadata({ params }) {
   const hub = COUNTRY_HUBS[params.country];
   const title = hub ? hub.seoTitle : `أدوات ${country.nameAr} المالية ونظام العمل 2026 | الأدوات العربية`;
   const description = hub ? hub.seoDesc : country.metaDesc;
-  const canonical = `https://arabic-tools-xi.vercel.app/ar/${country.code}/`;
+  const canonical = `${BASE_URL}/ar/${country.code}`;
 
   return {
     title,
@@ -503,7 +538,7 @@ export default function CountryPage({ params }) {
                   <span>الحزمة الأساسية الأكثر طلباً</span>
                 </div>
                 <h2 className="text-2xl font-black text-ink">
-                  أهم 4 حاسبات مالية وعمالية لـ {country.nameAr}
+                  أهم {hub.primaryTools.length} حاسبات مالية وعمالية لـ {country.nameAr}
                 </h2>
               </div>
               <p className="text-xs text-ink-muted">
