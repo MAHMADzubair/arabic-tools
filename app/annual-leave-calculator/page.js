@@ -121,7 +121,7 @@ export default function AnnualLeavePage() {
                 <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">تصفية شاملة لجميع مستحقاتك</p>
                 <h3 className="text-base font-extrabold text-ink mt-0.5">هل تُنهي خدمتك وتحتاج لمخالصة نهائية كاملة؟</h3>
                 <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-                  احسب بدل الإجازة + مكافأة نهاية الخدمة + راتب آخر شهر + تعويض الإشعار مع طباعة وثيقة مخالصة رسمية.
+                  احسب بدل الإجازة + مكافأة نهاية الخدمة + راتب آخر شهر + تعويض الإشعار مع إنشاء نموذج مخالصة نهائية قابل للطباعة.
                 </p>
               </div>
             </div>
@@ -270,7 +270,7 @@ export default function AnnualLeavePage() {
                   href: "/ar/sa/final-settlement-calculator",
                   icon: "📋",
                   title: "حاسبة المخالصة النهائية",
-                  desc: "تصفية شاملة لجميع مستحقات نهاية الخدمة والبدلات مع وثيقة رسمية للطباعة",
+                  desc: "تصفية شاملة لجميع مستحقات نهاية الخدمة والبدلات مع نموذج مخالصة نهائية قابل للطباعة",
                   badge: "شاملة",
                 },
                 {

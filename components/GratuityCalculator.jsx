@@ -854,7 +854,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
                   <span>هل تحتاج إلى تصفية شاملة؟ (Complete Settlement)</span>
                 </div>
                 <p className="text-ink-secondary text-[11px] leading-relaxed">
-                  احسب كامل مستحقاتك: مكافأة نهاية الخدمة + راتب آخر شهر + بدل الإجازات (م/111) + مهلة الإشعار (م/75) + الخصومات، مع إصدار وثيقة مخالصة رسمية للطباعة.
+                  احسب كامل مستحقاتك: مكافأة نهاية الخدمة + راتب آخر شهر + بدل الإجازات (م/111) + مهلة الإشعار (م/75) + الخصومات، مع إنشاء نموذج مخالصة نهائية قابل للطباعة.
                 </p>
                 <a
                   href="/ar/sa/final-settlement-calculator"
