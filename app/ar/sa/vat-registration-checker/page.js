@@ -375,6 +375,14 @@ export default function VatRegistrationCheckerPage() {
                   badgeColor: "bg-purple-100 text-purple-700",
                 },
                 {
+                  href: "/ar/sa/e-invoice-generator",
+                  icon: "🧾",
+                  title: "مولد الفاتورة الإلكترونية السعودية",
+                  desc: "هل أصبحت مؤهلاً أو ملزماً بالتسجيل؟ → أنشئ نموذج فاتورة إلكترونية سعودية (B2B أو B2C) مع احتساب VAT 15%.",
+                  badge: "ZATCA فاتورة",
+                  badgeColor: "bg-indigo-100 text-indigo-700",
+                },
+                {
                   href: "/ar/sa/final-settlement-calculator",
                   icon: "📋",
                   title: "حاسبة المخالصة النهائية الشاملة",

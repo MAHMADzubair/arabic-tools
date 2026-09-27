@@ -791,6 +791,28 @@ https://arabic-tools-xi.vercel.app/ar/sa/vat-registration-checker`;
             </a>
           </div>
 
+          {/* Next Step Banner: E-Invoice Generator */}
+          <div className="rounded-xl border border-indigo-200 bg-gradient-to-l from-indigo-50 to-blue-50 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">🧾</span>
+              <div>
+                <p className="text-xs font-bold text-indigo-950">
+                  الخطوة التالية: إصدار الفواتير الضريبية المتوافقة
+                </p>
+                <p className="text-[11px] text-indigo-800">
+                  أنشئ نموذج فاتورة ضريبية B2B أو مبسطة B2C جاهزة للطباعة مع احتساب VAT 15% وفحص اكتمال الحقول
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/ar/sa/e-invoice-generator"
+              className="shrink-0 rounded-xl bg-indigo-700 px-3.5 py-2 text-xs font-bold text-white hover:bg-indigo-800 transition-all shadow-sm flex items-center gap-1.5"
+            >
+              <span>مولد الفاتورة الإلكترونية</span>
+              <span>←</span>
+            </Link>
+          </div>
+
           {/* Legal Disclaimer */}
           <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-900 leading-relaxed">
             ⚖️ <strong>إخلاء مسؤولية رسمي:</strong> هذه الأداة تقديرية وتعتمد على البيانات التي يدخلها المستخدم، ولا تمثل قراراً رسمياً من هيئة الزكاة والضريبة والجمارك (ZATCA). قد تختلف متطلبات التسجيل بحسب طبيعة النشاط وحالة المكلف والتوريدات والاستثناءات النظامية. يرجى الرجوع إلى هيئة الزكاة والضريبة والجمارك عند الحاجة إلى تحديد رسمي للالتزام بالتسجيل.

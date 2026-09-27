@@ -111,6 +111,30 @@ export default function SaudiVatPage() {
             </Link>
           </div>
         </div>
+
+        {/* Contextual Link to E-Invoice Generator */}
+        <div className="mt-3 rounded-2xl border border-indigo-200 bg-indigo-50/80 p-4 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">🧾</span>
+              <div>
+                <p className="text-xs font-black text-indigo-950">
+                  ترغب في إنشاء فاتورة ضريبية كاملة لبنودك؟
+                </p>
+                <p className="text-[11px] text-indigo-800 mt-0.5">
+                  أنشئ نموذج فاتورة ضريبية B2B أو مبسطة B2C جاهزة للطباعة مع احتساب الضريبة والخصومات
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/ar/sa/e-invoice-generator"
+              className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-indigo-700 px-3.5 py-2 text-xs font-bold text-white hover:bg-indigo-800 transition-all shadow-sm"
+            >
+              <span>مولد الفاتورة الإلكترونية</span>
+              <span>←</span>
+            </Link>
+          </div>
+        </div>
       </div>
       <ToolGuideSection {...guideData} />
     </div>

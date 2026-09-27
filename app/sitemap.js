@@ -38,6 +38,7 @@ export default function sitemap() {
     "/ar/sa/annual-leave-calculator",
     "/ar/sa/article-77-calculator",
     "/ar/sa/vat-registration-checker",
+    "/ar/sa/e-invoice-generator",
   ];
 
   const now = new Date();
