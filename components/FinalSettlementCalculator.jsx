@@ -425,7 +425,7 @@ export default function FinalSettlementCalculator() {
 ═════════════════════════
 💎 صافي المخالصة النهائية المستحقة: ${fmt(calc.netSettlement)} ر.س
 
-احسب مخالصتك وأصدر مسيرك المعتمد مجاناً:
+احسب مخالصتك وأنشئ نموذجك التقديري مجاناً:
 https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
   }, [calc]);
 
@@ -458,7 +458,7 @@ https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
         <SectionHeader num="١" title="بيانات الموظف والعقد" icon="👤" />
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <TextInput label="اسم الموظف (للوثيقة)" value={employeeName} onChange={setEmployeeName} placeholder="محمد علي الزهراني" />
+          <TextInput label="اسم الموظف (للنموذج)" value={employeeName} onChange={setEmployeeName} placeholder="محمد علي الزهراني" />
           <TextInput label="اسم جهة العمل / الشركة" value={employerName} onChange={setEmployerName} placeholder="شركة الخليج للمقاولات" />
           <TextInput label="المسمى الوظيفي" value={position} onChange={setPosition} placeholder="مهندس مدني أول" />
           <TextInput label="رقم الهوية الوطنية / الإقامة" value={employeeId} onChange={setEmployeeId} placeholder="1xxxxxxxxx" />
@@ -1126,7 +1126,7 @@ https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
               <div>
                 <h3 className="text-sm font-extrabold text-ink mb-4 border-b border-slate-200 pb-1">التوقيعات والإقرار</h3>
                 <p className="text-xs text-ink-secondary mb-6">
-                  بتوقيع هذه الوثيقة، يُقرّ الطرفان باستلام وتسليم جميع المستحقات المبيّنة أعلاه وبراءة كل منهما تجاه الآخر من أي مطالبات عمالية تتعلق بفترة الخدمة المنتهية، ما لم يُنصّ صراحة على خلاف ذلك.
+                  بتوقيع هذا النموذج التقديري، يُقرّ الطرفان باستلام وتسليم جميع المستحقات المبيّنة أعلاه وبراءة كل منهما تجاه الآخر من أي مطالبات عمالية تتعلق بفترة الخدمة المنتهية، ما لم يُنصّ صراحة على خلاف ذلك.
                 </p>
                 <div className="grid grid-cols-2 gap-10">
                   <div className="text-center space-y-6">
