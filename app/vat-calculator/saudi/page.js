@@ -1,5 +1,6 @@
 import VatCalculator from "@/components/VatCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import Link from "next/link";
 
 export const metadata = {
   title: "حاسبة ضريبة القيمة المضافة في السعودية 15% | هيئة الزكاة والضريبة ZATCA",
@@ -76,7 +77,7 @@ const guideData = {
     },
     {
       question: "ما هو حد التسجيل الإلزامي في ضريبة القيمة المضافة بالسعودية؟",
-      answer: "يجب على كل منشأة مقيمة في المملكة تتجاوز إيراداتها السنوية الخاضعة للضريبة 375,000 ريال التسجيل إلزامياً لدى ZATCA، بينما يكون التسجيل اختيارياً للمنشآت التي تتراوح إيراداتها بين 187,500 و 375,000 ريال.",
+      answer: "يجب على كل منشأة مقيمة في المملكة تتجاوز إيراداتها السنوية الخاضعة للضريبة 375,000 ريال التسجيل إلزامياً لدى ZATCA، بينما يكون التسجيل اختيارياً للمنشآت التي تتراوح إيراداتها أو مصروفاتها بين 187,500 و 375,000 ريال.",
     },
   ],
 };
@@ -86,6 +87,30 @@ export default function SaudiVatPage() {
     <div className="py-6 sm:py-10">
       <div className="mx-auto max-w-2xl px-4">
         <VatCalculator initialCountry="KSA" />
+
+        {/* Contextual Link to VAT Registration Eligibility Checker */}
+        <div className="mt-5 rounded-2xl border border-purple-200 bg-purple-50/80 p-4 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">🏢</span>
+              <div>
+                <p className="text-xs font-black text-purple-950">
+                  هل تحتاج إلى معرفة ما إذا كان التسجيل في ضريبة القيمة المضافة مطلوباً؟
+                </p>
+                <p className="text-[11px] text-purple-800 mt-0.5">
+                  تحقق من حد الـ 375,000 ريال الإلزامي وحد الـ 187,500 ريال الاختياري وفق لوائح ZATCA
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/ar/sa/vat-registration-checker"
+              className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-purple-700 px-3.5 py-2 text-xs font-bold text-white hover:bg-purple-800 transition-all shadow-sm"
+            >
+              <span>حاسبة أهلية التسجيل</span>
+              <span>←</span>
+            </Link>
+          </div>
+        </div>
       </div>
       <ToolGuideSection {...guideData} />
     </div>

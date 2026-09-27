@@ -144,6 +144,22 @@ const COUNTRY_HUBS = {
           "متوافق مع المحاكم العمالية ومنصة ودي",
         ],
       },
+      {
+        id: "vat-registration-checker",
+        nameAr: "حاسبة أهلية التسجيل في ضريبة القيمة المضافة",
+        nameEn: "Saudi VAT Registration Eligibility Checker",
+        icon: "🏢",
+        badge: "حد 375 ألف ريال — ZATCA",
+        badgeColor: "bg-purple-50 text-purple-700 border-purple-200 font-bold",
+        href: "/ar/sa/vat-registration-checker",
+        desc: "تحقق من التزامك بالتسجيل الإلزامي أو الاختياري في ضريبة القيمة المضافة وفق حدود التوريدات والمصروفات المعتمدة من ZATCA.",
+        highlights: [
+          "حد التسجيل الإلزامي 375,000 ريال",
+          "حد التسجيل الاختياري 187,500 ريال",
+          "استبعاد التوريدات المعفاة والأصول الرأسمالية",
+          "ضوابط تسجيل المنشآت غير المقيمة",
+        ],
+      },
     ],
     upcomingTool: {
       tag: "الأداة القادمة — قيد التطوير والإطلاق",

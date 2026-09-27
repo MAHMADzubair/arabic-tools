@@ -37,6 +37,7 @@ export default function sitemap() {
     "/ar/sa/final-settlement-calculator",
     "/ar/sa/annual-leave-calculator",
     "/ar/sa/article-77-calculator",
+    "/ar/sa/vat-registration-checker",
   ];
 
   const now = new Date();
