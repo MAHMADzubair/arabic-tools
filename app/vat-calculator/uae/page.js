@@ -1,5 +1,6 @@
 import VatCalculator from "@/components/VatCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import Link from "next/link";
 
 export const metadata = {
   title: "حاسبة ضريبة القيمة المضافة في الإمارات 5% | الهيئة الاتحادية للضرائب FTA",

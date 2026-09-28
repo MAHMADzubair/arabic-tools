@@ -45,6 +45,7 @@ export default function sitemap() {
   const uaeDeepPages = [
     "/ar/ae/final-settlement-calculator",
     "/ar/ae/notice-period-calculator",
+    "/ar/ae/vat-registration-checker",
   ];
 
   const now = new Date();

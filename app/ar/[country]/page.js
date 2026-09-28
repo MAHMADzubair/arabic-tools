@@ -361,6 +361,22 @@ const COUNTRY_HUBS = {
           "مخطط زمني وتفقيط ونموذج ملخص للطباعة",
         ],
       },
+      {
+        id: "uae-vat-registration-checker",
+        nameAr: "حاسبة أهلية التسجيل في ضريبة القيمة المضافة",
+        nameEn: "UAE VAT Registration Eligibility Checker",
+        icon: "🏢",
+        badge: "FTA — 375 ألف درهم",
+        badgeColor: "bg-purple-50 text-purple-700 border-purple-200 font-bold",
+        href: "/ar/ae/vat-registration-checker",
+        desc: "تحقق من التزامك بالتسجيل الإلزامي أو الاختياري في ضريبة القيمة المضافة بالإمارات وفق حدود الهيئة الاتحادية للضرائب FTA.",
+        highlights: [
+          "حد التسجيل الإلزامي 375,000 درهم",
+          "حد التسجيل الاختياري 187,500 درهم",
+          "اختبار آخر 12 شهراً والـ 30 يوماً القادمة",
+          "ضوابط تسجيل المنشآت غير المقيمة",
+        ],
+      },
     ],
     upcomingTool: {
       tag: "الأداة القادمة — قيد التطوير والإطلاق",
