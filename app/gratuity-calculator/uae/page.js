@@ -1,5 +1,6 @@
 import GratuityCalculator from "@/components/GratuityCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import Link from "next/link";
 
 export const metadata = {
   title: "حاسبة مكافأة نهاية الخدمة في الإمارات 2026 | قانون العمل 33 لسنة 2021",
@@ -109,6 +110,30 @@ export default function UaeGratuityPage() {
     <div className="py-6 sm:py-10">
       <div className="mx-auto max-w-2xl px-4">
         <GratuityCalculator initialCountry="ae" />
+
+        {/* Contextual Link to UAE Final Settlement Calculator */}
+        <div className="mt-5 rounded-2xl border border-indigo-200 bg-indigo-50/80 p-4 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">📋</span>
+              <div>
+                <p className="text-xs font-black text-indigo-950">
+                  هل تريد حساب جميع مستحقات نهاية العمل في الإمارات؟
+                </p>
+                <p className="text-[11px] text-indigo-800 mt-0.5">
+                  احسب تصفية كاملة: مكافأة نهاية الخدمة، آخر راتب، بدل رصيد الإجازات، وبدل الإنذار
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/ar/ae/final-settlement-calculator"
+              className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-indigo-700 px-3.5 py-2 text-xs font-bold text-white hover:bg-indigo-800 transition-all shadow-sm"
+            >
+              <span>حاسبة المخالصة النهائية</span>
+              <span>←</span>
+            </Link>
+          </div>
+        </div>
       </div>
       <ToolGuideSection {...guideData} />
     </div>

@@ -41,6 +41,12 @@ export default function sitemap() {
     "/ar/sa/e-invoice-generator",
   ];
 
+  // UAE /ar/ae/ deep-linked tool pages
+  const uaeDeepPages = [
+    "/ar/ae/final-settlement-calculator",
+    "/ar/ae/notice-period-calculator",
+  ];
+
   const now = new Date();
 
   const homePage = {
@@ -60,6 +66,14 @@ export default function sitemap() {
 
   // Saudi deep tool pages — between country pages and generic tools in priority
   const saudiDeepRoutes = saudiDeepPages.map((route) => ({
+    url: `${BASE_URL}${route}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.9,
+  }));
+
+  // UAE deep tool pages
+  const uaeDeepRoutes = uaeDeepPages.map((route) => ({
     url: `${BASE_URL}${route}`,
     lastModified: now,
     changeFrequency: "monthly",
@@ -90,11 +104,12 @@ export default function sitemap() {
     priority: 0.4,
   }));
 
-  // Priority order: home → country landing → Saudi deep tools → country tool routes → general tools → static
+  // Priority order: home → country landing → Saudi deep tools → UAE deep tools → country tool routes → general tools → static
   return [
     homePage,
     ...countryPages,
     ...saudiDeepRoutes,
+    ...uaeDeepRoutes,
     ...countryToolRoutes,
     ...toolPages,
     ...staticPages,
