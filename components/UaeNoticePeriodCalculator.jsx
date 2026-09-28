@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -32,11 +32,11 @@ function addDays(dateStr, days) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return "";
-  d.setDate(d.getDate() + days);
+  d.setDate(d.getDate() + Number(days));
   return d.toISOString().split("T")[0];
 }
 
-/** Calculate calendar day difference between two dates inclusive or exclusive */
+/** Calculate calendar day difference between two dates */
 function getDaysDiff(startStr, endStr) {
   if (!startStr || !endStr) return 0;
   const s = new Date(startStr);
@@ -47,40 +47,49 @@ function getDaysDiff(startStr, endStr) {
 }
 
 export default function UaeNoticePeriodCalculator() {
-  // ── Scope & Jurisdiction ─────────────────────────────────────────────────────
-  const [sectorType, setSectorType] = useState("private_mohre"); // "private_mohre" | "difc_adgm" | "other"
+  // ── Section 3: Scope Check Questions ─────────────────────────────────────────
+  // 1. هل تعمل في القطاع الخاص الخاضع لقانون العمل الإماراتي؟ (نعم / لا / غير متأكد)
+  const [isPrivateSector, setIsPrivateSector] = useState("yes"); // "yes" | "no" | "unsure"
+  // 2. هل تعمل في DIFC أو ADGM؟ (لا / نعم / غير متأكد)
+  const [isDifcAdgm, setIsDifcAdgm] = useState("no"); // "no" | "yes" | "unsure"
+
+  // ── Section 4: Probation Status ──────────────────────────────────────────────
+  // هل الموظف لا يزال في فترة التجربة؟ (نعم / لا)
   const [isProbation, setIsProbation] = useState("no"); // "no" | "yes"
 
-  // ── Core Inputs ──────────────────────────────────────────────────────────────
+  // ── Section 5: Core User Inputs ──────────────────────────────────────────────
+  // A. Who initiated termination? (الموظف / صاحب العمل)
   const [initiator, setInitiator] = useState("employee"); // "employee" | "employer"
+
+  // B. Notice date (تاريخ تقديم الإشعار / الاستقالة)
   const [noticeStartDate, setNoticeStartDate] = useState(() => {
     return new Date().toISOString().split("T")[0];
   });
+
+  // C. Contractual notice period (30, 45, 60, 90, Custom)
   const [contractNoticePreset, setContractNoticePreset] = useState("30"); // "30" | "45" | "60" | "90" | "custom"
   const [customNoticeDays, setCustomNoticeDays] = useState("30");
 
-  // ── Served Notice Inputs ─────────────────────────────────────────────────────
+  // D. Actual notice served (عدد الأيام التي تم تنفيذها OR آخر يوم عمل فعلي)
   const [servedInputMode, setServedInputMode] = useState("days"); // "days" | "date"
   const [servedDaysInput, setServedDaysInput] = useState("30");
   const [actualLastWorkingDate, setActualLastWorkingDate] = useState(() => {
-    const today = new Date();
-    today.setDate(today.getDate() + 29);
-    return today.toISOString().split("T")[0];
+    return addDays(new Date().toISOString().split("T")[0], 30);
   });
 
-  // ── Salary Inputs ────────────────────────────────────────────────────────────
+  // E. Last wage (آخر أجر كان يتقاضاه العامل) AED
   const [lastWage, setLastWage] = useState("9000");
 
-  // ── Special Conditions ───────────────────────────────────────────────────────
+  // Special waiver / agreement
   const [isMutualWaiver, setIsMutualWaiver] = useState(false);
 
-  // ── UI States ────────────────────────────────────────────────────────────────
+  // UI States
   const [showFormulaDetails, setShowFormulaDetails] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [employeeName, setEmployeeName] = useState("");
   const [employerName, setEmployerName] = useState("");
 
-  // ── Resolved Contract Notice Days ────────────────────────────────────────────
+  // ── Contractual Notice Days Calculation ──────────────────────────────────────
   const requiredNoticeDays = useMemo(() => {
     if (contractNoticePreset === "custom") {
       return toNum(customNoticeDays);
@@ -88,7 +97,7 @@ export default function UaeNoticePeriodCalculator() {
     return toNum(contractNoticePreset);
   }, [contractNoticePreset, customNoticeDays]);
 
-  // Notice Period 30-90 Validation
+  // Validation: 30 to 90 days
   const noticeValidation = useMemo(() => {
     if (requiredNoticeDays < 30) {
       return {
@@ -105,30 +114,30 @@ export default function UaeNoticePeriodCalculator() {
     return { status: "valid", msg: "" };
   }, [requiredNoticeDays]);
 
-  // Expected Last Working Date Calculation
-  // Convention: Notice starts on noticeStartDate (Day 1). Last day = noticeStartDate + (requiredNoticeDays - 1)
+  // Section 6: Expected Last Working Day
+  // noticeStartDate + contractNoticeDays = expectedLastWorkingDate
   const expectedLastWorkingDate = useMemo(() => {
     if (!noticeStartDate || requiredNoticeDays <= 0) return "";
-    return addDays(noticeStartDate, Math.max(0, requiredNoticeDays - 1));
+    return addDays(noticeStartDate, requiredNoticeDays);
   }, [noticeStartDate, requiredNoticeDays]);
 
   // Auto-sync when noticeStartDate changes and mode is 'date'
   const handleStartDateChange = (newDate) => {
     setNoticeStartDate(newDate);
     if (servedInputMode === "date" && newDate && requiredNoticeDays > 0) {
-      setActualLastWorkingDate(addDays(newDate, Math.max(0, requiredNoticeDays - 1)));
+      setActualLastWorkingDate(addDays(newDate, requiredNoticeDays));
     }
   };
 
-  // Resolved Served Days
+  // Section 7: Resolved Served Days
   const servedNoticeDays = useMemo(() => {
     if (servedInputMode === "days") {
       return toNum(servedDaysInput);
     } else {
       if (!noticeStartDate || !actualLastWorkingDate) return 0;
       const diff = getDaysDiff(noticeStartDate, actualLastWorkingDate);
-      if (diff < 0) return 0; // last date is before notice start
-      return diff + 1; // inclusive counting (day of notice to last working day)
+      if (diff < 0) return 0;
+      return diff;
     }
   }, [servedInputMode, servedDaysInput, noticeStartDate, actualLastWorkingDate]);
 
@@ -139,31 +148,32 @@ export default function UaeNoticePeriodCalculator() {
     return new Date(actualLastWorkingDate) < new Date(noticeStartDate);
   }, [servedInputMode, noticeStartDate, actualLastWorkingDate]);
 
-  // Unserved / Remaining Notice Days
+  // Section 7: Remaining Notice Days
+  // remainingNoticeDays = max(requiredNoticeDays - servedNoticeDays, 0)
   const remainingNoticeDays = useMemo(() => {
     if (isMutualWaiver) return 0;
-    return Math.max(0, requiredNoticeDays - servedNoticeDays);
+    return Math.max(requiredNoticeDays - servedNoticeDays, 0);
   }, [requiredNoticeDays, servedNoticeDays, isMutualWaiver]);
 
-  // Wage Math
+  // Section 8: Wage & Compensation Math
   const wage = toNum(lastWage);
-  const dailyWage = wage / 30; // standard UAE MOHRE daily wage convention
-  const estimatedCompensation = remainingNoticeDays * dailyWage;
+  const dailyWage = wage / 30; // dailyWage = lastWage / 30
+  const estimatedCompensation = remainingNoticeDays * dailyWage; // remainingNoticeDays * dailyWage
 
-  // Compensation Direction
+  // Section 8: Compensation Direction
   const compensationDirection = useMemo(() => {
     if (remainingNoticeDays <= 0 || isMutualWaiver || wage <= 0) {
       return "none";
     }
-    // If employer terminated and did not allow full notice -> owes employee (+)
+    // If employer failed to serve notice -> compensation payable to employee
     if (initiator === "employer") {
       return "to_employee";
     }
-    // If employee resigned and left early without serving required notice -> owes employer (-)
+    // If employee failed to serve notice -> compensation payable to employer
     return "to_employer";
   }, [remainingNoticeDays, isMutualWaiver, wage, initiator]);
 
-  // Timeline percentage calculation
+  // Timeline progress percentage
   const timelineProgress = useMemo(() => {
     if (requiredNoticeDays <= 0) return 100;
     const pct = Math.min(100, Math.round((servedNoticeDays / requiredNoticeDays) * 100));
@@ -173,7 +183,7 @@ export default function UaeNoticePeriodCalculator() {
   // Presets from User Request Worked Examples
   const applyPreset = (presetNum) => {
     if (presetNum === 1) {
-      // Example 1: Employee resignation, 60 days notice, 60 served, 9000 AED => 0 compensation
+      // Example 1: Employee resignation, 60 days notice, 60 served, 9000 AED => no compensation
       setInitiator("employee");
       setContractNoticePreset("60");
       setServedInputMode("days");
@@ -181,7 +191,8 @@ export default function UaeNoticePeriodCalculator() {
       setLastWage("9000");
       setIsMutualWaiver(false);
       setIsProbation("no");
-      setSectorType("private_mohre");
+      setIsPrivateSector("yes");
+      setIsDifcAdgm("no");
     } else if (presetNum === 2) {
       // Example 2: Employee resignation, 60 days notice, 40 served, 9000 AED => 6000 AED payable to employer
       setInitiator("employee");
@@ -191,7 +202,8 @@ export default function UaeNoticePeriodCalculator() {
       setLastWage("9000");
       setIsMutualWaiver(false);
       setIsProbation("no");
-      setSectorType("private_mohre");
+      setIsPrivateSector("yes");
+      setIsDifcAdgm("no");
     } else if (presetNum === 3) {
       // Example 3: Employer termination, 30 days notice, 10 served, 12000 AED => 8000 AED payable to employee
       setInitiator("employer");
@@ -201,12 +213,14 @@ export default function UaeNoticePeriodCalculator() {
       setLastWage("12000");
       setIsMutualWaiver(false);
       setIsProbation("no");
-      setSectorType("private_mohre");
+      setIsPrivateSector("yes");
+      setIsDifcAdgm("no");
     }
   };
 
   const handleReset = () => {
-    setSectorType("private_mohre");
+    setIsPrivateSector("yes");
+    setIsDifcAdgm("no");
     setIsProbation("no");
     setInitiator("employee");
     const today = new Date().toISOString().split("T")[0];
@@ -215,7 +229,7 @@ export default function UaeNoticePeriodCalculator() {
     setCustomNoticeDays("30");
     setServedInputMode("days");
     setServedDaysInput("30");
-    setActualLastWorkingDate(addDays(today, 29));
+    setActualLastWorkingDate(addDays(today, 30));
     setLastWage("9000");
     setIsMutualWaiver(false);
     setEmployeeName("");
@@ -230,16 +244,16 @@ export default function UaeNoticePeriodCalculator() {
           <div className="flex items-center gap-2 mb-1">
             <span className="text-2xl">⏳</span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-ink">
-              حاسبة فترة الإنذار في الإمارات 2026
+              حاسبة فترة الإنذار في الإمارات
             </h1>
           </div>
           <p className="text-sm text-ink-muted">
-            احتساب آخر يوم عمل، الأيام غير المنفذة، وبدل الإنذار التعويضي وفق المادة (43) من قانون العمل الإماراتي رقم 33 لسنة 2021
+            احتساب آخر يوم عمل، الأيام غير المنفذة، وبدل الإنذار التعويضي وفق أحكام المادة (43) من قانون العمل الإماراتي رقم 33 لسنة 2021
           </p>
         </div>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 border border-blue-200">
-            <span>🇦🇪</span> قانون 33 م 43
+            <span>🇦🇪</span> المادة 43
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 border border-emerald-200">
             حساب فوري 100%
@@ -251,13 +265,13 @@ export default function UaeNoticePeriodCalculator() {
       <div className="mb-6 rounded-xl border border-brand-border bg-slate-50 p-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-extrabold text-ink flex items-center gap-1.5">
-            <span>💡</span> أمثلة عملية جاهزة (اضغط لتجربة فورية):
+            <span>💡</span> أمثلة عملية سريعة (اضغط للتطبيق المباشر):
           </span>
           <button
             onClick={handleReset}
             className="text-xs text-rose-600 hover:text-rose-700 font-bold underline transition"
           >
-            إعادة تعيين الحقول
+            إعادة تعيين
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -267,7 +281,7 @@ export default function UaeNoticePeriodCalculator() {
             className="rounded-lg border border-slate-200 bg-white p-2.5 text-right text-xs hover:border-brand hover:bg-brand-50 transition shadow-sm"
           >
             <div className="font-bold text-ink">مثال 1: استقالة وتنفيذ كامل</div>
-            <div className="text-ink-muted text-[11px] mt-0.5">إنذار 60 يوماً / نُفذت كاملة / لا تعويض</div>
+            <div className="text-ink-muted text-[11px] mt-0.5">إنذار 60 يوماً / نُفذت 60 / لا تعويض (0)</div>
           </button>
           <button
             type="button"
@@ -275,7 +289,7 @@ export default function UaeNoticePeriodCalculator() {
             className="rounded-lg border border-slate-200 bg-white p-2.5 text-right text-xs hover:border-brand hover:bg-brand-50 transition shadow-sm"
           >
             <div className="font-bold text-ink">مثال 2: استقالة وتنفيذ جزئي</div>
-            <div className="text-ink-muted text-[11px] mt-0.5">خدم 40 من 60 يوماً / تعويض لصاحب العمل</div>
+            <div className="text-ink-muted text-[11px] mt-0.5">خدم 40 من 60 يوماً / 6,000 درهم لصاحب العمل</div>
           </button>
           <button
             type="button"
@@ -283,69 +297,94 @@ export default function UaeNoticePeriodCalculator() {
             className="rounded-lg border border-slate-200 bg-white p-2.5 text-right text-xs hover:border-brand hover:bg-brand-50 transition shadow-sm"
           >
             <div className="font-bold text-ink">مثال 3: إنهاء من صاحب العمل</div>
-            <div className="text-ink-muted text-[11px] mt-0.5">خدم 10 من 30 يوماً / تعويض لصالح الموظف</div>
+            <div className="text-ink-muted text-[11px] mt-0.5">خدم 10 من 30 يوماً / 8,000 درهم لصالح الموظف</div>
           </button>
         </div>
       </div>
 
       {/* ── Main Calculator Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left / Input Column (7 cols) */}
+        {/* Left Column: Form Inputs (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
-          {/* STEP 1: Scope & Jurisdiction */}
+          {/* STEP 1: Scope Check & Probation */}
           <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
             <div className="flex items-center gap-2 border-b border-brand-border pb-3 mb-4">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-black text-blue-700">
                 1
               </span>
               <h2 className="text-base font-extrabold text-ink">
-                نطاق النظام وفترة التجربة
+                فحص النطاق وجهة الاختصاص
               </h2>
             </div>
 
             <div className="space-y-4">
-              {/* Scope Question */}
+              {/* Question 1: Private Sector */}
               <div>
                 <label className="block text-xs font-bold text-ink mb-1.5">
-                  جهة العمل ونظام التشريع الخاضع له:
+                  هل تعمل في القطاع الخاص الخاضع لقانون العمل الإماراتي؟
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { id: "private_mohre", label: "القطاع الخاص (MOHRE)" },
-                    { id: "difc_adgm", label: "DIFC أو ADGM" },
-                    { id: "other", label: "حكومي / شبه حكومي" },
-                  ].map((item) => (
+                    { id: "yes", label: "نعم" },
+                    { id: "no", label: "لا" },
+                    { id: "unsure", label: "غير متأكد" },
+                  ].map((opt) => (
                     <button
-                      key={item.id}
+                      key={opt.id}
                       type="button"
-                      onClick={() => setSectorType(item.id)}
-                      className={`rounded-xl border py-2.5 px-2 text-center text-xs font-bold transition ${
-                        sectorType === item.id
+                      onClick={() => setIsPrivateSector(opt.id)}
+                      className={`rounded-xl border py-2 px-3 text-center text-xs font-bold transition ${
+                        isPrivateSector === opt.id
                           ? "border-brand bg-brand-50 text-brand shadow-sm"
                           : "border-slate-200 bg-white text-ink-muted hover:border-slate-300"
                       }`}
                     >
-                      {item.label}
+                      {opt.label}
                     </button>
                   ))}
                 </div>
+                {isPrivateSector !== "yes" && (
+                  <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-xs text-amber-900 leading-relaxed">
+                    ⚠️ <strong>تنبيه:</strong> قد تختلف التشريعات المنظمة للقطاعات الحكومية وشبه الحكومية والمناطق ذات الأنظمة المستقلة عن أحكام المادة (43) من قانون العمل الاتحادي.
+                  </div>
+                )}
               </div>
 
-              {/* DIFC / ADGM Warning */}
-              {sectorType === "difc_adgm" && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 leading-relaxed">
-                  ⚠️ <strong>تنبيه اختصاص:</strong> قد تختلف قواعد الإشعار في المناطق المالية الحرة (DIFC أو ADGM) عن قانون العمل الاتحادي، لذلك لا ينبغي الاعتماد على هذه الحاسبة وحدها.
+              {/* Question 2: DIFC or ADGM */}
+              <div>
+                <label className="block text-xs font-bold text-ink mb-1.5">
+                  هل تعمل في DIFC أو ADGM؟
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "no", label: "لا" },
+                    { id: "yes", label: "نعم" },
+                    { id: "unsure", label: "غير متأكد" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setIsDifcAdgm(opt.id)}
+                      className={`rounded-xl border py-2 px-3 text-center text-xs font-bold transition ${
+                        isDifcAdgm === opt.id
+                          ? opt.id === "yes"
+                            ? "border-amber-500 bg-amber-50 text-amber-900 shadow-sm"
+                            : "border-brand bg-brand-50 text-brand shadow-sm"
+                          : "border-slate-200 bg-white text-ink-muted hover:border-slate-300"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
-              )}
+                {isDifcAdgm === "yes" && (
+                  <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-xs text-amber-900 leading-relaxed">
+                    ⚠️ <strong>تنبيه:</strong> قد تختلف قواعد الإشعار في DIFC أو ADGM، لذلك لا ينبغي الاعتماد على هذه الحاسبة وحدها.
+                  </div>
+                )}
+              </div>
 
-              {/* Government Warning */}
-              {sectorType === "other" && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 leading-relaxed">
-                  ⚠️ <strong>تنبيه اختصاص:</strong> تخضع القطاعات الحكومية والمناطق الحرة ذات القوانين الخاصة لتنظيمات إشعار مختلفة لا تخضع لأحكام المادة (43) مباشرة.
-                </div>
-              )}
-
-              {/* Probation Question */}
+              {/* Question 3: Probation Status */}
               <div>
                 <label className="block text-xs font-bold text-ink mb-1.5">
                   هل الموظف لا يزال في فترة التجربة؟
@@ -360,32 +399,30 @@ export default function UaeNoticePeriodCalculator() {
                         : "border-slate-200 bg-white text-ink-muted hover:border-slate-300"
                     }`}
                   >
-                    لا (خدمة عادية بعد التجربة)
+                    لا
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsProbation("yes")}
                     className={`rounded-xl border py-2 px-3 text-center text-xs font-bold transition ${
                       isProbation === "yes"
-                        ? "border-rose-500 bg-rose-50 text-rose-700 shadow-sm"
+                        ? "border-rose-500 bg-rose-50 text-rose-800 shadow-sm"
                         : "border-slate-200 bg-white text-ink-muted hover:border-slate-300"
                     }`}
                   >
-                    نعم (في فترة التجربة)
+                    نعم
                   </button>
                 </div>
+                {isProbation === "yes" && (
+                  <div className="mt-2 rounded-xl border border-rose-200 bg-rose-50 p-2.5 text-xs text-rose-900 leading-relaxed">
+                    ⚠️ هذه الحاسبة مخصصة أساساً لما بعد فترة التجربة، وقد تختلف قواعد الإشعار أثناء التجربة.
+                  </div>
+                )}
               </div>
-
-              {/* Probation Warning */}
-              {isProbation === "yes" && (
-                <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-900 leading-relaxed">
-                  ⚠️ <strong>تنبيه فترة التجربة:</strong> تخضع فترة التجربة لقواعد إشعار خاصة بحسب سبب الانتقال أو المغادرة (المادة 9 من قانون العمل: 14 يوماً من صاحب العمل، أو شهر إذا كان العامل سينتقل لعمل آخر بالدولة، أو 14 يوماً لمغادرة الدولة). هذه الحاسبة حالياً مخصصة أساساً لعقود العمل العادية لما بعد فترة التجربة (المادة 43).
-                </div>
-              )}
             </div>
           </div>
 
-          {/* STEP 2: Notice Initiation & Contract Notice */}
+          {/* STEP 2: Notice & Contract Details */}
           <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
             <div className="flex items-center gap-2 border-b border-brand-border pb-3 mb-4">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-black text-blue-700">
@@ -397,7 +434,7 @@ export default function UaeNoticePeriodCalculator() {
             </div>
 
             <div className="space-y-4">
-              {/* SECTION A: Who Initiated */}
+              {/* A. Who Initiated */}
               <div>
                 <label className="block text-xs font-bold text-ink mb-1.5">
                   من قام بإنهاء العلاقة / تقديم الاستقالة؟
@@ -413,7 +450,7 @@ export default function UaeNoticePeriodCalculator() {
                     }`}
                   >
                     <span>👤</span>
-                    <span>الموظف (استقالة)</span>
+                    <span>الموظف</span>
                   </button>
                   <button
                     type="button"
@@ -425,20 +462,15 @@ export default function UaeNoticePeriodCalculator() {
                     }`}
                   >
                     <span>🏢</span>
-                    <span>صاحب العمل (إنهاء العقد)</span>
+                    <span>صاحب العمل</span>
                   </button>
                 </div>
-                <p className="text-[11px] text-ink-muted mt-1">
-                  {initiator === "employee"
-                    ? "إذا لم يلتزم الموظف بفترة الإنذار كاملة، يكون التعويض مستحقاً لصالح صاحب العمل."
-                    : "إذا أنهى صاحب العمل العقد فوراً أو لم يلتزم بالإنذار، يكون التعويض مستحقاً لصالح الموظف."}
-                </p>
               </div>
 
-              {/* SECTION B: Notice Date */}
+              {/* B. Notice Date */}
               <div>
                 <label className="block text-xs font-bold text-ink mb-1.5">
-                  تاريخ تقديم إشعار الإنهاء / الاستقالة:
+                  تاريخ تقديم الإشعار / الاستقالة:
                 </label>
                 <input
                   type="date"
@@ -447,18 +479,18 @@ export default function UaeNoticePeriodCalculator() {
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-ink focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                 />
                 <span className="text-[11px] text-ink-muted mt-1 block">
-                  اليوم الأول لاحتساب فترة الإنذار: {formatDateAr(noticeStartDate)}
+                  تاريخ تقديم الإشعار: {formatDateAr(noticeStartDate)}
                 </span>
               </div>
 
-              {/* SECTION C: Contractual Notice Period */}
+              {/* C. Contractual Notice Period */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-bold text-ink">
-                    فترة الإنذار المتفق عليها في عقد العمل:
+                    فترة الإنذار المتفق عليها:
                   </label>
                   <span className="text-[11px] text-brand font-bold">
-                    المادة 43 (30 إلى 90 يوماً)
+                    الحد النظامي: 30 إلى 90 يوماً
                   </span>
                 </div>
 
@@ -488,7 +520,7 @@ export default function UaeNoticePeriodCalculator() {
                 {contractNoticePreset === "custom" && (
                   <div className="mt-2">
                     <label className="block text-xs text-ink-muted mb-1">
-                      أدخل عدد الأيام التعاقدية المخصصة:
+                      أدخل عدد الأيام المخصصة:
                     </label>
                     <div className="relative">
                       <input
@@ -506,7 +538,7 @@ export default function UaeNoticePeriodCalculator() {
                   </div>
                 )}
 
-                {/* Notice Validation Warnings */}
+                {/* Validation Warnings */}
                 {noticeValidation.msg && (
                   <div className="mt-2 rounded-xl border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900 leading-relaxed">
                     ⚠️ {noticeValidation.msg}
@@ -523,15 +555,15 @@ export default function UaeNoticePeriodCalculator() {
                 3
               </span>
               <h2 className="text-base font-extrabold text-ink">
-                الأيام المنفذة والأجر الأخير
+                الأيام المنفذة وآخر أجر
               </h2>
             </div>
 
             <div className="space-y-4">
-              {/* SECTION D: Method of entering served days */}
+              {/* D. Actual notice served */}
               <div>
                 <label className="block text-xs font-bold text-ink mb-1.5">
-                  طريقة احتساب الأيام المنفذة فعلياً:
+                  الأيام المنفذة فعلياً من فترة الإنذار:
                 </label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <button
@@ -543,7 +575,7 @@ export default function UaeNoticePeriodCalculator() {
                         : "border-slate-200 bg-white text-ink-muted hover:border-slate-300"
                     }`}
                   >
-                    1. إدخال عدد الأيام مباشرة
+                    عدد الأيام التي تم تنفيذها
                   </button>
                   <button
                     type="button"
@@ -554,7 +586,7 @@ export default function UaeNoticePeriodCalculator() {
                         : "border-slate-200 bg-white text-ink-muted hover:border-slate-300"
                     }`}
                   >
-                    2. باختيار آخر يوم عمل فعلي
+                    آخر يوم عمل فعلي
                   </button>
                 </div>
 
@@ -569,19 +601,14 @@ export default function UaeNoticePeriodCalculator() {
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-ink focus:border-brand focus:outline-none"
                       />
                       <span className="absolute left-3 top-2 text-xs text-ink-muted font-bold">
-                        يوماً تم تنفيذها
+                        يوماً
                       </span>
                     </div>
-                    {toNum(servedDaysInput) > requiredNoticeDays && (
-                      <p className="text-[11px] text-emerald-700 mt-1 font-bold">
-                        ✓ الأيام المنفذة تتجاوز أو تغطي كامل المدة التعاقدية.
-                      </p>
-                    )}
                   </div>
                 ) : (
                   <div>
                     <label className="block text-xs text-ink-muted mb-1">
-                      تاريخ آخر يوم عمل فعلي:
+                      حدد آخر يوم عمل فعلي:
                     </label>
                     <input
                       type="date"
@@ -595,25 +622,25 @@ export default function UaeNoticePeriodCalculator() {
                     />
                     {isActualDateInvalid ? (
                       <p className="text-[11px] text-rose-600 mt-1 font-bold">
-                        ❌ تاريخ آخر يوم عمل لا يمكن أن يكون قبل تاريخ تقديم الإشعار ({formatDateAr(noticeStartDate)}).
+                        ❌ لا يمكن أن يكون آخر يوم عمل قبل تاريخ تقديم الإشعار.
                       </p>
                     ) : (
                       <p className="text-[11px] text-ink-muted mt-1">
-                        الأيام المحسوبة من تاريخ الإشعار: <strong>{servedNoticeDays} يوماً</strong>.
+                        الأيام المنفذة المحسوبة تلقائياً: <strong>{servedNoticeDays} يوماً</strong>.
                       </p>
                     )}
                   </div>
                 )}
               </div>
 
-              {/* SECTION E: Last Wage */}
+              {/* E. Last Wage */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-bold text-ink flex items-center gap-1.5">
-                    <span>آخر أجر كان يتقاضاه العامل (الأجر الأخير):</span>
+                  <label className="text-xs font-bold text-ink">
+                    آخر أجر كان يتقاضاه العامل:
                   </label>
                   <span className="text-[11px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                    الراتب الشامل للبدلات
+                    الأجر المعتمد لبدل الإنذار
                   </span>
                 </div>
                 <div className="relative">
@@ -627,15 +654,15 @@ export default function UaeNoticePeriodCalculator() {
                     placeholder="مثال: 9000"
                   />
                   <span className="absolute left-3 top-2 text-xs text-ink-muted font-bold">
-                    درهم إماراتي (AED)
+                    AED
                   </span>
                 </div>
                 <p className="text-[11px] text-ink-muted mt-1 leading-relaxed">
-                  ℹ️ <strong>تنبيه قانوني:</strong> يُحسب بدل الإنذار بموجب المادة 43 على أساس <strong>الأجر الأخير</strong> (الأساسي + البدلات المنتظمة كالسكن والانتقال)، بخلاف مكافأة نهاية الخدمة التي تُحسب على الأساسي فقط.
+                  يُعتمد الأجر الأخير الشامل (الأساسي والبدلات) في احتساب بدل الإنذار بموجب المادة (43).
                 </p>
               </div>
 
-              {/* Special Waiver / Mutual Agreement */}
+              {/* Special Waiver */}
               <div className="pt-2 border-t border-slate-100">
                 <label className="flex items-start gap-2.5 cursor-pointer">
                   <input
@@ -645,36 +672,31 @@ export default function UaeNoticePeriodCalculator() {
                     className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand"
                   />
                   <span className="text-xs text-ink leading-relaxed">
-                    تم الاتفاق كتابياً بين الطرفين على الإعفاء المتبادل من مهلة الإنذار أو إنهائها بالتراضي مع حفظ الحقوق المقررة.
+                    تم الاتفاق كتابياً بين الطرفين على الإعفاء المتبادل من مهلة الإنذار مع حفظ الحقوق المقررة.
                   </span>
                 </label>
-                {isMutualWaiver && (
-                  <div className="mt-2 rounded-xl border border-sky-200 bg-sky-50 p-2.5 text-xs text-sky-900 leading-relaxed">
-                    📌 وفقاً للمادة (43) البند (2)، يجوز للطرفين الاتفاق على خفض مدة الإنذار أو الإعفاء منها بشرط الحفاظ على حقوق العامل المقررة في العقد والقانون. لا يُحسب تعويض بدل إنذار في حالة الإعفاء المتفق عليه.
-                  </div>
-                )}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right / Result Card Column (5 cols) */}
+        {/* Right Column: Result Card (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
-          {/* Main Results Card */}
+          {/* Main Result Card */}
           <div className="rounded-2xl border-2 border-brand/20 bg-gradient-to-b from-white to-brand-50/20 p-5 sm:p-6 shadow-lg">
             <div className="flex items-center justify-between border-b border-brand-border pb-3 mb-4">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-wider text-brand">
                   نتائج الحساب التقديري
                 </span>
-                <h3 className="text-lg font-black text-ink">ملخص فترة الإنذار</h3>
+                <h3 className="text-lg font-black text-ink">بطاقة النتائج</h3>
               </div>
               <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-extrabold text-brand border border-brand/20">
                 المادة 43
               </span>
             </div>
 
-            {/* Compensation Highlight Banner */}
+            {/* Compensation Highlight Banner with EXACT LABELS */}
             <div
               className={`rounded-2xl p-4 mb-4 text-center border ${
                 compensationDirection === "to_employee"
@@ -684,20 +706,14 @@ export default function UaeNoticePeriodCalculator() {
                   : "bg-slate-50 border-slate-300 text-slate-900"
               }`}
             >
-              <div className="text-xs font-bold mb-1 opacity-80">
-                {compensationDirection === "to_employee" && "بدل إنذار مستحق (+) لصالح:"}
-                {compensationDirection === "to_employer" && "بدل إنذار مستحق (-) لصالح:"}
-                {compensationDirection === "none" && "حالة التعويض عن الإنذار:"}
-              </div>
-
-              <div className="text-base font-black mb-1">
-                {compensationDirection === "to_employee" && "الموظف (من صاحب العمل)"}
-                {compensationDirection === "to_employer" && "صاحب العمل (من الموظف)"}
+              <div className="text-sm font-black mb-1">
+                {compensationDirection === "to_employee" && "بدل إنذار لصالح الموظف (+)"}
+                {compensationDirection === "to_employer" && "بدل إنذار لصالح صاحب العمل (−)"}
                 {compensationDirection === "none" && (
                   remainingNoticeDays === 0
-                    ? "تم استيفاء كامل فترة الإنذار"
+                    ? "تم تنفيذ فترة الإنذار كاملة"
                     : isMutualWaiver
-                    ? "إعفاء متبادل بالتراضي"
+                    ? "تم الإعفاء من الإنذار بالتراضي"
                     : "لا يوجد بدل مستحق"
                 )}
               </div>
@@ -713,66 +729,82 @@ export default function UaeNoticePeriodCalculator() {
                     مقابل {remainingNoticeDays} يوماً غير منفذة (الأجر اليومي {fmt(dailyWage)} AED)
                   </span>
                 ) : (
-                  <span>لا توجد أيام إنذار غير منفذة</span>
+                  <span>0 أيام متبقية — لا تعويض مالي مستحق</span>
                 )}
               </div>
             </div>
 
-            {/* Breakdown Table */}
+            {/* Section 9: Breakdown Table */}
             <div className="space-y-2.5 text-xs border-b border-brand-border pb-4 mb-4">
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
-                <span className="text-ink-muted">تاريخ تقديم الإشعار:</span>
+                <span className="text-ink-muted">تاريخ الإشعار:</span>
                 <span className="font-bold text-ink">{formatDateAr(noticeStartDate)}</span>
               </div>
 
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
-                <span className="text-ink-muted">فترة الإنذار المتفق عليها:</span>
-                <span className="font-bold text-ink">{requiredNoticeDays} يوماً</span>
+                <span className="text-ink-muted">فترة الإنذار:</span>
+                <span className="font-bold text-ink">{requiredNoticeDays} يوم</span>
               </div>
 
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
-                <span className="text-ink-muted">آخر يوم عمل متوقع (تعاقدياً):</span>
+                <span className="text-ink-muted">آخر يوم عمل المتوقع:</span>
                 <span className="font-black text-brand">{formatDateAr(expectedLastWorkingDate)}</span>
               </div>
 
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
-                <span className="text-ink-muted">الأيام المنفذة فعلياً:</span>
-                <span className="font-bold text-emerald-700">{servedNoticeDays} يوماً</span>
+                <span className="text-ink-muted">الأيام المنفذة:</span>
+                <span className="font-bold text-emerald-700">{servedNoticeDays} يوم</span>
               </div>
 
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
-                <span className="text-ink-muted">الأيام غير المنفذة (المتبقية):</span>
+                <span className="text-ink-muted">الأيام غير المنفذة:</span>
                 <span
                   className={`font-black ${
                     remainingNoticeDays > 0 ? "text-rose-600" : "text-emerald-600"
                   }`}
                 >
-                  {remainingNoticeDays} يوماً
+                  {remainingNoticeDays} يوم
                 </span>
               </div>
 
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
-                <span className="text-ink-muted">آخر أجر شهري (شامل):</span>
+                <span className="text-ink-muted">آخر أجر:</span>
                 <span className="font-bold text-ink">{fmt(wage)} AED</span>
               </div>
 
-              <div className="flex justify-between items-center py-1">
-                <span className="text-ink-muted">الأجر اليومي المحسوب (الأجر ÷ 30):</span>
+              <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                <span className="text-ink-muted">الأجر اليومي:</span>
                 <span className="font-bold text-ink">{fmt(dailyWage)} AED</span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                <span className="text-ink-muted">بدل الإنذار:</span>
+                <span className="font-black text-ink">{fmt(estimatedCompensation)} AED</span>
+              </div>
+
+              <div className="flex justify-between items-center py-1">
+                <span className="text-ink-muted">الطرف المستفيد:</span>
+                <span className="font-bold text-brand">
+                  {compensationDirection === "to_employee"
+                    ? "الموظف"
+                    : compensationDirection === "to_employer"
+                    ? "صاحب العمل"
+                    : "لا يوجد (تم استيفاء المدة)"}
+                </span>
               </div>
             </div>
 
             {/* Informational: Employer Termination Job Search Day */}
             {initiator === "employer" && (
               <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3 mb-4 text-xs text-blue-900 leading-relaxed">
-                ℹ️ <strong>يوم البحث عن عمل (المادة 43 - البند 5):</strong>
+                ℹ️ <strong>ملاحظة (المادة 43 - البند 5):</strong>
                 <p className="mt-1 text-[11px]">
-                  في حال قيام صاحب العمل بإنهاء العقد، يحق للموظف التغيب يوماً واحداً غير مدفوع الأجر أسبوعياً أو (8 ساعات متفرقة) للبحث عن عمل آخر، شريطة إخطار صاحب العمل قبل الغياب بثلاثة أيام على الأقل.
+                  في حال قيام صاحب العمل بإنهاء العقد، يحق للعامل التغيب يوماً واحداً غير مدفوع الأجر أسبوعياً للبحث عن عمل، شريطة إخطار صاحب العمل مسبقاً بثلاثة أيام على الأقل.
                 </p>
               </div>
             )}
 
-            {/* Printable summary action */}
+            {/* Section 12: Printable summary button */}
             <button
               type="button"
               onClick={() => setShowPrintModal(true)}
@@ -783,13 +815,13 @@ export default function UaeNoticePeriodCalculator() {
             </button>
           </div>
 
-          {/* Visual Timeline Card */}
+          {/* Section 10: Visual Timeline */}
           <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
             <h4 className="text-xs font-black text-ink uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <span>📊</span> المخطط الزمني لفترة الإنذار
             </h4>
 
-            {/* Progress bar */}
+            {/* Progress Bar */}
             <div className="mb-3">
               <div className="flex justify-between text-[11px] font-bold text-ink-muted mb-1">
                 <span>تم تنفيذ {servedNoticeDays} يوماً ({timelineProgress}%)</span>
@@ -802,7 +834,7 @@ export default function UaeNoticePeriodCalculator() {
                 />
                 {remainingNoticeDays > 0 && (
                   <div
-                    className="h-full bg-rose-400/80 transition-all duration-300"
+                    className="h-full bg-rose-400 transition-all duration-300"
                     style={{ width: `${100 - timelineProgress}%` }}
                   />
                 )}
@@ -811,40 +843,37 @@ export default function UaeNoticePeriodCalculator() {
 
             {/* Step Track */}
             <div className="relative pr-4 border-r-2 border-slate-200 space-y-4 text-xs">
-              {/* Step 1: Notice Given */}
               <div className="relative">
                 <span className="absolute -right-[21px] top-1 h-3 w-3 rounded-full bg-blue-600 ring-4 ring-white" />
                 <div className="font-bold text-ink">تاريخ الإشعار: {formatDateAr(noticeStartDate)}</div>
-                <div className="text-[11px] text-ink-muted">بداية سريان مهلة الإنذار المحددة بـ {requiredNoticeDays} يوماً.</div>
+                <div className="text-[11px] text-ink-muted">بداية سريان فترة الإنذار ({requiredNoticeDays} يوماً).</div>
               </div>
 
-              {/* Step 2: Actual last day */}
               <div className="relative">
                 <span
                   className={`absolute -right-[21px] top-1 h-3 w-3 rounded-full ring-4 ring-white ${
-                    remainingNoticeDays > 0 ? "bg-amber-500" : "bg-emerald-600"
+                    remainingNoticeDays > 0 ? "bg-rose-500" : "bg-emerald-600"
                   }`}
                 />
                 <div className="font-bold text-ink">
-                  الأيام المنفذة: {servedNoticeDays} يوماً
+                  فترة الإنذار المنفذة: {servedNoticeDays} يوماً
                 </div>
                 <div className="text-[11px] text-ink-muted">
                   {remainingNoticeDays > 0
-                    ? `انقطعت فترة الإنذار مبكراً مع بقاء ${remainingNoticeDays} يوماً غير منفذة.`
+                    ? `توقفت خدمة الإنذار مع بقاء ${remainingNoticeDays} يوماً غير منفذة.`
                     : "تمت خدمة كامل فترة الإنذار المقررة في العقد بنجاح."}
                 </div>
               </div>
 
-              {/* Step 3: Expected end date */}
               <div className="relative">
                 <span className="absolute -right-[21px] top-1 h-3 w-3 rounded-full bg-slate-400 ring-4 ring-white" />
-                <div className="font-bold text-ink">آخر يوم عمل تعاقدي: {formatDateAr(expectedLastWorkingDate)}</div>
-                <div className="text-[11px] text-ink-muted">الموعد النظامي لانقضاء رابطة العمل بشكل كامل.</div>
+                <div className="font-bold text-ink">آخر يوم عمل المتوقع: {formatDateAr(expectedLastWorkingDate)}</div>
+                <div className="text-[11px] text-ink-muted">الموعد التعاقدي لانتهاء سريان عقد العمل.</div>
               </div>
             </div>
           </div>
 
-          {/* Collapsible: How Calculation Works */}
+          {/* Section 11: How calculation works (Collapsible) */}
           <div className="rounded-2xl border border-brand-border bg-white p-4 shadow-card">
             <button
               type="button"
@@ -852,45 +881,44 @@ export default function UaeNoticePeriodCalculator() {
               className="w-full flex items-center justify-between text-xs font-bold text-ink hover:text-brand transition"
             >
               <span className="flex items-center gap-1.5">
-                <span>📐</span> كيف تم الحساب؟ (المعادلة والأجر اليومي)
+                <span>📐</span> كيف تم الحساب؟
               </span>
               <span className="text-base">{showFormulaDetails ? "▲" : "▼"}</span>
             </button>
 
             {showFormulaDetails && (
-              <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-ink-secondary space-y-2 leading-relaxed">
-                <p>
-                  <strong>1. احتساب الأجر اليومي:</strong>
-                  <br />
-                  الأجر اليومي = آخر أجر شهري ÷ 30
-                  <br />
-                  <code className="text-[11px] bg-slate-100 px-1 py-0.5 rounded text-ink">
+              <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-ink-secondary space-y-2.5 leading-relaxed">
+                <div>
+                  <div className="font-bold text-ink">1. احتساب الأجر اليومي:</div>
+                  <div className="bg-slate-100 p-2 rounded text-ink font-mono text-[11px] mt-0.5">
+                    آخر أجر ÷ 30 = الأجر اليومي
+                    <br />
                     {fmt(wage)} ÷ 30 = {fmt(dailyWage)} AED
-                  </code>
-                </p>
+                  </div>
+                </div>
 
-                <p>
-                  <strong>2. احتساب بدل مهلة الإنذار:</strong>
-                  <br />
-                  بدل الإنذار = الأيام غير المنفذة × الأجر اليومي
-                  <br />
-                  <code className="text-[11px] bg-slate-100 px-1 py-0.5 rounded text-ink">
-                    {remainingNoticeDays} × {fmt(dailyWage)} = {fmt(estimatedCompensation)} AED
-                  </code>
-                </p>
+                <div>
+                  <div className="font-bold text-ink">2. احتساب بدل الإنذار:</div>
+                  <div className="bg-slate-100 p-2 rounded text-ink font-mono text-[11px] mt-0.5">
+                    الأجر اليومي × الأيام غير المنفذة = بدل الإنذار
+                    <br />
+                    {fmt(dailyWage)} × {remainingNoticeDays} = {fmt(estimatedCompensation)} AED
+                  </div>
+                </div>
 
-                <p>
-                  <strong>3. توجيه المستفيد من التعويض:</strong>
-                  <br />
-                  وفقاً لنص المادة (43) البند (3)، يلتزم الطرف المخل بدفع بدل الإنذار إلى الطرف الآخر؛ فإذا أنهى صاحب العمل العقد دون إنذار استحق العامل التعويض، وإذا غادر الموظف قبل انتهاء الإنذار التزم بدفع البدل لصاحب العمل.
-                </p>
+                <div>
+                  <div className="font-bold text-ink">3. من يدفع التعويض؟</div>
+                  <p className="mt-0.5 text-[11px]">
+                    يلتزم الطرف الذي أخل بمهلة الإنذار بتعويض الطرف الآخر؛ فإذا أنهى صاحب العمل العقد استحق الموظف البدل، وإذا غادر الموظف مبكراً التزم بسداد البدل لصاحب العمل.
+                  </p>
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Printable Modal ── */}
+      {/* ── Section 12: Printable Summary Modal ── */}
       {showPrintModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
@@ -905,7 +933,7 @@ export default function UaeNoticePeriodCalculator() {
                   onClick={() => window.print()}
                   className="rounded-lg bg-brand hover:bg-brand-dark px-3 py-1.5 text-xs font-bold text-white transition"
                 >
-                  طباعة فورية
+                  طباعة
                 </button>
                 <button
                   type="button"
@@ -925,17 +953,17 @@ export default function UaeNoticePeriodCalculator() {
                   type="text"
                   value={employeeName}
                   onChange={(e) => setEmployeeName(e.target.value)}
-                  placeholder="مثال: أحمد محمد"
+                  placeholder="مثال: أحمد سالم"
                   className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs text-ink focus:border-brand focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-ink mb-1">جهة العمل / الشركة (اختياري):</label>
+                <label className="block text-[11px] font-bold text-ink mb-1">صاحب العمل / الشركة (اختياري):</label>
                 <input
                   type="text"
                   value={employerName}
                   onChange={(e) => setEmployerName(e.target.value)}
-                  placeholder="مثال: شركة الخليج للتجارة"
+                  placeholder="مثال: شركة الاتحاد للتجارة"
                   className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs text-ink focus:border-brand focus:outline-none"
                 />
               </div>
@@ -945,9 +973,10 @@ export default function UaeNoticePeriodCalculator() {
             <div className="print-content space-y-4 text-ink border border-slate-200 rounded-xl p-6 bg-slate-50/50">
               <div className="text-center border-b border-slate-300 pb-3">
                 <div className="text-xs text-ink-muted font-bold">دولة الإمارات العربية المتحدة</div>
+                {/* Heading EXACT per Section 12 */}
                 <h2 className="text-xl font-black mt-1">ملخص تقديري لفترة الإنذار</h2>
                 <div className="text-xs text-ink-muted mt-0.5">
-                  استناداً إلى أحكام المادة (43) من المرسوم بقانون اتحادي رقم (33) لسنة 2021
+                  وفق أحكام المادة (43) من المرسوم بقانون اتحادي رقم (33) لسنة 2021
                 </div>
               </div>
 
@@ -959,7 +988,7 @@ export default function UaeNoticePeriodCalculator() {
                     <span className="font-bold">{employeeName || "—"}</span>
                   </div>
                   <div>
-                    <span className="text-ink-muted">صاحب العمل: </span>
+                    <span className="text-ink-muted">صاحب العمل / الشركة: </span>
                     <span className="font-bold">{employerName || "—"}</span>
                   </div>
                 </div>
@@ -969,62 +998,75 @@ export default function UaeNoticePeriodCalculator() {
               <div className="grid grid-cols-2 gap-3 text-xs bg-white p-4 rounded-lg border border-slate-200">
                 <div>
                   <span className="text-ink-muted block mb-0.5">الطرف المبادر بالإنهاء:</span>
-                  <span className="font-bold">{initiator === "employee" ? "الموظف (استقالة)" : "صاحب العمل (إنهاء)"}</span>
+                  <span className="font-bold">{initiator === "employee" ? "الموظف" : "صاحب العمل"}</span>
                 </div>
                 <div>
-                  <span className="text-ink-muted block mb-0.5">تاريخ تقديم الإشعار:</span>
+                  <span className="text-ink-muted block mb-0.5">تاريخ الإشعار:</span>
                   <span className="font-bold">{formatDateAr(noticeStartDate)}</span>
                 </div>
                 <div>
-                  <span className="text-ink-muted block mb-0.5">فترة الإنذار المتفق عليها:</span>
-                  <span className="font-bold">{requiredNoticeDays} يوماً</span>
+                  <span className="text-ink-muted block mb-0.5">فترة الإنذار التعاقدية:</span>
+                  <span className="font-bold">{requiredNoticeDays} يوم</span>
                 </div>
                 <div>
-                  <span className="text-ink-muted block mb-0.5">آخر يوم عمل متوقع (تعاقدياً):</span>
+                  <span className="text-ink-muted block mb-0.5">آخر يوم عمل المتوقع:</span>
                   <span className="font-bold">{formatDateAr(expectedLastWorkingDate)}</span>
                 </div>
                 <div>
-                  <span className="text-ink-muted block mb-0.5">الأيام المنفذة فعلياً:</span>
-                  <span className="font-bold">{servedNoticeDays} يوماً</span>
+                  <span className="text-ink-muted block mb-0.5">آخر يوم عمل فعلي:</span>
+                  <span className="font-bold">
+                    {servedInputMode === "date" ? formatDateAr(actualLastWorkingDate) : `بعد ${servedNoticeDays} يوم`}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-ink-muted block mb-0.5">الأيام غير المنفذة (المتبقية):</span>
-                  <span className="font-bold">{remainingNoticeDays} يوماً</span>
+                  <span className="text-ink-muted block mb-0.5">الأيام المنفذة:</span>
+                  <span className="font-bold">{servedNoticeDays} يوم</span>
                 </div>
                 <div>
-                  <span className="text-ink-muted block mb-0.5">الأجر الأخير المعتمد:</span>
+                  <span className="text-ink-muted block mb-0.5">الأيام المتبقية (غير المنفذة):</span>
+                  <span className="font-bold">{remainingNoticeDays} يوم</span>
+                </div>
+                <div>
+                  <span className="text-ink-muted block mb-0.5">آخر أجر:</span>
                   <span className="font-bold">{fmt(wage)} AED</span>
                 </div>
                 <div>
-                  <span className="text-ink-muted block mb-0.5">الأجر اليومي (الأجر ÷ 30):</span>
+                  <span className="text-ink-muted block mb-0.5">الأجر اليومي:</span>
                   <span className="font-bold">{fmt(dailyWage)} AED</span>
+                </div>
+                <div>
+                  <span className="text-ink-muted block mb-0.5">الطرف المستفيد:</span>
+                  <span className="font-bold">
+                    {compensationDirection === "to_employee"
+                      ? "الموظف"
+                      : compensationDirection === "to_employer"
+                      ? "صاحب العمل"
+                      : "لا يوجد تعويض مستحق"}
+                  </span>
                 </div>
               </div>
 
               {/* Compensation Summary in Print */}
               <div className="bg-white p-4 rounded-lg border-2 border-brand/30 text-center">
-                <div className="text-xs text-ink-muted font-bold">بدل الإنذار التقديري المستحق:</div>
+                <div className="text-xs text-ink-muted font-bold">بدل الإنذار التقديري:</div>
                 <div className="text-2xl font-black text-brand my-1">
                   {fmt(estimatedCompensation)} AED
                 </div>
                 <div className="text-xs font-bold text-ink">
-                  الطرف المستفيد من التعويض:{" "}
-                  {compensationDirection === "to_employee"
-                    ? "الموظف (مستحق من صاحب العمل)"
-                    : compensationDirection === "to_employer"
-                    ? "صاحب العمل (مستحق من الموظف)"
-                    : "لا يوجد تعويض مالي (تم استيفاء المدة أو تم الإعفاء بالتراضي)"}
+                  {compensationDirection === "to_employee" && "بدل إنذار لصالح الموظف (+)"}
+                  {compensationDirection === "to_employer" && "بدل إنذار لصالح صاحب العمل (−)"}
+                  {compensationDirection === "none" && "تم تنفيذ فترة الإنذار كاملة"}
                 </div>
               </div>
 
-              {/* Print Footer / Legal Disclaimer */}
+              {/* Section 13: Exact Disclaimer */}
               <div className="text-[10px] text-ink-muted space-y-1 pt-2 border-t border-slate-300">
                 <p>
-                  <strong>إخلاء مسؤولية قانوني:</strong> هذه الوثيقة تقديرية واسترشادية أُنشئت إلكترونياً بناءً على البيانات المُدخلة من المستخدم، ولا تُعد قراراً صادراً عن وزارة الموارد البشرية والتوطين (MOHRE) أو تسوية قانونية نهائية أو وثيقة قضائية ملزمة.
+                  <strong>إخلاء مسؤولية:</strong> هذه الحاسبة تقديرية وتعتمد على البيانات التي يدخلها المستخدم. ولا تمثل قراراً رسمياً من وزارة الموارد البشرية والتوطين أو حكماً قانونياً نهائياً. قد تختلف النتيجة بحسب عقد العمل، حالة فترة التجربة، جهة الاختصاص أو ظروف إنهاء العلاقة العمالية.
                 </p>
                 <div className="flex justify-between pt-1">
-                  <span>تاريخ إصدار الملخص: {new Date().toLocaleDateString("ar-AE")}</span>
-                  <span>المصدر: حاسبة فترة الإنذار في الإمارات — موقع الأدوات العربية</span>
+                  <span>تاريخ الحساب: {new Date().toLocaleDateString("ar-AE")}</span>
+                  <span>المصدر: حاسبة فترة الإنذار في الإمارات — الأدوات العربية</span>
                 </div>
               </div>
             </div>
@@ -1032,15 +1074,15 @@ export default function UaeNoticePeriodCalculator() {
         </div>
       )}
 
-      {/* ── Official Source Citation ── */}
+      {/* ── Section 13: Page Disclaimer ── */}
       <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-ink-secondary flex items-start gap-3">
-        <span className="text-xl">🏛️</span>
+        <span className="text-xl">⚖️</span>
         <div>
-          <div className="font-bold text-ink mb-0.5">
-            المصدر القانوني المعتمد:
+          <div className="font-bold text-ink mb-1">
+            إخلاء مسؤولية قانوني:
           </div>
           <p className="leading-relaxed">
-            وزارة الموارد البشرية والتوطين (MOHRE) — المرسوم بقانون اتحادي رقم (33) لسنة 2021 بشأن تنظيم علاقات العمل ولائحته التنفيذية — <strong>المادة (43) إنهاء عقد العمل وفترة الإنذار</strong>.
+            هذه الحاسبة تقديرية وتعتمد على البيانات التي يدخلها المستخدم. ولا تمثل قراراً رسمياً من وزارة الموارد البشرية والتوطين أو حكماً قانونياً نهائياً. قد تختلف النتيجة بحسب عقد العمل، حالة فترة التجربة، جهة الاختصاص أو ظروف إنهاء العلاقة العمالية.
           </p>
         </div>
       </div>

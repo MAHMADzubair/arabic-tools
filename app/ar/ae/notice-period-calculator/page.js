@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata = {
   title: "حاسبة فترة الإنذار في الإمارات 2026 | آخر يوم وبدل الإنذار",
   description:
-    "احسب فترة الإنذار في الإمارات، آخر يوم عمل، الأيام غير المنفذة وبدل الإنذار التقديري للموظف أو صاحب العمل وفق بيانات عقد العمل والمادة 43 من قانون العمل رقم 33 لسنة 2021.",
+    "احسب فترة الإنذار في الإمارات، آخر يوم عمل، الأيام غير المنفذة وبدل الإنذار التقديري للموظف أو صاحب العمل وفق بيانات عقد العمل.",
   keywords: [
     "حاسبة فترة الإنذار في الإمارات",
     "فترة الإنذار قانون العمل الإماراتي",
@@ -24,7 +24,7 @@ export const metadata = {
   openGraph: {
     title: "حاسبة فترة الإنذار في الإمارات 2026 | آخر يوم وبدل الإنذار",
     description:
-      "احسب فترة الإنذار في الإمارات، آخر يوم عمل، الأيام غير المنفذة وبدل الإنذار التقديري للموظف أو صاحب العمل وفق بيانات عقد العمل والمادة 43.",
+      "احسب فترة الإنذار في الإمارات، آخر يوم عمل، الأيام غير المنفذة وبدل الإنذار التقديري للموظف أو صاحب العمل وفق بيانات عقد العمل.",
     url: "https://arabic-tools-xi.vercel.app/ar/ae/notice-period-calculator",
     type: "website",
     locale: "ar_AE",
@@ -91,7 +91,7 @@ const softwareAppJsonLd = {
     priceCurrency: "AED",
   },
   description:
-    "أداة مجانية لحساب فترة الإنذار وتاريخ آخر يوم عمل وبدل الإنذار التقديري للأيام غير المنفذة بموجب المادة 43 من قانون العمل الإماراتي.",
+    "احسب فترة الإنذار في الإمارات، آخر يوم عمل، الأيام غير المنفذة وبدل الإنذار التقديري للموظف أو صاحب العمل وفق بيانات عقد العمل.",
 };
 
 const breadcrumbJsonLd = {
@@ -151,10 +151,10 @@ export default function UaeNoticePeriodCalculatorPage() {
               <span className="text-3xl">📋</span>
               <div>
                 <h3 className="text-sm font-extrabold text-emerald-950">
-                  هل تريد حساب جميع مستحقات نهاية الخدمة والتصفية الشاملة؟
+                  احسب جميع مستحقات نهاية العمل
                 </h3>
                 <p className="text-xs text-emerald-800 mt-0.5">
-                  احسب مكافأة نهاية الخدمة (م 51)، رصيد الإجازات، آخر راتب، وبدل الإنذار مجمعة في نموذج مخالصة موحد.
+                  احسب تصفية كاملة: مكافأة نهاية الخدمة، آخر راتب، بدل رصيد الإجازات، وبدل الإنذار في وثيقة موحدة.
                 </p>
               </div>
             </div>
@@ -162,12 +162,12 @@ export default function UaeNoticePeriodCalculatorPage() {
               href="/ar/ae/final-settlement-calculator"
               className="shrink-0 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black px-4 py-2.5 transition shadow"
             >
-              الانتقال إلى حاسبة المخالصة النهائية ←
+              الانتقال إلى UAE Final Settlement Calculator ←
             </Link>
           </div>
         </section>
 
-        {/* ── PART 2: Comprehensive Explanation (300-500 words) ────────────────── */}
+        {/* ── PART 2: Comprehensive Explanation (Structured SEO Content) ────────── */}
         <section className="mx-auto max-w-4xl px-4 py-6 no-print print:hidden">
           <article className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
             <div className="border-b border-brand-border pb-4">
@@ -179,102 +179,146 @@ export default function UaeNoticePeriodCalculatorPage() {
               </p>
             </div>
 
-            {/* Section 1: What is the tool & Why it matters */}
+            {/* 1. ما هي فترة الإنذار في الإمارات؟ */}
             <div>
-              <h3 className="text-base font-bold text-ink mb-2">ما هي الأداة وما أهميتها؟</h3>
+              <h3 className="text-base font-bold text-ink mb-1.5">ما هي فترة الإنذار في الإمارات؟</h3>
               <p className="text-sm text-ink-secondary leading-relaxed">
-                تُعد <strong>حاسبة فترة الإنذار في الإمارات</strong> أداة متخصصة ومصممة بدقة لمساعدة موظفي وأرباب العمل في القطاع الخاص على التحديد الدقيق لتواريخ سريان مهلة الإنذار، وتاريخ آخر يوم عمل تعاقدي، وحساب التعويض المالي المقابل للأيام غير المنفذة (بدل الإنذار). وتكتسب هذه الأداة أهمية كبرى عند انتهاء رابطة العمل، نظراً لأن عدم مراعاة مدد الإخطار القانونية يترتب عليه التزام مالي فوري يلزم الطرف المخل بتعويض الطرف المتضرر عن كامل المدة أو الجزء المتبقي منها.
+                فترة الإنذار (Notice Period) هي المهلة الزمنية القانونية والتعاقدية الملزمة التي يجب على أي من طرفي عقد العمل (الموظف أو صاحب العمل) إخطار الطرف الآخر بها خطياً قبل إنهاء علاقة العمل لسبب مشروع. وتظل رابطة العمل سارية المفعول طوال فترة الإنذار، مع التزام العامل بأداء مهامه الوظيفية والتزام صاحب العمل بدفع الأجر الكامل.
               </p>
             </div>
 
-            {/* Section 2: Step by Step Guide */}
+            {/* 2. كم مدة الإنذار القانونية؟ */}
             <div>
-              <h3 className="text-base font-bold text-ink mb-2">كيفية الاستخدام خطوة بخطوة</h3>
-              <ol className="list-decimal list-inside text-sm text-ink-secondary space-y-1.5 leading-relaxed">
-                <li>
-                  <strong>تأكيد النطاق ونظام العمل:</strong> تحقق من خضوع المنشأة لقانون العمل الاتحادي الصادر عن وزارة الموارد البشرية والتوطين (MOHRE)، مع تحديد ما إذا كان الموظف قد اجتاز فترة التجربة بنجاح.
-                </li>
-                <li>
-                  <strong>تحديد الطرف المبادر:</strong> اختر ما إذا كانت الاستقالة مقدمة من الموظف أو أن قرار إنهاء العقد صادر من صاحب العمل، لتحديد اتجاه التعويض تلقائياً.
-                </li>
-                <li>
-                  <strong>إدخال تاريخ الإشعار ومدة الإنذار:</strong> حدد تاريخ تسليم الإخطار الخطي، والمدة التعاقدية المتفق عليها (30، 45، 60، أو 90 يوماً).
-                </li>
-                <li>
-                  <strong>تسجيل الأيام المنفذة والأجر الأخير:</strong> أدخل عدد الأيام التي قضاها الموظف في العمل فعلياً أو حدد تاريخ المغادرة، واكتب آخر أجر إجمالي شامل للبدلات.
-                </li>
-                <li>
-                  <strong>استعراض النتيجة والطباعة:</strong> احصل فوراً على تاريخ آخر يوم عمل، والأيام المتبقية، وقيمة بدل الإنذار التقديري، مع إمكانية استخراج ملخص جاهز للطباعة.
-                </li>
+              <h3 className="text-base font-bold text-ink mb-1.5">كم مدة الإنذار القانونية؟</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                حددت المادة (43) من قانون العمل الإماراتي رقم 33 لسنة 2021 نطاقاً واضحاً لمهلة الإنذار في عقود العمل محددة المدة:
+              </p>
+              <ul className="list-disc list-inside text-sm text-ink-secondary mt-1.5 space-y-1">
+                <li><strong>الحد الأدنى:</strong> 30 يوماً تقويمياً.</li>
+                <li><strong>الحد الأقصى:</strong> 90 يوماً تقويمياً.</li>
+              </ul>
+              <p className="text-xs text-ink-muted mt-1.5">
+                أي اتفاق على مدة تقل عن 30 يوماً أو تزيد عن 90 يوماً في العقد يعتبر مخالفاً للنظام العام ما لم يكن متفقاً عليه لاحقاً لمصلحة الطرفين كتابةً.
+              </p>
+            </div>
+
+            {/* 3. كيف يُحسب آخر يوم عمل؟ */}
+            <div>
+              <h3 className="text-base font-bold text-ink mb-1.5">كيف يُحسب آخر يوم عمل؟</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                يُحسب آخر يوم عمل المتوقع بإضافة عدد أيام مهلة الإنذار المتفق عليها إلى تاريخ تسليم الإخطار الخطي:
+                <br />
+                <code className="bg-slate-100 px-2 py-0.5 rounded text-ink font-mono text-xs mt-1 inline-block">
+                  تاريخ تقديم الإشعار + مدة الإنذار التعاقدية = آخر يوم عمل المتوقع
+                </code>
+              </p>
+            </div>
+
+            {/* 4. كيف يُحسب بدل الإنذار؟ */}
+            <div>
+              <h3 className="text-base font-bold text-ink mb-1.5">كيف يُحسب بدل الإنذار؟</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                يُحسب بدل الإنذار وفق المعادلة المقررة نظاماً:
+              </p>
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-mono text-ink space-y-1 my-2">
+                <div>الأجر اليومي = آخر أجر شهري شامل ÷ 30</div>
+                <div>بدل الإنذار = الأيام غير المنفذة × الأجر اليومي</div>
+              </div>
+              <p className="text-xs text-ink-muted">
+                ملاحظة جوهرية: يُعتمد <strong>آخر أجر</strong> (الأجر الإجمالي الشامل للأساسي والبدلات المستمرة كالسكن والانتقال) في احتساب بدل الإنذار، بخلاف مكافأة نهاية الخدمة التي تعتمد على الأساسي فقط.
+              </p>
+            </div>
+
+            {/* 5. من يدفع بدل الإنذار؟ */}
+            <div>
+              <h3 className="text-base font-bold text-ink mb-1.5">من يدفع بدل الإنذار؟</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                يدفع التعويض الطرف الذي أخل بمهلة الإنذار المقررة في العقد:
+              </p>
+              <ul className="list-disc list-inside text-sm text-ink-secondary mt-1 space-y-1">
+                <li><strong>إذا أنهى صاحب العمل العقد</strong> فوراً أو طلب من الموظف المغادرة قبل انتهاء المدة: يدفع صاحب العمل البدل للموظف <code>[+]</code>.</li>
+                <li><strong>إذا استقال الموظف</strong> وغادر العمل دون إتمام فترة الإنذار: يلتزم الموظف بدفع البدل لصاحب العمل <code>[−]</code> ويُخصم عادة من مستحقات التصفية.</li>
+              </ul>
+            </div>
+
+            {/* 6. ماذا يحدث عند تنفيذ جزء فقط من الإنذار؟ */}
+            <div>
+              <h3 className="text-base font-bold text-ink mb-1.5">ماذا يحدث عند تنفيذ جزء فقط من الإنذار؟</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                وفقاً للمادة 43، يكون التعويض مساوياً لأجر العامل عن الجزء المتبقي غير المنفذ فقط، ولا يُلزم الطرف المخل بالتعويض عن كامل مدة الإنذار إذا كان قد نُفذ جزء منها بالفعل.
+              </p>
+            </div>
+
+            {/* 7. هل تختلف القواعد أثناء فترة التجربة؟ */}
+            <div>
+              <h3 className="text-base font-bold text-ink mb-1.5">هل تختلف القواعد أثناء فترة التجربة؟</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                نعم. تخضع فترة التجربة لأحكام المادة (9) من قانون العمل:
+              </p>
+              <ul className="list-disc list-inside text-xs text-ink-secondary mt-1 space-y-1">
+                <li>إذا أنهى صاحب العمل العقد أثناء التجربة: إخطار خطي لا يقل عن 14 يوماً.</li>
+                <li>إذا رغب العامل بترك العمل للالتحاق بعمل آخر بالدولة: إخطار قبل شهر مع التزام صاحب العمل الجديد بالتعويض.</li>
+                <li>إذا رغب العامل بمغادرة الدولة: إخطار قبل 14 يوماً على الأقل.</li>
+              </ul>
+            </div>
+
+            {/* 8. هل تختلف القواعد في DIFC وADGM؟ */}
+            <div>
+              <h3 className="text-base font-bold text-ink mb-1.5">هل تختلف القواعد في DIFC وADGM؟</h3>
+              <p className="text-sm text-ink-secondary leading-relaxed">
+                نعم. تتمتع كل من مركز دبي المالي العالمي (DIFC) وسوق أبوظبي العالمي (ADGM) بأنظمة وقوانين عمل خاصة مستقلة تماماً عن وزارة الموارد البشرية والتوطين (MOHRE)، وتخضع لمدد إشعار تعاقدية وقانونية مختلفة.
+              </p>
+            </div>
+
+            {/* 9. كيفية استخدام الحاسبة */}
+            <div>
+              <h3 className="text-base font-bold text-ink mb-1.5">كيفية استخدام الحاسبة</h3>
+              <ol className="list-decimal list-inside text-sm text-ink-secondary space-y-1">
+                <li>اختر الطرف المبادر بإنهاء العلاقة (الموظف أم صاحب العمل).</li>
+                <li>حدد تاريخ تقديم الإشعار الرسمي عبر منتقي التواريخ.</li>
+                <li>اختر فترة الإنذار التعاقدية (30، 45، 60، 90، أو مدة مخصصة).</li>
+                <li>أدخل الأيام المنفذة إما بالعدد المباشر أو بتحديد آخر يوم عمل فعلي.</li>
+                <li>أدخل آخر أجر شهري إجمالي للاطلاع فوراً على النتيجة والمخطط الزمني.</li>
               </ol>
             </div>
 
-            {/* Section 3: Legal Basis & Rules */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-ink-secondary">
-              <div>
-                <h4 className="font-extrabold text-ink text-sm mb-1.5">⚖️ المادة (43) - إنهاء عقد العمل</h4>
-                <p className="leading-relaxed">
-                  ألزمت المادة طرفي العقد بوجوب توجيه إخطار خطي لا تقل مدته عن 30 يوماً ولا تزيد عن 90 يوماً. ويبقى عقد العمل سارياً طوال مهلة الإنذار ويستحق العامل أجره كاملاً عن هذه المدة وفقاً لآخر أجر كان يتقاضاه.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-extrabold text-ink text-sm mb-1.5">💵 احتساب بدل الإنذار والأجر الأخير</h4>
-                <p className="leading-relaxed">
-                  يُحسب بدل الإنذار وفقاً لـ <strong>آخر أجر</strong> (الأجر الإجمالي الشامل للأساسي والبدلات كالسكن والانتقال) مقسوماً على 30 يوماً. ولا يجوز الخلط بينه وبين مكافأة نهاية الخدمة التي تُحسب على الأساسي فقط.
-                </p>
-              </div>
-            </div>
-
-            {/* Section 4: Worked Real-World Examples */}
+            {/* 10. مثال عملي */}
             <div>
-              <h3 className="text-base font-bold text-ink mb-3">أمثلة عملية بالأرقام (3 حالات واقعية)</h3>
+              <h3 className="text-base font-bold text-ink mb-2">أمثلة عملية (Worked Examples)</h3>
               <div className="space-y-3">
-                <div className="rounded-xl border border-slate-200 p-4 bg-white">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-black text-ink">الحالة 1: استقالة موظف مع التزام كامل بالإنذار</span>
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">لا تعويض (0 AED)</span>
-                  </div>
-                  <p className="text-xs text-ink-secondary leading-relaxed">
-                    موظف راتبه الإجمالي 9,000 درهم، مدة إنذاره التعاقدية 60 يوماً، داوم طوال الـ 60 يوماً كاملة حتى تاريخ نهاية الإنذار. النتيجة: استحقاقه لراتبه الشهري كاملاً خلال المدة، ولا يترتب أي بدل إنذار على أي طرف.
+                <div className="rounded-xl border border-slate-200 p-3.5 bg-slate-50 text-xs">
+                  <div className="font-bold text-ink mb-1">المثال 1: استقالة موظف مع التزام كامل بالإنذار</div>
+                  <p className="text-ink-secondary">
+                    آخر أجر: 9,000 درهم | مدة الإنذار: 60 يوماً | الأيام المنفذة: 60 يوماً | <strong>النتيجة: 0 درهم (لا تعويض مستحق)</strong>.
                   </p>
                 </div>
-
-                <div className="rounded-xl border border-slate-200 p-4 bg-white">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-black text-ink">الحالة 2: استقالة موظف مع مغادرة مبكرة (تنفيذ جزئي)</span>
-                    <span className="text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded">6,000 AED لصالح الشركة</span>
-                  </div>
-                  <p className="text-xs text-ink-secondary leading-relaxed">
-                    موظف راتبه 9,000 درهم، إنذاره 60 يوماً، خدم منها 40 يوماً فقط وانقطع عن العمل. الأجر اليومي = 9,000 ÷ 30 = 300 درهم. الأيام غير المنفذة = 20 يوماً. التعويض المستحق = 20 × 300 = 6,000 درهم يلتزم الموظف بسدادها لصاحب العمل.
+                <div className="rounded-xl border border-slate-200 p-3.5 bg-slate-50 text-xs">
+                  <div className="font-bold text-ink mb-1">المثال 2: استقالة موظف مع مغادرة مبكرة (خدم 40 من 60)</div>
+                  <p className="text-ink-secondary">
+                    آخر أجر: 9,000 درهم (الأجر اليومي 300 درهم) | المتبقي: 20 يوماً | <strong>التعويض: 6,000 درهم مستحقة لصالح صاحب العمل</strong>.
                   </p>
                 </div>
-
-                <div className="rounded-xl border border-slate-200 p-4 bg-white">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-black text-ink">الحالة 3: إنهاء فوري من صاحب العمل (إخلال المنشأة)</span>
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">8,000 AED لصالح الموظف</span>
-                  </div>
-                  <p className="text-xs text-ink-secondary leading-relaxed">
-                    قررت الشركة إنهاء عقد موظف أجره 12,000 درهم ومهلة إنذاره 30 يوماً، وطلبت منه التوقف بعد 10 أيام فقط. الأجر اليومي = 12,000 ÷ 30 = 400 درهم. الأيام المتبقية = 20 يوماً. التعويض = 20 × 400 = 8,000 درهم تدفعها الشركة للموظف كبدل إنذار.
+                <div className="rounded-xl border border-slate-200 p-3.5 bg-slate-50 text-xs">
+                  <div className="font-bold text-ink mb-1">المثال 3: إنهاء من صاحب العمل (خدم 10 من 30)</div>
+                  <p className="text-ink-secondary">
+                    آخر أجر: 12,000 درهم (الأجر اليومي 400 درهم) | المتبقي: 20 يوماً | <strong>التعويض: 8,000 درهم مستحقة لصالح الموظف</strong>.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Jurisdictions & Special Notes */}
-            <div className="rounded-xl border border-brand-border bg-slate-50 p-4 text-xs text-ink-secondary space-y-2">
-              <h4 className="font-bold text-ink text-sm">💡 ضوابط مهمة وحالات خاصة:</h4>
-              <ul className="list-disc list-inside space-y-1">
-                <li>
-                  <strong>فترة التجربة:</strong> تخضع للمادة (9) بقواعد إنذار خاصة (14 يوماً من صاحب العمل، وشهر أو 14 يوماً من العامل بحسب المغادرة أو الانتقال)، ولا تطبق عليها حدود المادة 43 العادية.
-                </li>
-                <li>
-                  <strong>المناطق الحرة المالية (DIFC / ADGM):</strong> تتمتع بقوانين عمل مستقلة، وتحكمها لوائح خاصة لعقود العمل تختلف عن وزارة الموارد البشرية والتوطين.
-                </li>
-                <li>
-                  <strong>يوم البحث عن عمل:</strong> إذا كان الإنهاء من قبل صاحب العمل، يحق للعامل التغيب يوماً في الأسبوع بدون أجر للبحث عن عمل شريطة إخطار الشركة مسبقاً بثلاثة أيام (م 43 ب 5).
-                </li>
-              </ul>
+            {/* 11. المصادر الرسمية */}
+            <div>
+              <h3 className="text-base font-bold text-ink mb-1.5">المصادر الرسمية</h3>
+              <p className="text-xs text-ink-secondary leading-relaxed">
+                وزارة الموارد البشرية والتوطين (MOHRE) — المرسوم بقانون اتحادي رقم (33) لسنة 2021 بشأن تنظيم علاقات العمل، ولائحته التنفيذية الصادرة بقرار مجلس الوزراء رقم (1) لسنة 2022 — المادة (43) إنهاء عقد العمل وفترة الإنذار.
+              </p>
+            </div>
+
+            {/* 12. آخر تحديث */}
+            <div className="pt-2 border-t border-slate-200 flex justify-between text-xs text-ink-muted">
+              <span><strong>آخر تحديث:</strong> 2026</span>
+              <span>مطابق للمرسوم 33 لسنة 2021 وقرارات MOHRE الحديثة</span>
             </div>
           </article>
         </section>
