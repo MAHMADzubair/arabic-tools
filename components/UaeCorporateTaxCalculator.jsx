@@ -228,7 +228,7 @@ export default function UaeCorporateTaxCalculator() {
                 <span className="text-rose-800 text-left">+375,000<span className="block text-[9px] font-normal">9%</span></span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center"><span className="font-extrabold text-emerald-800 block">أول 375,000 د.إ</span><span className="text-emerald-700 text-[10px]">معفى — نسبة 0%</span></div>
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center"><span className="font-extrabold text-emerald-800 block">أول 375,000 د.إ</span><span className="text-emerald-700 text-[10px]">خاضع لنسبة 0%</span></div>
                 <div className="rounded-lg bg-rose-50 border border-rose-200 p-2.5 text-center"><span className="font-extrabold text-rose-800 block">ما يتجاوز 375,000 د.إ</span><span className="text-rose-700 text-[10px]">يخضع لنسبة 9%</span></div>
               </div>
             </div>
@@ -325,7 +325,7 @@ export default function UaeCorporateTaxCalculator() {
                   <ul className="space-y-1">{sbrResult.reasons.map((r,i)=>(<li key={i} className="text-xs text-rose-800 flex items-start gap-1.5"><span>•</span><span>{r}</span></li>))}</ul>
                 )}
               </div>
-              <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3 text-[11px] text-amber-900 leading-relaxed">⚠️ تسهيلات الأعمال الصغيرة تخضع لفترات وشروط نظامية محددة. يجب مراجعة أحدث توجيهات FTA قبل الاعتماد على هذه النتيجة. آخر مراجعة: 2026.</div>
+              <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3 text-[11px] text-amber-900 leading-relaxed">⚠️ وفق التوجيهات الحالية لـ FTA، تسري تسهيلات الأعمال الصغيرة (بحد إيرادات 3,000,000 درهم) على الفترات الضريبية التي تنتهي في أو قبل 31 ديسمبر 2026. يجب مراجعة أحدث إرشادات الهيئة الاتحادية للضرائب قبل الاعتماد على هذه النتيجة. آخر مراجعة: سبتمبر 2026.</div>
             </div>
           )}
         </div>

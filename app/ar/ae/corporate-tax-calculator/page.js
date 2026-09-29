@@ -39,7 +39,7 @@ const faqJsonLd = {
     {
       "@type": "Question",
       name: "كيف يعمل حد 375,000 درهم في ضريبة الشركات؟",
-      acceptedAnswer: { "@type": "Answer", text: "أول 375,000 درهم من الدخل الخاضع للضريبة معفى تماماً (0%). أي مبلغ يتجاوز هذا الحد يخضع لنسبة 9%. مثال: دخل مليون درهم → 375,000 بنسبة 0% + 625,000 بنسبة 9% = ضريبة 56,250 درهم." },
+      acceptedAnswer: { "@type": "Answer", text: "أول 375,000 درهم من الدخل الخاضع للضريبة يخضع لنسبة 0% (صفر بالمئة). أي مبلغ يتجاوز هذا الحد يخضع لنسبة 9%. مثال: دخل مليون درهم → 375,000 بنسبة 0% + 625,000 بنسبة 9% = ضريبة 56,250 درهم." },
     },
     {
       "@type": "Question",
@@ -49,7 +49,7 @@ const faqJsonLd = {
     {
       "@type": "Question",
       name: "ما هي تسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية؟",
-      acceptedAnswer: { "@type": "Answer", text: "تسهيلات الأعمال الصغيرة تتيح للأشخاص المقيمين الذين لا تتجاوز إيراداتهم 3,000,000 درهم في الفترة الضريبية الحالية وفي كل فترة سابقة ذات صلة اختيار معاملة ضريبية مبسّطة. هي اختيار (election) وليست إعفاءً تلقائياً." },
+      acceptedAnswer: { "@type": "Answer", text: "تسهيلات الأعمال الصغيرة تتيح للأشخاص المقيمين الذين لا تتجاوز إيراداتهم 3,000,000 درهم في الفترة الضريبية الحالية وفي كل فترة سابقة ذات صلة اختيار معاملة ضريبية مبسّطة. هي اختيار (election) وليست إعفاءً تلقائياً. وفق التوجيهات الحالية لـ FTA، تسري على الفترات الضريبية التي تنتهي في أو قبل 31 ديسمبر 2026." },
     },
     {
       "@type": "Question",
@@ -128,7 +128,7 @@ export default function UaeCorporateTaxPage() {
             <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-5 space-y-2">
               <h3 className="text-base font-extrabold text-emerald-950 flex items-center gap-2"><span>💚</span><span>كم نسبة ضريبة الشركات؟</span></h3>
               <ul className="text-sm text-emerald-900 space-y-1.5 list-disc list-inside">
-                <li><strong>0%</strong> على الدخل الخاضع للضريبة حتى وبما يشمل <strong>375,000 درهم</strong>.</li>
+                <li><strong>0%</strong> على الدخل الخاضع للضريبة حتى وبما يشمل <strong>375,000 درهم</strong> (نطاق الضريبة بنسبة 0%).</li>
                 <li><strong>9%</strong> على الدخل الخاضع للضريبة الذي يتجاوز <strong>375,000 درهم</strong>.</li>
               </ul>
             </div>
@@ -136,7 +136,7 @@ export default function UaeCorporateTaxPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 space-y-2">
                 <h3 className="text-sm font-extrabold text-amber-950">🏷️ تسهيلات الأعمال الصغيرة</h3>
-                <p className="text-xs text-amber-900 leading-relaxed">متاحة للأشخاص المقيمين الذين لا تتجاوز إيراداتهم 3,000,000 درهم في الفترة الحالية وكل فترة سابقة ذات صلة — وليست إعفاءً تلقائياً بل اختياراً يُقدَّم لدى FTA.</p>
+                <p className="text-xs text-amber-900 leading-relaxed">متاحة للأشخاص المقيمين الذين لا تتجاوز إيراداتهم 3,000,000 درهم في الفترة الحالية وكل فترة سابقة ذات صلة — وليست إعفاءً تلقائياً بل اختياراً يُقدَّم لدى FTA. وفق التوجيهات الحالية تسري على الفترات الضريبية التي تنتهي في أو قبل 31 ديسمبر 2026.</p>
               </div>
               <div className="rounded-xl border border-purple-200 bg-purple-50/60 p-4 space-y-2">
                 <h3 className="text-sm font-extrabold text-purple-950">🏙️ المناطق الحرة (QFZP)</h3>
@@ -152,7 +152,7 @@ export default function UaeCorporateTaxPage() {
               </div>
             </div>
 
-            <p className="text-[11px] text-ink-muted border-t border-brand-border pt-3">آخر تحديث: يناير 2026م — المصدر: الهيئة الاتحادية للضرائب، دولة الإمارات العربية المتحدة.</p>
+            <p className="text-[11px] text-ink-muted border-t border-brand-border pt-3">آخر تحديث: سبتمبر 2026م — المصدر: الهيئة الاتحادية للضرائب، دولة الإمارات العربية المتحدة.</p>
           </div>
         </section>
 
@@ -164,7 +164,7 @@ export default function UaeCorporateTaxPage() {
             </div>
             <div className="space-y-4">
               {[
-                { title: "مثال 1 — دخل 300,000 درهم", scenario: "دخل خاضع للضريبة: 300,000 درهم", result: "ضريبة: 0 درهم (كامل الدخل ضمن نطاق 0%)", color: "text-emerald-700", note: "الدخل دون حد 375,000 درهم — معفى بالكامل." },
+                { title: "مثال 1 — دخل 300,000 درهم", scenario: "دخل خاضع للضريبة: 300,000 درهم", result: "ضريبة: 0 درهم (كامل الدخل ضمن نطاق الضريبة بنسبة 0%)", color: "text-emerald-700", note: "الدخل دون حد 375,000 درهم — يخضع لنسبة 0%." },
                 { title: "مثال 2 — دخل مليون درهم", scenario: "دخل خاضع للضريبة: 1,000,000 درهم", result: "375,000 × 0% + 625,000 × 9% = 56,250 درهم", color: "text-rose-700", note: "معدل فعلي: 5.625%." },
                 { title: "مثال 3 — إيرادات 2.4 مليون + SBR", scenario: "إيرادات: 2,400,000 درهم | دخل خاضع: 500,000 درهم", result: "الضريبة المعيارية: 11,250 درهم | قد يكون مؤهلاً لـ SBR", color: "text-amber-700", note: "الإيرادات أقل من 3 مليون — فحص SBR مطلوب." },
                 { title: "مثال 4 — شخص طبيعي دوران 800,000 درهم", scenario: "دوران النشاط التجاري: 800,000 درهم", result: "قد لا يكون في نطاق ضريبة الشركات بناءً على هذا الشرط وحده", color: "text-emerald-700", note: "الدوران دون 1,000,000 درهم — مراجعة FTA مطلوبة للتأكيد." },
