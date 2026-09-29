@@ -597,12 +597,14 @@ function WaitlistForm({ formRef }) {
         if (data.errors) setErrors(data.errors);
         else setErrors({ _global: "حدث خطأ — يرجى المحاولة مرة أخرى" });
         setStatus("error");
+        track("pilot_form_error", { reason: data.error || "validation", platform: form.platform });
       } else {
         setStatus("success");
       }
     } catch {
       setErrors({ _global: "تعذّر الإرسال — يرجى التحقق من الاتصال والمحاولة مرة أخرى" });
       setStatus("error");
+      track("pilot_form_error", { reason: "network", platform: form.platform });
     }
   };
 
