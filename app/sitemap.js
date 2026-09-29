@@ -46,6 +46,7 @@ export default function sitemap() {
     "/ar/ae/final-settlement-calculator",
     "/ar/ae/notice-period-calculator",
     "/ar/ae/vat-registration-checker",
+    "/ar/ae/corporate-tax-calculator",
   ];
 
   const now = new Date();

@@ -377,6 +377,22 @@ const COUNTRY_HUBS = {
           "ضوابط تسجيل المنشآت غير المقيمة",
         ],
       },
+      {
+        id: "uae-corporate-tax-calculator",
+        nameAr: "حاسبة ضريبة الشركات في الإمارات",
+        nameEn: "UAE Corporate Tax Calculator",
+        icon: "🏛️",
+        badge: "FTA CT — 0% و9%",
+        badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200 font-bold",
+        href: "/ar/ae/corporate-tax-calculator",
+        desc: "قدّر ضريبة الشركات: 0% على أول 375,000 درهم و9% على ما يزيد مع تسهيلات الأعمال الصغيرة وقواعد المناطق الحرة والشخص الطبيعي.",
+        highlights: [
+          "0% على أول 375,000 درهم",
+          "9% على ما يتجاوز 375,000 درهم",
+          "تسهيلات الأعمال الصغيرة (إيرادات ≤ 3 مليون)",
+          "نظام QFZP للمناطق الحرة",
+        ],
+      },
     ],
     upcomingTool: {
       tag: "الأداة القادمة — قيد التطوير والإطلاق",

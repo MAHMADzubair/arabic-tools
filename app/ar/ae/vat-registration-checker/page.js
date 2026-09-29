@@ -341,6 +341,14 @@ export default function UaeVatRegistrationCheckerPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 {
+                  href: "/ar/ae/corporate-tax-calculator",
+                  icon: "🏛️",
+                  title: "حاسبة ضريبة الشركات في الإمارات",
+                  desc: "هل تحتاج أيضاً إلى تقدير ضريبة الشركات؟ 0% و9% مع SBR وقواعد المناطق الحرة.",
+                  badge: "FTA CT",
+                  badgeColor: "bg-indigo-100 text-indigo-800",
+                },
+                {
                   href: "/vat-calculator/uae",
                   icon: "🧾",
                   title: "حاسبة ضريبة القيمة المضافة في الإمارات 5%",
