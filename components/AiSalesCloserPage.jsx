@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -114,7 +114,7 @@ function HeroSection({ onCTAClick }) {
 // ─── PROBLEM SECTION ─────────────────────────────────────────────────────────
 const PROBLEMS = [
   { icon: "💸", title: "العميل يسأل عن السعر ثم يختفي",       desc: "يحدث يومياً — ولا أحد يعرف لماذا توقف." },
-  { icon: "🤔", title: "«بفكر» ولا يتابعه أحد",                desc: "90% من هؤلاء لن يعودوا بدون متابعة." },
+  { icon: "🤔", title: "«بفكر» ولا يتابعه أحد",                desc: "كثير من هؤلاء العملاء قد لا يعودون بدون متابعة مناسبة." },
   { icon: "🚚", title: "سؤال عن التوصيل بدون رد سريع",         desc: "التأخر في الرد يكلّف البيع." },
   { icon: "💳", title: "توقف قبل إتمام الدفع",                 desc: "كان على وشك الشراء — ثم اختفى." },
   { icon: "😴", title: "المندوب ينسى المتابعة",                desc: "المتابعة اليدوية لا تتوسع مع الحجم." },
@@ -803,3 +803,4 @@ export default function AiSalesCloserPage() {
     </div>
   );
 }
+
