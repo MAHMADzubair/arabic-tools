@@ -47,6 +47,7 @@ export default function sitemap() {
     "/ar/ae/notice-period-calculator",
     "/ar/ae/vat-registration-checker",
     "/ar/ae/corporate-tax-calculator",
+    "/ar/ae/small-business-relief-checker",
   ];
 
   const now = new Date();

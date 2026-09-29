@@ -206,6 +206,7 @@ export default function UaeCorporateTaxPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
+                { href: "/ar/ae/small-business-relief-checker", icon: "🏷️", title: "حاسبة أهلية تسهيلات الأعمال الصغيرة", desc: "هل قد تكون مؤهلاً لتسهيلات الأعمال الصغيرة؟ فحص حد 3 مليون درهم والشروط.", badge: "SBR 2026", badgeColor: "bg-emerald-100 text-emerald-800" },
                 { href: "/ar/ae/vat-registration-checker", icon: "🏢", title: "حاسبة أهلية التسجيل في ضريبة القيمة المضافة", desc: "هل تحتاج لمعرفة وضع التسجيل في ضريبة القيمة المضافة؟", badge: "FTA VAT", badgeColor: "bg-purple-100 text-purple-800" },
                 { href: "/vat-calculator/uae", icon: "🧾", title: "حاسبة ضريبة القيمة المضافة 5%", desc: "احسب ضريبة الـ 5% أو استخرج السعر الأصلي من أي فاتورة.", badge: "5% FTA", badgeColor: "bg-blue-100 text-blue-800" },
                 { href: "/ar/ae/final-settlement-calculator", icon: "📋", title: "حاسبة المخالصة النهائية في الإمارات", desc: "تصفية مستحقات نهاية الخدمة وفق قانون العمل 33.", badge: "قانون 33", badgeColor: "bg-emerald-100 text-emerald-800" },

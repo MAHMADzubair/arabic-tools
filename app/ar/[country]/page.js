@@ -393,6 +393,22 @@ const COUNTRY_HUBS = {
           "نظام QFZP للمناطق الحرة",
         ],
       },
+      {
+        id: "uae-small-business-relief-checker",
+        nameAr: "حاسبة أهلية تسهيلات الأعمال الصغيرة",
+        nameEn: "UAE Small Business Relief Eligibility Checker",
+        icon: "🏷️",
+        badge: "SBR — 3 مليون درهم",
+        badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold",
+        href: "/ar/ae/small-business-relief-checker",
+        desc: "تحقق من أهليتك لتسهيلات الأعمال الصغيرة في ضريبة الشركات: حد 3,000,000 درهم، الفترات السابقة، QFZP، وانتهاء المدة 31 ديسمبر 2026.",
+        highlights: [
+          "حد الإيرادات 3,000,000 درهم",
+          "فحص الفترات الضريبية السابقة",
+          "استبعاد QFZP والمجموعات الكبيرة",
+          "تسري حتى 31 ديسمبر 2026",
+        ],
+      },
     ],
     upcomingTool: {
       tag: "الأداة القادمة — قيد التطوير والإطلاق",
