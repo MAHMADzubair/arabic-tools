@@ -2,18 +2,16 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-
-// ─── Utility: SAR Formatting ────────────────────────────────────────────────
-const fmt = (n) =>
-  Number(n || 0).toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-
-const parseNum = (v) => {
-  const n = parseFloat(String(v).replace(/,/g, ""));
-  return isNaN(n) || n < 0 ? 0 : n;
-};
+import {
+  formatSAR as fmt,
+  parseNum,
+  calcLineVat,
+  isValidSaudiVatNumber,
+  calcCompleteness,
+  inputCls,
+  labelCls,
+} from "@/lib/businessUtils";
+import { CheckItem } from "@/components/business/CompletenessChecker";
 
 // ─── VAT Rate Options ────────────────────────────────────────────────────────
 const VAT_RATES = [
@@ -144,21 +142,19 @@ const SAMPLE_PRESETS = {
 
 // ─── Calculate single line item ───────────────────────────────────────────────
 function calcLine(item) {
-  const qty = parseNum(item.qty);
-  const price = parseNum(item.unitPrice);
-  const discount = parseNum(item.discount);
-  const gross = qty * price;
-  const taxableBase = Math.max(0, gross - discount);
+  const { gross, taxableBase, vatAmount, lineTotal } = calcLineVat({
+    qty: item.qty,
+    unitPrice: item.unitPrice,
+    discount: item.discount,
+    vatRate: (VAT_RATES.find((r) => r.id === item.vatRateId) || VAT_RATES[0]).rate,
+  });
   const vatRateObj = VAT_RATES.find((r) => r.id === item.vatRateId) || VAT_RATES[0];
-  const vatRate = vatRateObj.rate;
-  const vatAmount = vatRate !== null ? taxableBase * vatRate : 0;
-  const total = taxableBase + vatAmount;
   return {
     gross,
     taxableBase,
     vatAmount,
-    total,
-    vatRate,
+    total: lineTotal,
+    vatRate: vatRateObj.rate,
     vatRateId: item.vatRateId,
     tag: vatRateObj.tag,
   };
@@ -198,7 +194,7 @@ function validateInvoice({ invoiceType, seller, buyer, invoiceDetails, lines }) 
       hint: "إلزامي لكافة المسجلين في ضريبة القيمة المضافة بالسعودية",
     });
   } else {
-    const isValidVat = /^3\d{14}$/.test(seller.vatNumber.trim());
+    const isValidVat = isValidSaudiVatNumber(seller.vatNumber.trim());
     checks.push({
       label: "صحة تنسيق الرقم الضريبي للبائع (15 رقماً يبدأ بـ 3)",
       status: isValidVat ? "ok" : "warning",
@@ -224,7 +220,7 @@ function validateInvoice({ invoiceType, seller, buyer, invoiceDetails, lines }) 
         hint: "إلزامي في الفاتورة الضريبية B2B إذا كان العميل مسجلاً في ضريبة القيمة المضافة لاسترداد المدخلات",
       });
     } else {
-      const isValidBuyerVat = /^3\d{14}$/.test(buyer.vatNumber.trim());
+      const isValidBuyerVat = isValidSaudiVatNumber(buyer.vatNumber.trim());
       checks.push({
         label: "الرقم الضريبي للمشتري (B2B)",
         status: isValidBuyerVat ? "ok" : "warning",
@@ -347,10 +343,9 @@ export default function EInvoiceGenerator() {
     [invoiceType, seller, buyer, invoiceDetails, lines]
   );
 
-  const okCount = validationResults.filter((c) => c.status === "ok").length;
-  const missingCount = validationResults.filter((c) => c.status === "missing").length;
-  const warningCount = validationResults.filter((c) => c.status === "warning").length;
-  const completenessPercent = Math.round((okCount / Math.max(validationResults.length, 1)) * 100);
+  const { okCount, warnCount: warningCount, missCount: missingCount, completenessPercent, barColor: completenessBarColor } = calcCompleteness(validationResults);
+  // keep legacy names for the JSX below
+  const completePct_ = completenessPercent;
 
   // ─── Reset ────────────────────────────────────────────────────────────────
   const handleReset = () => {
@@ -383,10 +378,7 @@ export default function EInvoiceGenerator() {
     }
   };
 
-  // ─── Styling Helpers ──────────────────────────────────────────────────────
-  const inputCls =
-    "w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-ink shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition";
-  const labelCls = "block text-xs font-bold text-ink-secondary mb-1";
+  // ─── Styling Helpers (shared constants imported from businessUtils) ──────
 
   const currentInvoiceTypeMeta = INVOICE_TYPES.find((t) => t.id === invoiceType) || INVOICE_TYPES[0];
 
@@ -482,13 +474,7 @@ export default function EInvoiceGenerator() {
             <span className="text-xs font-black text-ink">مقياس اكتمال متطلبات الفاتورة:</span>
             <div className="w-32 sm:w-44 bg-gray-200 rounded-full h-2.5 overflow-hidden">
               <div
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  completenessPercent === 100
-                    ? "bg-emerald-500"
-                    : completenessPercent >= 70
-                    ? "bg-amber-500"
-                    : "bg-rose-500"
-                }`}
+                className={`h-2.5 rounded-full transition-all duration-300 ${completenessBarColor}`}
                 style={{ width: `${completenessPercent}%` }}
               />
             </div>
@@ -522,24 +508,7 @@ export default function EInvoiceGenerator() {
         {showValidation && (
           <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             {validationResults.map((check, i) => (
-              <div
-                key={i}
-                className={`p-2.5 rounded-lg border flex items-start gap-2 ${
-                  check.status === "ok"
-                    ? "bg-emerald-50/60 border-emerald-200 text-emerald-950"
-                    : check.status === "warning"
-                    ? "bg-amber-50/60 border-amber-200 text-amber-950"
-                    : "bg-rose-50/60 border-rose-200 text-rose-950"
-                }`}
-              >
-                <span className="shrink-0 font-bold">
-                  {check.status === "ok" ? "✅" : check.status === "warning" ? "⚠️" : "❌"}
-                </span>
-                <div>
-                  <p className="font-bold">{check.label}</p>
-                  {check.hint && <p className="text-[11px] opacity-80 mt-0.5">{check.hint}</p>}
-                </div>
-              </div>
+              <CheckItem key={i} status={check.status} label={check.label} hint={check.hint} />
             ))}
           </div>
         )}
@@ -624,7 +593,7 @@ export default function EInvoiceGenerator() {
                     value={seller.vatNumber}
                     onChange={(e) => setSeller({ ...seller, vatNumber: e.target.value.replace(/\D/g, "") })}
                   />
-                  {seller.vatNumber && !/^3\d{14}$/.test(seller.vatNumber) && (
+                  {seller.vatNumber && !isValidSaudiVatNumber(seller.vatNumber) && (
                     <p className="text-xs text-amber-600 mt-1">⚠ الرقم الضريبي السعودي يتكون من 15 رقماً ويبدأ بـ 3</p>
                   )}
                 </div>

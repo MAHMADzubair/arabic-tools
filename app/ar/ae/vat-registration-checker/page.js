@@ -1,6 +1,7 @@
 import UaeVatRegistrationChecker from "@/components/UaeVatRegistrationChecker";
 import Link from "next/link";
 import { FTA_OFFICIAL_URL, FTA_REGISTRATION_URL } from "@/lib/uaeVatRegistrationConfig";
+import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -333,91 +334,19 @@ export default function UaeVatRegistrationCheckerPage() {
 
         {/* ── PART 5: Related UAE Tools ──────────────────────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 py-4 pb-12">
-          <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <div className="border-b border-brand-border pb-4 mb-5">
-              <h2 className="text-lg font-extrabold text-ink">🔗 أدوات وحاسبات ذات صلة بدولة الإمارات</h2>
-              <p className="text-xs text-ink-muted mt-1">حاسبات عمالية ومالية وضريبية مخصصة لبيئة العمل الإماراتية</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {[
-                {
-                  href: "/ar/ae/vat-invoice-generator",
-                  icon: "🧾",
-                  title: "مولد الفاتورة الضريبية في الإمارات",
-                  desc: "بعد التسجيل، أنشئ نموذج فاتورة ضريبية كاملة أو مبسطة مع احتساب 5% VAT وفحص اكتمال الحقول.",
-                  badge: "FTA VAT",
-                  badgeColor: "bg-blue-100 text-blue-800",
-                },
-                {
-                  href: "/ar/ae/corporate-tax-calculator",
-                  icon: "🏛️",
-                  title: "حاسبة ضريبة الشركات في الإمارات",
-                  desc: "هل تحتاج أيضاً إلى تقدير ضريبة الشركات؟ 0% و9% مع SBR وقواعد المناطق الحرة.",
-                  badge: "FTA CT",
-                  badgeColor: "bg-indigo-100 text-indigo-800",
-                },
-                {
-                  href: "/vat-calculator/uae",
-                  icon: "🧾",
-                  title: "حاسبة ضريبة القيمة المضافة في الإمارات 5%",
-                  desc: "احسب ضريبة الـ 5% أو استخرج السعر الأصلي من أي فاتورة إماراتية وفق FTA.",
-                  badge: "FTA 5%",
-                  badgeColor: "bg-purple-100 text-purple-800",
-                },
-                {
-                  href: "/ar/ae/final-settlement-calculator",
-                  icon: "📋",
-                  title: "حاسبة المخالصة النهائية في الإمارات",
-                  desc: "تصفية كاملة: مكافأة نهاية الخدمة، آخر راتب، رصيد الإجازات، وبدل الإنذار.",
-                  badge: "قانون 33",
-                  badgeColor: "bg-emerald-100 text-emerald-800",
-                },
-                {
-                  href: "/ar/ae/notice-period-calculator",
-                  icon: "⏳",
-                  title: "حاسبة فترة الإنذار في الإمارات",
-                  desc: "احسب تاريخ آخر يوم عمل والأيام غير المنفذة وبدل الإنذار وفق المادة 43.",
-                  badge: "المادة 43",
-                  badgeColor: "bg-blue-100 text-blue-800",
-                },
-                {
-                  href: "/gratuity-calculator/uae",
-                  icon: "🎖️",
-                  title: "حاسبة مكافأة نهاية الخدمة في الإمارات",
-                  desc: "احسب المكافأة وفق المادة 51 مع سقف السنتين وقواعد الحساب التفصيلية.",
-                  badge: "المادة 51",
-                  badgeColor: "bg-amber-100 text-amber-800",
-                },
-                {
-                  href: "/ar/ae",
-                  icon: "🇦🇪",
-                  title: "مجمع أدوات وحاسبات الإمارات",
-                  desc: "الدليل الشامل لكافة الحاسبات العمالية والمالية والضريبية المخصصة للإمارات.",
-                  badge: "الشامل",
-                  badgeColor: "bg-emerald-700 text-white font-black",
-                },
-              ].map((tool) => (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className="group flex items-start gap-3 rounded-xl border border-brand-border bg-white p-4 hover:border-brand hover:shadow-md transition-all"
-                >
-                  <span className="text-2xl shrink-0 mt-0.5">{tool.icon}</span>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <span className="text-sm font-bold text-ink group-hover:text-brand transition-colors">
-                        {tool.title}
-                      </span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${tool.badgeColor}`}>
-                        {tool.badge}
-                      </span>
-                    </div>
-                    <p className="text-xs text-ink-muted leading-relaxed">{tool.desc}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+          <RelatedBusinessTools
+            title="🔗 أدوات وحاسبات ذات صلة بدولة الإمارات"
+            subtitle="حاسبات عمالية ومالية وضريبية مخصصة لبيئة العمل الإماراتية"
+            tools={[
+              { href: "/ar/ae/vat-invoice-generator", icon: "🧾", title: "مولد الفاتورة الضريبية في الإمارات", desc: "بعد التسجيل، أنشئ نموذج فاتورة ضريبية كاملة أو مبسطة مع احتساب 5% VAT وفحص اكتمال الحقول.", badge: "FTA VAT", badgeColor: "bg-blue-100 text-blue-800" },
+              { href: "/ar/ae/corporate-tax-calculator", icon: "🏛️", title: "حاسبة ضريبة الشركات في الإمارات", desc: "هل تحتاج أيضاً إلى تقدير ضريبة الشركات؟ 0% و9% مع SBR وقواعد المناطق الحرة.", badge: "FTA CT", badgeColor: "bg-indigo-100 text-indigo-800" },
+              { href: "/vat-calculator/uae", icon: "🧾", title: "حاسبة ضريبة القيمة المضافة في الإمارات 5%", desc: "احسب ضريبة الـ 5% أو استخرج السعر الأصلي من أي فاتورة إماراتية وفق FTA.", badge: "FTA 5%", badgeColor: "bg-purple-100 text-purple-800" },
+              { href: "/ar/ae/final-settlement-calculator", icon: "📋", title: "حاسبة المخالصة النهائية في الإمارات", desc: "تصفية كاملة: مكافأة نهاية الخدمة، آخر راتب، رصيد الإجازات، وبدل الإنذار.", badge: "قانون 33", badgeColor: "bg-emerald-100 text-emerald-800" },
+              { href: "/ar/ae/notice-period-calculator", icon: "⏳", title: "حاسبة فترة الإنذار في الإمارات", desc: "احسب تاريخ آخر يوم عمل والأيام غير المنفذة وبدل الإنذار وفق المادة 43.", badge: "المادة 43", badgeColor: "bg-blue-100 text-blue-800" },
+              { href: "/gratuity-calculator/uae", icon: "🎖️", title: "حاسبة مكافأة نهاية الخدمة في الإمارات", desc: "احسب المكافأة وفق المادة 51 مع سقف السنتين وقواعد الحساب التفصيلية.", badge: "المادة 51", badgeColor: "bg-amber-100 text-amber-800" },
+              { href: "/ar/ae", icon: "🇦🇪", title: "مجمع أدوات وحاسبات الإمارات", desc: "الدليل الشامل لكافة الحاسبات العمالية والمالية والضريبية المخصصة للإمارات.", badge: "الشامل", badgeColor: "bg-emerald-700 text-white font-black" },
+            ]}
+          />
         </section>
 
       </main>

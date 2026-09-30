@@ -1,10 +1,18 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const EMIRATES = ["أبوظبي", "دبي", "الشارقة", "عجمان", "أم القيوين", "رأس الخيمة", "الفجيرة"];
+import {
+  formatAED as fmt,
+  parseNum,
+  calcLineVat,
+  isValidUaeTrn as isValidTrn,
+  calcCompleteness,
+  inputCls,
+  selectCls,
+  labelCls,
+} from "@/lib/businessUtils";
+import { EMIRATES } from "@/lib/countryBusinessConfig";
+import { CheckItem } from "@/components/business/CompletenessChecker";
 
 const VAT_RATES = [
   { id: "5",      label: "5% — خاضعة للضريبة",      rate: 0.05, tag: "5%",      color: "bg-blue-100 text-blue-800" },
@@ -13,14 +21,8 @@ const VAT_RATES = [
   { id: "out",    label: "خارج نطاق الضريبة",          rate: null, tag: "خ.ن",    color: "bg-slate-100 text-slate-700" },
 ];
 
-const inputCls  = "w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-ink shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition";
-const selectCls = inputCls + " cursor-pointer";
-const labelCls  = "block text-xs font-bold text-ink-secondary mb-1";
+// ─── VAT Rate Options ─────────────────────────────────────────────────────────
 
-const fmt = (n) =>
-  Number(n || 0).toLocaleString("ar-AE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-const isValidTrn = (v) => /^\d{15}$/.test(String(v || "").trim());
 
 // ─── Sample presets ───────────────────────────────────────────────────────────
 
@@ -105,22 +107,17 @@ export default function UaeVatInvoiceGenerator() {
   // ── Calculations ────────────────────────────────────────────────────────────
   const { lineCalcs, totals } = useMemo(() => {
     const lineCalcs = lines.map(l => {
-      const qty        = Math.max(0, parseFloat(l.qty)       || 0);
-      const unitPrice  = Math.max(0, parseFloat(l.unitPrice) || 0);
-      const discount   = Math.max(0, parseFloat(l.discount)  || 0);
-      const gross      = qty * unitPrice;
-      const base       = Math.max(0, gross - discount);
-      const rateObj    = VAT_RATES.find(r => r.id === l.vatRateId) || VAT_RATES[0];
-      const vatAmount  = rateObj.rate !== null ? base * rateObj.rate : 0;
-      return { gross, discount, base, vatAmount, lineTotal: base + vatAmount, rateObj };
+      const rateObj   = VAT_RATES.find(r => r.id === l.vatRateId) || VAT_RATES[0];
+      const result    = calcLineVat({ qty: l.qty, unitPrice: l.unitPrice, discount: l.discount, vatRate: rateObj.rate });
+      return { ...result, rateObj };
     });
 
     const grossTotal    = lineCalcs.reduce((s, l) => s + l.gross, 0);
     const totalDiscount = lineCalcs.reduce((s, l) => s + l.discount, 0);
-    const taxable5      = lineCalcs.filter(l => l.rateObj.id === "5").reduce((s, l) => s + l.base, 0);
-    const taxable0      = lineCalcs.filter(l => l.rateObj.id === "0").reduce((s, l) => s + l.base, 0);
-    const exemptTotal   = lineCalcs.filter(l => l.rateObj.id === "exempt").reduce((s, l) => s + l.base, 0);
-    const outTotal      = lineCalcs.filter(l => l.rateObj.id === "out").reduce((s, l) => s + l.base, 0);
+    const taxable5      = lineCalcs.filter(l => l.rateObj.id === "5").reduce((s, l) => s + l.taxableBase, 0);
+    const taxable0      = lineCalcs.filter(l => l.rateObj.id === "0").reduce((s, l) => s + l.taxableBase, 0);
+    const exemptTotal   = lineCalcs.filter(l => l.rateObj.id === "exempt").reduce((s, l) => s + l.taxableBase, 0);
+    const outTotal      = lineCalcs.filter(l => l.rateObj.id === "out").reduce((s, l) => s + l.taxableBase, 0);
     const totalVat      = lineCalcs.reduce((s, l) => s + l.vatAmount, 0);
     const grandTotal    = lineCalcs.reduce((s, l) => s + l.lineTotal, 0);
 
@@ -183,11 +180,7 @@ export default function UaeVatInvoiceGenerator() {
     return c;
   }, [seller, buyer, details, lines, invoiceType]);
 
-  const okCount      = checks.filter(c => c.status === "ok").length;
-  const warnCount    = checks.filter(c => c.status === "warning").length;
-  const missCount    = checks.filter(c => c.status === "missing").length;
-  const completePct  = Math.round((okCount / checks.length) * 100);
-  const barColor     = completePct === 100 ? "bg-emerald-500" : completePct >= 70 ? "bg-amber-500" : "bg-rose-500";
+  const { okCount, warnCount, missCount, completePct, barColor } = calcCompleteness(checks);
 
   // ── Print ───────────────────────────────────────────────────────────────────
   const handlePrint = () => {
@@ -522,7 +515,7 @@ export default function UaeVatInvoiceGenerator() {
                         </span>
                         {(calc?.discount || 0) > 0 && (
                           <span className="rounded-full text-[11px] font-bold bg-rose-100 text-rose-700 px-2.5 py-0.5">
-                            بعد الخصم: {fmt(calc?.base)} {details.currency}
+                            بعد الخصم: {fmt(calc?.taxableBase)} {details.currency}
                           </span>
                         )}
                         <span className={`rounded-full text-[11px] font-bold px-2.5 py-0.5 ${rateObj.color}`}>
@@ -608,13 +601,7 @@ export default function UaeVatInvoiceGenerator() {
             {(showValidation && validationOpen) && (
               <div className="mt-3 space-y-1.5">
                 {checks.map((c, i) => (
-                  <div key={i} className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs ${c.status === "ok" ? "bg-emerald-50 text-emerald-800" : c.status === "warning" ? "bg-amber-50 text-amber-800" : "bg-rose-50 text-rose-800"}`}>
-                    <span className="shrink-0 font-bold">{c.status === "ok" ? "✅" : c.status === "warning" ? "⚠️" : "❌"}</span>
-                    <div>
-                      <span className="font-bold">{c.label}</span>
-                      {c.hint && <span className="mr-1 opacity-75"> — {c.hint}</span>}
-                    </div>
-                  </div>
+                  <CheckItem key={i} status={c.status} label={c.label} hint={c.hint} />
                 ))}
               </div>
             )}

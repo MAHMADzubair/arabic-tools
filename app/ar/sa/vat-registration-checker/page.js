@@ -1,6 +1,7 @@
 import VatRegistrationChecker from "@/components/VatRegistrationChecker";
 import Link from "next/link";
 import { ZATCA_OFFICIAL_URL } from "@/lib/vatRegistrationConfig";
+import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -354,98 +355,19 @@ export default function VatRegistrationCheckerPage() {
 
         {/* ── PART 4: Related Tools (Business & Saudi VAT Cluster) ──────────────── */}
         <section className="mx-auto max-w-3xl px-4 pb-12">
-          <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
-            <div>
-              <h2 className="text-lg font-extrabold text-ink mb-1">
-                📌 أدوات مالية وضريبية ذات صلة بالمملكة العربية السعودية
-              </h2>
-              <p className="text-xs text-ink-muted mb-4">
-                تصفح الحاسبات المتكاملة لمنظومة الأعمال والفوترة والضرائب في السعودية
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {[
-                {
-                  href: "/vat-calculator/saudi",
-                  icon: "🧾",
-                  title: "حاسبة ضريبة القيمة المضافة 15%",
-                  desc: "احسب ضريبة الـ 15% أو افصل السعر الأصلي لبيانات منظومة فاتورة والفوترة الإلكترونية.",
-                  badge: "ZATCA 15%",
-                  badgeColor: "bg-purple-100 text-purple-700",
-                },
-                {
-                  href: "/ar/sa/e-invoice-generator",
-                  icon: "🧾",
-                  title: "مولد الفاتورة الإلكترونية السعودية",
-                  desc: "هل أصبحت مؤهلاً أو ملزماً بالتسجيل؟ → أنشئ نموذج فاتورة إلكترونية سعودية (B2B أو B2C) مع احتساب VAT 15%.",
-                  badge: "ZATCA فاتورة",
-                  badgeColor: "bg-indigo-100 text-indigo-700",
-                },
-                {
-                  href: "/ar/sa/final-settlement-calculator",
-                  icon: "📋",
-                  title: "حاسبة المخالصة النهائية الشاملة",
-                  desc: "تصفية كاملة لمستحقات العامل: نهاية الخدمة، آخر راتب، بدل الإجازات، وبدل الإشعار.",
-                  badge: "نظام العمل",
-                  badgeColor: "bg-emerald-100 text-emerald-700",
-                },
-                {
-                  href: "/ar/sa/article-77-calculator",
-                  icon: "⚖️",
-                  title: "حاسبة تعويض المادة 77",
-                  desc: "حساب تعويض إنهاء العقد لسبب غير مشروع مع تطبيق حد الشهرين الأدنى للموظف أو المنشأة.",
-                  badge: "المادة 77",
-                  badgeColor: "bg-rose-100 text-rose-700",
-                },
-                {
-                  href: "/salary-calculator/saudi",
-                  icon: "💼",
-                  title: "حاسبة الراتب الصافي والتأمينات GOSI",
-                  desc: "احسب صافي الراتب بعد استقطاعات التأمينات وساند ومسيرات حماية الأجور.",
-                  badge: "GOSI",
-                  badgeColor: "bg-blue-100 text-blue-700",
-                },
-                {
-                  href: "/profit-margin-calculator",
-                  icon: "📈",
-                  title: "حاسبة هامش الربح والتسعير",
-                  desc: "احسب هامش الربح الإجمالي والصافي ومعدل الزيادة على التكلفة لمنتجاتك وخدماتك.",
-                  badge: "أعمال",
-                  badgeColor: "bg-amber-100 text-amber-700",
-                },
-                {
-                  href: "/ar/sa",
-                  icon: "🇸🇦",
-                  title: "مجمع أدوات وحاسبات السعودية",
-                  desc: "دليل الحاسبات العمالية، والضريبية، والمالية المخصصة للمملكة في مكان واحد.",
-                  badge: "المجمع الشامل",
-                  badgeColor: "bg-emerald-600 text-white font-black",
-                },
-              ].map((tool) => (
-                <Link
-                  key={tool.href}
-                  href={tool.href}
-                  className="group flex items-start gap-3 rounded-xl border border-brand-border bg-white p-4 hover:border-brand hover:shadow-md transition-all"
-                >
-                  <span className="text-2xl shrink-0 mt-0.5">{tool.icon}</span>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-sm font-bold text-ink group-hover:text-brand transition-colors">
-                        {tool.title}
-                      </span>
-                      {tool.badge && (
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${tool.badgeColor}`}>
-                          {tool.badge}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-ink-muted leading-relaxed">{tool.desc}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+          <RelatedBusinessTools
+            title="📌 أدوات مالية وضريبية ذات صلة بالمملكة العربية السعودية"
+            subtitle="تصفح الحاسبات المتكاملة لمنظومة الأعمال والفوترة والضرائب في السعودية"
+            tools={[
+              { href: "/vat-calculator/saudi", icon: "🧾", title: "حاسبة ضريبة القيمة المضافة 15%", desc: "احسب ضريبة الـ 15% أو افصل السعر الأصلي لبيانات منظومة فاتورة والفوترة الإلكترونية.", badge: "ZATCA 15%", badgeColor: "bg-purple-100 text-purple-700" },
+              { href: "/ar/sa/e-invoice-generator", icon: "🧾", title: "مولد الفاتورة الإلكترونية السعودية", desc: "هل أصبحت مؤهلاً أو ملزماً بالتسجيل؟ → أنشئ نموذج فاتورة إلكترونية سعودية (B2B أو B2C) مع احتساب VAT 15%.", badge: "ZATCA فاتورة", badgeColor: "bg-indigo-100 text-indigo-700" },
+              { href: "/ar/sa/final-settlement-calculator", icon: "📋", title: "حاسبة المخالصة النهائية الشاملة", desc: "تصفية كاملة لمستحقات العامل: نهاية الخدمة، آخر راتب، بدل الإجازات، وبدل الإشعار.", badge: "نظام العمل", badgeColor: "bg-emerald-100 text-emerald-700" },
+              { href: "/ar/sa/article-77-calculator", icon: "⚖️", title: "حاسبة تعويض المادة 77", desc: "حساب تعويض إنهاء العقد لسبب غير مشروع مع تطبيق حد الشهرين الأدنى للموظف أو المنشأة.", badge: "المادة 77", badgeColor: "bg-rose-100 text-rose-700" },
+              { href: "/salary-calculator/saudi", icon: "💼", title: "حاسبة الراتب الصافي والتأمينات GOSI", desc: "احسب صافي الراتب بعد استقطاعات التأمينات وساند ومسيرات حماية الأجور.", badge: "GOSI", badgeColor: "bg-blue-100 text-blue-700" },
+              { href: "/profit-margin-calculator", icon: "📈", title: "حاسبة هامش الربح والتسعير", desc: "احسب هامش الربح الإجمالي والصافي ومعدل الزيادة على التكلفة لمنتجاتك وخدماتك.", badge: "أعمال", badgeColor: "bg-amber-100 text-amber-700" },
+              { href: "/ar/sa", icon: "🇸🇦", title: "مجمع أدوات وحاسبات السعودية", desc: "دليل الحاسبات العمالية، والضريبية، والمالية المخصصة للمملكة في مكان واحد.", badge: "المجمع الشامل", badgeColor: "bg-emerald-600 text-white font-black" },
+            ]}
+          />
         </section>
       </main>
     </>
