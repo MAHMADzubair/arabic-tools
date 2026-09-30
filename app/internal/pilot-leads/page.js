@@ -1,10 +1,13 @@
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import PilotLeadsClient from "./PilotLeadsClient";
 
 export const metadata = {
   title: "Pilot Leads — Internal",
   robots: { index: false, follow: false },
 };
+
+const COOKIE_NAME = "pilot_admin_session";
 
 const PLATFORM_LABEL = { salla:"سلة", shopify:"Shopify", zid:"Zid", other:"أخرى" };
 const VOLUME_LABEL   = { lt_100:"< 100", "100_500":"100–500", "500_2000":"500–2000", gt_2000:"> 2000" };
@@ -23,11 +26,14 @@ function priorityColor(p) {
   return "bg-slate-100 text-slate-600 border-slate-300";
 }
 
-async function fetchLeads(secret) {
+async function fetchLeads() {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const secret = process.env.ADMIN_SECRET;
   try {
-    const res = await fetch(`${base}/api/internal/pilot-leads?secret=${encodeURIComponent(secret)}`,
-      { cache: "no-store" });
+    const res = await fetch(
+      `${base}/api/internal/pilot-leads?secret=${encodeURIComponent(secret)}`,
+      { cache: "no-store" }
+    );
     if (!res.ok) return { leads: [], error: `HTTP ${res.status}` };
     return res.json();
   } catch (err) {
@@ -35,10 +41,10 @@ async function fetchLeads(secret) {
   }
 }
 
-export default async function PilotLeadsPage({ searchParams }) {
+export default async function PilotLeadsPage() {
   const adminSecret = process.env.ADMIN_SECRET;
 
-  // Not configured
+  // Env not configured — show setup hint (doesn't leak info, server-only)
   if (!adminSecret) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
@@ -51,23 +57,14 @@ export default async function PilotLeadsPage({ searchParams }) {
     );
   }
 
-  const secret = searchParams?.secret || "";
-  if (secret !== adminSecret) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
-        <div className="rounded-2xl bg-slate-800 border border-red-800 p-8 text-center space-y-3 max-w-md">
-          <p className="text-2xl">🔒</p>
-          <p className="text-white font-bold">Unauthorized</p>
-          <p className="text-slate-400 text-sm">
-            Access this page at:<br />
-            <code className="text-amber-400 text-xs">/internal/pilot-leads?secret=YOUR_ADMIN_SECRET</code>
-          </p>
-        </div>
-      </div>
-    );
+  // Cookie auth — redirect unauthenticated users to login
+  const cookieStore = await cookies();
+  const session = cookieStore.get(COOKIE_NAME)?.value;
+  if (!session || session !== adminSecret) {
+    redirect("/internal/login");
   }
 
-  const { leads = [], error, source } = await fetchLeads(secret);
+  const { leads = [], error, source } = await fetchLeads();
 
   const enriched = leads.map(l => ({
     ...l,
@@ -91,17 +88,22 @@ export default async function PilotLeadsPage({ searchParams }) {
             <p className="text-slate-400 text-xs">AI Sales Closer · {enriched.length} lead{enriched.length !== 1 ? "s" : ""} · source: {source || "—"}</p>
           </div>
         </div>
-        {error && <span className="rounded-lg bg-red-900 text-red-200 text-xs px-3 py-1">⚠️ {error}</span>}
+        <div className="flex items-center gap-3">
+          {error && <span className="rounded-lg bg-red-900 text-red-200 text-xs px-3 py-1">⚠️ {error}</span>}
+          <a href="/api/internal/auth" className="rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold px-3 py-1.5 transition-colors">
+            تسجيل خروج →
+          </a>
+        </div>
       </div>
 
       {/* Stats bar */}
       {enriched.length > 0 && (
         <div className="px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "إجمالي الطلبات", val: enriched.length, color: "text-white" },
-            { label: "أولوية عالية 🔴", val: enriched.filter(l=>l.priority==="high").length,   color: "text-rose-400" },
-            { label: "أولوية متوسطة 🟡", val: enriched.filter(l=>l.priority==="medium").length, color: "text-amber-400" },
-            { label: "يريد التجربة", val: enriched.filter(l=>l.trial_interest==="yes").length, color: "text-emerald-400" },
+            { label: "إجمالي الطلبات",     val: enriched.length,                                            color: "text-white" },
+            { label: "أولوية عالية 🔴",    val: enriched.filter(l=>l.priority==="high").length,             color: "text-rose-400" },
+            { label: "أولوية متوسطة 🟡",   val: enriched.filter(l=>l.priority==="medium").length,           color: "text-amber-400" },
+            { label: "يريد التجربة",        val: enriched.filter(l=>l.trial_interest==="yes").length,        color: "text-emerald-400" },
           ].map(s => (
             <div key={s.label} className="rounded-xl bg-slate-800 border border-slate-700 p-3 text-center">
               <p className={`text-2xl font-black ${s.color}`}>{s.val}</p>
@@ -112,7 +114,7 @@ export default async function PilotLeadsPage({ searchParams }) {
       )}
 
       {/* Pass to client for CSV + table interactivity */}
-      <PilotLeadsClient leads={enriched} secret={secret} />
+      <PilotLeadsClient leads={enriched} />
     </div>
   );
 }

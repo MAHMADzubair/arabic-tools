@@ -1,9 +1,10 @@
 /**
  * GET /api/internal/pilot-leads
  * Internal-only endpoint: returns all pilot leads as JSON.
- * Protected by ADMIN_SECRET env var.
  *
- * Usage: GET /api/internal/pilot-leads?secret=YOUR_SECRET
+ * Auth (either is sufficient):
+ *   1. HttpOnly session cookie `pilot_admin_session` (browser / page.js server component)
+ *   2. ?secret=ADMIN_SECRET  (server-to-server call from page.js on Vercel)
  *
  * Required env vars:
  *   ADMIN_SECRET              — any random long string you generate
@@ -12,8 +13,11 @@
  */
 
 import { NextResponse } from "next/server";
+import { cookies }      from "next/headers";
 import { readFile }     from "fs/promises";
 import { join }         from "path";
+
+const COOKIE_NAME = "pilot_admin_session";
 
 function getSupabase() {
   const url = process.env.SUPABASE_URL;
@@ -26,17 +30,27 @@ function getSupabase() {
 }
 
 export async function GET(request) {
-  // ── Auth check ──────────────────────────────────────────────────────────
   const adminSecret = process.env.ADMIN_SECRET;
   if (!adminSecret) {
     return NextResponse.json({ error: "ADMIN_SECRET not configured" }, { status: 503 });
   }
+
+  // ── Auth: cookie (browser) or ?secret= (server-to-server) ───────────────
   const { searchParams } = new URL(request.url);
-  if (searchParams.get("secret") !== adminSecret) {
+  const querySecret = searchParams.get("secret");
+
+  const cookieStore = await cookies();
+  const cookieSession = cookieStore.get(COOKIE_NAME)?.value;
+
+  const authed =
+    (cookieSession && cookieSession === adminSecret) ||
+    (querySecret   && querySecret   === adminSecret);
+
+  if (!authed) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // ── Fetch from Supabase ─────────────────────────────────────────────────
+  // ── Fetch from Supabase ──────────────────────────────────────────────────
   const sb = getSupabase();
   if (sb) {
     const { data, error } = await sb
@@ -50,22 +64,22 @@ export async function GET(request) {
     return NextResponse.json({ leads: data || [], source: "supabase" });
   }
 
-  // ── /tmp fallback ───────────────────────────────────────────────────────
+  // ── /tmp fallback (dev only) ─────────────────────────────────────────────
   try {
-    const raw  = await readFile(join("/tmp", "pilot-leads.json"), "utf8");
-    const arr  = JSON.parse(raw);
+    const raw   = await readFile(join("/tmp", "pilot-leads.json"), "utf8");
+    const arr   = JSON.parse(raw);
     const leads = arr
       .map(l => ({
         id:                          l.id,
-        created_at:                  l.createdAt,
+        created_at:                  l.created_at || l.createdAt,
         name:                        l.name,
-        store_name:                  l.storeName,
+        store_name:                  l.store_name || l.storeName,
         email:                       l.email,
         whatsapp:                    l.whatsapp,
         platform:                    l.platform,
-        monthly_conversation_volume: l.volume,
-        biggest_problem:             l.problem,
-        trial_interest:              l.trialInterest,
+        monthly_conversation_volume: l.monthly_conversation_volume || l.volume,
+        biggest_problem:             l.biggest_problem || l.problem,
+        trial_interest:              l.trial_interest  || l.trialInterest,
         priority:                    l.priority,
         source:                      l.source,
         referrer:                    l.referrer,

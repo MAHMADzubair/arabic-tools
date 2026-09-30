@@ -50,7 +50,13 @@ export default function sitemap() {
     "/ar/ae/small-business-relief-checker",
   ];
 
+  // Business tool pages
+  const businessPages = [
+    "/ar/business/ai-sales-closer",
+  ];
+
   const now = new Date();
+
 
   const homePage = {
     url: BASE_URL,
@@ -99,6 +105,14 @@ export default function sitemap() {
     priority: 0.8,
   }));
 
+  // Business tool pages (pilot / AI products)
+  const businessRoutes = businessPages.map((route) => ({
+    url: `${BASE_URL}${route}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.85,
+  }));
+
   // Static / legal pages — lowest crawl priority
   const staticPages = ["/about", "/privacy", "/contact", "/terms", "/disclaimer"].map((route) => ({
     url: `${BASE_URL}${route}`,
@@ -107,13 +121,14 @@ export default function sitemap() {
     priority: 0.4,
   }));
 
-  // Priority order: home → country landing → Saudi deep tools → UAE deep tools → country tool routes → general tools → static
+  // Priority order: home → country landing → Saudi deep tools → UAE deep tools → country tool routes → business → general tools → static
   return [
     homePage,
     ...countryPages,
     ...saudiDeepRoutes,
     ...uaeDeepRoutes,
     ...countryToolRoutes,
+    ...businessRoutes,
     ...toolPages,
     ...staticPages,
   ];

@@ -30,7 +30,7 @@ function downloadCSV(leads) {
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
 
-export default function PilotLeadsClient({ leads, secret }) {
+export default function PilotLeadsClient({ leads }) {
   const [sortField,  setSortField]  = useState("created_at");
   const [sortDir,    setSortDir]    = useState("desc");
   const [filterP,    setFilterP]    = useState("all");  // priority filter
