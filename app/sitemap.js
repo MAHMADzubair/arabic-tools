@@ -39,6 +39,7 @@ export default function sitemap() {
     "/ar/sa/article-77-calculator",
     "/ar/sa/vat-registration-checker",
     "/ar/sa/e-invoice-generator",
+    "/ar/sa/quotation-generator",
   ];
 
   // UAE /ar/ae/ deep-linked tool pages

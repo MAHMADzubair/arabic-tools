@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   formatSAR as fmt,
@@ -282,6 +282,37 @@ export default function EInvoiceGenerator() {
   const [showValidation, setShowValidation] = useState(false);
   const [activeTab, setActiveTab] = useState("form"); // "form" | "preview"
 
+  // ─── Prefill from Quotation Generator ──────────────────────────────────────
+  // If saudi_invoice_prefill_v1 exists in localStorage (set by SaudiQuotationGenerator),
+  // show a dismissible import banner. Never silently overwrite existing form data.
+  const [prefillData,    setPrefillData]    = useState(null);
+  const [prefillDismissed, setPrefillDismissed] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = typeof window !== "undefined" && localStorage.getItem("saudi_invoice_prefill_v1");
+      if (raw) setPrefillData(JSON.parse(raw));
+    } catch { /* ignore */ }
+  }, []);
+
+  const handleImportPrefill = () => {
+    if (!prefillData) return;
+    try {
+      if (prefillData.seller)         setSeller({ ...SAMPLE_PRESETS.tax.seller, ...prefillData.seller });
+      if (prefillData.buyer)          setBuyer({ ...SAMPLE_PRESETS.tax.buyer, ...prefillData.buyer });
+      if (prefillData.invoiceDetails) setInvoiceDetails({ ...SAMPLE_PRESETS.tax.invoiceDetails, ...prefillData.invoiceDetails });
+      if (prefillData.invoiceType)    setInvoiceType(prefillData.invoiceType);
+      if (prefillData.lines && prefillData.lines.length > 0) setLines(prefillData.lines);
+      localStorage.removeItem("saudi_invoice_prefill_v1");
+    } catch { /* ignore */ }
+    setPrefillData(null);
+    setPrefillDismissed(false);
+  };
+
+  const handleDismissPrefill = () => {
+    setPrefillDismissed(true);
+  };
+
   // ─── Load Preset ───────────────────────────────────────────────────────────
   const applyPreset = (type) => {
     const preset = SAMPLE_PRESETS[type];
@@ -384,6 +415,29 @@ export default function EInvoiceGenerator() {
 
   return (
     <div className="rounded-2xl border border-brand-border bg-white shadow-card overflow-hidden" dir="rtl">
+      {/* ── Prefill import banner (from Saudi Quotation Generator) ─────────── */}
+      {prefillData && !prefillDismissed && (
+        <div className="bg-emerald-50 border-b border-emerald-200 px-4 py-3 flex items-center justify-between gap-3 flex-wrap no-print">
+          <div className="flex items-center gap-2">
+            <span className="text-lg shrink-0">📋</span>
+            <p className="text-xs font-bold text-emerald-900">
+              تم اكتشاف بيانات من مولد عرض السعر السعودي — هل تريد استيرادها؟
+              <span className="mr-1 font-normal text-emerald-700">لن تُستبدل بيانات الفاتورة الحالية إلا بعد موافقتك.</span>
+            </p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button onClick={handleImportPrefill}
+              className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-1.5 transition-all">
+              ✅ استيراد بيانات عرض السعر
+            </button>
+            <button onClick={handleDismissPrefill}
+              className="rounded-lg border border-emerald-300 text-emerald-700 text-xs font-bold px-3 py-1.5 hover:bg-emerald-100 transition-all">
+              تجاهل
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Top Official Disclaimer Banner ─────────────────────────────────── */}
       <div className="bg-amber-500/10 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between text-xs text-amber-900 no-print">
         <div className="flex items-center gap-2">

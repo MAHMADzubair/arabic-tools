@@ -336,6 +336,14 @@ export default function EInvoiceGeneratorPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 {
+                  href: "/ar/sa/quotation-generator",
+                  icon: "📋",
+                  title: "مولد عرض السعر في السعودية",
+                  desc: "قبل إصدار الفاتورة، أنشئ عرض سعر احترافي بالعربية والإنجليزية وأرسله للعميل للموافقة أولاً.",
+                  badge: "Business",
+                  badgeColor: "bg-amber-100 text-amber-700",
+                },
+                {
                   href: "/ar/sa/vat-registration-checker",
                   icon: "🏢",
                   title: "حاسبة أهلية التسجيل في ضريبة القيمة المضافة",
