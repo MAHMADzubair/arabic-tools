@@ -48,6 +48,7 @@ export default function sitemap() {
     "/ar/ae/vat-registration-checker",
     "/ar/ae/corporate-tax-calculator",
     "/ar/ae/small-business-relief-checker",
+    "/ar/ae/vat-invoice-generator",
   ];
 
   // Business tool pages

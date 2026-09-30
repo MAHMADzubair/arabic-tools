@@ -341,6 +341,14 @@ export default function UaeVatRegistrationCheckerPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 {
+                  href: "/ar/ae/vat-invoice-generator",
+                  icon: "🧾",
+                  title: "مولد الفاتورة الضريبية في الإمارات",
+                  desc: "بعد التسجيل، أنشئ نموذج فاتورة ضريبية كاملة أو مبسطة مع احتساب 5% VAT وفحص اكتمال الحقول.",
+                  badge: "FTA VAT",
+                  badgeColor: "bg-blue-100 text-blue-800",
+                },
+                {
                   href: "/ar/ae/corporate-tax-calculator",
                   icon: "🏛️",
                   title: "حاسبة ضريبة الشركات في الإمارات",
