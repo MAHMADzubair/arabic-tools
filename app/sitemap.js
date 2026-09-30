@@ -51,6 +51,7 @@ export default function sitemap() {
     "/ar/ae/small-business-relief-checker",
     "/ar/ae/vat-invoice-generator",
     "/ar/ae/quotation-generator",
+    "/ar/ae/purchase-order-generator",
   ];
 
   // Business tool pages

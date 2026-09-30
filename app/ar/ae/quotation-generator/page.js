@@ -108,6 +108,15 @@ const faqJsonLd = {
 
 const relatedTools = [
   {
+    href: "/ar/ae/purchase-order-generator",
+    icon: "📦",
+    title: "مولد أمر الشراء في الإمارات",
+    desc: "بعد موافقة العميل أو المورد، أنشئ أمر شراء رسمي بالعربية والإنجليزية.",
+    badge: "Business",
+    badgeColor: "bg-indigo-100 text-indigo-800",
+    cta: "أنشئ أمر شراء →",
+  },
+  {
     href: "/ar/ae/vat-invoice-generator",
     icon: "🧾",
     title: "مولد الفاتورة الضريبية في الإمارات",

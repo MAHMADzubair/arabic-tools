@@ -275,6 +275,20 @@ export default function UaeQuotationGenerator() {
     window.open("/ar/ae/vat-invoice-generator", "_blank");
   };
 
+  // ── Convert to PO (localStorage handoff) ─────────────────────────────────────
+  const handleConvertToPO = () => {
+    try {
+      const payload = {
+        supplier: { name: seller.name, address: seller.address, emirate: seller.emirate, trn: seller.trn, email: seller.email, phone: seller.phone, contactPerson: seller.contactPerson || "" },
+        buyer:    { name: customer.name, address: customer.address, emirate: customer.emirate, trn: customer.trn, email: customer.email, phone: customer.phone, contactPerson: customer.contactPerson || "" },
+        lines:    lines.map(l => ({ id: l.id, name: l.name, sku: "", qty: l.qty, unit: l.unit || "وحدة", unitPrice: l.unitPrice, discount: l.discount, vatRateId: l.vatRateId })),
+        poDetails: { quoteRef: details.quoteNumber, currency: details.currency, issueDate: details.issueDate, showVat: details.showVat },
+      };
+      localStorage.setItem("uae_po_prefill_v1", JSON.stringify(payload));
+    } catch { /* silent — link still works */ }
+    window.open("/ar/ae/purchase-order-generator", "_blank");
+  };
+
   // ─── RENDER ──────────────────────────────────────────────────────────────────
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 space-y-4">
@@ -760,6 +774,10 @@ export default function UaeQuotationGenerator() {
             <button onClick={handleConvertToInvoice}
               className="rounded-xl border border-emerald-300 text-emerald-700 hover:bg-emerald-50 font-bold text-sm px-5 py-3 transition-all whitespace-nowrap">
               🧾 تحويل إلى فاتورة
+            </button>
+            <button onClick={handleConvertToPO}
+              className="rounded-xl border border-indigo-300 text-indigo-700 hover:bg-indigo-50 font-bold text-sm px-5 py-3 transition-all whitespace-nowrap">
+              📦 تحويل إلى أمر شراء
             </button>
           </div>
 
