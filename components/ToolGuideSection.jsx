@@ -199,7 +199,7 @@ export default function ToolGuideSection({
           {lastUpdated && (
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-xs font-bold text-emerald-800 shadow-sm">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>آخر تحديث واعتماد رسمي: {lastUpdated}</span>
+              <span>آخر مراجعة للمحتوى: {lastUpdated}</span>
             </div>
           )}
           <br />
@@ -237,7 +237,7 @@ export default function ToolGuideSection({
             <div className="mt-8 border-t border-brand-border/60 pt-6 space-y-4">
               <h3 className="text-lg font-bold text-ink flex items-center gap-2">
                 <span>📚</span>
-                <span>السند النظامي والشرعي المعتمد:</span>
+                <span>السند النظامي والمرجعي:</span>
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 {legalSources.map((ls, idx) => (

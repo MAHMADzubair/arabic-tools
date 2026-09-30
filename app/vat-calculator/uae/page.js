@@ -1,6 +1,7 @@
 import VatCalculator from "@/components/VatCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 import Link from "next/link";
+import GeoSummary from "@/components/business/GeoSummary";
 
 export const metadata = {
   title: "حاسبة ضريبة القيمة المضافة في الإمارات 5% | الهيئة الاتحادية للضرائب FTA",
@@ -88,6 +89,15 @@ export default function UaeVatPage() {
       <div className="mx-auto max-w-2xl px-4">
         <VatCalculator initialCountry="UAE" />
       </div>
+      <GeoSummary
+        whatItDoes="تحسب ضريبة القيمة المضافة الإماراتية 5% — تضيفها إلى السعر أو تستخرجها من السعر الشامل"
+        appliesTo="دولة الإمارات العربية المتحدة — السلع والخدمات الخاضعة للضريبة"
+        keyRule="النسبة الأساسية 5% — معادلة الإضافة: × 1.05 — معادلة الاستخراج: ÷ 1.05"
+        authority="الهيئة الاتحادية للضرائب (FTA)"
+        authorityUrl="https://tax.gov.ae"
+        lastReviewed="يناير 2026"
+        disclaimer="هذه الأداة استرشادية — للالتزام الضريبي الرسمي راجع بوابة EmaraTax أو مستشارك الضريبي."
+      />
       <ToolGuideSection {...guideData} />
     </div>
   );

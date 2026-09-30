@@ -1,10 +1,11 @@
 import VatCalculator from "@/components/VatCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import GeoSummary from "@/components/business/GeoSummary";
 
 export const metadata = {
-  title: "حاسبة ضريبة القيمة المضافة (VAT) | احسب ١٥٪ أو ٥٪ وإجمالي الفاتورة",
+  title: "حاسبة ضريبة القيمة المضافة متعددة الدول | ١٥٪ و٥٪ والدول العربية",
   description:
-    "احسب ضريبة القيمة المضافة للسعودية (١٥٪)، الإمارات (٥٪)، مصر، والدول العربية، مع إمكانية إضافة الضريبة إلى السعر أو استخراجها من السعر الشامل.",
+    "احسب ضريبة القيمة المضافة للسعودية (١٥٪)، الإمارات (٥٪)، البحرين (١٠٪)، مصر (١٤٪)، الأردن (١٦٪) — أضف الضريبة أو استخرجها من السعر الشامل في ثوانٍ.",
   alternates: {
     canonical: "https://arabic-tools-xi.vercel.app/vat-calculator",
   },
@@ -85,6 +86,16 @@ export default function VatCalculatorPage() {
     <div className="py-6 sm:py-10">
       {/* 1. Calculator on top */}
       <VatCalculator />
+
+      {/* GEO / Answer-engine summary */}
+      <GeoSummary
+        whatItDoes="تحسب ضريبة القيمة المضافة وتستخرجها لأي دولة عربية — السعودية 15%، الإمارات وعُمان 5%، البحرين 10%، مصر 14%، الأردن 16%"
+        appliesTo="دول مجلس التعاون الخليجي ومصر والأردن"
+        keyRule="المعادلة: السعر × النسبة للإضافة — أو الإجمالي ÷ (1 + النسبة) للاستخراج"
+        authority="هيئات الضرائب الوطنية في كل دولة"
+        lastReviewed="سبتمبر 2026"
+        disclaimer="هذه الأداة استرشادية — تحقق مع مستشارك الضريبي أو الهيئة المختصة في بلدك لأي التزام رسمي."
+      />
 
       {/* 2. Standardized Guide, FAQs, and Related Tools */}
       <ToolGuideSection {...guideData} />

@@ -1,6 +1,7 @@
 import VatCalculator from "@/components/VatCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 import Link from "next/link";
+import GeoSummary from "@/components/business/GeoSummary";
 
 export const metadata = {
   title: "حاسبة ضريبة القيمة المضافة في السعودية 15% | هيئة الزكاة والضريبة ZATCA",
@@ -67,7 +68,7 @@ const guideData = {
         { label: "السعر الأصلي (1,150 ÷ 1.15)", value: "1,000.00 ر.س" },
         { label: "مبلغ الضريبة المسدد (1,150 - 1,000)", value: "150.00 ر.س (أو 1,000 × 15%)" },
       ],
-      verifiedResult: "السعر الأصلي 1,000 ر.س والضريبة 150 ر.س مطابقة 100%.",
+      verifiedResult: "السعر الأصلي 1,000 ر.س والضريبة 150 ر.س — الحساب صحيح وفق معادلة القسمة على 1.15.",
     },
   ],
   faqs: [
@@ -87,8 +88,6 @@ export default function SaudiVatPage() {
     <div className="py-6 sm:py-10">
       <div className="mx-auto max-w-2xl px-4">
         <VatCalculator initialCountry="KSA" />
-
-        {/* Contextual Link to VAT Registration Eligibility Checker */}
         <div className="mt-5 rounded-2xl border border-purple-200 bg-purple-50/80 p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
@@ -136,6 +135,15 @@ export default function SaudiVatPage() {
           </div>
         </div>
       </div>
+      <GeoSummary
+        whatItDoes="تحسب ضريبة القيمة المضافة السعودية 15% — تضيفها إلى السعر أو تستخرجها من السعر الشامل"
+        appliesTo="المملكة العربية السعودية — جميع القطاعات الخاضعة للضريبة"
+        keyRule="النسبة الأساسية 15% — معادلة الإضافة: × 1.15 — معادلة الاستخراج: ÷ 1.15"
+        authority="هيئة الزكاة والضريبة والجمارك (ZATCA)"
+        authorityUrl="https://zatca.gov.sa"
+        lastReviewed="يناير 2026"
+        disclaimer="هذه الأداة استرشادية — للالتزام الضريبي الرسمي راجع بوابة ZATCA أو مستشارك الضريبي."
+      />
       <ToolGuideSection {...guideData} />
     </div>
   );

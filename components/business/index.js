@@ -7,3 +7,4 @@ export { default as LegalDisclaimer }                from "./LegalDisclaimer";
 export { default as OfficialSource }                 from "./OfficialSource";
 export { default as RelatedBusinessTools }           from "./RelatedBusinessTools";
 export { default as PrintWrapper }                   from "./PrintWrapper";
+export { default as GeoSummary }                     from "./GeoSummary";

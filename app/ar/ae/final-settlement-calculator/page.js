@@ -1,5 +1,6 @@
 import UaeFinalSettlementCalculator from "@/components/UaeFinalSettlementCalculator";
 import Link from "next/link";
+import GeoSummary from "@/components/business/GeoSummary";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -143,6 +144,17 @@ export default function UaeFinalSettlementPage() {
         <div className="mx-auto max-w-3xl px-4 py-4 print:p-0 print:m-0 print:max-w-none">
           <UaeFinalSettlementCalculator />
         </div>
+
+        {/* GEO / Answer-engine summary */}
+        <GeoSummary
+          whatItDoes="تحسب مستحقات نهاية الخدمة الشاملة للموظف في الإمارات: مكافأة نهاية الخدمة وآخر راتب ورصيد الإجازات وبدل الإنذار"
+          appliesTo="دولة الإمارات العربية المتحدة — القطاع الخاص (عقود محددة وغير محددة)"
+          keyRule="مكافأة نهاية الخدمة: 21 يوماً لكل سنة للسنوات الخمس الأولى ثم 30 يوماً للسنوات التالية — المرسوم 33 لسنة 2021 المادة 51"
+          authority="وزارة الموارد البشرية والتوطين (MOHRE)"
+          authorityUrl="https://www.mohre.gov.ae"
+          lastReviewed="يناير 2026"
+          disclaimer="هذه الأداة استرشادية — نتائجها تقديرية. للنزاعات العمالية راجع بوابة تسوية النزاعات في MOHRE."
+        />
 
         {/* ── PART 2: Comprehensive Explanation (300–500 Words) ────────────────── */}
         <section className="mx-auto max-w-3xl px-4 py-8 no-print print:hidden">
