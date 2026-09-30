@@ -459,7 +459,7 @@ export default function EInvoiceGenerator() {
                   مولد الفاتورة الإلكترونية السعودية
                 </h1>
                 <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
-                  ZATCA 2026
+                  ZATCA فاتورة
                 </span>
               </div>
               <p className="text-xs text-indigo-200 mt-1">

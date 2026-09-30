@@ -120,7 +120,7 @@ export default function OvertimeCalculator({ initialCountry = "sa" }) {
           </span>
         </div>
         <p className="text-sm text-white/80">
-          احسب أجر ساعات العمل الإضافية النهارية والليلية والعطلات بدقة تامة
+          احسب أجر ساعات العمل الإضافية النهارية والليلية والعطلات وفق الأنظمة المعتمدة
         </p>
       </div>
 

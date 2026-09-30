@@ -2,7 +2,7 @@ import UmrahCalculator from "../../components/UmrahCalculator";
 import ToolGuideSection from "../../components/ToolGuideSection";
 
 export const metadata = {
-  title: "حاسبة تكلفة العمرة 2025 | تقدير شامل للميزانية",
+  title: "حاسبة تكلفة العمرة 2026 | تقدير شامل للميزانية",
   description:
     "احسب تكلفة رحلة العمرة بالكامل — تذاكر الطيران، الفندق، التأشيرة، الطعام، والمواصلات. دعم 8 دول بعملاتها المحلية ومواسم مختلفة.",
   keywords: ["تكلفة العمرة", "حاسبة العمرة", "ميزانية العمرة", "رحلة العمرة"],

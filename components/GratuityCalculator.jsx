@@ -445,7 +445,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
           حاسبة مكافأة نهاية الخدمة
         </h1>
         <p className="mx-auto max-w-2xl text-sm text-ink-secondary sm:text-base">
-          احسب مستحقاتك القانونية بدقة متناهية وفق أنظمة العمل المحدثة لـ 7 دول عربية وخليجية مع حالات الاستقالة والفصل والتقاعد.
+          احسب مستحقاتك القانونية وفق أنظمة العمل المحدثة لـ 7 دول عربية وخليجية مع حالات الاستقالة والفصل والتقاعد.
         </p>
       </div>
 
