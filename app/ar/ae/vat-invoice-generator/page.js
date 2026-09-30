@@ -383,6 +383,15 @@ export default function UaeVatInvoiceGeneratorPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 {
+                  href: "/ar/ae/quotation-generator",
+                  icon: "📋",
+                  title: "مولد عرض السعر في الإمارات",
+                  desc: "قبل إصدار الفاتورة، أنشئ عرض سعر احترافي بالعربية والإنجليزية وأرسله للعميل للموافقة.",
+                  badge: "Business",
+                  badgeColor: "bg-amber-100 text-amber-800",
+                  cta: "أنشئ عرض سعر أولاً →",
+                },
+                {
                   href: "/ar/ae/vat-registration-checker",
                   icon: "🏢",
                   title: "التحقق من أهلية التسجيل في ضريبة القيمة المضافة",
