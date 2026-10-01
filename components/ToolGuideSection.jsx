@@ -315,18 +315,18 @@ export default function ToolGuideSection({
         </div>
       </section>
 
-      {/* Verified Test Cases Section */}
+      {/* Test Cases Section */}
       {testCases && testCases.length > 0 && (
         <section className="space-y-6">
           <div className="text-center">
             <span className="inline-block rounded-full bg-emerald-100 px-3.5 py-1 text-xs font-bold text-emerald-800 mb-2">
-              حالات اختبار معتمدة
+              أمثلة اختبار توضيحية
             </span>
             <h2 className="text-2xl font-black text-ink sm:text-3xl">
-              حالات تدقيق ومطابقة بالأرقام (Verified Test Cases)
+              أمثلة تطبيقية بالأرقام (Test Cases)
             </h2>
             <p className="mt-1 text-xs sm:text-sm text-ink-muted">
-              مسائل شرعية ونظامية دقيقة تم حلها يدوياً وتطابق نتائج الحاسبة بنسبة 100%
+              مسائل نظامية تم حلها يدوياً لتوضيح طريقة الحساب — النتائج تقديرية حسب المدخلات
             </p>
           </div>
 
@@ -341,7 +341,7 @@ export default function ToolGuideSection({
                     {tc.tag || `حالة ${idx + 1}`}
                   </span>
                   <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    ✓ مطابقة نظامية 100%
+                    ✓ نتيجة تقديرية
                   </span>
                 </div>
                 <h3 className="text-base font-bold text-ink">{tc.title}</h3>

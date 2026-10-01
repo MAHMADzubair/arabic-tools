@@ -23,7 +23,12 @@ function formatCurrency(val, currency) {
   })} ${currency}`;
 }
 
-export default function VatCalculator({ initialCountry = "KSA" }) {
+export default function VatCalculator({
+  initialCountry = "KSA",
+  pageTitle = null,
+  pageDesc = null,
+  pageBadge = null,
+}) {
   const defaultPreset = countryPresets.find((c) => c.code === initialCountry) || countryPresets[0];
 
   // Calculation mode: 'add' (غير شامل -> شامل) or 'extract' (شامل -> استخراج غير الشامل)
@@ -113,19 +118,23 @@ export default function VatCalculator({ initialCountry = "KSA" }) {
       <div className="mb-8 text-center sm:mb-12">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
           <span>🧾</span>
-          <span>حاسبة الضرائب والفواتير المعتمدة</span>
+          <span>{pageBadge || "أداة حساب ضريبة القيمة المضافة"}</span>
         </div>
         <h1 className="mb-3 text-3xl font-extrabold text-ink sm:text-5xl">
-          حاسبة ضريبة القيمة المضافة (VAT)
+          {pageTitle || "حاسبة ضريبة القيمة المضافة (VAT)"}
         </h1>
         <p className="mx-auto max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
-          احسب قيمة الضريبة المضافة بدقة للسعودية (١٥٪)، الإمارات (٥٪)، مصر، وباقي الدول العربية،
-          مع إمكانية إضافة الضريبة إلى السعر أو استخراجها من السعر الشامل.
+          {pageDesc || (
+            <>
+              أضف ضريبة القيمة المضافة إلى السعر أو استخرجها من السعر الشامل — اختر الدولة
+              لتطبيق النسبة المناسبة (١٥٪ في السعودية، ٥٪ في الإمارات وغيرها).
+            </>
+          )}
         </p>
 
         {/* Country Quick Presets */}
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-xs font-bold text-ink-muted">نسب الدول المعتمدة:</span>
+          <span className="text-xs font-bold text-ink-muted">نسبة الضريبة حسب الدولة:</span>
           {countryPresets.map((c) => (
             <button
               key={c.code}

@@ -4,11 +4,19 @@ import Link from "next/link";
 import GeoSummary from "@/components/business/GeoSummary";
 
 export const metadata = {
-  title: "حاسبة ضريبة القيمة المضافة في السعودية 15% | هيئة الزكاة والضريبة ZATCA",
+  title: "حاسبة ضريبة القيمة المضافة السعودية 15% | VAT Calculator KSA 2026",
   description:
-    "احسب ضريبة القيمة المضافة 15% في السعودية، واستخرج السعر قبل وبعد الضريبة وفق لوائح هيئة الزكاة والضريبة والجمارك (ZATCA) ومنظومة الفوترة الإلكترونية فاتورة.",
+    "احسب ضريبة القيمة المضافة 15% في المملكة العربية السعودية — أضف الضريبة أو استخرجها من السعر الشامل وفق لوائح هيئة الزكاة والضريبة والجمارك (ZATCA). بالريال السعودي.",
   alternates: {
     canonical: "https://arabic-tools-xi.vercel.app/vat-calculator/saudi",
+  },
+  openGraph: {
+    title: "حاسبة ضريبة القيمة المضافة السعودية 15% | VAT Calculator KSA 2026",
+    description:
+      "احسب ضريبة القيمة المضافة 15% في المملكة العربية السعودية وفق لوائح ZATCA. بالريال السعودي.",
+    url: "https://arabic-tools-xi.vercel.app/vat-calculator/saudi",
+    type: "website",
+    locale: "ar_SA",
   },
 };
 
@@ -68,7 +76,7 @@ const guideData = {
         { label: "السعر الأصلي (1,150 ÷ 1.15)", value: "1,000.00 ر.س" },
         { label: "مبلغ الضريبة المسدد (1,150 - 1,000)", value: "150.00 ر.س (أو 1,000 × 15%)" },
       ],
-      verifiedResult: "السعر الأصلي 1,000 ر.س والضريبة 150 ر.س — الحساب صحيح وفق معادلة القسمة على 1.15.",
+      verifiedResult: "السعر الأصلي 1,000 ر.س والضريبة 150 ر.س — النتيجة وفق معادلة القسمة على 1.15 (أداة تقديرية).",
     },
   ],
   faqs: [
@@ -87,7 +95,12 @@ export default function SaudiVatPage() {
   return (
     <div className="py-6 sm:py-10">
       <div className="mx-auto max-w-2xl px-4">
-        <VatCalculator initialCountry="KSA" />
+        <VatCalculator
+          initialCountry="KSA"
+          pageTitle="حاسبة ضريبة القيمة المضافة في السعودية 15%"
+          pageBadge="حاسبة VAT السعودية — ZATCA"
+          pageDesc="احسب ضريبة القيمة المضافة 15% في المملكة العربية السعودية بالريال السعودي — أضف الضريبة إلى السعر أو استخرجها من الإجمالي وفق القواعد المنشورة من هيئة الزكاة والضريبة والجمارك (ZATCA)."
+        />
         <div className="mt-5 rounded-2xl border border-purple-200 bg-purple-50/80 p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">

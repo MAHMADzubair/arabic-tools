@@ -85,7 +85,11 @@ export default function VatCalculatorPage() {
   return (
     <div className="py-6 sm:py-10">
       {/* 1. Calculator on top */}
-      <VatCalculator />
+      <VatCalculator
+        pageTitle="حاسبة ضريبة القيمة المضافة — متعددة الدول"
+        pageBadge="أداة حساب VAT للدول العربية"
+        pageDesc="أضف ضريبة القيمة المضافة إلى السعر أو استخرجها من السعر الشامل — يدعم السعودية (١٥٪)، الإمارات (٥٪)، البحرين (١٠٪)، مصر (١٤٪)، الأردن (١٦٪)."
+      />
 
       {/* GEO / Answer-engine summary */}
       <GeoSummary

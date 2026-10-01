@@ -6,6 +6,17 @@ export const metadata = {
   description:
     "احسب راتبك الصافي بدقة بعد خصم ضرائب الدخل والتأمينات الاجتماعية (GOSI) والبدلات للسعودية والإمارات ومصر وباكستان وبريطانيا وأمريكا.",
   keywords: ["حاسبة الراتب", "صافي الراتب", "ضريبة الدخل", "GOSI", "net salary", "حاسبة الأجر"],
+  alternates: {
+    canonical: "https://arabic-tools-xi.vercel.app/salary-calculator",
+  },
+  openGraph: {
+    title: "حاسبة الراتب الصافي 2026 | ضريبة الدخل والتأمينات لـ 6 دول",
+    description:
+      "احسب راتبك الصافي بعد خصم ضرائب الدخل والتأمينات للسعودية والإمارات ومصر وباكستان وبريطانيا وأمريكا.",
+    url: "https://arabic-tools-xi.vercel.app/salary-calculator",
+    type: "website",
+    locale: "ar_AR",
+  },
 };
 
 const guideData = {
@@ -84,7 +95,7 @@ const guideData = {
         { label: "خصم التأمينات GOSI (10%)", value: "1,250.00 ر.س" },
         { label: "ضريبة الدخل في السعودية", value: "0.00 ر.س" },
       ],
-      verifiedResult: "الراتب الصافي = 13,300 - 1,250 = 12,050.00 ريال سعودي. مطابقة تامة 100%.",
+      verifiedResult: "الراتب الصافي = 13,300 - 1,250 = 12,050.00 ريال سعودي. النتيجة متوافقة مع قواعد التأمينات المنشورة.",
     },
     {
       tag: "حالة 2: موظف في مصر مع الضريبة التصاعدية والتأمينات",
@@ -122,7 +133,11 @@ const guideData = {
 export default function SalaryCalculatorPage() {
   return (
     <div className="py-6 sm:py-10">
-      <SalaryCalculator />
+      <SalaryCalculator
+        pageTitle="حاسبة الراتب الصافي — متعددة الدول"
+        pageBadge="حاسبة الراتب الصافي"
+        pageDesc="احسب راتبك الصافي بعد الضرائب والتأمينات الاجتماعية والبدلات — يدعم السعودية والإمارات ومصر وباكستان وبريطانيا وأمريكا."
+      />
       <ToolGuideSection {...guideData} />
     </div>
   );

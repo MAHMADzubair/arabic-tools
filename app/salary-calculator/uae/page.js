@@ -1,10 +1,22 @@
 import SalaryCalculator from "@/components/SalaryCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 
 export const metadata = {
-  title: "حاسبة الراتب الصافي في الإمارات 2026 | نظام حماية الأجور والتأمين ILOE",
+  title: "حاسبة الراتب في الإمارات 2026 | صافي الراتب بالدرهم الإماراتي",
   description:
-    "احسب صافي راتبك في دبي وأبوظبي والإمارات بدقة بعد تفصيل الراتب الأساسي والبدلات، مع توضيح رسوم التأمين ضد التعطل عن العمل (ILOE) وانعدام ضريبة الدخل.",
+    "احسب صافي راتبك في دبي وأبوظبي والإمارات بالدرهم الإماراتي — تفصيل الراتب الأساسي والبدلات مع توضيح رسوم التأمين ضد التعطل (ILOE) وانعدام ضريبة الدخل.",
+  alternates: {
+    canonical: "https://arabic-tools-xi.vercel.app/salary-calculator/uae",
+  },
+  openGraph: {
+    title: "حاسبة الراتب في الإمارات 2026 | صافي الراتب بالدرهم الإماراتي",
+    description:
+      "احسب صافي راتبك في الإمارات بالدرهم الإماراتي — 0% ضريبة دخل، تفصيل الراتب الأساسي والبدلات.",
+    url: "https://arabic-tools-xi.vercel.app/salary-calculator/uae",
+    type: "website",
+    locale: "ar_AE",
+  },
 };
 
 const guideData = {
@@ -85,8 +97,22 @@ export default function UaeSalaryPage() {
   return (
     <div className="py-6 sm:py-10">
       <div className="mx-auto max-w-2xl px-4">
-        <SalaryCalculator initialCountry="ae" />
+        <SalaryCalculator
+          initialCountry="ae"
+          pageTitle="حاسبة الراتب الصافي في الإمارات"
+          pageBadge="حاسبة الراتب الإماراتي — WPS"
+          pageDesc="احسب صافي راتبك الشهري في دولة الإمارات العربية المتحدة بالدرهم الإماراتي — 0% ضريبة دخل شخصية، مع تفصيل الراتب الأساسي والبدلات."
+        />
       </div>
+      <GeoAnswerSummary
+        whatItDoes="تحسب صافي الراتب الشهري في الإمارات بالدرهم الإماراتي مع تفصيل الراتب الأساسي والبدلات"
+        appliesTo="دولة الإمارات العربية المتحدة — موظفو القطاعين الخاص والحكومي"
+        keyRule="0% ضريبة دخل شخصية — رسم ILOE 5 أو 10 دراهم شهرياً حسب الراتب"
+        authority="وزارة الموارد البشرية والتوطين (MOHRE)"
+        authorityUrl="https://mohre.gov.ae"
+        lastReviewed="سبتمبر 2026"
+        disclaimer="هذه الأداة استرشادية تقديرية — راجع قسم الموارد البشرية أو وزارة MOHRE لأرقام دقيقة."
+      />
       <ToolGuideSection {...guideData} />
     </div>
   );

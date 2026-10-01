@@ -109,7 +109,12 @@ function calcSocial(gross, country) {
 }
 
 /* ─── Component ─────────────────────────────────────────────────────────── */
-export default function SalaryCalculator({ initialCountry = "sa" }) {
+export default function SalaryCalculator({
+  initialCountry = "sa",
+  pageTitle = null,
+  pageDesc = null,
+  pageBadge = null,
+}) {
   const [countryId, setCountryId] = useState(initialCountry);
   const [grossSalary, setGrossSalary] = useState(10000);
   const [housingAllowance, setHousingAllowance] = useState(0);
@@ -196,13 +201,13 @@ export default function SalaryCalculator({ initialCountry = "sa" }) {
       {/* Header */}
       <div className="mb-8 text-center space-y-3">
         <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>💰</span><span>حاسبة الراتب الصافي</span>
+          <span>💰</span><span>{pageBadge || "حاسبة الراتب الصافي"}</span>
         </div>
         <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">
-          حاسبة الراتب الصافي وصافي الأجر
+          {pageTitle || "حاسبة الراتب الصافي وصافي الأجر"}
         </h1>
         <p className="mx-auto max-w-xl text-sm text-ink-secondary sm:text-base">
-          احسب راتبك الصافي بعد الضرائب والتأمينات الاجتماعية والبدلات لـ 6 دول.
+          {pageDesc || "احسب راتبك الصافي بعد الضرائب والتأمينات الاجتماعية والبدلات لـ 6 دول."}
         </p>
       </div>
 
