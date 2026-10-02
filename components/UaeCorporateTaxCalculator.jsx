@@ -325,7 +325,7 @@ export default function UaeCorporateTaxCalculator() {
                   <ul className="space-y-1">{sbrResult.reasons.map((r,i)=>(<li key={i} className="text-xs text-rose-800 flex items-start gap-1.5"><span>•</span><span>{r}</span></li>))}</ul>
                 )}
               </div>
-              <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3 text-[11px] text-amber-900 leading-relaxed">⚠️ وفق التوجيهات الحالية لـ FTA، تسري تسهيلات الأعمال الصغيرة (بحد إيرادات 3,000,000 درهم) على الفترات الضريبية التي تنتهي في أو قبل 31 ديسمبر 2026. يجب مراجعة أحدث إرشادات الهيئة الاتحادية للضرائب قبل الاعتماد على هذه النتيجة. آخر مراجعة: سبتمبر 2026.</div>
+              <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3 text-[11px] text-amber-900 leading-relaxed">⚠️ تم تمديد تسهيلات الأعمال الصغيرة (بحد إيرادات 3,000,000 درهم) بموجب القرار الوزاري رقم 131 لسنة 2026 — تسري على الفترات الضريبية التي تنتهي في أو قبل 31 ديسمبر 2029. التسهيل اختياري (election) وليس إعفاءً تلقائياً. يجب مراجعة أحدث إرشادات الهيئة الاتحادية للضرائب قبل الاعتماد على هذه النتيجة. آخر مراجعة: أكتوبر 2026.</div>
             </div>
           )}
         </div>
