@@ -1,5 +1,6 @@
 import SalaryCalculator from "../../components/SalaryCalculator";
 import ToolGuideSection from "../../components/ToolGuideSection";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة الراتب الصافي 2026 | ضريبة الدخل والتأمينات لـ 6 دول",
@@ -7,13 +8,13 @@ export const metadata = {
     "احسب راتبك الصافي بدقة بعد خصم ضرائب الدخل والتأمينات الاجتماعية (GOSI) والبدلات للسعودية والإمارات ومصر وباكستان وبريطانيا وأمريكا.",
   keywords: ["حاسبة الراتب", "صافي الراتب", "ضريبة الدخل", "GOSI", "net salary", "حاسبة الأجر"],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/salary-calculator",
+    canonical: "/salary-calculator",
   },
   openGraph: {
     title: "حاسبة الراتب الصافي 2026 | ضريبة الدخل والتأمينات لـ 6 دول",
     description:
       "احسب راتبك الصافي بعد خصم ضرائب الدخل والتأمينات للسعودية والإمارات ومصر وباكستان وبريطانيا وأمريكا.",
-    url: "https://arabic-tools-xi.vercel.app/salary-calculator",
+    url: `${SITE_URL}/salary-calculator`,
     type: "website",
     locale: "ar_AR",
   },

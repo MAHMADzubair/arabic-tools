@@ -1,5 +1,6 @@
 import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -16,7 +17,7 @@ export const metadata = {
     "بدل الإجازة عند نهاية الخدمة",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/annual-leave-calculator",
+    canonical: "/annual-leave-calculator",
   },
   openGraph: {
     title: "حاسبة بدل الإجازات السنوية 2026 | رصيد الإجازة والتعويض النقدي",
@@ -79,8 +80,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية", item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "حاسبة بدل الإجازات السنوية", item: "https://arabic-tools-xi.vercel.app/annual-leave-calculator" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "حاسبة بدل الإجازات السنوية", item: `${SITE_URL}/annual-leave-calculator` },
   ],
 };
 

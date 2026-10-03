@@ -7,9 +7,9 @@ import {
   getActiveTools,
 } from "@/lib/registry";
 import GeoSummary from "@/components/business/GeoSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
+const BASE_URL = SITE_URL;
 
 export function generateStaticParams() {
   return COUNTRY_CODES.map((code) => ({ country: code }));
@@ -563,17 +563,12 @@ export default function CountryPage({ params }) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "الرئيسية",
-        item: "https://arabic-tools-xi.vercel.app/",
-      },
+      { "@type": "ListItem", position: 1, name: "الرئيسية",  item: `${BASE_URL}/` },
       {
         "@type": "ListItem",
         position: 2,
         name: country.nameAr,
-        item: `https://arabic-tools-xi.vercel.app/ar/${country.code}/`,
+        item: `${BASE_URL}/ar/${country.code}/`,
       },
     ],
   };

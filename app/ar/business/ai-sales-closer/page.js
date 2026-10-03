@@ -1,6 +1,7 @@
 import AiSalesCloserPage from "@/components/AiSalesCloserPage";
+import { SITE_URL } from "@/lib/siteConfig";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
+const BASE_URL = SITE_URL;
 const PAGE_URL = `${BASE_URL}/ar/business/ai-sales-closer`;
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────

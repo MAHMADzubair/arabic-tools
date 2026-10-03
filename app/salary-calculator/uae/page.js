@@ -1,19 +1,20 @@
 import SalaryCalculator from "@/components/SalaryCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة الراتب في الإمارات 2026 | صافي الراتب بالدرهم الإماراتي",
   description:
     "احسب صافي راتبك في دبي وأبوظبي والإمارات بالدرهم الإماراتي — تفصيل الراتب الأساسي والبدلات مع توضيح رسوم التأمين ضد التعطل (ILOE) وانعدام ضريبة الدخل.",
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/salary-calculator/uae",
+    canonical: "/salary-calculator/uae",
   },
   openGraph: {
     title: "حاسبة الراتب في الإمارات 2026 | صافي الراتب بالدرهم الإماراتي",
     description:
       "احسب صافي راتبك في الإمارات بالدرهم الإماراتي — 0% ضريبة دخل، تفصيل الراتب الأساسي والبدلات.",
-    url: "https://arabic-tools-xi.vercel.app/salary-calculator/uae",
+    url: `${SITE_URL}/salary-calculator/uae`,
     type: "website",
     locale: "ar_AE",
   },

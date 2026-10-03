@@ -1,5 +1,7 @@
 import UaeSbrChecker from "@/components/UaeSbrChecker";
 import Link from "next/link";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة تسهيلات الأعمال الصغيرة الإمارات 2026 | حد 3 ملايين درهم",
@@ -15,11 +17,11 @@ export const metadata = {
     "QFZP ضريبة الشركات",
     "حاسبة ضريبة الشركات الإمارات 2026",
   ],
-  alternates: { canonical: "https://arabic-tools-xi.vercel.app/ar/ae/small-business-relief-checker" },
+  alternates: { canonical: "/ar/ae/small-business-relief-checker" },
   openGraph: {
     title: "حاسبة تسهيلات الأعمال الصغيرة الإمارات 2026 | حد 3 ملايين درهم",
     description: "تحقق من أهليتك التقديرية لتسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية وفق FTA.",
-    url: "https://arabic-tools-xi.vercel.app/ar/ae/small-business-relief-checker",
+    url: `${SITE_URL}/ar/ae/small-business-relief-checker`,
     type: "website",
     locale: "ar_AE",
   },
@@ -71,9 +73,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية", item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae" },
-    { "@type": "ListItem", position: 3, name: "حاسبة تسهيلات الأعمال الصغيرة", item: "https://arabic-tools-xi.vercel.app/ar/ae/small-business-relief-checker" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: `${SITE_URL}/ar/ae` },
+    { "@type": "ListItem", position: 3, name: "حاسبة تسهيلات الأعمال الصغيرة", item: `${SITE_URL}/ar/ae/small-business-relief-checker` },
   ],
 };
 
@@ -111,6 +113,17 @@ export default function UaeSbrPage() {
         <div className="mx-auto max-w-3xl px-4 py-4">
           <UaeSbrChecker />
         </div>
+
+        {/* GEO Answer Summary */}
+        <GeoAnswerSummary
+          whatItDoes="تحدد الأهلية التقديرية لتسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية بحد إيرادات 3,000,000 درهم"
+          appliesTo="دولة الإمارات العربية المتحدة — الشركات والأشخاص الطبيعيون الخاضعون لضريبة الشركات"
+          keyRule="الإيرادات ≤ 3,000,000 درهم في الفترة الضريبية — تسري حتى 31 ديسمبر 2026 — مع استثناء QFZP والمجموعات الكبيرة"
+          authority="الهيئة الاتحادية للضرائب (FTA)"
+          authorityUrl="https://tax.gov.ae"
+          lastReviewed="سبتمبر 2026"
+          disclaimer="هذه الأداة تقديرية استرشادية — راجع مستشارك الضريبي أو بوابة EmaraTax للتحقق من الأهلية الرسمية."
+        />
 
         {/* SEO Content */}
         <section className="mx-auto max-w-3xl px-4 py-8">

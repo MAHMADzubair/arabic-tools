@@ -2,9 +2,9 @@ import "./globals.css";
 import Header from "../components/Header";
 import Script from "next/script";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
+import { SITE_URL, SITE_NAME } from "@/lib/siteConfig";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
+const BASE_URL = SITE_URL;
 
 // ─── Root Structured Data (WebSite + WebApplication) ─────────────────────────
 const websiteJsonLd = {
@@ -27,7 +27,7 @@ const websiteJsonLd = {
 export const metadata = {
   metadataBase: new URL(BASE_URL),
   alternates: {
-    canonical: BASE_URL,
+    canonical: "/",
   },
   title: {
     default: "أدوات عربية مجانية | حاسبات ومحولات وأدوات PDF وصور ومال",

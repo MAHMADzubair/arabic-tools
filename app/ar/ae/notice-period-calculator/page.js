@@ -1,5 +1,7 @@
 import UaeNoticePeriodCalculator from "@/components/UaeNoticePeriodCalculator";
 import Link from "next/link";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -19,13 +21,13 @@ export const metadata = {
     "إنهاء عقد العمل فترة التجربة الإمارات",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/ae/notice-period-calculator",
+    canonical: "/ar/ae/notice-period-calculator",
   },
   openGraph: {
     title: "حاسبة فترة الإنذار في الإمارات 2026 | آخر يوم وبدل الإنذار",
     description:
       "احسب فترة الإنذار في الإمارات، آخر يوم عمل، الأيام غير المنفذة وبدل الإنذار التقديري للموظف أو صاحب العمل وفق بيانات عقد العمل.",
-    url: "https://arabic-tools-xi.vercel.app/ar/ae/notice-period-calculator",
+    url: `${SITE_URL}/ar/ae/notice-period-calculator`,
     type: "website",
     locale: "ar_AE",
   },
@@ -98,13 +100,13 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية", item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "أدوات الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "أدوات الإمارات", item: `${SITE_URL}/ar/ae` },
     {
       "@type": "ListItem",
       position: 3,
       name: "حاسبة فترة الإنذار",
-      item: "https://arabic-tools-xi.vercel.app/ar/ae/notice-period-calculator",
+      item: `${SITE_URL}/ar/ae/notice-period-calculator`,
     },
   ],
 };
@@ -143,6 +145,17 @@ export default function UaeNoticePeriodCalculatorPage() {
         <section className="pt-2 pb-6">
           <UaeNoticePeriodCalculator />
         </section>
+
+        {/* GEO Answer Summary */}
+        <GeoAnswerSummary
+          whatItDoes="تحسب مدة فترة الإنذار وتاريخ آخر يوم عمل وبدل الإنذار التقديري للموظف أو صاحب العمل"
+          appliesTo="دولة الإمارات العربية المتحدة — عقود العمل في القطاع الخاص"
+          keyRule="مدة الإنذار تتراوح بين 30 و90 يوماً حسب مدة الخدمة — المادة 43 من المرسوم بقانون 33 لسنة 2021"
+          authority="وزارة الموارد البشرية والتوطين (MOHRE)"
+          authorityUrl="https://mohre.gov.ae"
+          lastReviewed="سبتمبر 2026"
+          disclaimer="هذه الأداة تقديرية استرشادية — راجع عقد العمل أو MOHRE للتحقق من شروط الإنذار المتفق عليها."
+        />
 
         {/* Contextual Link to Final Settlement Calculator */}
         <section className="mx-auto max-w-4xl px-4 pb-6 no-print print:hidden">
@@ -331,7 +344,7 @@ export default function UaeNoticePeriodCalculatorPage() {
                 ❓ الأسئلة الشائعة حول فترة الإنذار وبدل الإشعار بالإمارات
               </h2>
               <p className="text-xs text-ink-muted mt-1">
-                إجابات شاملة ومطابقة لأحدث قرارات وزارة الموارد البشرية والتوطين
+                إجابات مبنية على المصادر الرسمية المتاحة من وزارة الموارد البشرية والتوطين
               </p>
             </div>
 

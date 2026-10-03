@@ -1,6 +1,7 @@
 import UaePurchaseOrderGenerator from "@/components/UaePurchaseOrderGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -19,13 +20,13 @@ export const metadata = {
     "نموذج أمر شراء بالإنجليزي",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/ae/purchase-order-generator",
+    canonical: "/ar/ae/purchase-order-generator",
   },
   openGraph: {
     title: "نموذج أمر شراء الإمارات | مولد LPO PDF جاهز 2026",
     description:
       "أنشئ نموذج أمر شراء LPO في الإمارات بالدرهم AED مع بيانات المورد والأصناف وضريبة القيمة المضافة، واطبعه أو احفظه PDF مباشرة.",
-    url: "https://arabic-tools-xi.vercel.app/ar/ae/purchase-order-generator",
+    url: `${SITE_URL}/ar/ae/purchase-order-generator`,
     type: "website",
     locale: "ar_AE",
   },
@@ -37,9 +38,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae" },
-    { "@type": "ListItem", position: 3, name: "مولد نموذج أمر الشراء LPO", item: "https://arabic-tools-xi.vercel.app/ar/ae/purchase-order-generator" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: `${SITE_URL}/ar/ae` },
+    { "@type": "ListItem", position: 3, name: "مولد نموذج أمر الشراء LPO", item: `${SITE_URL}/ar/ae/purchase-order-generator` },
   ],
 };
 
@@ -53,7 +54,7 @@ const softwareAppJsonLd = {
   description:
     "أداة مجانية لإنشاء نماذج أوامر شراء (Purchase Order / LPO) بالعربية والإنجليزية للشركات في الإمارات، مع دعم ضريبة القيمة المضافة 5% والطباعة وحفظ PDF.",
   inLanguage: "ar",
-  url: "https://arabic-tools-xi.vercel.app/ar/ae/purchase-order-generator",
+  url: `${SITE_URL}/ar/ae/purchase-order-generator`,
 };
 
 // 8 FAQs — visible on page and mirrored in schema

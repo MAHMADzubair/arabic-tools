@@ -1,11 +1,13 @@
 import FinalSettlementCalculator from "@/components/FinalSettlementCalculator";
 import Link from "next/link";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
   title: "حاسبة المخالصة النهائية في السعودية 2026 | مكافأة وإجازة وإشعار",
   description:
-    "احسب مستحقاتك بدقة عبر حاسبة المخالصة النهائية في السعودية 2026: تقدير راتب آخر شهر، مكافأة نهاية الخدمة، بدل رصيد الإجازات السنوية، تعويض مهلة الإشعار، والإضافات والخصومات لصافي التصفية.",
+    "قدّر مستحقاتك عبر حاسبة المخالصة النهائية في السعودية 2026: راتب آخر شهر، مكافأة نهاية الخدمة، بدل رصيد الإجازات السنوية، تعويض مهلة الإشعار، والإضافات والخصومات لصافي التصفية.",
   keywords: [
     "حاسبة المخالصة النهائية السعودية",
     "حساب مكافأة نهاية الخدمة",
@@ -19,13 +21,13 @@ export const metadata = {
     "حساب نهاية الخدمة",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator",
+    canonical: "/ar/sa/final-settlement-calculator",
   },
   openGraph: {
     title: "حاسبة المخالصة النهائية في السعودية 2026 | مكافأة وإجازة وإشعار",
     description:
-      "احسب مستحقاتك بدقة عبر حاسبة المخالصة النهائية في السعودية 2026: تقدير راتب آخر شهر، مكافأة نهاية الخدمة، بدل رصيد الإجازات السنوية، تعويض مهلة الإشعار، والإضافات والخصومات لصافي التصفية.",
-    url: "https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator",
+      "قدّر مستحقاتك عبر حاسبة المخالصة النهائية في السعودية 2026: راتب آخر شهر، مكافأة نهاية الخدمة، بدل رصيد الإجازات، تعويض مهلة الإشعار وفق نظام العمل السعودي.",
+    url: `${SITE_URL}/ar/sa/final-settlement-calculator`,
     type: "website",
     locale: "ar_SA",
   },
@@ -98,9 +100,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية", item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "أدوات السعودية", item: "https://arabic-tools-xi.vercel.app/ar/sa/" },
-    { "@type": "ListItem", position: 3, name: "حاسبة المخالصة النهائية", item: "https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "أدوات السعودية", item: `${SITE_URL}/ar/sa/` },
+    { "@type": "ListItem", position: 3, name: "حاسبة المخالصة النهائية", item: `${SITE_URL}/ar/sa/final-settlement-calculator` },
   ],
 };
 
@@ -139,6 +141,17 @@ export default function FinalSettlementPage() {
           <FinalSettlementCalculator />
         </div>
 
+        {/* GEO Answer Summary */}
+        <GeoAnswerSummary
+          whatItDoes="تصفية شاملة لمستحقات العامل عند نهاية الخدمة: مكافأة نهاية الخدمة، كسر آخر راتب، رصيد الإجازات، وبدل مهلة الإشعار"
+          appliesTo="المملكة العربية السعودية — عقود العمل في القطاع الخاص"
+          keyRule="المادتان 84 و85 للمكافأة — المادة 111 للإجازات — المادتان 75 و76 لمهلة الإشعار"
+          authority="وزارة الموارد البشرية والتنمية الاجتماعية"
+          authorityUrl="https://hrsd.gov.sa"
+          lastReviewed="سبتمبر 2026"
+          disclaimer="هذه الأداة تقديرية استرشادية — نتائجها لا تُعدّ مخالصة رسمية. راجع متخصصاً عند الحاجة."
+        />
+
         {/* ── PART 2: Editorial Explanation (300-500 words) ──────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 py-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
@@ -155,7 +168,7 @@ export default function FinalSettlementPage() {
                 <strong className="text-ink">المخالصة النهائية</strong> هي التصفية الشاملة لجميع الحقوق المالية المتبادلة بين العامل وصاحب العمل عند انتهاء علاقة العمل. تشمل كل ما استحقه العامل من مستحقات طوال مدة خدمته، وما قد يكون على العامل من ديون ومديونيات لصاحب العمل. في المملكة العربية السعودية، يُعدّ إنجاز المخالصة بصورة صحيحة ودقيقة أمراً بالغ الأهمية، إذ يحمي كلا الطرفين من النزاعات العمالية ودعاوى المطالبة المستقبلية.
               </p>
               <p>
-                نظام العمل السعودي الصادر بالمرسوم الملكي (م/51) يُحدد بدقة حقوق العامل عند انتهاء الخدمة. وقد شهدت المواد الجوهرية المنظِّمة لهذه العلاقة — كالمادتين (84) و(85) الخاصتين بمكافأة نهاية الخدمة، والمادة (111) الخاصة ببدل الإجازة السنوية، والمادتين (75) و(76) الخاصتين بمهلة الإشعار — أحدث التعديلات النظامية لعام 2026 وفق النص الرسمي لوزارة الموارد البشرية والتنمية الاجتماعية. تعكس هذه الحاسبة هذه التعديلات للتأكد من دقة الحسابات.
+                نظام العمل السعودي الصادر بالمرسوم الملكي (م/51) يُنظّم حقوق العامل عند انتهاء الخدمة. تستند هذه الحاسبة إلى القواعد المنشورة في المادتين (84) و(85) الخاصتين بمكافأة نهاية الخدمة، والمادة (111) الخاصة ببدل الإجازة السنوية، والمادتين (75) و(76) الخاصتين بمهلة الإشعار — وفق المصادر الرسمية المتاحة. تُعدّ نتائجها تقديرية ولا تُغني عن مراجعة متخصص في حالات النزاع.
               </p>
             </div>
 
@@ -353,7 +366,7 @@ export default function FinalSettlementPage() {
             <div>
               <h2 className="text-lg font-extrabold text-ink mb-1">📌 أدوات مالية وإدارية أخرى ذات صلة</h2>
               <p className="text-xs text-ink-muted mb-4">
-                حاسبات إضافية معتمدة لإدارة مستحقاتك المالية والضريبية
+                حاسبات مساندة لإدارة مستحقاتك المالية والضريبية
               </p>
             </div>
 

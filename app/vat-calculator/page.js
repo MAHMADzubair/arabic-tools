@@ -7,7 +7,7 @@ export const metadata = {
   description:
     "احسب ضريبة القيمة المضافة للسعودية (١٥٪)، الإمارات (٥٪)، البحرين (١٠٪)، مصر (١٤٪)، الأردن (١٦٪) — أضف الضريبة أو استخرجها من السعر الشامل في ثوانٍ.",
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/vat-calculator",
+    canonical: "/vat-calculator",
   },
 };
 

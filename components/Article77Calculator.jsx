@@ -127,7 +127,7 @@ export default function Article77Calculator() {
 • السند: المادة (77) من نظام العمل السعودي
 
 احسب تعويضك الآن مجاناً عبر:
-https://arabic-tools-xi.vercel.app/ar/sa/article-77-calculator`;
+${(process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app")}/ar/sa/article-77-calculator`;
   }, [contractType, terminatingParty, calc]);
 
   const handleCopy = () => {
@@ -163,7 +163,7 @@ https://arabic-tools-xi.vercel.app/ar/sa/article-77-calculator`;
             حاسبة التعويض عن إنهاء العقد غير المشروع (المادة 77)
           </h2>
           <p className="text-xs text-ink-muted mt-1">
-            احسب بدقة التعويض المالي الملزم قانوناً عند فسخ عقد العمل دون سبب مشروع مع تطبيق الحد الأدنى النظامي (أجر شهرين).
+            قدّر التعويض وفق قاعدة المادة 77 من نظام العمل السعودي عند فسخ عقد العمل دون سبب مشروع مع تطبيق الحد الأدنى النظامي (أجر شهرين).
           </p>
         </div>
 

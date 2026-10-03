@@ -16,7 +16,7 @@ export const metadata = {
     "حساب مستحقات نهاية الخدمة",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/gratuity-calculator",
+    canonical: "/gratuity-calculator",
   },
 };
 

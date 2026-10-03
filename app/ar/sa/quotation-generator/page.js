@@ -1,6 +1,7 @@
 import SaudiQuotationGenerator from "@/components/SaudiQuotationGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -21,13 +22,13 @@ export const metadata = {
     "عرض سعر للمستقلين السعودية",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/sa/quotation-generator",
+    canonical: "/ar/sa/quotation-generator",
   },
   openGraph: {
     title: "مولد عرض سعر السعودية 2026 | نموذج Quotation مجاني",
     description:
       "أنشئ عرض سعر احترافي بالعربية والإنجليزية مع حساب ضريبة 15% وخصومات وشروط دفع، واطبعه مباشرة.",
-    url: "https://arabic-tools-xi.vercel.app/ar/sa/quotation-generator",
+    url: `${SITE_URL}/ar/sa/quotation-generator`,
     type: "website",
     locale: "ar_SA",
   },
@@ -39,9 +40,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇸🇦 أدوات السعودية", item: "https://arabic-tools-xi.vercel.app/ar/sa" },
-    { "@type": "ListItem", position: 3, name: "مولد عرض السعر",     item: "https://arabic-tools-xi.vercel.app/ar/sa/quotation-generator" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇸🇦 أدوات السعودية", item: `${SITE_URL}/ar/sa` },
+    { "@type": "ListItem", position: 3, name: "مولد عرض السعر",     item: `${SITE_URL}/ar/sa/quotation-generator` },
   ],
 };
 
@@ -55,7 +56,7 @@ const softwareAppJsonLd = {
   description:
     "أداة مجانية لإنشاء عروض أسعار احترافية بالعربية والإنجليزية للشركات والمستقلين في المملكة العربية السعودية مع دعم ضريبة القيمة المضافة 15%.",
   inLanguage: "ar",
-  url: "https://arabic-tools-xi.vercel.app/ar/sa/quotation-generator",
+  url: `${SITE_URL}/ar/sa/quotation-generator`,
 };
 
 const faqJsonLd = {

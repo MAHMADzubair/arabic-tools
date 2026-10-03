@@ -1,8 +1,9 @@
 import Article77Calculator from "@/components/Article77Calculator";
 import Link from "next/link";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
+const BASE_URL = SITE_URL;
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -19,7 +20,7 @@ export const metadata = {
     "الحد الادنى للمادة 77 شهرين",
   ],
   alternates: {
-    canonical: `${BASE_URL}/ar/sa/article-77-calculator`,
+    canonical: "/ar/sa/article-77-calculator",
   },
   openGraph: {
     title: "حاسبة تعويض المادة 77 في السعودية 2026 | الفصل لسبب غير مشروع",
@@ -65,7 +66,7 @@ const faqJsonLd = {
       name: "هل يستحق العامل مكافأة نهاية الخدمة بالإضافة إلى تعويض المادة (77)؟",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "نعم، استقر قضاء المحاكم العمالية في المملكة على أن تعويض المادة (77) هو تعويض جابر للضرر الناتج عن الإنهاء غير المشروع للعقد، ولا يسقط حق العامل في مستحقاته النظامية الأخرى المقررة، كـ مكافأة نهاية الخدمة (م/84)، وبدل رصيد الإجازات السنوية (م/111)، وبدل مهلة الإشعار، ورواتبه المتأخرة، وتُجمع كلها في سند المخالصة النهائية.",
+        text: "نعم، وفق النصوص المنشورة في نظام العمل السعودي، فإن تعويض المادة (77) هو تعويض جابر للضرر الناتج عن الإنهاء غير المشروع للعقد، ولا يسقط حق العامل في مستحقاته النظامية الأخرى المقررة، كـ مكافأة نهاية الخدمة (م/84)، وبدل رصيد الإجازات السنوية (م/111)، وبدل مهلة الإشعار، ورواتبه المتأخرة، وتُجمع كلها في سند المخالصة النهائية.",
       },
     },
     {
@@ -142,6 +143,16 @@ export default function Article77Page() {
           <Article77Calculator />
         </div>
 
+        {/* GEO Answer Summary */}
+        <GeoAnswerSummary
+          whatItDoes="تقدير التعويض المستحق عند إنهاء عقد العمل لسبب غير مشروع وفق المادة 77 من نظام العمل السعودي"
+          appliesTo="المملكة العربية السعودية — عقود العمل الخاصة (محددة وغير محددة المدة)"
+          keyRule="15 يوماً لكل سنة خدمة (غير محدد) أو أجر المدة الباقية (محدد) — بحد أدنى أجر شهرين"
+          authority="نظام العمل السعودي — المرسوم الملكي م/51"
+          lastReviewed="سبتمبر 2026"
+          disclaimer="هذه الأداة تقديرية استرشادية — لا تُعدّ استشارة قانونية. راجع محامي عمالي أو منصة ودي للنزاعات الرسمية."
+        />
+
         {/* ── PART 2: 300-500 words Editorial Explanation ─────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 py-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
@@ -205,7 +216,7 @@ export default function Article77Page() {
                 <p>• أنهت الشركة خدماته دون سبب مشروع بعد <strong>سنة ونصف (1.5 سنة)</strong> خدمة.</p>
                 <p>• الحساب الأولي: 1.5 سنة × أجر 15 يوماً (5,000 ر.س) = <strong>7,500 ر.س</strong>.</p>
                 <p>• فحص الحد الأدنى: أجر شهرين = 2 × 10,000 = <strong>20,000 ر.س</strong>.</p>
-                <p>• <strong className="text-emerald-950 font-black">التعويض الملزم نظاماً: 20,000 ر.س</strong> بحكم تطبيق الحد الأدنى الإلزامي الوارد في الفقرة (3) من المادة 77، بالإضافة إلى استحقاقه الكامل لمكافأة نهاية الخدمة وبدل الإجازات.</p>
+                <p>• <strong className="text-emerald-950 font-black">التعويض التقديري وفق النص النظامي: 20,000 ر.س</strong> بحكم تطبيق الحد الأدنى الإلزامي الوارد في الفقرة (3) من المادة 77، بالإضافة إلى استحقاقه الكامل لمكافأة نهاية الخدمة وبدل الإجازات.</p>
               </div>
             </div>
           </div>

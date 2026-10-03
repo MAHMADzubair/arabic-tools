@@ -2,6 +2,8 @@ import VatRegistrationChecker from "@/components/VatRegistrationChecker";
 import Link from "next/link";
 import { ZATCA_OFFICIAL_URL } from "@/lib/vatRegistrationConfig";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -20,13 +22,13 @@ export const metadata = {
     "تسجيل المنشآت في الضريبة",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/sa/vat-registration-checker",
+    canonical: "/ar/sa/vat-registration-checker",
   },
   openGraph: {
     title: "حاسبة التسجيل في ضريبة القيمة المضافة السعودية 2026 | حد 375,000 ريال",
     description:
       "احسب وتأكد من أهليتك في التسجيل في ضريبة القيمة المضافة بالسعودية: فحص حد التسجيل الإلزامي 375,000 ريال وحد التسجيل الاختياري 187,500 ريال واستبعاد التوريدات المعفاة وفق ZATCA.",
-    url: "https://arabic-tools-xi.vercel.app/ar/sa/vat-registration-checker",
+    url: `${SITE_URL}/ar/sa/vat-registration-checker`,
     type: "website",
     locale: "ar_SA",
   },
@@ -99,13 +101,13 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية", item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇸🇦 أدوات السعودية", item: "https://arabic-tools-xi.vercel.app/ar/sa" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇸🇦 أدوات السعودية", item: `${SITE_URL}/ar/sa` },
     {
       "@type": "ListItem",
       position: 3,
       name: "حاسبة أهلية التسجيل في ضريبة القيمة المضافة",
-      item: "https://arabic-tools-xi.vercel.app/ar/sa/vat-registration-checker",
+      item: `${SITE_URL}/ar/sa/vat-registration-checker`,
     },
   ],
 };
@@ -147,6 +149,17 @@ export default function VatRegistrationCheckerPage() {
         <div className="mx-auto max-w-3xl px-4 py-4">
           <VatRegistrationChecker />
         </div>
+
+        {/* GEO Answer Summary */}
+        <GeoAnswerSummary
+          whatItDoes="تحدد مستوى الالتزام بالتسجيل في ضريبة القيمة المضافة (إلزامي أو اختياري أو معفى) بناءً على حجم التوريدات"
+          appliesTo="المملكة العربية السعودية — المنشآت الخاضعة لضريبة القيمة المضافة"
+          keyRule="التسجيل الإلزامي عند تجاوز 375,000 ريال — الاختياري من 187,500 ريال — وفق لوائح ZATCA المنشورة"
+          authority="هيئة الزكاة والضريبة والجمارك (ZATCA)"
+          authorityUrl="https://zatca.gov.sa"
+          lastReviewed="سبتمبر 2026"
+          disclaimer="هذه الأداة تقديرية استرشادية — راجع بوابة ZATCA أو مستشارك الضريبي للتحقق من الالتزام الرسمي."
+        />
 
         {/* ── PART 2: Comprehensive Explanation (300-500 Words) ────────────────── */}
         <section className="mx-auto max-w-3xl px-4 py-8">

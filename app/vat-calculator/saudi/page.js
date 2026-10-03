@@ -2,19 +2,20 @@ import VatCalculator from "@/components/VatCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 import Link from "next/link";
 import GeoSummary from "@/components/business/GeoSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة ضريبة القيمة المضافة السعودية 15% | VAT Calculator KSA 2026",
   description:
     "احسب ضريبة القيمة المضافة 15% في المملكة العربية السعودية — أضف الضريبة أو استخرجها من السعر الشامل وفق لوائح هيئة الزكاة والضريبة والجمارك (ZATCA). بالريال السعودي.",
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/vat-calculator/saudi",
+    canonical: "/vat-calculator/saudi",
   },
   openGraph: {
     title: "حاسبة ضريبة القيمة المضافة السعودية 15% | VAT Calculator KSA 2026",
     description:
       "احسب ضريبة القيمة المضافة 15% في المملكة العربية السعودية وفق لوائح ZATCA. بالريال السعودي.",
-    url: "https://arabic-tools-xi.vercel.app/vat-calculator/saudi",
+    url: `${SITE_URL}/vat-calculator/saudi`,
     type: "website",
     locale: "ar_SA",
   },

@@ -1,34 +1,33 @@
 import EInvoiceGenerator from "@/components/EInvoiceGenerator";
 import Link from "next/link";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
-  title: "مولد الفاتورة الإلكترونية السعودية 2026 | فاتورة ضريبية وVAT",
+  title: "مولد نموذج فاتورة ضريبية في السعودية 2026 | B2B وB2C مع VAT 15%",
   description:
-    "أنشئ نموذج فاتورة إلكترونية سعودية قابل للطباعة: فاتورة ضريبية B2B وفاتورة ضريبية مبسطة B2C مع احتساب ضريبة القيمة المضافة 15% وفق متطلبات منظومة ZATCA فاتورة 2026.",
+    "أنشئ نموذج فاتورة ضريبية سعودية قابل للطباعة: فاتورة ضريبية B2B وفاتورة مبسطة B2C مع احتساب 15% VAT وفحص مبدئي لاكتمال الحقول — لأغراض التخطيط والمراجعة الداخلية. غير مرتبطة بمنصة ZATCA فاتورة.",
   keywords: [
-    "فاتورة إلكترونية سعودية",
-    "مولد الفاتورة الإلكترونية",
-    "فاتورة ضريبية",
-    "فاتورة ضريبية مبسطة",
-    "ZATCA فاتورة",
-    "ضريبة القيمة المضافة 15%",
-    "Saudi e-invoice generator",
-    "VAT invoice Saudi Arabia",
-    "منظومة فاتورة الإلكترونية",
-    "هيئة الزكاة والضريبة والجمارك",
+    "نموذج فاتورة ضريبية السعودية",
+    "مولد فاتورة ضريبية",
     "فاتورة ضريبية B2B",
     "فاتورة ضريبية مبسطة B2C",
-    "نموذج فاتورة قابل للطباعة",
+    "فاتورة ضريبية قابلة للطباعة",
+    "ضريبة القيمة المضافة 15%",
+    "Saudi tax invoice template",
+    "VAT invoice Saudi Arabia",
+    "نموذج فاتورة ZATCA",
+    "هيئة الزكاة والضريبة والجمارك",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/sa/e-invoice-generator",
+    canonical: "/ar/sa/e-invoice-generator",
   },
   openGraph: {
-    title: "مولد الفاتورة الإلكترونية السعودية 2026 | فاتورة ضريبية وVAT",
+    title: "مولد نموذج فاتورة ضريبية في السعودية 2026 | B2B وB2C مع VAT 15%",
     description:
-      "أنشئ نموذج فاتورة إلكترونية سعودية قابل للطباعة: فاتورة ضريبية B2B وفاتورة مبسطة B2C مع احتساب VAT 15% وفق منظومة ZATCA فاتورة.",
-    url: "https://arabic-tools-xi.vercel.app/ar/sa/e-invoice-generator",
+      "أنشئ نموذج فاتورة ضريبية سعودية قابل للطباعة مع VAT 15% — لأغراض التخطيط والمراجعة الداخلية. غير مرتبطة بمنصة ZATCA فاتورة.",
+    url: `${SITE_URL}/ar/sa/e-invoice-generator`,
     type: "website",
     locale: "ar_SA",
   },
@@ -85,7 +84,7 @@ const faqJsonLd = {
 const softwareAppJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "مولد الفاتورة الإلكترونية السعودية",
+  name: "مولد نموذج فاتورة ضريبية في السعودية",
   operatingSystem: "All",
   applicationCategory: "BusinessApplication",
   offers: {
@@ -94,20 +93,20 @@ const softwareAppJsonLd = {
     priceCurrency: "SAR",
   },
   description:
-    "أداة لإنشاء نماذج فواتير إلكترونية سعودية قابلة للطباعة: فاتورة ضريبية B2B وفاتورة مبسطة B2C مع حساب ضريبة القيمة المضافة 15% وفحص اكتمال الحقول المطلوبة.",
+    "أداة لإنشاء نموذج فاتورة ضريبية سعودية قابل للطباعة: فاتورة ضريبية B2B وفاتورة مبسطة B2C مع حساب ضريبة القيمة المضافة 15% وفحص مبدئي لاكتمال الحقول. غير مرتبطة بمنصة ZATCA فاتورة.",
 };
 
 const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية", item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇸🇦 أدوات السعودية", item: "https://arabic-tools-xi.vercel.app/ar/sa" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇸🇦 أدوات السعودية", item: `${SITE_URL}/ar/sa` },
     {
       "@type": "ListItem",
       position: 3,
       name: "مولد الفاتورة الإلكترونية السعودية",
-      item: "https://arabic-tools-xi.vercel.app/ar/sa/e-invoice-generator",
+      item: `${SITE_URL}/ar/sa/e-invoice-generator`,
     },
   ],
 };
@@ -137,14 +136,38 @@ export default function EInvoiceGeneratorPage() {
             <span>›</span>
             <Link href="/ar/sa" className="hover:text-brand transition-colors">🇸🇦 أدوات السعودية</Link>
             <span>›</span>
-            <span className="text-ink font-semibold">مولد الفاتورة الإلكترونية</span>
+            <span className="text-ink font-semibold">مولد نموذج الفاتورة الضريبية</span>
           </nav>
+        </div>
+
+        {/* ── ZATCA Disclaimer Banner ─────────────────────────────────────────── */}
+        <div className="mx-auto max-w-3xl px-4 pb-2 no-print print:hidden">
+          <div className="rounded-xl border border-amber-300 bg-amber-50 p-3.5 flex items-start gap-3 shadow-sm">
+            <span className="text-xl shrink-0 mt-0.5">⚠️</span>
+            <div className="text-xs leading-relaxed text-amber-900">
+              <strong className="font-extrabold">تنبيه مهم: </strong>
+              هذه الأداة تُنشئ نموذج فاتورة ضريبية قابل للطباعة لأغراض التخطيط والمراجعة الداخلية فقط.
+              <strong className="font-bold"> لا تُصدر فاتورة إلكترونية مبلّغاً عنها عبر منصة فاتورة (ZATCA).</strong>
+              {" "}الامتثال الرسمي يستلزم الربط المباشر بمنصة ZATCA فاتورة عبر حلول فوترة إلكترونية معتمدة.
+            </div>
+          </div>
         </div>
 
         {/* ── PART 1: Interactive Tool (Above the Fold) ────────────────────────── */}
         <div className="mx-auto max-w-3xl px-4 py-4 print:p-0 print:m-0 print:max-w-none">
           <EInvoiceGenerator />
         </div>
+
+        {/* GEO Answer Summary */}
+        <GeoAnswerSummary
+          whatItDoes="تُنشئ نموذج فاتورة ضريبية قابل للطباعة (B2B وB2C) مع احتساب VAT 15% وفحص مبدئي لاكتمال الحقول — للتخطيط والمراجعة الداخلية"
+          appliesTo="المملكة العربية السعودية — المنشآت المسجلة في ضريبة القيمة المضافة"
+          keyRule="فاتورة ضريبية للمعاملات بين الأعمال B2B — فاتورة مبسطة للمستهلك النهائي B2C — VAT 15%"
+          authority="هيئة الزكاة والضريبة والجمارك (ZATCA)"
+          authorityUrl="https://zatca.gov.sa"
+          lastReviewed="سبتمبر 2026"
+          disclaimer="هذه الأداة تُنشئ نماذج إرشادية فقط ولا تُصدر فاتورة إلكترونية مبلّغاً عنها عبر منصة فاتورة (ZATCA). الامتثال الرسمي يستلزم حلول فوترة معتمدة."
+        />
 
         {/* ── PART 2: Comprehensive Explanation (300–500 Words) ────────────────── */}
         <section className="mx-auto max-w-3xl px-4 py-8 no-print print:hidden">

@@ -1,6 +1,7 @@
 import UaeCorporateTaxCalculator from "@/components/UaeCorporateTaxCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -18,12 +19,12 @@ export const metadata = {
     "FTA Corporate Tax",
     "حساب ضريبة الشركات في الإمارات",
   ],
-  alternates: { canonical: "https://arabic-tools-xi.vercel.app/ar/ae/corporate-tax-calculator" },
+  alternates: { canonical: "/ar/ae/corporate-tax-calculator" },
   openGraph: {
     title: "حاسبة ضريبة الشركات الإمارات 2026 | Corporate Tax Calculator UAE",
     description:
       "احسب ضريبة الشركات 0% و9% مع تسهيلات الأعمال الصغيرة (ممتدة حتى 2029) وقواعد المناطق الحرة وفق FTA.",
-    url: "https://arabic-tools-xi.vercel.app/ar/ae/corporate-tax-calculator",
+    url: `${SITE_URL}/ar/ae/corporate-tax-calculator`,
     type: "website",
     locale: "ar_AE",
   },
@@ -35,9 +36,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae" },
-    { "@type": "ListItem", position: 3, name: "حاسبة ضريبة الشركات في الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae/corporate-tax-calculator" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: `${SITE_URL}/ar/ae` },
+    { "@type": "ListItem", position: 3, name: "حاسبة ضريبة الشركات في الإمارات", item: `${SITE_URL}/ar/ae/corporate-tax-calculator` },
   ],
 };
 
@@ -51,7 +52,7 @@ const softwareAppJsonLd = {
   description:
     "أداة مجانية لتقدير ضريبة الشركات الإماراتية: 0% على أول 375,000 درهم من الدخل الخاضع للضريبة، و9% على ما يزيد، مع فحص تسهيلات الأعمال الصغيرة وقواعد المناطق الحرة.",
   inLanguage: "ar",
-  url: "https://arabic-tools-xi.vercel.app/ar/ae/corporate-tax-calculator",
+  url: `${SITE_URL}/ar/ae/corporate-tax-calculator`,
 };
 
 // 10 FAQs — visible accordion + FAQPage schema

@@ -7,7 +7,7 @@ export const metadata = {
   description:
     "احسب مكافأة نهاية الخدمة لموظفي القطاع الخاص في السعودية بدقة وفق المواد (84 و85 و87) من نظام العمل مع حالات الاستقالة والفصل والتقاعد وحساب الأجر الفعلي.",
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/gratuity-calculator/saudi",
+    canonical: "/gratuity-calculator/saudi",
   },
 };
 

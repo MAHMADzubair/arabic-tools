@@ -170,7 +170,7 @@ export default function ToolGuideSection({
     "@type": "WebApplication",
     name: currentTool ? currentTool.title : aboutTitle,
     description: currentTool ? currentTool.desc : aboutTitle,
-    url: `https://arabic-tools-xi.vercel.app${currentPath}`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app"}${currentPath}`,
     applicationCategory: "UtilityApplication",
     operatingSystem: "All",
     browserRequirements: "Requires JavaScript. Requires HTML5.",

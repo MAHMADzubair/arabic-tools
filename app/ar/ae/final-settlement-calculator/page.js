@@ -1,12 +1,13 @@
 import UaeFinalSettlementCalculator from "@/components/UaeFinalSettlementCalculator";
 import Link from "next/link";
 import GeoSummary from "@/components/business/GeoSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
   title: "حاسبة المخالصة النهائية في الإمارات 2026 | مكافأة وإجازة وإنذار",
   description:
-    "احسب تصفية مستحقاتك بدقة عبر حاسبة المخالصة النهائية في الإمارات 2026: مكافأة نهاية الخدمة (قانون العمل 33)، راتب آخر شهر، بدل رصيد الإجازات السنوية، تعويض مهلة الإنذار، والاستقطاعات والخصومات لصافي التصفية العمالية بالدرهم الإماراتي.",
+    "قدّر مستحقات التصفية عبر حاسبة المخالصة النهائية في الإمارات 2026: مكافأة نهاية الخدمة (قانون العمل 33)، راتب آخر شهر، بدل رصيد الإجازات السنوية، تعويض مهلة الإنذار، والاستقطاعات والخصومات لصافي التصفية العمالية بالدرهم الإماراتي.",
   keywords: [
     "حاسبة المخالصة النهائية في الإمارات",
     "تصفية مستحقات نهاية الخدمة الإمارات",
@@ -20,13 +21,13 @@ export const metadata = {
     "نموذج مخالصة نهائية الإمارات",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/ae/final-settlement-calculator",
+    canonical: "/ar/ae/final-settlement-calculator",
   },
   openGraph: {
     title: "حاسبة المخالصة النهائية في الإمارات 2026 | مكافأة وإجازة وإنذار",
     description:
-      "احسب تصفية مستحقاتك بدقة عبر حاسبة المخالصة النهائية في الإمارات 2026: مكافأة نهاية الخدمة (قانون العمل 33)، راتب آخر شهر، بدل رصيد الإجازات، وبدل مهلة الإنذار.",
-    url: "https://arabic-tools-xi.vercel.app/ar/ae/final-settlement-calculator",
+      "قدّر مستحقات التصفية عبر حاسبة المخالصة النهائية في الإمارات 2026: مكافأة نهاية الخدمة (قانون العمل 33)، راتب آخر شهر، بدل رصيد الإجازات، وبدل مهلة الإنذار.",
+    url: `${SITE_URL}/ar/ae/final-settlement-calculator`,
     type: "website",
     locale: "ar_AE",
   },
@@ -99,13 +100,13 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية", item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: `${SITE_URL}/ar/ae` },
     {
       "@type": "ListItem",
       position: 3,
       name: "حاسبة المخالصة النهائية في الإمارات",
-      item: "https://arabic-tools-xi.vercel.app/ar/ae/final-settlement-calculator",
+      item: `${SITE_URL}/ar/ae/final-settlement-calculator`,
     },
   ],
 };
@@ -152,7 +153,7 @@ export default function UaeFinalSettlementPage() {
           keyRule="مكافأة نهاية الخدمة: 21 يوماً لكل سنة للسنوات الخمس الأولى ثم 30 يوماً للسنوات التالية — المرسوم 33 لسنة 2021 المادة 51"
           authority="وزارة الموارد البشرية والتوطين (MOHRE)"
           authorityUrl="https://www.mohre.gov.ae"
-          lastReviewed="يناير 2026"
+          lastReviewed="سبتمبر 2026"
           disclaimer="هذه الأداة استرشادية — نتائجها تقديرية. للنزاعات العمالية راجع بوابة تسوية النزاعات في MOHRE."
         />
 
@@ -412,7 +413,7 @@ export default function UaeFinalSettlementPage() {
                   href: "/vat-calculator/uae",
                   icon: "🧾",
                   title: "حاسبة ضريبة القيمة المضافة في الإمارات 5%",
-                  desc: "احسب ضريبة الـ 5% المعتمدة من الهيئة الاتحادية للضرائب FTA أو استخرج السعر قبل الضريبة.",
+                  desc: "احسب ضريبة الـ 5% وفق لوائح الهيئة الاتحادية للضرائب FTA أو استخرج السعر قبل الضريبة.",
                   badge: "FTA 5%",
                   badgeColor: "bg-purple-100 text-purple-800",
                 },

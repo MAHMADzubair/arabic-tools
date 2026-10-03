@@ -2,19 +2,20 @@ import VatCalculator from "@/components/VatCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 import Link from "next/link";
 import GeoSummary from "@/components/business/GeoSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة ضريبة القيمة المضافة في الإمارات 5% | VAT Calculator UAE 2026",
   description:
     "احسب ضريبة القيمة المضافة 5% في دولة الإمارات العربية المتحدة — أضف الضريبة أو استخرجها من السعر الشامل وفق لوائح الهيئة الاتحادية للضرائب (FTA). بالدرهم الإماراتي.",
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/vat-calculator/uae",
+    canonical: "/vat-calculator/uae",
   },
   openGraph: {
     title: "حاسبة ضريبة القيمة المضافة في الإمارات 5% | VAT Calculator UAE 2026",
     description:
       "احسب ضريبة القيمة المضافة 5% في الإمارات وفق لوائح FTA. بالدرهم الإماراتي.",
-    url: "https://arabic-tools-xi.vercel.app/vat-calculator/uae",
+    url: `${SITE_URL}/vat-calculator/uae`,
     type: "website",
     locale: "ar_AE",
   },

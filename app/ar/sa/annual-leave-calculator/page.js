@@ -1,8 +1,9 @@
 import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
 import Link from "next/link";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { SITE_URL } from "@/lib/siteConfig";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
+const BASE_URL = SITE_URL;
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -19,7 +20,7 @@ export const metadata = {
     "أجر الإجازة السنوية بالأجر الفعلي",
   ],
   alternates: {
-    canonical: `${BASE_URL}/ar/sa/annual-leave-calculator`,
+    canonical: "/ar/sa/annual-leave-calculator",
   },
   openGraph: {
     title: "حاسبة بدل الإجازات السنوية في السعودية 2026 | نظام العمل السعودي",
@@ -141,6 +142,17 @@ export default function SaudiAnnualLeavePage() {
         <div className="mx-auto max-w-3xl px-4 py-4">
           <AnnualLeaveCalculator />
         </div>
+
+        {/* GEO Answer Summary */}
+        <GeoAnswerSummary
+          whatItDoes="تحسب رصيد الإجازات السنوية المستحق والتعويض النقدي عن الرصيد المتبقي عند نهاية الخدمة"
+          appliesTo="المملكة العربية السعودية — عقود العمل في القطاع الخاص"
+          keyRule="21 يوماً سنوياً (أقل من 5 سنوات) — 30 يوماً (5 سنوات فأكثر) — وفق المادتين 109 و111"
+          authority="وزارة الموارد البشرية والتنمية الاجتماعية"
+          authorityUrl="https://hrsd.gov.sa"
+          lastReviewed="سبتمبر 2026"
+          disclaimer="هذه الأداة تقديرية استرشادية. راجع عقد العمل ولوائح المنشأة للتحقق من الأجر الفعلي المعتمد."
+        />
 
         {/* ── PART 2: 300-500 words Editorial Explanation ─────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 py-8">

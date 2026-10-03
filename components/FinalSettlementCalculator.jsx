@@ -426,7 +426,7 @@ export default function FinalSettlementCalculator() {
 💎 صافي المخالصة النهائية المستحقة: ${fmt(calc.netSettlement)} ر.س
 
 احسب مخالصتك وأنشئ نموذجك التقديري مجاناً:
-https://arabic-tools-xi.vercel.app/ar/sa/final-settlement-calculator`;
+${(process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app")}/ar/sa/final-settlement-calculator`;
   }, [calc]);
 
   // ─── Render ────────────────────────────────────────────────────────────────────

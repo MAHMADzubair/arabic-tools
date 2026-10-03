@@ -2,6 +2,7 @@ import UaeVatRegistrationChecker from "@/components/UaeVatRegistrationChecker";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -20,13 +21,13 @@ export const metadata = {
     "EmaraTax تسجيل ضريبة القيمة المضافة",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/ae/vat-registration-checker",
+    canonical: "/ar/ae/vat-registration-checker",
   },
   openGraph: {
     title: "حاسبة التسجيل في ضريبة القيمة المضافة الإمارات | VAT Registration UAE 2026",
     description:
       "تحقق من التزام نشاطك بالتسجيل في ضريبة القيمة المضافة في الإمارات: 375,000 درهم إلزامي و187,500 درهم اختياري وفق الهيئة الاتحادية للضرائب FTA.",
-    url: "https://arabic-tools-xi.vercel.app/ar/ae/vat-registration-checker",
+    url: `${SITE_URL}/ar/ae/vat-registration-checker`,
     type: "website",
     locale: "ar_AE",
   },
@@ -38,9 +39,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae" },
-    { "@type": "ListItem", position: 3, name: "حاسبة التسجيل في ضريبة القيمة المضافة", item: "https://arabic-tools-xi.vercel.app/ar/ae/vat-registration-checker" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: `${SITE_URL}/ar/ae` },
+    { "@type": "ListItem", position: 3, name: "حاسبة التسجيل في ضريبة القيمة المضافة", item: `${SITE_URL}/ar/ae/vat-registration-checker` },
   ],
 };
 
@@ -54,7 +55,7 @@ const softwareAppJsonLd = {
   description:
     "أداة مجانية لفحص أهلية التسجيل في ضريبة القيمة المضافة بالإمارات وفق حدود الهيئة الاتحادية للضرائب: 375,000 درهم للتسجيل الإلزامي و187,500 درهم للاختياري.",
   inLanguage: "ar",
-  url: "https://arabic-tools-xi.vercel.app/ar/ae/vat-registration-checker",
+  url: `${SITE_URL}/ar/ae/vat-registration-checker`,
 };
 
 // 10 FAQs — visible accordion + FAQPage schema

@@ -1,6 +1,7 @@
 import UaeQuotationGenerator from "@/components/UaeQuotationGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -20,13 +21,13 @@ export const metadata = {
     "عرض سعر مع VAT الإمارات",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/ae/quotation-generator",
+    canonical: "/ar/ae/quotation-generator",
   },
   openGraph: {
     title: "مولد عرض سعر الإمارات 2026 | نموذج Quotation مجاني",
     description:
       "أنشئ عرض سعر احترافي بالعربية والإنجليزية مع حساب VAT وخصومات وشروط دفع، واطبعه مباشرة.",
-    url: "https://arabic-tools-xi.vercel.app/ar/ae/quotation-generator",
+    url: `${SITE_URL}/ar/ae/quotation-generator`,
     type: "website",
     locale: "ar_AE",
   },
@@ -38,9 +39,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية",          item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae" },
-    { "@type": "ListItem", position: 3, name: "مولد عرض السعر",    item: "https://arabic-tools-xi.vercel.app/ar/ae/quotation-generator" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية",          item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: `${SITE_URL}/ar/ae` },
+    { "@type": "ListItem", position: 3, name: "مولد عرض السعر",    item: `${SITE_URL}/ar/ae/quotation-generator` },
   ],
 };
 
@@ -54,7 +55,7 @@ const softwareAppJsonLd = {
   description:
     "أداة مجانية لإنشاء عروض أسعار احترافية بالعربية والإنجليزية للشركات والمستقلين في الإمارات.",
   inLanguage: "ar",
-  url: "https://arabic-tools-xi.vercel.app/ar/ae/quotation-generator",
+  url: `${SITE_URL}/ar/ae/quotation-generator`,
 };
 
 const faqJsonLd = {

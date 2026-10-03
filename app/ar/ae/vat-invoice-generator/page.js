@@ -1,5 +1,6 @@
 import UaeVatInvoiceGenerator from "@/components/UaeVatInvoiceGenerator";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -19,13 +20,13 @@ export const metadata = {
     "Tax Invoice PDF UAE",
   ],
   alternates: {
-    canonical: "https://arabic-tools-xi.vercel.app/ar/ae/vat-invoice-generator",
+    canonical: "/ar/ae/vat-invoice-generator",
   },
   openGraph: {
     title: "مولد فاتورة ضريبية الإمارات 2026 | VAT Invoice PDF",
     description:
       "أنشئ فاتورة ضريبية في الإمارات بالدرهم AED مع VAT 5% وحقول TRN والفاتورة الكاملة أو المبسطة — اطبعها أو احفظها PDF.",
-    url: "https://arabic-tools-xi.vercel.app/ar/ae/vat-invoice-generator",
+    url: `${SITE_URL}/ar/ae/vat-invoice-generator`,
     type: "website",
     locale: "ar_AE",
   },
@@ -37,9 +38,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: "https://arabic-tools-xi.vercel.app" },
-    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: "https://arabic-tools-xi.vercel.app/ar/ae" },
-    { "@type": "ListItem", position: 3, name: "مولد الفاتورة الضريبية", item: "https://arabic-tools-xi.vercel.app/ar/ae/vat-invoice-generator" },
+    { "@type": "ListItem", position: 1, name: "الرئيسية",           item: `${SITE_URL}` },
+    { "@type": "ListItem", position: 2, name: "🇦🇪 أدوات الإمارات", item: `${SITE_URL}/ar/ae` },
+    { "@type": "ListItem", position: 3, name: "مولد الفاتورة الضريبية", item: `${SITE_URL}/ar/ae/vat-invoice-generator` },
   ],
 };
 
@@ -53,7 +54,7 @@ const softwareAppJsonLd = {
   description:
     "أداة مجانية لإنشاء نموذج فاتورة ضريبية قابل للطباعة للأعمال في الإمارات، مع دعم الفاتورة الكاملة والمبسطة وحساب VAT 5% وفحص مبدئي لاكتمال الحقول.",
   inLanguage: "ar",
-  url: "https://arabic-tools-xi.vercel.app/ar/ae/vat-invoice-generator",
+  url: `${SITE_URL}/ar/ae/vat-invoice-generator`,
 };
 
 // 10 FAQs — visible on page and mirrored in schema

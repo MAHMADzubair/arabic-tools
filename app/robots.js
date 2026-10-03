@@ -1,5 +1,6 @@
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app";
+import { SITE_URL } from "@/lib/siteConfig";
+
+const BASE_URL = SITE_URL;
 
 /** @type {import('next').MetadataRoute.Robots} */
 export default function robots() {
