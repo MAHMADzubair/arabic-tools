@@ -10,6 +10,10 @@ export const metadata = {
     "احسب ضريبة القيمة المضافة 15% في المملكة العربية السعودية — أضف الضريبة أو استخرجها من السعر الشامل وفق لوائح هيئة الزكاة والضريبة والجمارك (ZATCA). بالريال السعودي.",
   alternates: {
     canonical: "/vat-calculator/saudi",
+    languages: {
+      "ar-SA": "/vat-calculator/saudi",
+      "ar-AE": "/vat-calculator/uae",
+    },
   },
   openGraph: {
     title: "حاسبة ضريبة القيمة المضافة السعودية 15% | VAT Calculator KSA 2026",

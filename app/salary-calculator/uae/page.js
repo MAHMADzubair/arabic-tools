@@ -9,6 +9,10 @@ export const metadata = {
     "احسب صافي راتبك في دبي وأبوظبي والإمارات بالدرهم الإماراتي — تفصيل الراتب الأساسي والبدلات مع توضيح رسوم التأمين ضد التعطل (ILOE) وانعدام ضريبة الدخل.",
   alternates: {
     canonical: "/salary-calculator/uae",
+    languages: {
+      "ar-SA": "/salary-calculator/saudi",
+      "ar-AE": "/salary-calculator/uae",
+    },
   },
   openGraph: {
     title: "حاسبة الراتب في الإمارات 2026 | صافي الراتب بالدرهم الإماراتي",

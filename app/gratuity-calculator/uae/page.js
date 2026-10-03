@@ -1,11 +1,27 @@
 import GratuityCalculator from "@/components/GratuityCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة مكافأة نهاية الخدمة في الإمارات 2026 | قانون العمل 33 لسنة 2021",
   description:
     "احسب مكافأة نهاية الخدمة للقطاع الخاص في دبي وأبوظبي والإمارات بدقة وفق المادة (51) من قانون العمل الاتحادي الجديد 33 لسنة 2021 دون أي خصم للاستقالة.",
+  alternates: {
+    canonical: "/gratuity-calculator/uae",
+    languages: {
+      "ar-SA": "/gratuity-calculator/saudi",
+      "ar-AE": "/gratuity-calculator/uae",
+    },
+  },
+  openGraph: {
+    title: "حاسبة مكافأة نهاية الخدمة في الإمارات 2026 | قانون العمل 33 لسنة 2021",
+    description:
+      "احسب مكافأة نهاية الخدمة في الإمارات وفق المادة (51) من قانون العمل الاتحادي 33 لسنة 2021 دون أي خصم للاستقالة.",
+    url: `${SITE_URL}/gratuity-calculator/uae`,
+    type: "website",
+    locale: "ar_AE",
+  },
 };
 
 const guideData = {

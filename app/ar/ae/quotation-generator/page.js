@@ -22,6 +22,10 @@ export const metadata = {
   ],
   alternates: {
     canonical: "/ar/ae/quotation-generator",
+    languages: {
+      "ar-SA": "/ar/sa/quotation-generator",
+      "ar-AE": "/ar/ae/quotation-generator",
+    },
   },
   openGraph: {
     title: "مولد عرض سعر الإمارات 2026 | نموذج Quotation مجاني",
@@ -313,7 +317,7 @@ export default function UaeQuotationGeneratorPage() {
                 <h3 className="text-sm font-extrabold text-ink">مثال — مشروع موقع إلكتروني احترافي</h3>
                 <div className="text-xs text-ink-secondary space-y-1">
                   <div className="grid grid-cols-3 gap-2 font-bold text-ink border-b border-slate-200 pb-1 mb-2">
-                    <span>البند</span><span className="text-left" dir="ltr">السعر</span><span className="text-left" dir="ltr">الإجمالي</span>
+                    <span>البند</span><span>السعر</span><span>الإجمالي</span>
                   </div>
                   {[
                     ["تصميم واجهة الموقع (UI/UX)", "4,000 درهم × 1", "4,000.00 درهم"],

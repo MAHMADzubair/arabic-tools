@@ -10,6 +10,10 @@ export const metadata = {
     "احسب ضريبة القيمة المضافة 5% في دولة الإمارات العربية المتحدة — أضف الضريبة أو استخرجها من السعر الشامل وفق لوائح الهيئة الاتحادية للضرائب (FTA). بالدرهم الإماراتي.",
   alternates: {
     canonical: "/vat-calculator/uae",
+    languages: {
+      "ar-SA": "/vat-calculator/saudi",
+      "ar-AE": "/vat-calculator/uae",
+    },
   },
   openGraph: {
     title: "حاسبة ضريبة القيمة المضافة في الإمارات 5% | VAT Calculator UAE 2026",

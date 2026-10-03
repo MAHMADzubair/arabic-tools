@@ -22,6 +22,10 @@ export const metadata = {
   ],
   alternates: {
     canonical: "/ar/sa/final-settlement-calculator",
+    languages: {
+      "ar-SA": "/ar/sa/final-settlement-calculator",
+      "ar-AE": "/ar/ae/final-settlement-calculator",
+    },
   },
   openGraph: {
     title: "حاسبة المخالصة النهائية في السعودية 2026 | مكافأة وإجازة وإشعار",

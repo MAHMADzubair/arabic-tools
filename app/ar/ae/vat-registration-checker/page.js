@@ -22,6 +22,10 @@ export const metadata = {
   ],
   alternates: {
     canonical: "/ar/ae/vat-registration-checker",
+    languages: {
+      "ar-SA": "/ar/sa/vat-registration-checker",
+      "ar-AE": "/ar/ae/vat-registration-checker",
+    },
   },
   openGraph: {
     title: "حاسبة التسجيل في ضريبة القيمة المضافة الإمارات | VAT Registration UAE 2026",

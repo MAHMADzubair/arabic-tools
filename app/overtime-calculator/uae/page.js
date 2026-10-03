@@ -1,10 +1,26 @@
 import OvertimeCalculator from "@/components/OvertimeCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة العمل الإضافي في الإمارات 2026 | المادة 19 قانون العمل 33 لسنة 2021",
   description:
     "احسب أجر ساعات العمل الإضافي (الأوفر تايم) في الإمارات ودبي وأبوظبي بدقة وفق المادة (19) من قانون العمل: 125% للساعات النهارية و150% للساعات الليلية والعطلات الرسمية.",
+  alternates: {
+    canonical: "/overtime-calculator/uae",
+    languages: {
+      "ar-SA": "/overtime-calculator/saudi",
+      "ar-AE": "/overtime-calculator/uae",
+    },
+  },
+  openGraph: {
+    title: "حاسبة العمل الإضافي في الإمارات 2026 | المادة 19 قانون العمل 33 لسنة 2021",
+    description:
+      "احسب أجر الأوفر تايم في الإمارات وفق المادة (19): 125% نهاراً و150% ليلاً والعطلات الرسمية.",
+    url: `${SITE_URL}/overtime-calculator/uae`,
+    type: "website",
+    locale: "ar_AE",
+  },
 };
 
 const guideData = {

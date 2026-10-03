@@ -1,5 +1,6 @@
 import OvertimeCalculator from "@/components/OvertimeCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة العمل الإضافي في السعودية 2026 | المادة 107 من نظام العمل",
@@ -7,6 +8,18 @@ export const metadata = {
     "احسب أجر ساعات العمل الإضافي (الأوفر تايم) في السعودية بدقة وفق المادة (107) من نظام العمل بنسبة 150% لساعات العمل النهارية والليلية والعطلات الأسبوعية والأعياد.",
   alternates: {
     canonical: "/overtime-calculator/saudi",
+    languages: {
+      "ar-SA": "/overtime-calculator/saudi",
+      "ar-AE": "/overtime-calculator/uae",
+    },
+  },
+  openGraph: {
+    title: "حاسبة العمل الإضافي في السعودية 2026 | المادة 107 من نظام العمل",
+    description:
+      "احسب أجر الأوفر تايم في السعودية وفق المادة (107) بنسبة 150% للساعات الإضافية والعطلات.",
+    url: `${SITE_URL}/overtime-calculator/saudi`,
+    type: "website",
+    locale: "ar_SA",
   },
 };
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import GratuityCalculator from "@/components/GratuityCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import { SITE_URL } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة مكافأة نهاية الخدمة في السعودية 2026 | المادتان 84 و85 نظام العمل",
@@ -8,6 +9,18 @@ export const metadata = {
     "احسب مكافأة نهاية الخدمة لموظفي القطاع الخاص في السعودية بدقة وفق المواد (84 و85 و87) من نظام العمل مع حالات الاستقالة والفصل والتقاعد وحساب الأجر الفعلي.",
   alternates: {
     canonical: "/gratuity-calculator/saudi",
+    languages: {
+      "ar-SA": "/gratuity-calculator/saudi",
+      "ar-AE": "/gratuity-calculator/uae",
+    },
+  },
+  openGraph: {
+    title: "حاسبة مكافأة نهاية الخدمة في السعودية 2026 | المادتان 84 و85 نظام العمل",
+    description:
+      "احسب مكافأة نهاية الخدمة وفق المواد (84 و85 و87) من نظام العمل السعودي مع حالات الاستقالة والفصل والتقاعد.",
+    url: `${SITE_URL}/gratuity-calculator/saudi`,
+    type: "website",
+    locale: "ar_SA",
   },
 };
 

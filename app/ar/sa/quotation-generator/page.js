@@ -23,6 +23,10 @@ export const metadata = {
   ],
   alternates: {
     canonical: "/ar/sa/quotation-generator",
+    languages: {
+      "ar-SA": "/ar/sa/quotation-generator",
+      "ar-AE": "/ar/ae/quotation-generator",
+    },
   },
   openGraph: {
     title: "مولد عرض سعر السعودية 2026 | نموذج Quotation مجاني",
@@ -318,7 +322,7 @@ export default function SaudiQuotationGeneratorPage() {
               <h3 className="text-sm font-extrabold text-ink">مثال — تطوير موقع إلكتروني احترافي</h3>
               <div className="text-xs text-ink-secondary space-y-1">
                 <div className="grid grid-cols-3 gap-2 font-bold text-ink border-b border-slate-200 pb-1 mb-2">
-                  <span>البند</span><span className="text-left" dir="ltr">السعر</span><span className="text-left" dir="ltr">الإجمالي</span>
+                  <span>البند</span><span>السعر</span><span>الإجمالي</span>
                 </div>
                 {[
                   ["تصميم واجهة الموقع", "4,000 ريال × 1", "4,000.00 ريال"],
