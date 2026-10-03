@@ -388,6 +388,7 @@ export default function ToolGuideSection({
                 <button
                   type="button"
                   onClick={() => setOpenFaq(isOpen ? -1 : idx)}
+                  aria-expanded={isOpen}
                   className="flex w-full items-center justify-between p-4 sm:p-5 text-right font-bold text-sm sm:text-base text-ink hover:text-brand"
                 >
                   <span className="flex items-center gap-3">

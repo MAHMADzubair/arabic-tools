@@ -16,6 +16,12 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
 
 const BASE_URL = SITE_URL;
 
+// ─── Viewport ─────────────────────────────────────────────────────────────────
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 // ─── Root Structured Data (WebSite + WebApplication) ─────────────────────────
 const websiteJsonLd = {
   "@context": "https://schema.org",
