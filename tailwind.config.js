@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        arabic: ["'IBM Plex Sans Arabic'", "Tahoma", "sans-serif"],
+        arabic: ["var(--font-ibm-plex-arabic)", "'IBM Plex Sans Arabic'", "Tahoma", "sans-serif"],
       },
       colors: {
         brand: {

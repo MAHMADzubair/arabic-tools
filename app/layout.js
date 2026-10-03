@@ -1,8 +1,18 @@
 import "./globals.css";
+import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import Header from "../components/Header";
 import Script from "next/script";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 import { SITE_URL, SITE_NAME } from "@/lib/siteConfig";
+
+// ─── Font: IBM Plex Sans Arabic via next/font (self-hosted, no blocking request) ──
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-ibm-plex-arabic",
+  display: "swap",
+  preload: true,
+});
 
 const BASE_URL = SITE_URL;
 
@@ -53,7 +63,7 @@ export default function RootLayout({ children }) {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "";
 
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl" className={ibmPlexArabic.variable}>
       <body suppressHydrationWarning={true} className="bg-slate-50 text-ink min-h-screen flex flex-col">
         {/* WebSite Structured Data */}
         <script
