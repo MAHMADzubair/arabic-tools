@@ -280,7 +280,7 @@ export default function UaePurchaseOrderGenerator() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="text-2xl">📦</span>
-              <h1 className="text-xl font-extrabold text-ink">مولد أمر الشراء في الإمارات</h1>
+              <h2 className="text-xl font-extrabold text-ink">مولد أمر الشراء في الإمارات</h2>
             </div>
             <p className="text-xs text-ink-secondary">
               أنشئ أمر شراء احترافي بالعربية والإنجليزية — للشركات والمتاجر وفرق المشتريات في الإمارات

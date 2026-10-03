@@ -140,9 +140,9 @@ export default function UaeVatRegistrationChecker() {
           <div className="flex items-center gap-3">
             <span className="text-4xl">🏢</span>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black leading-tight">
+              <h2 className="text-xl sm:text-2xl font-black leading-tight">
                 حاسبة أهلية التسجيل في ضريبة القيمة المضافة في الإمارات
-              </h1>
+              </h2>
               <p className="mt-1 text-sm text-white/85">
                 فحص فوري للالتزام بحد التسجيل الإلزامي (375,000 د.إ) والاختياري (187,500 د.إ) وفق معايير الهيئة الاتحادية للضرائب
               </p>

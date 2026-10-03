@@ -114,7 +114,7 @@ export default function UaeCorporateTaxCalculator() {
           <div className="flex items-center gap-3">
             <span className="text-4xl">🏛️</span>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black leading-tight">حاسبة ضريبة الشركات في الإمارات</h1>
+              <h2 className="text-xl sm:text-2xl font-black leading-tight">حاسبة ضريبة الشركات في الإمارات</h2>
               <p className="mt-1 text-sm text-white/85">تقدير ضريبة الشركات وفق نسبتَي 0% و9% — المرسوم بقانون رقم 47 لسنة 2022</p>
             </div>
           </div>

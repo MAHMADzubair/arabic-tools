@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "الصفحة غير موجودة — 404 | أدوات عربية",
+  title: "الصفحة غير موجودة — 404",
   robots: { index: false, follow: false },
 };
 
