@@ -159,9 +159,9 @@ ${(process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app")}/ar
             <span>⚖️</span>
             <span>نظام العمل السعودي — المرسوم الملكي م/51</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-ink">
+          <h1 className="text-xl sm:text-2xl font-black text-ink">
             حاسبة التعويض عن إنهاء العقد غير المشروع (المادة 77)
-          </h2>
+          </h1>
           <p className="text-xs text-ink-muted mt-1">
             قدّر التعويض وفق قاعدة المادة 77 من نظام العمل السعودي عند فسخ عقد العمل دون سبب مشروع مع تطبيق الحد الأدنى النظامي (أجر شهرين).
           </p>
