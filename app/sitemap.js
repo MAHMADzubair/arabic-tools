@@ -1,7 +1,5 @@
 import { SITE_URL } from "@/lib/siteConfig";
 
-const BASE_URL = SITE_URL;
-
 export default function sitemap() {
   // General tool routes (global scope)
   const toolRoutes = [
@@ -16,7 +14,7 @@ export default function sitemap() {
 
   // Country-specific sub-pages (high SEO priority — country revenue cluster)
   const countryToolPages = [
-    // Saudi Arabia cluster (legacy /tool/saudi routes)
+    // Saudi Arabia cluster
     "/salary-calculator/saudi",
     "/gratuity-calculator/saudi",
     "/overtime-calculator/saudi",
@@ -26,14 +24,14 @@ export default function sitemap() {
     "/gratuity-calculator/uae",
     "/overtime-calculator/uae",
     "/vat-calculator/uae",
-    // Kuwait, Qatar & Egypt gratuity and salary
+    // Kuwait, Qatar & Egypt
     "/gratuity-calculator/kuwait",
     "/gratuity-calculator/qatar",
     "/gratuity-calculator/egypt",
     "/salary-calculator/egypt",
   ];
 
-  // Saudi /ar/sa/ deep-linked tool pages — highest revenue cluster
+  // Saudi /ar/sa/ deep-linked tool pages
   const saudiDeepPages = [
     "/ar/sa/final-settlement-calculator",
     "/ar/sa/annual-leave-calculator",
@@ -60,73 +58,62 @@ export default function sitemap() {
     "/ar/business/ai-sales-closer",
   ];
 
-  const now = new Date();
-
-
   const homePage = {
-    url: BASE_URL,
-    lastModified: now,
+    url: SITE_URL,
     changeFrequency: "weekly",
     priority: 1.0,
   };
 
   // Country landing pages (/ar/sa, /ar/ae, etc.)
+  // Matches generateStaticParams in app/ar/[country]/page.js — codes: sa, ae, qa, kw, om, bh
   const countryPages = ["sa", "ae", "qa", "kw", "om", "bh"].map((code) => ({
-    url: `${BASE_URL}/ar/${code}`,
-    lastModified: now,
+    url: `${SITE_URL}/ar/${code}`,
     changeFrequency: "weekly",
     priority: 0.95,
   }));
 
-  // Saudi deep tool pages — between country pages and generic tools in priority
   const saudiDeepRoutes = saudiDeepPages.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified: now,
+    url: `${SITE_URL}${route}`,
     changeFrequency: "monthly",
     priority: 0.9,
   }));
 
-  // UAE deep tool pages
   const uaeDeepRoutes = uaeDeepPages.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified: now,
+    url: `${SITE_URL}${route}`,
     changeFrequency: "monthly",
     priority: 0.9,
   }));
 
-  // Country-specific tool pages (e.g. /gratuity-calculator/saudi)
   const countryToolRoutes = countryToolPages.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified: now,
+    url: `${SITE_URL}${route}`,
     changeFrequency: "monthly",
     priority: 0.85,
   }));
 
-  // General tools
   const toolPages = toolRoutes.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified: now,
+    url: `${SITE_URL}${route}`,
     changeFrequency: "monthly",
     priority: 0.8,
   }));
 
-  // Business tool pages (pilot / AI products)
   const businessRoutes = businessPages.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified: now,
+    url: `${SITE_URL}${route}`,
     changeFrequency: "monthly",
     priority: 0.85,
   }));
 
-  // Static / legal pages — lowest crawl priority
-  const staticPages = ["/about", "/privacy", "/contact", "/terms", "/disclaimer"].map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified: now,
+  // Static / legal / trust pages — lowest crawl priority
+  // Note: /disclaimer added 2026-10 (was missing despite having a real page)
+  const staticPages = [
+    "/about", "/contact", "/privacy", "/terms", "/disclaimer",
+  ].map((route) => ({
+    url: `${SITE_URL}${route}`,
     changeFrequency: "yearly",
     priority: 0.4,
   }));
 
-  // Priority order: home → country landing → Saudi deep tools → UAE deep tools → country tool routes → business → general tools → static
+  // Priority order: home → country hubs → Saudi tools → UAE tools
+  //   → country tool sub-pages → business → general tools → static
   return [
     homePage,
     ...countryPages,

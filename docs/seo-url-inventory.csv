@@ -1,0 +1,65 @@
+url_path,page_type,country,indexable,canonical_path,in_sitemap,robots_blocked,noindex,source,updated_at,notes
+/,Home,global,yes,/,yes,no,no,app/page.js,,Homepage
+/about,Trust page,global,yes,/about,yes,no,no,app/about/page.js,,About page
+/contact,Trust page,global,yes,/contact,yes,no,no,app/contact/page.js,,Contact page
+/privacy,Trust page,global,yes,/privacy,yes,no,no,app/privacy/page.js,,Privacy policy
+/terms,Trust page,global,yes,/terms,yes,no,no,app/terms/page.js,,Terms of use
+/disclaimer,Trust page,global,yes,/disclaimer,yes,no,no,app/disclaimer/page.js,,FIXED: was missing from sitemap; added 2026-10
+/ar/sa,Category hub,sa,yes,/ar/sa,yes,no,no,app/ar/[country]/page.js,,Saudi Arabia hub
+/ar/ae,Category hub,ae,yes,/ar/ae,yes,no,no,app/ar/[country]/page.js,,UAE hub
+/ar/qa,Category hub,qa,yes,/ar/qa,yes,no,no,app/ar/[country]/page.js,,Qatar hub
+/ar/kw,Category hub,kw,yes,/ar/kw,yes,no,no,app/ar/[country]/page.js,,Kuwait hub
+/ar/om,Category hub,om,yes,/ar/om,yes,no,no,app/ar/[country]/page.js,,Oman hub
+/ar/bh,Category hub,bh,yes,/ar/bh,yes,no,no,app/ar/[country]/page.js,,Bahrain hub
+/ar/sa/final-settlement-calculator,Tool,sa,yes,/ar/sa/final-settlement-calculator,yes,no,no,registry + app/ar/sa/final-settlement-calculator/page.js,,Saudi Final Settlement
+/ar/sa/annual-leave-calculator,Tool,sa,yes,/ar/sa/annual-leave-calculator,yes,no,no,registry + app/ar/sa/annual-leave-calculator/page.js,,Saudi Annual Leave
+/ar/sa/article-77-calculator,Tool,sa,yes,/ar/sa/article-77-calculator,yes,no,no,registry + app/ar/sa/article-77-calculator/page.js,,Saudi Article 77
+/ar/sa/vat-registration-checker,Tool,sa,yes,/ar/sa/vat-registration-checker,yes,no,no,registry + app/ar/sa/vat-registration-checker/page.js,,Saudi VAT Registration
+/ar/sa/e-invoice-generator,Tool,sa,yes,/ar/sa/e-invoice-generator,yes,no,no,registry + app/ar/sa/e-invoice-generator/page.js,,Saudi E-Invoice
+/ar/sa/quotation-generator,Tool,sa,yes,/ar/sa/quotation-generator,yes,no,no,registry + app/ar/sa/quotation-generator/page.js,,Saudi Quotation
+/ar/ae/final-settlement-calculator,Tool,ae,yes,/ar/ae/final-settlement-calculator,yes,no,no,registry + app/ar/ae/final-settlement-calculator/page.js,,UAE Final Settlement
+/ar/ae/notice-period-calculator,Tool,ae,yes,/ar/ae/notice-period-calculator,yes,no,no,registry + app/ar/ae/notice-period-calculator/page.js,,UAE Notice Period
+/ar/ae/vat-registration-checker,Tool,ae,yes,/ar/ae/vat-registration-checker,yes,no,no,registry + app/ar/ae/vat-registration-checker/page.js,,UAE VAT Registration
+/ar/ae/corporate-tax-calculator,Tool,ae,yes,/ar/ae/corporate-tax-calculator,yes,no,no,registry + app/ar/ae/corporate-tax-calculator/page.js,,UAE Corporate Tax
+/ar/ae/small-business-relief-checker,Tool,ae,yes,/ar/ae/small-business-relief-checker,yes,no,no,registry + app/ar/ae/small-business-relief-checker/page.js,,UAE Small Business Relief
+/ar/ae/vat-invoice-generator,Tool,ae,yes,/ar/ae/vat-invoice-generator,yes,no,no,registry + app/ar/ae/vat-invoice-generator/page.js,,UAE VAT Invoice
+/ar/ae/quotation-generator,Tool,ae,yes,/ar/ae/quotation-generator,yes,no,no,registry + app/ar/ae/quotation-generator/page.js,,UAE Quotation
+/ar/ae/purchase-order-generator,Tool,ae,yes,/ar/ae/purchase-order-generator,yes,no,no,registry + app/ar/ae/purchase-order-generator/page.js,,UAE Purchase Order
+/ar/business/ai-sales-closer,Business landing,sa,yes,/ar/business/ai-sales-closer,yes,no,no,registry + app/ar/business/ai-sales-closer/page.js,,AI Sales Closer pilot
+/salary-calculator,Tool,global,yes,/salary-calculator,yes,no,no,registry + app/salary-calculator/page.js,,Multi-country salary
+/salary-calculator/saudi,Tool,sa,yes,/salary-calculator/saudi,yes,no,no,app/salary-calculator/saudi/page.js,,Saudi salary sub-page
+/salary-calculator/uae,Tool,ae,yes,/salary-calculator/uae,yes,no,no,app/salary-calculator/uae/page.js,,UAE salary sub-page
+/salary-calculator/egypt,Tool,eg,yes,/salary-calculator/egypt,yes,no,no,app/salary-calculator/egypt/page.js,,Egypt salary sub-page
+/gratuity-calculator,Tool,global,yes,/gratuity-calculator,yes,no,no,registry + app/gratuity-calculator/page.js,,Multi-country gratuity
+/gratuity-calculator/saudi,Tool,sa,yes,/gratuity-calculator/saudi,yes,no,no,app/gratuity-calculator/saudi/page.js,,Saudi gratuity sub-page
+/gratuity-calculator/uae,Tool,ae,yes,/gratuity-calculator/uae,yes,no,no,app/gratuity-calculator/uae/page.js,,UAE gratuity sub-page
+/gratuity-calculator/kuwait,Tool,kw,yes,/gratuity-calculator/kuwait,yes,no,no,app/gratuity-calculator/kuwait/page.js,,Kuwait gratuity sub-page
+/gratuity-calculator/qatar,Tool,qa,yes,/gratuity-calculator/qatar,yes,no,no,app/gratuity-calculator/qatar/page.js,,Qatar gratuity sub-page
+/gratuity-calculator/egypt,Tool,eg,yes,/gratuity-calculator/egypt,yes,no,no,app/gratuity-calculator/egypt/page.js,,Egypt gratuity sub-page
+/overtime-calculator,Tool,global,yes,/overtime-calculator,yes,no,no,registry + app/overtime-calculator/page.js,,Multi-country overtime
+/overtime-calculator/saudi,Tool,sa,yes,/overtime-calculator/saudi,yes,no,no,app/overtime-calculator/saudi/page.js,,Saudi overtime sub-page
+/overtime-calculator/uae,Tool,ae,yes,/overtime-calculator/uae,yes,no,no,app/overtime-calculator/uae/page.js,,UAE overtime sub-page
+/vat-calculator,Tool,global,yes,/vat-calculator,yes,no,no,registry + app/vat-calculator/page.js,,Multi-country VAT
+/vat-calculator/saudi,Tool,sa,yes,/vat-calculator/saudi,yes,no,no,app/vat-calculator/saudi/page.js,,Saudi VAT sub-page
+/vat-calculator/uae,Tool,ae,yes,/vat-calculator/uae,yes,no,no,app/vat-calculator/uae/page.js,,UAE VAT sub-page
+/annual-leave-calculator,Tool,global,yes,/annual-leave-calculator,yes,no,no,registry + app/annual-leave-calculator/page.js,,Multi-country annual leave
+/zakat-calculator,Tool,global,yes,/zakat-calculator,yes,no,no,registry + app/zakat-calculator/page.js,,Zakat calculator
+/zakat-al-fitr,Tool,global,yes,/zakat-al-fitr,yes,no,no,registry + app/zakat-al-fitr/page.js,,Zakat al-Fitr
+/kaffara-calculator,Tool,global,yes,/kaffara-calculator,yes,no,no,registry + app/kaffara-calculator/page.js,,Kaffara calculator
+/inheritance-calculator,Tool,global,yes,/inheritance-calculator,yes,no,no,registry + app/inheritance-calculator/page.js,,Inheritance calculator
+/umrah-calculator,Tool,global,yes,/umrah-calculator,yes,no,no,registry + app/umrah-calculator/page.js,,Umrah cost calculator
+/loan-calculator,Tool,global,yes,/loan-calculator,yes,no,no,registry + app/loan-calculator/page.js,,Loan calculator
+/mortgage-calculator,Tool,global,yes,/mortgage-calculator,yes,no,no,registry + app/mortgage-calculator/page.js,,Mortgage calculator
+/compound-interest,Tool,global,yes,/compound-interest,yes,no,no,registry + app/compound-interest/page.js,,Compound interest
+/roi-calculator,Tool,global,yes,/roi-calculator,yes,no,no,registry + app/roi-calculator/page.js,,ROI calculator
+/profit-margin-calculator,Tool,global,yes,/profit-margin-calculator,yes,no,no,registry + app/profit-margin-calculator/page.js,,Profit margin
+/currency-converter,Tool,global,yes,/currency-converter,yes,no,no,registry + app/currency-converter/page.js,,Currency converter
+/hijri-age-calculator,Tool,global,yes,/hijri-age-calculator,yes,no,no,registry + app/hijri-age-calculator/page.js,,Hijri age calculator
+/date-converter,Tool,global,yes,/date-converter,yes,no,no,registry + app/date-converter/page.js,,Hijri date converter
+/bmi-calculator,Tool,global,yes,/bmi-calculator,yes,no,no,registry + app/bmi-calculator/page.js,,BMI calculator
+/unit-converter,Tool,global,yes,/unit-converter,yes,no,no,registry + app/unit-converter/page.js,,Unit converter
+/internal/login,Internal/admin,internal,no,/internal/login,no,yes,yes,app/internal/login/page.js,,Admin login — noindex + disallowed
+/internal/pilot-leads,Internal/admin,internal,no,/internal/pilot-leads,no,yes,yes,app/internal/pilot-leads/page.js,,Pilot leads dashboard — noindex + disallowed
+/api/internal/auth,API,internal,n/a,/api/internal/auth,no,yes,n/a,app/api/internal/auth/route.js,,Auth API — disallowed
+/api/internal/pilot-leads,API,internal,n/a,/api/internal/pilot-leads,no,yes,n/a,app/api/internal/pilot-leads/route.js,,Pilot leads API — disallowed
+/api/pilot,API,internal,n/a,/api/pilot,no,yes,n/a,app/api/pilot/route.js,,Pilot signup API — disallowed
