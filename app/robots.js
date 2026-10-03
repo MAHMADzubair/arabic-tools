@@ -1,7 +1,5 @@
 import { SITE_URL } from "@/lib/siteConfig";
 
-const BASE_URL = SITE_URL;
-
 /** @type {import('next').MetadataRoute.Robots} */
 export default function robots() {
   return {
@@ -12,6 +10,7 @@ export default function robots() {
         disallow: ["/api/", "/internal/"],
       },
     ],
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }
