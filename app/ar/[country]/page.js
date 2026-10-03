@@ -568,7 +568,7 @@ export default function CountryPage({ params }) {
         "@type": "ListItem",
         position: 2,
         name: country.nameAr,
-        item: `${BASE_URL}/ar/${country.code}/`,
+        item: `${BASE_URL}/ar/${country.code}`,
       },
     ],
   };
