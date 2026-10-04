@@ -526,7 +526,7 @@ export default function UaeVatInvoiceGenerator() {
 
 
 
-  const { okCount, warnCount, missCount, completePct } = calcCompleteness(checks);
+  const { okCount, warnCount, missCount, completePct, barColor } = calcCompleteness(checks);
 
 
 

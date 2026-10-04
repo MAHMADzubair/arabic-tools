@@ -6,7 +6,7 @@ import { useState, useMemo } from "react";
 
 
 
-/\* ─── Unit Conversion Definitions ─────────────────────────────────────────── \*/
+/* ─── Unit Conversion Definitions ─────────────────────────────────────────── */
 
 const UNIT_CATEGORIES = {
 
@@ -206,7 +206,7 @@ const UNIT_CATEGORIES = {
 
 
 
-/\* ─── Temperature Converter Helpers ───────────────────────────────────────── \*/
+/* ─── Temperature Converter Helpers ───────────────────────────────────────── */
 
 function convertTemp(val, from, to) {
 
@@ -214,7 +214,7 @@ function convertTemp(val, from, to) {
 
   if (from === "C") c = val;
 
-  else if (from === "F") c = ((val - 32) \* 5) / 9;
+  else if (from === "F") c = ((val - 32) * 5) / 9;
 
   else if (from === "K") c = val - 273.15;
 
@@ -222,7 +222,7 @@ function convertTemp(val, from, to) {
 
   if (to === "C") return c;
 
-  if (to === "F") return (c \* 9) / 5 + 32;
+  if (to === "F") return (c * 9) / 5 + 32;
 
   if (to === "K") return c + 273.15;
 
@@ -454,7 +454,7 @@ export default function UnitConverter() {
 
 
 
-    const baseVal = val \* uFrom.rateToBase;
+    const baseVal = val * uFrom.rateToBase;
 
     return baseVal / uTo.rateToBase;
 
@@ -484,7 +484,7 @@ export default function UnitConverter() {
 
         const uFrom = category.units.find((item) => item.id === fromUnit);
 
-        const baseVal = val \* (uFrom?.rateToBase || 1);
+        const baseVal = val * (uFrom?.rateToBase || 1);
 
         res = baseVal / u.rateToBase;
 
@@ -575,7 +575,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
     <div className="uv-root mx-auto max-w-5xl px-4 py-8 sm:py-12" dir="rtl">
       <UnitConverterStyles />
 
-      {/\* Header \*/}
+      {/* Header */}
 
       <div className="mb-8 text-center space-y-3">
 
@@ -603,7 +603,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-      {/\* Category Tabs \*/}
+      {/* Category Tabs */}
 
       <div className="mb-6 flex flex-wrap justify-center gap-2">
 
@@ -639,7 +639,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-      {/\* Quick Presets \*/}
+      {/* Quick Presets */}
 
       <div className="mb-6 rounded-2xl border border-[var(--uv-border)] bg-[var(--uv-surface-2)] p-3 sm:p-4">
 
@@ -675,13 +675,13 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
       <div className="grid gap-6 lg:grid-cols-5">
 
-        {/\* ─── Left Inputs Column (3 cols) ─── \*/}
+        {/* ─── Left Inputs Column (3 cols) ─── */}
 
         <div className="lg:col-span-3 space-y-5">
 
 
 
-          {/\* Interactive Converter Box \*/}
+          {/* Interactive Converter Box */}
 
           <div className="uv-card rounded-2xl p-5 space-y-5">
 
@@ -717,7 +717,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-            {/\* From Input \*/}
+            {/* From Input */}
 
             <div className="grid gap-3 sm:grid-cols-2">
 
@@ -775,7 +775,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-            {/\* To Unit Selector \*/}
+            {/* To Unit Selector */}
 
             <div className="space-y-1 pt-1">
 
@@ -809,7 +809,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-          {/\* Complete Category Conversion Grid (Matrix) \*/}
+          {/* Complete Category Conversion Grid (Matrix) */}
 
           <div className="uv-card rounded-2xl p-5 space-y-3">
 
@@ -875,7 +875,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-        {/\* ─── Right Results Column (2 cols) ─── \*/}
+        {/* ─── Right Results Column (2 cols) ─── */}
 
         <div className="lg:col-span-2">
 
@@ -883,7 +883,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-            {/\* Main Result Card \*/}
+            {/* Main Result Card */}
 
             <div className="uv-result rounded-2xl p-6 space-y-4">
 
@@ -921,7 +921,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-              {/\* Action Buttons \*/}
+              {/* Action Buttons */}
 
               <div className="flex gap-2 pt-2">
 
@@ -959,7 +959,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
 
 
-            {/\* Conversion Formula Info \*/}
+            {/* Conversion Formula Info */}
 
             <div className="uv-card rounded-2xl p-5 space-y-3">
 

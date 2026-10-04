@@ -82,13 +82,13 @@ function TriToggle({ label, value, onChange, options }) {
 
       <p className="text-xs font-bold text-[var(--text-2)] mb-2">{label}</p>
 
-      <div className={\`grid gap-2 max-w-sm\`} style={{ gridTemplateColumns: \`repeat(${opts.length}, 1fr)\` }}>
+      <div className={`grid gap-2 max-w-sm`} style={{ gridTemplateColumns: `repeat(${opts.length}, 1fr)` }}>
 
         {opts.map(({ l, v }) => (
 
           <button key={v} type="button" onClick={() => onChange(v)}
 
-            className={\`rounded-xl border p-2.5 text-center text-xs font-bold transition-all ${value === v ? "border-[var(--orange)] bg-[var(--orange)] text-[var(--on-orange)]" : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-2)] hover:border-[var(--orange)]"}\`}>
+            className={`rounded-xl border p-2.5 text-center text-xs font-bold transition-all ${value === v ? "border-[var(--orange)] bg-[var(--orange)] text-[var(--on-orange)]" : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-2)] hover:border-[var(--orange)]"}`}>
 
             {l}
 
@@ -120,7 +120,7 @@ function ChecklistRow({ label, status, note }) {
 
       <div>
 
-        <p className={\`text-xs font-bold ${color}\`}>{label}</p>
+        <p className={`text-xs font-bold ${color}`}>{label}</p>
 
         {note && <p className="text-[10px] text-[var(--text-3)]">{note}</p>}
 
@@ -526,7 +526,7 @@ export default function UaeSbrChecker() {
 
             <button key={p.id} type="button" onClick={() => loadPreset(p.id)}
 
-              className={\`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${p.cls}\`}>{p.label}</button>
+              className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${p.cls}`}>{p.label}</button>
 
           ))}
 
@@ -554,7 +554,7 @@ export default function UaeSbrChecker() {
 
             <button key={val} type="button" onClick={() => { setPersonType(val); if (val === PERSON_TYPE.FREE_ZONE && isQFZP === TRI.NO) setIsQFZP(TRI.UNSURE); }}
 
-              className={\`rounded-xl border p-3 text-center text-xs font-bold transition-all ${personType === val ? "border-[var(--orange)] bg-[var(--orange)] text-[var(--on-orange)]" : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-2)] hover:border-[var(--orange)]"}\`}>
+              className={`rounded-xl border p-3 text-center text-xs font-bold transition-all ${personType === val ? "border-[var(--orange)] bg-[var(--orange)] text-[var(--on-orange)]" : "border-[var(--border)] bg-[var(--surface)] text-[var(--text-2)] hover:border-[var(--orange)]"}`}>
 
               {label}
 
@@ -688,13 +688,13 @@ export default function UaeSbrChecker() {
 
         {sanitizeNumber(currentRev) > 0 && (
 
-          <div className={\`rounded-xl border p-3 text-xs font-bold ${sanitizeNumber(currentRev) <= SBR_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}\`}>
+          <div className={`rounded-xl border p-3 text-xs font-bold ${sanitizeNumber(currentRev) <= SBR_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}`}>
 
             {sanitizeNumber(currentRev) <= SBR_REVENUE_THRESHOLD
 
-              ? \`الإيرادات (${formatAED(sanitizeNumber(currentRev))} د.إ) ضمن حد 3,000,000 درهم\`
+              ? `الإيرادات (${formatAED(sanitizeNumber(currentRev))} د.إ) ضمن حد 3,000,000 درهم`
 
-              : \`الإيرادات (${formatAED(sanitizeNumber(currentRev))} د.إ) تتجاوز حد 3,000,000 درهم\`}
+              : `الإيرادات (${formatAED(sanitizeNumber(currentRev))} د.إ) تتجاوز حد 3,000,000 درهم`}
 
           </div>
 
@@ -734,7 +734,7 @@ export default function UaeSbrChecker() {
 
                   <label className="block text-xs font-bold text-[var(--text-2)] mb-1">اسم / وصف الفترة {i + 1}</label>
 
-                  <input type="text" value={p.label} placeholder={\`مثال: 2023-2024\`}
+                  <input type="text" value={p.label} placeholder={`مثال: 2023-2024`}
 
                     onChange={e => { const arr = [...priorPeriods]; arr[i] = { ...arr[i], label: e.target.value }; setPriorPeriods(arr); }}
 
@@ -746,7 +746,7 @@ export default function UaeSbrChecker() {
 
                   <div className="flex-1">
 
-                    <AedInput id={\`prior_${i}\`} label={\`إيرادات الفترة ${i + 1}\`} value={p.revenue}
+                    <AedInput id={`prior_${i}`} label={`إيرادات الفترة ${i + 1}`} value={p.revenue}
 
                       onChange={v => { const arr = [...priorPeriods]; arr[i] = { ...arr[i], revenue: v }; setPriorPeriods(arr); }} />
 
@@ -772,7 +772,7 @@ export default function UaeSbrChecker() {
 
             {highestPriorRevenue > 0 && (
 
-              <div className={\`rounded-xl border p-3 text-xs font-bold ${highestPriorRevenue <= SBR_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}\`}>
+              <div className={`rounded-xl border p-3 text-xs font-bold ${highestPriorRevenue <= SBR_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}`}>
 
                 أعلى إيرادات سابقة: {formatAED(highestPriorRevenue)} د.إ
 
@@ -848,19 +848,19 @@ export default function UaeSbrChecker() {
 
             <AedInput id="mneRev" label="الإيرادات العالمية الموحدة للمجموعة (درهم)"
 
-              hint={\`الحد المقرر: ${formatAEDInt(MNE_GLOBAL_REVENUE_THRESHOLD)} درهم (3.15 مليار). إذا تجاوزت الإيرادات هذا الحد فالمنشأة غير مؤهلة.\`}
+              hint={`الحد المقرر: ${formatAEDInt(MNE_GLOBAL_REVENUE_THRESHOLD)} درهم (3.15 مليار). إذا تجاوزت الإيرادات هذا الحد فالمنشأة غير مؤهلة.`}
 
               value={mneRevenue} onChange={setMneRevenue} />
 
             {sanitizeNumber(mneRevenue) > 0 && (
 
-              <div className={\`rounded-xl border p-3 text-xs font-bold ${sanitizeNumber(mneRevenue) <= MNE_GLOBAL_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}\`}>
+              <div className={`rounded-xl border p-3 text-xs font-bold ${sanitizeNumber(mneRevenue) <= MNE_GLOBAL_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}`}>
 
                 {sanitizeNumber(mneRevenue) <= MNE_GLOBAL_REVENUE_THRESHOLD
 
-                  ? \`الإيرادات العالمية ضمن الحد المقرر\`
+                  ? `الإيرادات العالمية ضمن الحد المقرر`
 
-                  : \`الإيرادات العالمية تتجاوز ${formatAEDInt(MNE_GLOBAL_REVENUE_THRESHOLD)} درهم\`}
+                  : `الإيرادات العالمية تتجاوز ${formatAEDInt(MNE_GLOBAL_REVENUE_THRESHOLD)} درهم`}
 
               </div>
 
@@ -934,7 +934,7 @@ export default function UaeSbrChecker() {
 
       <div className="rounded-2xl border-2 border-[var(--orange)] bg-[var(--surface)]  overflow-hidden">
 
-        <div className={\`p-6 text-[var(--card-text)] ${rc.gradient}\`}>
+        <div className={`p-6 text-[var(--card-text)] ${rc.gradient}`}>
 
           <div className="flex items-center gap-3.5">
 
@@ -970,21 +970,21 @@ export default function UaeSbrChecker() {
 
             </div>
 
-            <div className={\`rounded-xl border p-3.5 ${evaluation.curRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}\`}>
+            <div className={`rounded-xl border p-3.5 ${evaluation.curRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}`}>
 
               <p className="text-[11px] font-bold text-[var(--text-3)]">إيرادات الفترة الحالية</p>
 
-              <p className={\`text-base font-black mt-0.5 ${evaluation.curRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-text" : "sbr-error-text"}\`}>{formatAED(evaluation.curRev)} د.إ</p>
+              <p className={`text-base font-black mt-0.5 ${evaluation.curRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-text" : "sbr-error-text"}`}>{formatAED(evaluation.curRev)} د.إ</p>
 
               <p className="text-[10px] text-[var(--text-3)]">{evaluation.curRev <= SBR_REVENUE_THRESHOLD ? "✓ ضمن الحد" : "✗ يتجاوز الحد"}</p>
 
             </div>
 
-            <div className={\`rounded-xl border p-3.5 ${evaluation.priorRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}\`}>
+            <div className={`rounded-xl border p-3.5 ${evaluation.priorRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-soft" : "sbr-error-soft"}`}>
 
               <p className="text-[11px] font-bold text-[var(--text-3)]">أعلى إيرادات سابقة</p>
 
-              <p className={\`text-base font-black mt-0.5 ${evaluation.priorRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-text" : "sbr-error-text"}\`}>{hasPrior === TRI.YES ? formatAED(evaluation.priorRev) + " د.إ" : "لا توجد فترات سابقة"}</p>
+              <p className={`text-base font-black mt-0.5 ${evaluation.priorRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-text" : "sbr-error-text"}`}>{hasPrior === TRI.YES ? formatAED(evaluation.priorRev) + " د.إ" : "لا توجد فترات سابقة"}</p>
 
               <p className="text-[10px] text-[var(--text-3)]">{hasPrior !== TRI.YES ? "—" : evaluation.priorRev <= SBR_REVENUE_THRESHOLD ? "✓ ضمن الحد" : "✗ يتجاوز الحد"}</p>
 
@@ -1188,7 +1188,7 @@ export default function UaeSbrChecker() {
 
                   ["الإقامة الضريبية", residency === TRI.YES ? "مقيم" : residency === TRI.NO ? "غير مقيم" : "غير متأكد"],
 
-                  ["الفترة الضريبية", periodStart && periodEnd ? \`${periodStart} — ${periodEnd}\` : "—"],
+                  ["الفترة الضريبية", periodStart && periodEnd ? `${periodStart} — ${periodEnd}` : "—"],
 
                   ["إيرادات الفترة الحالية", formatAED(evaluation.curRev) + " د.إ"],
 
@@ -1220,7 +1220,7 @@ export default function UaeSbrChecker() {
 
             <p className="text-[10px] text-[var(--text-3)] border-t border-[var(--border)] pt-3 leading-relaxed">هذه الأداة تقديرية وتعتمد على البيانات التي يدخلها المستخدم ولا تمثل قراراً رسمياً من الهيئة الاتحادية للضرائب.</p>
 
-            <button type="button" onClick={() => window\.print()} className="rounded-xl bg-[var(--orange)] hover:bg-[var(--orange-press)] text-[var(--card-text)] text-xs font-black px-4 py-2.5 transition">طباعة / حفظ PDF 🖨️</button>
+            <button type="button" onClick={() => window.print()} className="rounded-xl bg-[var(--orange)] hover:bg-[var(--orange-press)] text-[var(--card-text)] text-xs font-black px-4 py-2.5 transition">طباعة / حفظ PDF 🖨️</button>
 
           </div>
 

@@ -264,19 +264,19 @@ export default function UmrahCalculator() {
 
     if (!country || !season || !hotel || !meal) return null;
 
-    const baseFlight = country.flight \* season.flightMult;
+    const baseFlight = country.flight * season.flightMult;
 
-    const flightCost = baseFlight \* (flightClass === "business" ? 3.5 : 1) \* travelers;
+    const flightCost = baseFlight * (flightClass === "business" ? 3.5 : 1) * travelers;
 
-    const visaCost = includeVisa ? country.visa \* travelers : 0;
+    const visaCost = includeVisa ? country.visa * travelers : 0;
 
-    const hotelSAR = hotel.sarPerNight \* season.hotelMult \* days;
+    const hotelSAR = hotel.sarPerNight * season.hotelMult * days;
 
-    const hotelCost = hotelSAR \* sarRate \* Math.ceil(travelers / 2);
+    const hotelCost = hotelSAR * sarRate * Math.ceil(travelers / 2);
 
-    const foodCost = country.dailyFood \* meal.mult \* days \* travelers;
+    const foodCost = country.dailyFood * meal.mult * days * travelers;
 
-    const transportCost = country.transport \* days \* travelers;
+    const transportCost = country.transport * days * travelers;
 
     const shoppingCost = country.shopping + Number(extraShopping);
 
@@ -381,7 +381,7 @@ export default function UmrahCalculator() {
 
         <div className="lg:col-span-3 space-y-5">
 
-          {/\* Country \*/}
+          {/* Country */}
 
           <div className="uc-card rounded-2xl p-5 space-y-4">
 
@@ -393,7 +393,7 @@ export default function UmrahCalculator() {
 
 
 
-          {/\* Travelers & Days \*/}
+          {/* Travelers & Days */}
 
           <div className="uc-card rounded-2xl p-5 space-y-4">
 
@@ -413,7 +413,7 @@ export default function UmrahCalculator() {
 
 
 
-          {/\* Season \*/}
+          {/* Season */}
 
           <div className="uc-card rounded-2xl p-5 space-y-3">
 
@@ -425,7 +425,7 @@ export default function UmrahCalculator() {
 
 
 
-          {/\* Hotel \*/}
+          {/* Hotel */}
 
           <div className="uc-card rounded-2xl p-5 space-y-3">
 
@@ -437,7 +437,7 @@ export default function UmrahCalculator() {
 
 
 
-          {/\* Flight & Meal \*/}
+          {/* Flight & Meal */}
 
           <div className="grid grid-cols-2 gap-4">
 
@@ -489,7 +489,7 @@ export default function UmrahCalculator() {
 
 
 
-          {/\* Extra options \*/}
+          {/* Extra options */}
 
           <div className="uc-card rounded-2xl p-5 space-y-4">
 
@@ -501,7 +501,7 @@ export default function UmrahCalculator() {
 
                 <p className="text-sm font-semibold text-[var(--uc-text)]">????? ???? ????????</p>
 
-                <p className="text-xs text-[var(--uc-muted)]">{fmt((country?.visa || 0) \* travelers, sym)} ???????</p>
+                <p className="text-xs text-[var(--uc-muted)]">{fmt((country?.visa || 0) * travelers, sym)} ???????</p>
 
               </div>
 
@@ -531,7 +531,7 @@ export default function UmrahCalculator() {
 
 
 
-        {/\* Results \*/}
+        {/* Results */}
 
         <div className="lg:col-span-2 space-y-4">
 
@@ -571,7 +571,7 @@ export default function UmrahCalculator() {
 
                   {items.map((item) => {
 
-                    const pct = Math.round((item.value / result.total) \* 100);
+                    const pct = Math.round((item.value / result.total) * 100);
 
                     return (
 
