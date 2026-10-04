@@ -111,6 +111,24 @@ const CSS = `
 .hd-df a{display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px;border:2px solid var(--text);border-radius:14px;color:var(--text);text-decoration:none;font-size:14px;font-weight:800}
 .hd-df a.hd-home{grid-column:1/-1;border-color:var(--orange);background:var(--orange);color:var(--on-orange)}
 @media(prefers-reduced-motion:reduce){.hd *{animation:none!important;transition:none!important}}
+/* mobile: minimal header (logo + one small button), no extra effects */
+@media(max-width:767px){
+.hd-bar{padding:8px 10px 0}
+.hd-pill{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--surface);box-shadow:none;border-radius:14px;padding:6px 8px 6px 10px}
+.hd-pill:hover{border-color:var(--border)}
+.hd-logo:hover .hd-mark{transform:none}
+.hd-mark{width:34px;height:34px;font-size:16px;border-radius:10px}
+.hd-name{font-size:15px}
+.hd-quick,.hd-prog{display:none}
+.hd-mob .hd-all,.hd-mob .hd-all:hover{min-height:38px;padding:0 12px;background:transparent;color:var(--text);border:2px solid var(--border)}
+.hd-mob .hd-all b{display:none}
+.hd-back,.hd-drawer{animation:none}
+.hd-over{height:100dvh}
+.hd-drawer{width:100%}
+.hd-df{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.hd-df a span{display:none}
+.hd *{-webkit-tap-highlight-color:transparent}
+}
 @media print{.hd-bar{display:none}}
 `;
 
@@ -152,7 +170,7 @@ export default function Header() {
     [activeTools]
   );
 
-  // Scroll: compact the bar + reading progress line
+  // Scroll: compact the bar (desktop) + reading progress line
   useEffect(() => {
     let raf = 0;
     const onScroll = () => {
@@ -339,7 +357,7 @@ export default function Header() {
             )}
           </div>
 
-          {/* Mobile quick chips (collapse while scrolling down) */}
+          {/* Mobile quick chips (hidden on mobile by CSS, kept for easy re-enable) */}
           <nav className="hd-quick" aria-label="أدوات سريعة">
             {COUNTRIES.map((c) => (
               <Link key={c.id} href={c.href} className="hd-chip is-country" onClick={() => track(c.id, "header_mobile")}>

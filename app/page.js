@@ -33,6 +33,8 @@ const TOKENS_CSS = `
   --tab-hover:rgba(255,255,255,.10);
   --orange:#FF5B04; --orange-hover:#FF7A33; --orange-press:#E64F00; --on-orange:#0D0D0D;
   --success:#137A47; --warning:#8A5A00; --error:#C8321F;
+  /* measured by the script: height of the site's sticky header */
+  --hd-h:72px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -58,19 +60,36 @@ body{background:var(--bg);color:var(--text)}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
-/* Category nav: no native scrollbar, soft fade at both edges */
-.nav-scroll{scrollbar-width:none;-ms-overflow-style:none;padding-inline:20px}
-.nav-scroll::-webkit-scrollbar{display:none}
-.nav-fade{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%)}
+/* Sections land below the site's sticky header */
+.cat-sec{scroll-margin-top:calc(var(--hd-h) + 12px)}
 
-#cat-nav a[aria-current="true"]{background:var(--text);border-color:var(--text)}
-#cat-nav a[aria-current="true"] .nav-name{color:var(--bg)}
-#cat-nav a[aria-current="true"] .nav-sub{color:var(--bg);opacity:.75}
-#cat-nav a[aria-current="true"] .nav-plate{background:var(--orange);color:var(--on-orange)}
+/* ── Category strip: NOT sticky, scrolls away with the page ── */
+.cat-strip{border-block:1px solid var(--border);background:var(--bg);padding:14px 0}
+.marquee{display:flex;gap:12px;overflow-x:auto;padding:6px 20px;
+  scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);
+  mask-image:linear-gradient(to right,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%)}
+.marquee::-webkit-scrollbar{display:none}
 
-/* Tool slider */
-.slider{scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
-.slide{scroll-snap-align:start}
+/* Stylish pill chip */
+.pill{flex:none;display:inline-flex;align-items:center;gap:10px;height:52px;padding-block:0;padding-inline:7px 16px;
+  border:2px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);text-decoration:none;
+  white-space:nowrap;box-shadow:0 1px 0 var(--border);
+  transition:border-color .18s,transform .18s,box-shadow .18s,background .18s}
+.pill:hover,.pill:focus-visible{border-color:var(--orange);transform:translateY(-3px);box-shadow:0 8px 0 -4px var(--orange)}
+.pill-plate{display:grid;place-items:center;width:36px;height:36px;border-radius:999px;background:var(--card);color:var(--card-text);font-size:18px;line-height:1;transition:background .18s,color .18s,transform .18s}
+.pill:hover .pill-plate,.pill:focus-visible .pill-plate{background:var(--orange);color:var(--on-orange);transform:rotate(-8deg) scale(1.06)}
+.pill-name{font-size:14px;font-weight:900}
+.pill-count{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:var(--orange);color:var(--on-orange);font-size:12px;font-weight:900}
+.pill-soon{border-style:dashed;border-color:var(--text-3);box-shadow:none}
+.pill-soon .pill-plate{background:transparent;color:var(--text);border:2px dashed var(--text-3)}
+.pill-soon .pill-count{background:transparent;color:var(--text);border:2px solid var(--text-3)}
+@media(min-width:768px){
+  .marquee{gap:14px}
+  .pill{height:58px;gap:12px;padding-inline:8px 20px}
+  .pill-plate{width:42px;height:42px;font-size:21px}
+  .pill-name{font-size:15px}
+}
 
 .clamp-2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 
@@ -82,31 +101,26 @@ html{scroll-behavior:smooth}
 .feat-plate{transition:transform .2s}
 `;
 
-// Highlights the category in view (marks every box that points to it, including the looped copies).
-const NAV_SCRIPT = `
+// 1) Measures the site header height -> --hd-h (for scroll offset when you jump to a section).
+// 2) Seamless auto-scroll: the pill list is rendered twice; when the first copy has scrolled past,
+//    the position wraps by exactly one copy. Pauses on hover / touch / focus (you can still swipe
+//    by hand). Disabled when the user prefers reduced motion.
+const STRIP_SCRIPT = `
 (function(){
-  if(window.__navSpy)return; window.__navSpy=1; var raf=0;
-  function update(){
-    raf=0;
-    var nav=document.getElementById('cat-nav'); if(!nav)return;
-    var links=[].slice.call(nav.querySelectorAll('a[data-cat]')), cur=null;
-    links.forEach(function(a){var s=document.getElementById(a.getAttribute('data-cat')); if(s&&s.getBoundingClientRect().top<=120)cur=a.getAttribute('data-cat');});
-    if(!cur&&links[0])cur=links[0].getAttribute('data-cat');
-    links.forEach(function(a){
-      if(a.getAttribute('data-cat')===cur)a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current');
-    });
+  if(window.__strip)return; window.__strip=1;
+  var root=document.documentElement,hdH=-1;
+  function measure(){
+    var hd=document.querySelector('.hd-bar');
+    var h=hd?Math.round(hd.getBoundingClientRect().height):0;
+    if(h!==hdH){hdH=h;root.style.setProperty('--hd-h',h+'px');}
   }
-  window.addEventListener('scroll',function(){if(!raf)raf=requestAnimationFrame(update);},{passive:true});
-})();
-`;
+  window.addEventListener('resize',measure);
+  window.addEventListener('load',measure);
+  measure();
 
-// Continuous, seamless auto-scroll (marquee). The box list is rendered twice; when the first copy
-// has scrolled past, the position jumps back by exactly one copy, so it never visibly restarts.
-// Pauses on hover / touch / focus.
-const MARQUEE_SCRIPT = `
-(function(){
-  if(window.__marquee)return; window.__marquee=1;
-  var SPEED=55, last=0;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce)return;
+  var SPEED=45,last=0;
   function tick(ts){
     var dt=Math.min(ts-last,64)/1000; last=ts;
     [].slice.call(document.querySelectorAll('[data-marquee]')).forEach(function(box){
@@ -114,7 +128,7 @@ const MARQUEE_SCRIPT = `
       var n=+t.getAttribute('data-n')||0, a=t.children[0], b=t.children[n]; if(!a||!b)return;
       var setW=Math.abs(b.offsetLeft-a.offsetLeft); if(!setW)return;
       var s=getComputedStyle(t).direction==='rtl'?-1:1;
-      if(box.hasAttribute('data-hold')||box.getAttribute('data-off')==='1'){box._x=Math.abs(t.scrollLeft);return;}
+      if(box.hasAttribute('data-hold')){box._x=Math.abs(t.scrollLeft);return;}
       if(box._x==null)box._x=Math.abs(t.scrollLeft);
       box._x=(box._x+SPEED*dt)%setW;
       t.scrollLeft=s*box._x;
@@ -132,34 +146,20 @@ const MARQUEE_SCRIPT = `
 })();
 `;
 
-const NAV_BOX =
-  "flex w-44 shrink-0 items-center gap-3 rounded-xl border-2 border-[var(--border)] bg-[var(--surface)] p-2.5 pe-4 transition-colors hover:border-[var(--text)] sm:w-52";
-
 const toolsLabel = (n) => `${n.toLocaleString("ar-EG")} ${n <= 10 ? "أدوات" : "أداة"}`;
 
-function NavBox({ item, dup }) {
+function Pill({ item, dup }) {
   return (
     <a
-      data-cat={item.soon ? undefined : item.id}
-      href={item.soon ? "#upcoming" : `#${item.id}`}
-      aria-current={item.current ? "true" : undefined}
+      href={`#${item.id}`}
       aria-hidden={dup ? "true" : undefined}
       tabIndex={dup ? -1 : undefined}
-      suppressHydrationWarning
-      className={item.soon ? `${NAV_BOX} !border-dashed !border-[var(--text-3)]` : NAV_BOX}
+      className={`pill${item.soon ? " pill-soon" : ""}`}
     >
-      <span
-        className={`nav-plate flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xl ${item.soon
-            ? "border-2 border-dashed border-[var(--text-3)] text-[var(--text)]"
-            : "bg-[var(--card)] text-[var(--card-text)]"
-          }`}
-      >
-        {item.icon}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="nav-name block truncate text-sm font-extrabold text-[var(--text)]">{item.name}</span>
-        <span className="nav-sub block text-xs text-[var(--text-3)]">{item.sub}</span>
-      </span>
+      <span className="pill-plate" aria-hidden="true">{item.icon}</span>
+      <span className="pill-name">{item.name}</span>
+      {!dup && <span className="sr-only">، {item.label}</span>}
+      <span className="pill-count" aria-hidden="true">{item.count}</span>
     </a>
   );
 }
@@ -183,15 +183,24 @@ export default function HomePage() {
   ];
 
   const navItems = [
-    ...activeCategories.map((c, i) => ({
+    ...activeCategories.map((c) => ({
       id: c.id,
       icon: c.icon,
       name: c.nameAr,
-      sub: toolsLabel(c.tools.length),
-      current: i === 0,
+      count: c.tools.length.toLocaleString("ar-EG"),
+      label: toolsLabel(c.tools.length),
     })),
     ...(upcomingCategories.length > 0
-      ? [{ id: "soon", soon: true, icon: "🚀", name: "قريباً", sub: `${upcomingCategories.length.toLocaleString("ar-EG")} أقسام` }]
+      ? [
+        {
+          id: "upcoming",
+          soon: true,
+          icon: "🚀",
+          name: "قريباً",
+          count: upcomingCategories.length.toLocaleString("ar-EG"),
+          label: `${upcomingCategories.length.toLocaleString("ar-EG")} أقسام`,
+        },
+      ]
       : []),
   ];
 
@@ -264,19 +273,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Category Nav ── */}
-      <nav
-        id="cat-nav"
-        aria-label="تصنيفات الأدوات"
-        className="sticky top-0 z-20 border-b border-[var(--border)] bg-[var(--bg)] py-2.5"
-      >
-        <div data-marquee className="mx-auto flex max-w-5xl items-center gap-2 px-2">
-          <div
-            data-n={navItems.length}
-            className="marquee nav-scroll nav-fade relative flex min-w-0 flex-1 gap-4 overflow-x-auto py-1"
-          >
+      {/* ── Category strip (auto-scrolling, not sticky) ── */}
+      <nav dir="rtl" aria-label="تصنيفات الأدوات" className="cat-strip">
+        <div data-marquee className="mx-auto max-w-5xl">
+          <div data-n={navItems.length} className="marquee">
             {[false, true].map((dup) =>
-              navItems.map((item) => <NavBox key={`${dup}-${item.id}`} item={item} dup={dup} />)
+              navItems.map((item) => <Pill key={`${dup}-${item.id}`} item={item} dup={dup} />)
             )}
           </div>
         </div>
@@ -286,7 +288,7 @@ export default function HomePage() {
       <main className="mx-auto max-w-5xl space-y-14 px-4 py-12 sm:py-16">
         {/* Full Active Sections */}
         {activeCategories.map((cat) => (
-          <section key={cat.id} id={cat.id} className="scroll-mt-20">
+          <section key={cat.id} id={cat.id} className="cat-sec">
             {/* Section header */}
             <div className="mb-6 flex items-end gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--card)] text-xl text-[var(--card-text)]">
@@ -316,7 +318,7 @@ export default function HomePage() {
 
         {/* Compact Coming Soon Section */}
         {upcomingCategories.length > 0 && (
-          <section id="upcoming" className="scroll-mt-20 pt-2">
+          <section id="upcoming" className="cat-sec pt-2">
             <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
               <div className="flex flex-col justify-between gap-4 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-3">
@@ -382,8 +384,7 @@ export default function HomePage() {
       {/* ── Features Strip ── */}
       <FeaturesStrip />
 
-      <Script id="nav-spy" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: NAV_SCRIPT }} />
-      <Script id="cat-marquee" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: MARQUEE_SCRIPT }} />
+      <Script id="cat-strip" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: STRIP_SCRIPT }} />
     </div>
   );
 }
