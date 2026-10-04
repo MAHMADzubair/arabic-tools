@@ -331,63 +331,72 @@ function parseLocal(str) {
   return new Date(y, (m || 1) - 1, d || 1);
 }
 
-/* ─── Styles (tokens: --c-* with fallbacks) ───────────────────────────────── */
+/* ─── Styles (built on the global Ink & Signal tokens from app/layout.js) ──── */
 const CSS = `
-.gr{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#0D0D0D);color:var(--ink);font-size:15px;line-height:1.6}
-@media (prefers-color-scheme:dark){.gr{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2)}}
+.gr{--g-bg:var(--bg,#F5F5F2);--g-ink:var(--text,#0D0D0D);--g-mu:var(--text-2,#555555);--g-mu3:var(--text-3,#6B6B66);--g-sf:var(--surface,#FFFFFF);--g-ln:var(--border,#D4D4CE);--g-ac:var(--orange,#FF5B04);--g-ac-h:var(--orange-hover,#FF7A33);--g-on:var(--on-orange,#0D0D0D);color:var(--g-ink);font-size:16px;line-height:1.7}
 .gr *{box-sizing:border-box}
-.gr h1,.gr h2,.gr h3{margin:0;line-height:1.25}
-.gr-col{display:flex;flex-direction:column;gap:20px}
-.gr-grid{display:grid;gap:24px;grid-template-columns:1fr}
-@media(min-width:1024px){.gr-grid{grid-template-columns:3fr 2fr;align-items:start}.gr-sticky{position:sticky;top:96px}}
-.gr-card{background:var(--sf);border:2px solid var(--ln);padding:20px;display:flex;flex-direction:column;gap:14px}
-.gr-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--ln);padding-bottom:10px}
-.gr-head h2{font-size:17px;font-weight:800}
-.gr-g2{display:grid;gap:12px;grid-template-columns:1fr}
-@media(min-width:640px){.gr-g2{grid-template-columns:1fr 1fr}.gr-c4{grid-template-columns:repeat(4,1fr)}}
-.gr-c4{display:grid;gap:8px;grid-template-columns:1fr 1fr}
-.gr-label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
-.gr-in{width:100%;border:1px solid var(--ln);background:var(--bg);color:var(--ink);padding:10px 12px;font:inherit;font-size:15px;border-radius:0;min-height:44px}
+.gr h1,.gr h2,.gr h3{margin:0;line-height:1.4}
+.gr-col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.gr-grid{display:grid;gap:24px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1024px){.gr-grid{grid-template-columns:minmax(0,3fr) minmax(0,2fr);align-items:start}.gr-sticky{position:sticky;top:96px}}
+.gr-card{background:var(--g-sf);border:1px solid var(--g-ln);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.gr-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--g-ln);padding-bottom:12px}
+.gr-head h2{font-size:18px;font-weight:800}
+.gr-g2{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:640px){.gr-g2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gr-c4{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:640px){.gr-c4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.gr-label{display:block;font-size:15px;font-weight:700;margin-bottom:6px}
+.gr-in{width:100%;border:1.5px solid var(--g-mu3);background:var(--g-sf);color:var(--g-ink);padding:10px 12px;font:inherit;font-size:16px;border-radius:10px;min-height:48px}
+.gr-in:hover{border-color:var(--g-ink)}
 .gr-pre{position:relative}
-.gr-pre .gr-in{padding-inline-start:44px}
-.gr-pre span{position:absolute;inset-inline-start:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:800;color:var(--mu);pointer-events:none}
-.gr-in:focus-visible,.gr-tg:focus-visible,.gr-btn:focus-visible,.gr a:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
-.gr-tg{border:1px solid var(--ln);background:var(--sf);color:var(--ink);padding:10px 12px;text-align:right;font:inherit;font-size:13px;font-weight:600;cursor:pointer;min-height:44px}
-.gr-tg small{display:block;font-weight:400;font-size:11px;color:var(--mu);margin-top:2px}
-.gr-tg[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:800}
-.gr-tg[aria-pressed="true"] small{color:var(--bg);opacity:.8}
+.gr-pre .gr-in{padding-inline-start:52px}
+.gr-pre span{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:800;color:var(--g-mu);pointer-events:none}
+.gr :focus-visible{outline:3px solid var(--g-ink);outline-offset:2px}
+.gr-in:focus-visible{outline:none;border-color:var(--g-ac);box-shadow:0 0 0 3px var(--g-ac)}
+.gr-tg{border:1.5px solid var(--g-mu3);border-radius:12px;background:var(--g-sf);color:var(--g-ink);padding:10px 12px;text-align:start;font:inherit;font-size:15px;font-weight:600;cursor:pointer;min-height:48px;transition:border-color .15s,background-color .15s}
+.gr-tg:hover{border-color:var(--g-ac)}
+.gr-tg small{display:block;font-weight:400;font-size:13px;color:var(--g-mu);margin-top:2px;line-height:1.6}
+.gr-tg[aria-pressed="true"]{background:var(--g-ac);color:var(--g-on);border-color:var(--g-ac);font-weight:800}
+.gr-tg[aria-pressed="true"]:hover{background:var(--g-ac-h);border-color:var(--g-ac-h)}
+.gr-tg[aria-pressed="true"] small{color:var(--g-on)}
 .gr-tg.c{text-align:center}
-.gr-seg{display:inline-flex;border:1px solid var(--ln)}
-.gr-seg .gr-tg{border:0;min-height:36px;font-size:12px;padding:6px 12px}
-.gr-seg .gr-tg+.gr-tg{border-inline-start:1px solid var(--ln)}
-.gr-reasons{display:grid;gap:8px;grid-template-columns:1fr}
-@media(min-width:640px){.gr-reasons{grid-template-columns:1fr 1fr}}
-.gr-box{border:1px solid var(--ln);background:var(--bg);padding:12px 14px;font-size:13px}
+.gr-seg{display:inline-flex;border:1.5px solid var(--g-mu3);border-radius:10px;overflow:hidden}
+.gr-seg .gr-tg{border:0;border-radius:0;min-height:44px;font-size:14px;padding:6px 14px}
+.gr-seg .gr-tg+.gr-tg{border-inline-start:1.5px solid var(--g-mu3)}
+.gr-seg .gr-tg[aria-pressed="true"]{background:var(--g-ink);color:var(--g-bg);border-color:var(--g-mu3)}
+.gr-seg .gr-tg[aria-pressed="true"]:hover{background:var(--g-ink)}
+.gr-reasons{display:grid;gap:8px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:640px){.gr-reasons{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gr-box{border-radius:12px;background:var(--g-bg);padding:12px 14px;font-size:15px}
 .gr-box p{margin:0}
-.gr-box .m{font-size:12px;color:var(--mu);margin-top:2px}
+.gr-box .m{font-size:14px;color:var(--g-mu);margin-top:2px}
 .gr-row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-.gr-note{border:1px dashed var(--ln);padding:12px 14px;font-size:12px}
+.gr-note{border:1px dashed var(--g-mu3);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.8;color:var(--g-mu)}
+.gr-note b{color:var(--g-ink)}
 .gr-note p{margin:4px 0 0}
-.gr-hero{background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);padding:22px;display:flex;flex-direction:column;gap:14px}
+.gr-hero{background:var(--g-ac);color:var(--g-on);border-radius:16px;padding:24px 22px;display:flex;flex-direction:column;gap:14px}
 .gr-hero p{margin:0}
-.gr-big{font-size:clamp(32px,6vw,44px);font-weight:900;line-height:1.1}
-.gr-law{border:2px solid #0D0D0D;background:rgba(255,255,255,.55);padding:10px 12px;font-size:13px}
-.gr-btn{border:2px solid var(--ln);background:var(--sf);color:var(--ink);padding:10px 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;min-height:44px;text-align:center;text-decoration:none;display:inline-flex;justify-content:center;align-items:center}
-.gr-btn:hover{background:var(--ink);color:var(--bg)}
+.gr-big{font-size:clamp(32px,6vw,44px);font-weight:900;line-height:1.2;overflow-wrap:anywhere}
+.gr-law{border:1.5px solid var(--g-on);border-radius:12px;background:rgba(255,255,255,.55);padding:10px 12px;font-size:15px}
+.gr-btn{border:1.5px solid var(--g-ink);border-radius:12px;background:var(--g-sf);color:var(--g-ink);padding:10px 14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;min-height:48px;text-align:center;text-decoration:none;display:inline-flex;justify-content:center;align-items:center;transition:background-color .15s,color .15s}
+.gr-btn:hover{background:var(--g-ink);color:var(--g-bg)}
 .gr-hero .gr-btn{background:#fff;color:#0D0D0D;border-color:#0D0D0D}
 .gr-hero .gr-btn:hover{background:#0D0D0D;color:#fff}
-.gr-line{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--ln);font-size:13px}
+.gr-hero :focus-visible{outline-color:#0D0D0D}
+.gr-line{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--g-ln);font-size:15px}
+.gr-line span{color:var(--g-mu)}
 .gr-line b{white-space:nowrap}
-.gr-final{display:flex;justify-content:space-between;gap:12px;padding:12px;border:2px solid var(--ln);background:var(--ac);color:#0D0D0D;font-weight:900;font-size:15px}
-.gr-tier{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--ln);font-size:12px}
+.gr-final{display:flex;justify-content:space-between;gap:12px;padding:14px;border-radius:12px;background:var(--g-ac);color:var(--g-on);font-weight:900;font-size:16px}
+.gr-tier{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--g-ln);font-size:14px}
 .gr-tier:last-child{border-bottom:0}
-.gr-tier b{border:1px solid var(--ln);padding:2px 8px;font-size:11px;text-align:left}
-.gr-sub{margin:0 0 6px;font-size:14px;font-weight:800}
-.gr-link{border:3px solid var(--ln);background:var(--sf);padding:16px;display:flex;flex-direction:column;gap:10px;font-size:13px}
+.gr-tier b{background:var(--g-bg);border-radius:6px;padding:2px 8px;font-size:13px;text-align:start}
+.gr-sub{margin:0 0 6px;font-size:16px;font-weight:800}
+.gr-link{border:1.5px solid var(--g-ink);border-radius:16px;background:var(--g-sf);padding:16px;display:flex;flex-direction:column;gap:10px;font-size:15px}
 .gr-link p{margin:0}
-.gr-link a{background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);padding:10px 14px;font-weight:800;text-align:center;text-decoration:none;min-height:44px;display:flex;align-items:center;justify-content:center}
-.gr-link a:hover{background:var(--ink);color:var(--bg)}
-@media print{.gr-noprint{display:none!important}.gr-sticky{position:static}}
+.gr-link a{background:var(--g-ac);color:var(--g-on);border-radius:12px;padding:10px 14px;font-weight:800;text-align:center;text-decoration:none;min-height:48px;display:flex;align-items:center;justify-content:center;transition:background-color .15s,color .15s}
+.gr-link a:hover{background:var(--g-ink);color:var(--g-bg)}
+@media print{.gr-noprint{display:none!important}.gr-sticky{position:static}.gr-hero,.gr-final{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 @media (prefers-reduced-motion:reduce){.gr *{transition:none!important}}
 `;
 
@@ -561,7 +570,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
       {/* Header */}
       <header style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: "clamp(26px,5vw,38px)", fontWeight: 900 }}>حاسبة مكافأة نهاية الخدمة</h1>
-        <p style={{ margin: "10px 0 0", maxWidth: 640, color: "var(--mu)" }}>
+        <p style={{ margin: "10px 0 0", maxWidth: 640, color: "var(--g-mu)" }}>
           احسب مستحقاتك القانونية وفق أنظمة العمل في 7 دول عربية وخليجية، مع حالات الاستقالة والفصل والتقاعد.
         </p>
       </header>
@@ -571,7 +580,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
         <p className="gr-sub">نماذج جاهزة للتجربة</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {PRESETS.map((p) => (
-            <button key={p.label} type="button" className="gr-btn" style={{ minHeight: 40, fontSize: 13, padding: "6px 12px" }}
+            <button key={p.label} type="button" className="gr-btn" style={{ minHeight: 44, fontSize: 14, padding: "6px 12px" }}
               onClick={() => handleApplyPreset(p)}>
               {p.label}
             </button>
@@ -629,7 +638,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
               <span>وعاء الراتب المعتمد للحساب</span>
               <span style={{ textAlign: "right" }}>
                 <b style={{ fontSize: 15 }}>{fmt(appliedSalary, sym)}</b>
-                <span className="m" style={{ display: "block", fontSize: 11, color: "var(--mu)" }}>
+                <span className="m" style={{ display: "block", fontSize: 13, color: "var(--g-mu)" }}>
                   {wageBaseType === "total" ? "إجمالي شامل البدلات" : "راتب أساسي فقط"}
                 </span>
               </span>
@@ -671,14 +680,14 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
         <div className="gr-col gr-sticky" aria-live="polite">
           <section className="gr-hero">
             <div className="gr-row">
-              <p style={{ fontSize: 13, fontWeight: 700 }}>صافي مكافأة نهاية الخدمة المستحقة</p>
-              <p style={{ fontSize: 12, fontWeight: 800, border: "2px solid #0D0D0D", padding: "1px 10px" }}>{country.name}</p>
+              <p style={{ fontSize: 15, fontWeight: 700 }}>صافي مكافأة نهاية الخدمة المستحقة</p>
+              <p style={{ fontSize: 14, fontWeight: 800, border: "1.5px solid #0D0D0D", borderRadius: 999, padding: "1px 12px" }}>{country.name}</p>
             </div>
 
             <div>
               <p className="gr-big">{result ? fmt(result.amount, sym) : "—"}</p>
               {result && result.percent < 100 && (
-                <p style={{ marginTop: 6, fontSize: 12, fontWeight: 700 }}>
+                <p style={{ marginTop: 6, fontSize: 14, fontWeight: 700 }}>
                   تخفيض استقالة: احتساب {result.percent}٪ من إجمالي المكافأة الأصلية {fmt(result.fullAmount, sym)}
                 </p>
               )}
@@ -738,8 +747,8 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
 
           {countryId === "sa" && (
             <section className="gr-link gr-noprint">
-              <p style={{ fontWeight: 800, fontSize: 14 }}>هل تحتاج إلى تصفية شاملة؟ (Complete Settlement)</p>
-              <p style={{ color: "var(--mu)", fontSize: 12 }}>
+              <p style={{ fontWeight: 800, fontSize: 16 }}>هل تحتاج إلى تصفية شاملة؟ (Complete Settlement)</p>
+              <p style={{ color: "var(--g-mu)", fontSize: 14 }}>
                 احسب كامل مستحقاتك: مكافأة نهاية الخدمة + راتب آخر شهر + بدل الإجازات (م/111) + مهلة الإشعار (م/75) + الخصومات، مع إنشاء نموذج مخالصة نهائية قابل للطباعة.
               </p>
               <a href="/ar/sa/final-settlement-calculator">الانتقال لحاسبة المخالصة النهائية بالسعودية</a>
