@@ -1,8 +1,8 @@
 import "./globals.css";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import Header from "../components/Header";
-import Script from "next/script";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
+import Script from "next/script";
 import { SITE_URL, SITE_NAME } from "@/lib/siteConfig";
 
 // ─── Font: IBM Plex Sans Arabic via next/font (self-hosted, no blocking request) ──
@@ -26,6 +26,7 @@ const TOKENS_CSS = `
   --tab-hover:rgba(255,255,255,.10);
   --orange:#FF5B04; --orange-hover:#FF7A33; --orange-press:#E64F00; --on-orange:#0D0D0D;
   --success:#137A47; --warning:#8A5A00; --error:#C8321F;
+  --foot-bg:#FFFFFF; --foot-text:var(--text); --foot-muted:var(--text-2); --foot-line:var(--border); --foot-hover:var(--orange-press);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -35,6 +36,7 @@ const TOKENS_CSS = `
     --card-border:#A9A9A4; --card-field:#E6E6E1; --card-field-text:#0D0D0D;
     --tab-hover:rgba(13,13,13,.10);
     --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B;
+    --foot-bg:#0D0D0D; --foot-hover:var(--orange-hover);
   }
 }
 :root[data-theme="dark"]{
@@ -44,6 +46,7 @@ const TOKENS_CSS = `
   --card-border:#A9A9A4; --card-field:#E6E6E1; --card-field-text:#0D0D0D;
   --tab-hover:rgba(13,13,13,.10);
   --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B;
+  --foot-bg:#0D0D0D; --foot-hover:var(--orange-hover);
 }
 body{background:var(--bg);color:var(--text)}
 .tear{height:12px;background:conic-gradient(from -45deg at bottom,#0000,var(--card) 1deg 90deg,#0000 91deg) 50%/16px 100%}
@@ -152,113 +155,113 @@ export default function RootLayout({ children }) {
           </>
         )}
 
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-[var(--orange)] focus:px-4 focus:py-2 focus:font-bold focus:text-[var(--on-orange)]">انتقل إلى المحتوى</a>
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="main" className="flex-1">{children}</main>
         <Footer />
+        <script dangerouslySetInnerHTML={{ __html: FOOTER_SCRIPT }} />
       </body>
     </html>
   );
 }
 
+// Mobile/tablet: collapsible group (<details>). Desktop (>=1024px): always open.
+// Server render is open (no flash on desktop, links always in the DOM); FOOTER_SCRIPT collapses it on small screens.
+function FooterGroup({ title, children, className = "" }) {
+  return (
+    <details suppressHydrationWarning open data-fg className={`group border-b border-[var(--foot-line)] lg:border-0 ${className}`}>
+      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 py-3 text-base font-bold marker:hidden [&::-webkit-details-marker]:hidden lg:min-h-0 lg:cursor-default lg:border-b lg:border-dotted lg:border-[var(--foot-muted)] lg:pb-2 lg:pt-0">
+        <span>{title}</span>
+        <svg aria-hidden="true" viewBox="0 0 20 20" className="h-5 w-5 shrink-0 text-[var(--foot-muted)] transition-transform group-open:rotate-180 lg:hidden" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 8 5 5 5-5" /></svg>
+      </summary>
+      <div className="pb-4 lg:pb-0 lg:pt-3">{children}</div>
+    </details>
+  );
+}
+
+const FOOTER_SCRIPT = `(function(){var m=window.matchMedia("(min-width:1024px)");function s(){document.querySelectorAll("details[data-fg]").forEach(function(d){d.open=m.matches})}s();m.addEventListener("change",function(e){if(e.matches)s()});document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("details[data-fg] > summary");if(t&&m.matches)e.preventDefault()})})();`;
+
+const NUM_LOCALE = "ar-EG"; // change to "en" for Western digits (35)
+
 const linkCls =
-  "text-[var(--card-muted)] underline-offset-4 transition-colors hover:text-[var(--card-text)] hover:underline";
+  "inline-block rounded py-1.5 text-[15px] leading-6 text-[var(--foot-muted)] underline-offset-4 transition-colors hover:text-[var(--foot-hover)] hover:underline hover:decoration-2 focus-visible:text-[var(--foot-hover)]";
+
+const LEGAL = [
+  ["/about", "عن الموقع والرسالة"],
+  ["/privacy", "سياسة الخصوصية"],
+  ["/terms", "شروط الاستخدام"],
+  ["/disclaimer", "إخلاء المسؤولية"],
+  ["/contact", "تواصل معنا"],
+];
 
 function Footer() {
   const totalTools = getToolCount();
-
-  const activeCategories = CATEGORIES.map((cat) => ({
-    ...cat,
-    tools: getToolsByCategory(cat.id),
-  })).filter((cat) => cat.tools.length > 0);
-
-  const upcomingCategories = CATEGORIES.filter(
-    (cat) => getToolsByCategory(cat.id).length === 0
-  );
+  const active = CATEGORIES.map((c) => ({ ...c, tools: getToolsByCategory(c.id) })).filter((c) => c.tools.length > 0);
+  const upcoming = CATEGORIES.filter((c) => getToolsByCategory(c.id).length === 0);
 
   return (
-    <footer className="mt-20 border-t border-[var(--card-border)] bg-[var(--card)] py-12 text-[var(--card-text)]">
-      <div className="mx-auto max-w-5xl px-4">
-        {/* Top Branding Strip */}
-        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between">
+    <footer className="mt-16 border-t border-[var(--foot-line)] bg-[var(--foot-bg)] text-[var(--foot-text)] sm:mt-20">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-14">
+        {/* Brand strip */}
+        <div className="flex flex-col gap-5 pb-8 lg:flex-row lg:items-center lg:justify-between lg:pb-10">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--orange)] text-lg font-black text-[var(--on-orange)]">
-              ع
-            </div>
-            <div className="text-right">
-              <span className="block text-base font-extrabold">أدوات عربية</span>
-              <span className="text-xs text-[var(--card-muted)]">
-                {totalTools.toLocaleString("ar-EG")} أداة وحاسبة متخصصة
-              </span>
+            <div aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--orange)] text-xl font-black text-[var(--on-orange)]">ع</div>
+            <div>
+              <span className="block text-lg font-extrabold leading-7">أدوات عربية</span>
+              <span className="block text-sm text-[var(--foot-muted)]">{totalTools.toLocaleString(NUM_LOCALE)} أداة وحاسبة متخصصة</span>
             </div>
           </div>
-          <p className="max-w-md text-center text-sm leading-7 text-[var(--card-muted)] sm:text-start">
+          <p className="max-w-xl text-[15px] leading-7 text-[var(--foot-muted)]">
             الأدوات الأساسية مجانية 100% وبدون تسجيل، مع خدمات متقدمة قادمة للأعمال.
           </p>
         </div>
 
-        {/* Categorized Footer Links Matching Registry */}
-        <div className="mt-10 grid grid-cols-2 gap-8 border-t border-[var(--card-border)] pt-8 text-sm sm:grid-cols-3 md:grid-cols-6">
-          {activeCategories.map((cat) => (
-            <div key={cat.id}>
-              <p className="mb-3 border-b border-dotted border-[var(--card-muted)] pb-2 font-bold">
-                {cat.nameAr}
-              </p>
-              <ul className="space-y-2">
-                {cat.tools.map((tool) => (
-                  <li key={tool.id}>
-                    <a href={tool.href} className={linkCls}>
-                      {tool.nameAr}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        {/* Link groups: accordion < lg, columns >= lg */}
+        <div className="grid items-start border-t border-[var(--foot-line)] md:grid-cols-2 md:gap-x-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-10 lg:pt-10">
+          {active.map((cat) => {
+            const wide = cat.tools.length > 8;
+            return (
+              <FooterGroup key={cat.id} title={cat.nameAr} className={wide ? "lg:col-span-2" : ""}>
+                <ul className={wide ? "lg:columns-2 lg:gap-x-8" : ""}>
+                  {cat.tools.map((t) => (
+                    <li key={t.id} className="break-inside-avoid">
+                      <a href={t.href} className={linkCls}>{t.nameAr}</a>
+                    </li>
+                  ))}
+                </ul>
+              </FooterGroup>
+            );
+          })}
 
-          {/* Upcoming Categories */}
-          {upcomingCategories.length > 0 && (
-            <div>
-              <p className="mb-3 border-b border-dotted border-[var(--card-muted)] pb-2 font-bold">
-                قريباً في المنصة
-              </p>
-              <ul className="space-y-2 text-[var(--card-muted)]">
-                {upcomingCategories.map((cat) => (
-                  <li key={cat.id} className="flex items-center gap-2">
-                    <span>{cat.nameAr}</span>
-                    <span className="rounded border border-[var(--card-muted)] px-1.5 text-[10px] font-bold">
-                      قريباً
-                    </span>
+          {upcoming.length > 0 && (
+            <FooterGroup title="قريباً في المنصة">
+              <ul>
+                {upcoming.map((c) => (
+                  <li key={c.id} className="flex flex-wrap items-center gap-2 py-1.5 text-[15px] leading-6 text-[var(--foot-muted)]">
+                    <span>{c.nameAr}</span>
+                    <span className="rounded border border-[var(--foot-muted)] px-1.5 text-xs font-bold">قريباً</span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </FooterGroup>
           )}
 
-          {/* Legal and Info */}
-          <div className="col-span-2 sm:col-span-1">
-            <p className="mb-3 border-b border-dotted border-[var(--card-muted)] pb-2 font-bold">
-              معلومات وقانونية
-            </p>
-            <ul className="space-y-2">
-              <li><a href="/about" className={linkCls}>عن الموقع والرسالة</a></li>
-              <li><a href="/privacy" className={linkCls}>سياسة الخصوصية</a></li>
-              <li><a href="/terms" className={linkCls}>شروط الاستخدام</a></li>
-              <li><a href="/disclaimer" className={linkCls}>إخلاء المسؤولية</a></li>
-              <li><a href="/contact" className={linkCls}>تواصل معنا</a></li>
+          <FooterGroup title="معلومات وقانونية">
+            <ul>
+              {LEGAL.map(([href, label]) => (
+                <li key={href}><a href={href} className={linkCls}>{label}</a></li>
+              ))}
             </ul>
-          </div>
+          </FooterGroup>
         </div>
 
-        {/* Bottom copyright row */}
-        <div className="mt-10 flex flex-col items-center gap-3 border-t border-[var(--card-border)] pt-5 text-xs text-[var(--card-muted)] sm:flex-row sm:justify-between">
+        {/* Bottom row */}
+        <div className="flex flex-col gap-3 border-t border-[var(--foot-line)] pt-6 text-sm text-[var(--foot-muted)] sm:flex-row sm:items-center sm:justify-between lg:mt-10">
           <span>© {new Date().getFullYear()} أدوات عربية — جميع الحقوق محفوظة</span>
-          <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1" aria-label="روابط قانونية">
-            <a href="/about" className={linkCls}>عن الموقع</a>
-            <a href="/privacy" className={linkCls}>سياسة الخصوصية</a>
-            <a href="/terms" className={linkCls}>شروط الاستخدام</a>
-            <a href="/disclaimer" className={linkCls}>إخلاء المسؤولية</a>
-            <a href="/contact" className={linkCls}>تواصل معنا</a>
-          </nav>
+          <a href="#main" className="inline-flex min-h-11 items-center gap-2 self-start rounded-lg border border-[var(--foot-muted)] px-4 font-bold text-[var(--foot-text)] hover:border-[var(--foot-hover)] hover:text-[var(--foot-hover)] sm:self-auto">
+            العودة للأعلى
+            <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5-5 5 5" /></svg>
+          </a>
         </div>
       </div>
     </footer>
