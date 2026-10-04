@@ -1,21 +1,42 @@
 /**
  * components/business/PrintWrapper.jsx
- * Wraps a printable invoice/document for A4 output.
+ * Ink & Signal: wraps a printable invoice/document for A4 output.
  * Handles the no-print / print CSS boundary.
  * Server-safe.
  *
- * Props:
- *   children   — the invoice document content
- *   id?        — element id for the wrapper (default: "invoice-print")
- *   className? — extra classes on the outer wrapper
+ * Props (unchanged): children, id?, className?
  */
 export default function PrintWrapper({ children, id = "invoice-print", className = "" }) {
   return (
-    <div
-      id={id}
-      className={`rounded-2xl border border-slate-300 bg-white shadow-xl print:shadow-none print:border-0 print:rounded-none print:m-0 overflow-hidden ${className}`}
-    >
+    <div id={id} className={`pw-sheet ${className}`}>
+      <PrintWrapperStyles />
       {children}
     </div>
+  );
+}
+
+function PrintWrapperStyles() {
+  return (
+    <style>{`
+      /* Screen: the document is always a white paper sheet, even in dark mode,
+         so the preview matches what prints. */
+      .pw-sheet{
+        background:#ffffff; color:#0a0a0a;
+        border:2px solid #0a0a0a;
+        overflow:hidden;
+      }
+
+      @page{ size:A4; margin:12mm; }
+
+      @media print{
+        .pw-sheet{
+          border:0; margin:0; padding:0; overflow:visible;
+          -webkit-print-color-adjust:exact; print-color-adjust:exact;
+        }
+        .pw-sheet table,
+        .pw-sheet tr,
+        .pw-sheet img{ break-inside:avoid; }
+      }
+    `}</style>
   );
 }

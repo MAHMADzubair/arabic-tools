@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useId } from "react";
 
 const currencyOptions = [
   { code: "SAR", label: "ريال سعودي" },
@@ -89,6 +89,9 @@ function calcMurabaha(p, annualProfitRate, n) {
 }
 
 export default function LoanCalculator() {
+  const currencyId = useId();
+  const earlyId = useId();
+
   const [financeType, setFinanceType] = useState("murabaha"); // 'murabaha' | 'conventional'
   const [currency, setCurrency] = useState("SAR");
   const [principal, setPrincipal] = useState("100000");
@@ -148,7 +151,7 @@ export default function LoanCalculator() {
   }, [result, earlyRepayMonth, totalMonths, financeType, principal]);
 
   const fmt = (n) =>
-    n.toLocaleString("ar-EG", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const hasResult = result !== null && toNum(principal) > 0 && totalMonths > 0;
   const profitPct = hasResult
@@ -158,280 +161,241 @@ export default function LoanCalculator() {
     ? +((toNum(principal) / result.totalPayment) * 100).toFixed(1)
     : 0;
 
+  const profitWord = financeType === "murabaha" ? "الربح" : "الفائدة";
+
   return (
-    <div className="mx-auto max-w-lg">
-      {/* Page header */}
-      <div className="mb-6 rounded-2xl bg-hero-gradient p-6 text-white shadow-result">
-        <div className="mb-1 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🏦</span>
-            <h1 className="text-2xl font-extrabold">حاسبة التمويل والقروض</h1>
-          </div>
-          <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">
-            مرابحة إسلامية وتناقصي
-          </span>
-        </div>
-        <p className="text-sm text-white/80">
-          احسب القسط الشهري، هامش الربح، السداد المبكر، وجدول الاستهلاك الكامل
-        </p>
-      </div>
+    <div className="ln" dir="rtl">
+      <style>{css}</style>
 
-      <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card sm:p-7">
-        {/* Finance Type Toggle (Islamic vs Conventional) */}
-        <div className="mb-5">
-          <label className="mb-2 block text-xs font-bold text-ink-secondary">نوع صيغة التمويل</label>
-          <div className="grid grid-cols-2 gap-2">
+      <header className="ln-head">
+        <p className="ln-kicker">مرابحة إسلامية وتناقصي</p>
+        <h1 className="ln-h1">حاسبة التمويل والقروض</h1>
+        <p className="ln-lead">
+          احسب القسط الشهري، وهامش الربح، والسداد المبكر، وجدول السداد الكامل.
+        </p>
+      </header>
+
+      <div className="ln-box">
+        {/* Finance type */}
+        <fieldset className="ln-fieldset">
+          <legend className="ln-label">نوع صيغة التمويل</legend>
+          <div className="ln-seg">
             <button
               type="button"
+              className="ln-type"
+              aria-pressed={financeType === "murabaha"}
               onClick={() => setFinanceType("murabaha")}
-              className={`rounded-xl border p-3 text-right transition-all ${
-                financeType === "murabaha"
-                  ? "border-brand bg-brand-light font-bold text-brand-dark shadow-sm"
-                  : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
-              }`}
             >
-              <div className="flex items-center justify-between text-xs mb-1">
-                <span className="font-extrabold">🕌 تمويل مرابحة إسلامي</span>
-              </div>
-              <p className="text-[11px] text-ink-secondary leading-tight">
+              <span className="ln-type-title">تمويل مرابحة إسلامي</span>
+              <span className="ln-type-desc">
                 هامش ربح سنوي ثابت معتمد لدى البنوك الإسلامية (الراجحي، الإنماء، دبي الإسلامي)
-              </p>
+              </span>
             </button>
-
             <button
               type="button"
+              className="ln-type"
+              aria-pressed={financeType === "conventional"}
               onClick={() => setFinanceType("conventional")}
-              className={`rounded-xl border p-3 text-right transition-all ${
-                financeType === "conventional"
-                  ? "border-blue-500 bg-blue-50/70 font-bold text-blue-950 shadow-sm"
-                  : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
-              }`}
             >
-              <div className="flex items-center justify-between text-xs mb-1">
-                <span className="font-extrabold">📊 تمويل بفائدة متناقصة</span>
-              </div>
-              <p className="text-[11px] text-ink-secondary leading-tight">
+              <span className="ln-type-title">تمويل بفائدة متناقصة</span>
+              <span className="ln-type-desc">
                 نظام الفائدة المتناقصة السنوية (APR / Amortization) المعمول به في البنوك التجارية
-              </p>
+              </span>
             </button>
           </div>
+        </fieldset>
+
+        <div className="ln-stack">
+          <div>
+            <label className="ln-label" htmlFor={currencyId}>العملة</label>
+            <select
+              id={currencyId}
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="ln-input"
+            >
+              {currencyOptions.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.label} ({c.code})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <NumField
+            label="مبلغ التمويل أو القرض"
+            suffix={currency}
+            placeholder="مثال: 100000"
+            value={principal}
+            onChange={setPrincipal}
+          />
+
+          <NumField
+            label={financeType === "murabaha" ? "نسبة هامش الربح السنوي" : "معدل الفائدة السنوي"}
+            suffix="%"
+            step="0.05"
+            placeholder={financeType === "murabaha" ? "مثال: 4.25" : "مثال: 5.5"}
+            value={rate}
+            onChange={setRate}
+            note={
+              financeType === "murabaha"
+                ? "نسبة الربح الثابتة المتفق عليها سنوياً على أصل التمويل"
+                : "معدل النسبة السنوي الفعلي (APR) المتناقص شهرياً"
+            }
+          />
+
+          <fieldset className="ln-fieldset">
+            <legend className="ln-label">مدة السداد</legend>
+            <div className="ln-two">
+              <NumField label="سنوات" mode="numeric" placeholder="0" value={years} onChange={setYears} compact />
+              <NumField label="أشهر" mode="numeric" placeholder="0" value={months} onChange={setMonths} compact />
+            </div>
+          </fieldset>
         </div>
 
-        {/* Currency */}
-        <Field label="العملة">
-          <select
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="input flex-1"
-          >
-            {currencyOptions.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.label} ({c.code})
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        {/* Principal */}
-        <Field label="مبلغ التمويل أو القرض">
-          <div className="relative flex flex-1 items-center">
-            <input
-              type="number"
-              inputMode="decimal"
-              placeholder="مثال: 100000"
-              value={principal}
-              onChange={(e) => setPrincipal(e.target.value)}
-              className="input flex-1 text-right pl-12"
-            />
-            <span className="absolute left-3 text-xs font-semibold text-ink-muted">
-              {currency}
-            </span>
-          </div>
-        </Field>
-
-        {/* Rate / Profit Margin */}
-        <Field label={financeType === "murabaha" ? "نسبة هامش الربح السنوي" : "معدل الفائدة السنوي"}>
-          <div className="relative flex flex-1 items-center">
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.05"
-              placeholder={financeType === "murabaha" ? "مثال: 4.25" : "مثال: 5.5"}
-              value={rate}
-              onChange={(e) => setRate(e.target.value)}
-              className="input flex-1 text-right pl-8"
-            />
-            <span className="absolute left-3 text-xs font-semibold text-ink-muted">%</span>
-          </div>
-        </Field>
-        <p className="mb-4 -mt-1 text-xs text-ink-muted">
-          {financeType === "murabaha"
-            ? "نسبة الربح الثابتة المتفق عليها سنوياً على أصل التمويل"
-            : "معدل النسبة السنوي الفعلي (APR) المتناقص شهرياً"}
-        </p>
-
-        {/* Duration */}
-        <div className="mb-5">
-          <label className="mb-2 block text-sm font-medium text-ink-secondary">مدة السداد</label>
-          <div className="flex gap-3">
-            <div className="relative flex flex-1 items-center">
-              <input
-                type="number"
-                inputMode="numeric"
-                placeholder="0"
-                value={years}
-                onChange={(e) => setYears(e.target.value)}
-                className="input flex-1 text-right pl-12"
-              />
-              <span className="absolute left-3 text-xs text-ink-muted">سنوات</span>
-            </div>
-            <div className="relative flex flex-1 items-center">
-              <input
-                type="number"
-                inputMode="numeric"
-                placeholder="0"
-                value={months}
-                onChange={(e) => setMonths(e.target.value)}
-                className="input flex-1 text-right pl-10"
-              />
-              <span className="absolute left-3 text-xs text-ink-muted">أشهر</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Results */}
         {hasResult && (
-          <>
-            <div className="rounded-xl border border-brand-border bg-brand-light p-4 space-y-2">
-              <ResultLine
-                label="القسط الشهري"
-                value={`${fmt(result.monthlyPayment)} ${currency}`}
-                bold
-                large
-              />
-              <ResultLine
-                label={financeType === "murabaha" ? "إجمالي أرباح المرابحة" : "إجمالي الفائدة المدفوعة"}
-                value={`${fmt(result.totalProfitOrInterest)} ${currency}`}
-              />
-              <ResultLine
-                label="إجمالي المبلغ المسدد بالكامل"
-                value={`${fmt(result.totalPayment)} ${currency}`}
-                bold
-              />
-              <ResultLine label="عدد الأقساط الشهرية" value={`${totalMonths} شهر`} />
+          <div className="ln-out">
+            {/* Main result */}
+            <section className="ln-result" aria-live="polite" aria-labelledby="ln-res-label">
+              <p className="ln-result-label" id="ln-res-label">القسط الشهري</p>
+              <p className="ln-result-big"><bdi>{fmt(result.monthlyPayment)} {currency}</bdi></p>
+              <dl className="ln-result-rows">
+                <div>
+                  <dt>{financeType === "murabaha" ? "إجمالي أرباح المرابحة" : "إجمالي الفائدة المدفوعة"}</dt>
+                  <dd><bdi>{fmt(result.totalProfitOrInterest)} {currency}</bdi></dd>
+                </div>
+                <div>
+                  <dt>إجمالي المبلغ المسدد بالكامل</dt>
+                  <dd><bdi>{fmt(result.totalPayment)} {currency}</bdi></dd>
+                </div>
+                <div>
+                  <dt>عدد الأقساط الشهرية</dt>
+                  <dd><bdi>{totalMonths}</bdi> شهر</dd>
+                </div>
+              </dl>
+            </section>
+
+            {/* Ratio bar */}
+            <div>
+              <div className="ln-ratio-labels">
+                <span>أصل التمويل: <bdi>{principalPct}%</bdi></span>
+                <span>{profitWord}: <bdi>{profitPct}%</bdi></span>
+              </div>
+              <div
+                className="ln-bar"
+                role="img"
+                aria-label={`أصل التمويل ${principalPct}% و${profitWord} ${profitPct}%`}
+              >
+                <div className="ln-bar-a" style={{ flex: `${principalPct} 1 0` }} />
+                <div className="ln-bar-b" style={{ flex: `${profitPct} 1 0` }} />
+              </div>
             </div>
 
-            {/* Visual ratio bar */}
-            <div className="mt-4">
-              <div className="mb-1 flex justify-between text-xs text-ink-secondary">
-                <span>أصل التمويل: {principalPct}%</span>
-                <span>{financeType === "murabaha" ? "الربح:" : "الفائدة:"} {profitPct}%</span>
-              </div>
-              <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-brand-border">
-                <div
-                  className="bg-brand transition-all duration-300"
-                  style={{ width: `${principalPct}%` }}
-                />
-                <div
-                  className="bg-accent transition-all duration-300"
-                  style={{ width: `${profitPct}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Early Repayment Calculator Drawer */}
-            <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-emerald-900 flex items-center gap-1.5">
-                  <span>⚡</span>
-                  <span>حاسبة السداد المبكر وتوفير الأرباح</span>
-                </span>
+            {/* Early repayment */}
+            <section className="ln-early" aria-labelledby="ln-early-title">
+              <div className="ln-row">
+                <h2 className="ln-h2" id="ln-early-title">حاسبة السداد المبكر وتوفير الأرباح</h2>
                 <button
                   type="button"
+                  className="ln-btn"
+                  aria-expanded={showEarlyRepay}
+                  aria-controls="ln-early-body"
                   onClick={() => setShowEarlyRepay(!showEarlyRepay)}
-                  className="text-xs font-bold text-emerald-700 hover:underline"
                 >
                   {showEarlyRepay ? "إخفاء" : "احسب التوفير"}
                 </button>
               </div>
 
-              {showEarlyRepay && earlyRepayCalc && (
-                <div className="mt-3 pt-3 border-t border-emerald-200/70 space-y-2.5 text-xs text-emerald-950">
-                  <div className="flex items-center justify-between">
-                    <span>ترغب في السداد المبكر عند الشهر رقم:</span>
-                    <input
-                      type="number"
-                      min="1"
-                      max={totalMonths - 1}
-                      value={earlyRepayMonth}
-                      onChange={(e) => setEarlyRepayMonth(e.target.value)}
-                      className="w-20 rounded-lg border border-emerald-300 bg-white p-1 text-center font-bold"
-                    />
-                  </div>
-                  <div className="rounded-lg bg-white p-3 space-y-1.5 font-mono text-xs border border-emerald-100">
-                    <div className="flex justify-between font-sans">
-                      <span className="text-ink-secondary">أصل التمويل المتبقي:</span>
-                      <span className="font-bold">{fmt(earlyRepayCalc.remainingPrincipal)} {currency}</span>
-                    </div>
-                    <div className="flex justify-between font-sans">
-                      <span className="text-ink-secondary">تعويض البنك النظامي (أرباح 3 أشهر كحد أقصى):</span>
-                      <span className="font-bold">{fmt(earlyRepayCalc.bankPenalty)} {currency}</span>
-                    </div>
-                    <div className="flex justify-between font-sans pt-1 border-t border-slate-100">
-                      <span className="text-ink-secondary">مبلغ المخالصة النهائية للسداد المبكر:</span>
-                      <span className="font-bold text-emerald-700">{fmt(earlyRepayCalc.earlySettlementAmount)} {currency}</span>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-emerald-100/80 p-2.5 text-center font-bold text-emerald-900">
-                    🎉 وفرت بإسقاط أرباح الأشهر المتبقية ما مقداره: {fmt(earlyRepayCalc.savings)} {currency}
-                  </div>
+              {showEarlyRepay && (
+                <div id="ln-early-body" className="ln-early-body">
+                  {earlyRepayCalc ? (
+                    <>
+                      <div className="ln-early-input">
+                        <label className="ln-label ln-label-flush" htmlFor={earlyId}>
+                          ترغب في السداد المبكر عند الشهر رقم
+                        </label>
+                        <input
+                          id={earlyId}
+                          type="number"
+                          inputMode="numeric"
+                          min="1"
+                          max={totalMonths - 1}
+                          value={earlyRepayMonth}
+                          onChange={(e) => setEarlyRepayMonth(e.target.value)}
+                          className="ln-input ln-center"
+                        />
+                      </div>
+
+                      <dl className="ln-rows">
+                        <div>
+                          <dt>أصل التمويل المتبقي</dt>
+                          <dd><bdi>{fmt(earlyRepayCalc.remainingPrincipal)} {currency}</bdi></dd>
+                        </div>
+                        <div>
+                          <dt>تعويض البنك النظامي (أرباح 3 أشهر كحد أقصى)</dt>
+                          <dd><bdi>{fmt(earlyRepayCalc.bankPenalty)} {currency}</bdi></dd>
+                        </div>
+                        <div className="ln-rows-total">
+                          <dt>مبلغ المخالصة النهائية للسداد المبكر</dt>
+                          <dd><bdi>{fmt(earlyRepayCalc.earlySettlementAmount)} {currency}</bdi></dd>
+                        </div>
+                      </dl>
+
+                      <p className="ln-saving">
+                        وفّرت بإسقاط أرباح الأشهر المتبقية: <bdi>{fmt(earlyRepayCalc.savings)} {currency}</bdi>
+                      </p>
+                    </>
+                  ) : (
+                    <p className="ln-small">لا يتوفر سداد مبكر لأن مدة التمويل شهر واحد أو أقل.</p>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* Schedule */}
+            <div>
+              <button
+                type="button"
+                className="ln-btn ln-btn-full"
+                aria-expanded={showSchedule}
+                aria-controls="ln-schedule"
+                onClick={() => setShowSchedule((v) => !v)}
+              >
+                {showSchedule ? "إخفاء جدول السداد" : "عرض جدول السداد الشهري الكامل"}
+              </button>
+
+              {showSchedule && (
+                <div id="ln-schedule" className="ln-table-wrap" tabIndex={0} role="region" aria-label="جدول السداد الشهري">
+                  <table className="ln-table">
+                    <caption className="ln-sr">جدول السداد الشهري</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">الشهر</th>
+                        <th scope="col">القسط</th>
+                        <th scope="col">الأصل</th>
+                        <th scope="col">{profitWord}</th>
+                        <th scope="col">الرصيد المتبقي</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {result.schedule.map((row) => (
+                        <tr key={row.month}>
+                          <th scope="row">{row.month}</th>
+                          <td>{fmt(row.payment)}</td>
+                          <td>{fmt(row.principal)}</td>
+                          <td>{fmt(row.profitOrInterest)}</td>
+                          <td>{fmt(row.balance)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
-
-            {/* Schedule toggle */}
-            <button
-              type="button"
-              onClick={() => setShowSchedule((v) => !v)}
-              className="mt-4 flex w-full items-center justify-center gap-1 text-xs font-semibold text-brand hover:underline"
-            >
-              <span>{showSchedule ? "إخفاء جدول السداد" : "عرض جدول السداد الشهري الكامل"}</span>
-              <span>{showSchedule ? "▲" : "▼"}</span>
-            </button>
-
-            {/* Schedule table */}
-            {showSchedule && (
-              <div className="mt-4 max-h-72 overflow-y-auto rounded-xl border border-brand-border text-xs">
-                <table className="w-full text-right">
-                  <thead className="sticky top-0 bg-brand-surface text-ink-secondary">
-                    <tr>
-                      <th className="p-2">الشهر</th>
-                      <th className="p-2">القسط</th>
-                      <th className="p-2">الأصل</th>
-                      <th className="p-2">{financeType === "murabaha" ? "الربح" : "الفائدة"}</th>
-                      <th className="p-2">الرصيد المتبقي</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-brand-border/40">
-                    {result.schedule.map((row) => (
-                      <tr key={row.month} className="hover:bg-brand-light/30">
-                        <td className="p-2 font-mono font-medium">{row.month}</td>
-                        <td className="p-2 font-mono">{fmt(row.payment)}</td>
-                        <td className="p-2 font-mono">{fmt(row.principal)}</td>
-                        <td className="p-2 font-mono text-accent-dark">
-                          {fmt(row.profitOrInterest)}
-                        </td>
-                        <td className="p-2 font-mono">{fmt(row.balance)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
+          </div>
         )}
 
-        <p className="mt-5 text-[11px] leading-relaxed text-ink-muted">
+        <p className="ln-disclaimer">
           هذه الأداة للمساعدة في التقدير والتخطيط. قد تختلف النسب الفعلية وعروض البنوك وفق شروط التمويل وتاريخ تحويل الراتب والرسوم الإدارية.
         </p>
       </div>
@@ -439,26 +403,127 @@ export default function LoanCalculator() {
   );
 }
 
-function Field({ label, children }) {
+function NumField({ label, value, onChange, suffix, placeholder, step, note, mode = "decimal", compact }) {
+  const id = useId();
   return (
-    <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-      <label className="text-sm font-medium text-ink-secondary">{label}</label>
-      {children}
+    <div>
+      <label className="ln-label" htmlFor={id}>{label}</label>
+      <div className="ln-suffix-wrap">
+        <input
+          id={id}
+          type="number"
+          inputMode={mode}
+          step={step}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="ln-input"
+          style={suffix ? { paddingInlineEnd: "3.5rem" } : undefined}
+        />
+        {suffix && <span className="ln-suffix" aria-hidden="true">{suffix}</span>}
+      </div>
+      {note && !compact && <p className="ln-small">{note}</p>}
     </div>
   );
 }
 
-function ResultLine({ label, value, bold, large }) {
-  return (
-    <div className="flex justify-between text-sm">
-      <span className="text-ink-secondary">{label}</span>
-      <span
-        className={`${bold ? "font-bold text-ink" : "text-ink"} ${
-          large ? "text-xl text-brand-dark" : ""
-        }`}
-      >
-        {value}
-      </span>
-    </div>
-  );
+// ─── Styles: Ink & Signal ──────────────────────────────────────────────────────
+// Reads the site's --c-* tokens when present, with the palette as fallback.
+// Orange is only ever a background, always with black text.
+const css = `
+.ln{
+  --i-bg:var(--c-bg,#F5F5F2);
+  --i-ink:var(--c-ink,#0D0D0D);
+  --i-mute:var(--c-mute,#55554F);
+  --i-soft:var(--c-soft,#DEDED8);
+  --i-accent:var(--c-accent,#FF6A1A);
+  --i-on-accent:#0D0D0D;
+  background:var(--i-bg);color:var(--i-ink);
+  max-width:40rem;margin:0 auto;padding:2rem 1rem 3rem;line-height:1.6;
 }
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .ln{
+    --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+    --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+  }
+}
+:root[data-theme="dark"] .ln{
+  --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+  --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+}
+.ln *{box-sizing:border-box}
+.ln h1,.ln h2,.ln p,.ln dl,.ln dd{margin:0;padding:0}
+.ln button,.ln input,.ln select{font:inherit;color:inherit}
+.ln :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
+.ln bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+
+.ln-head{margin-bottom:1.75rem}
+.ln-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
+.ln-h1{font-size:clamp(1.9rem,5vw,2.6rem);font-weight:900;line-height:1.15;margin-bottom:.6rem}
+.ln-lead{color:var(--i-mute)}
+
+.ln-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem;display:grid;gap:1.5rem}
+@media (min-width:640px){.ln-box{padding:1.75rem}}
+.ln-stack{display:grid;gap:1.1rem}
+.ln-two{display:grid;gap:.75rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+.ln-fieldset{border:0;margin:0;padding:0;min-width:0}
+.ln-label{display:block;font-size:.8rem;font-weight:700;margin-bottom:.35rem;padding:0}
+.ln-label-flush{margin-bottom:0}
+.ln-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ln-small{margin-top:.35rem;font-size:.78rem;color:var(--i-mute)}
+.ln-input{width:100%;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.6rem .75rem;font-size:.95rem;font-weight:700;min-height:2.75rem}
+.ln-center{text-align:center}
+.ln-suffix-wrap{position:relative}
+.ln-suffix{position:absolute;inset-inline-end:.75rem;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:var(--i-mute);pointer-events:none}
+
+.ln-seg{display:grid;gap:.5rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:560px){.ln-seg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ln-type{display:grid;gap:.3rem;align-content:start;text-align:start;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.8rem;cursor:pointer}
+.ln-type:hover{background:var(--i-soft)}
+.ln-type[aria-pressed="true"]{background:var(--i-ink);color:var(--i-bg)}
+.ln-type-title{font-size:.9rem;font-weight:800}
+.ln-type-desc{font-size:.75rem;line-height:1.5}
+
+.ln-btn{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.45rem .85rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:2.5rem}
+.ln-btn:hover{background:var(--i-soft)}
+.ln-btn[aria-expanded="true"]{background:var(--i-ink);color:var(--i-bg)}
+.ln-btn-full{width:100%}
+
+.ln-out{display:grid;gap:1.25rem;border-top:2px solid var(--i-ink);padding-top:1.5rem}
+.ln-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem}
+.ln-result-label{font-size:.9rem;font-weight:700}
+.ln-result-big{font-size:clamp(2rem,7vw,3rem);font-weight:900;line-height:1.15;margin:.2rem 0 1rem}
+.ln-result-rows{border-top:2px solid var(--i-on-accent)}
+.ln-result-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.5rem 0;border-bottom:1px solid var(--i-on-accent);font-size:.9rem}
+.ln-result-rows>div:last-child{border-bottom:0;padding-bottom:0}
+.ln-result-rows dt{font-weight:600}
+.ln-result-rows dd{font-weight:800}
+
+.ln-ratio-labels{display:flex;justify-content:space-between;gap:1rem;font-size:.8rem;font-weight:700;margin-bottom:.4rem}
+.ln-bar{display:flex;height:1.5rem;border:2px solid var(--i-ink);border-radius:4px;overflow:hidden}
+.ln-bar-a{background:var(--i-ink)}
+.ln-bar-b{background:var(--i-accent);border-inline-start:2px solid var(--i-bg)}
+
+.ln-early{border:2px dashed var(--i-ink);border-radius:4px;padding:1rem}
+.ln-row{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:center}
+.ln-h2{font-size:.95rem;font-weight:800}
+.ln-early-body{display:grid;gap:1rem;margin-top:1rem;padding-top:1rem;border-top:2px solid var(--i-ink)}
+.ln-early-input{display:grid;gap:.5rem;grid-template-columns:minmax(0,1fr) 6rem;align-items:center}
+.ln-rows{border:2px solid var(--i-ink);border-radius:4px}
+.ln-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.2rem 1rem;padding:.65rem .8rem;border-bottom:2px solid var(--i-ink);font-size:.85rem}
+.ln-rows>div:last-child{border-bottom:0}
+.ln-rows dt{font-weight:600;color:var(--i-mute)}
+.ln-rows dd{font-weight:800}
+.ln-rows-total{background:var(--i-soft)}
+.ln-rows-total dt{color:var(--i-ink);font-weight:800}
+.ln-saving{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.7rem .9rem;font-size:.9rem;font-weight:800}
+
+.ln-table-wrap{margin-top:1rem;max-height:20rem;overflow:auto;border:2px solid var(--i-ink);border-radius:4px}
+.ln-table{width:100%;border-collapse:collapse;font-size:.8rem;text-align:start;font-variant-numeric:tabular-nums;min-width:30rem}
+.ln-table th,.ln-table td{padding:.5rem .6rem;text-align:start;border-bottom:1px solid var(--i-ink)}
+.ln-table thead th{position:sticky;top:0;background:var(--i-ink);color:var(--i-bg);font-weight:800}
+.ln-table tbody th{font-weight:800}
+.ln-table tbody tr:nth-child(even){background:var(--i-soft)}
+
+.ln-disclaimer{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.8rem 1rem;font-size:.8rem;color:var(--i-mute)}
+`;

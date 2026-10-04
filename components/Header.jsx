@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { CATEGORIES, getActiveTools } from "@/lib/registry";
 
 // Top quick tools for desktop bar
@@ -16,34 +17,126 @@ const TOP_TOOLS = [
   { href: "/unit-converter", label: "محول الوحدات" },
 ];
 
+const COUNTRIES = [
+  { href: "/ar/sa", id: "sa", label: "السعودية" },
+  { href: "/ar/ae", id: "ae", label: "الإمارات" },
+];
+
+const CSS = `
+.hd{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#0D0D0D)}
+@media (prefers-color-scheme:dark){.hd{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2)}}
+.hd *{box-sizing:border-box}
+.hd a,.hd button{font:inherit}
+.hd-bar{position:sticky;top:0;z-index:40;background:var(--bg);color:var(--ink);border-bottom:2px solid var(--ln)}
+.hd-in{max-width:64rem;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hd-logo{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;flex:none}
+.hd-mark{width:36px;height:36px;display:grid;place-items:center;background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);font-weight:900;font-size:18px}
+.hd-name{display:block;font-size:17px;font-weight:900;line-height:1.2}
+.hd-count{display:none;font-size:11px;color:var(--mu)}
+@media(min-width:640px){.hd-count{display:block}}
+.hd-nav{display:none;align-items:center;gap:6px}
+@media(min-width:768px){.hd-nav{display:flex}.hd-mob{display:none!important}}
+.hd-link,.hd-btn,.hd-chip{color:var(--ink);text-decoration:none;font-size:13px;font-weight:700;padding:6px 10px;background:none;border:1px solid transparent;cursor:pointer;min-height:36px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.hd-link:hover{border-color:var(--ln)}
+.hd-link[aria-current="page"],.hd-chip[aria-current="page"]{border-bottom:3px solid var(--ln);font-weight:900}
+.hd-country{border:1px solid var(--ln)}
+.hd-country:hover,.hd-chip:hover{background:var(--ink);color:var(--bg)}
+.hd-btn{border:2px solid var(--ln);background:var(--ac);color:#0D0D0D;font-weight:800}
+.hd-btn:hover{background:var(--ink);color:var(--bg)}
+.hd a:focus-visible,.hd button:focus-visible,.hd input:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.hd-rel{position:relative}
+.hd-scrim{position:fixed;inset:0;z-index:40;background:transparent}
+.hd-menu{position:absolute;left:0;top:calc(100% + 8px);z-index:50;width:min(520px,90vw);background:var(--sf);border:2px solid var(--ln);padding:16px;color:var(--ink)}
+.hd-menu-h{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:2px solid var(--ln);padding-bottom:8px;margin-bottom:12px;font-size:13px;font-weight:900}
+.hd-x{background:none;border:1px solid var(--ln);color:var(--ink);width:36px;height:36px;display:grid;place-items:center;cursor:pointer;font-weight:900}
+.hd-x:hover{background:var(--ink);color:var(--bg)}
+.hd-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-height:380px;overflow-y:auto;padding:2px}
+.hd-cat{margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid var(--ln);font-size:12px;font-weight:800;color:var(--mu)}
+.hd-item{display:block;color:var(--ink);text-decoration:none;font-size:13px;font-weight:600;padding:6px 8px;border-inline-start:3px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-item:hover{border-inline-start-color:var(--ac);background:var(--bg)}
+.hd-item[aria-current="page"]{border-inline-start-color:var(--ln);font-weight:900}
+.hd-quick{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;border-top:1px solid var(--ln);scrollbar-width:none}
+.hd-quick::-webkit-scrollbar{display:none}
+@media(min-width:768px){.hd-quick{display:none}}
+.hd-chip{flex:none;border:1px solid var(--ln);font-size:12px;padding:4px 10px;min-height:36px}
+.hd-over{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end}
+@media(min-width:768px){.hd-over{display:none}}
+.hd-back{position:absolute;inset:0;background:rgba(13,13,13,.7)}
+.hd-drawer{position:relative;z-index:1;width:100%;max-width:24rem;height:100%;background:var(--sf);color:var(--ink);border-inline-end:2px solid var(--ln);display:flex;flex-direction:column;margin-inline-end:auto}
+.hd-dh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:2px solid var(--ln)}
+.hd-ds{padding:12px 16px;border-bottom:1px solid var(--ln)}
+.hd-field{width:100%;border:1px solid var(--ln);background:var(--bg);color:var(--ink);padding:10px 12px;font-size:14px;border-radius:0;min-height:44px}
+.hd-lbl{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.hd-dl{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:20px}
+.hd-df{padding:12px 16px;border-top:2px solid var(--ln)}
+.hd-home{display:block;text-align:center;background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);padding:10px;font-weight:800;font-size:14px;text-decoration:none;min-height:44px}
+.hd-home:hover{background:var(--ink);color:var(--bg)}
+.hd-dm{display:block;color:var(--ink);text-decoration:none;font-size:14px;font-weight:700;padding:10px;min-height:44px;border-inline-start:3px solid transparent}
+.hd-dm:hover{border-inline-start-color:var(--ac);background:var(--bg)}
+.hd-dm[aria-current="page"]{border-inline-start-color:var(--ln);font-weight:900}
+.hd-empty{text-align:center;padding:32px 0;font-size:13px;color:var(--mu)}
+@media print{.hd-bar{display:none}}
+`;
+
+function track(country, from) {
+  if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+    window.trackEvent("country_switched", { country, from });
+  }
+}
+
 export default function Header() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const dropBtnRef = useRef(null);
+  const menuBtnRef = useRef(null);
 
   const activeTools = useMemo(() => getActiveTools(), []);
   const toolCount = activeTools.length;
+  const count = toolCount.toLocaleString("en-US");
 
-  const activeCategories = useMemo(() => {
-    return CATEGORIES.map((cat) => ({
-      ...cat,
-      tools: activeTools.filter((t) => t.category === cat.id),
-    })).filter((cat) => cat.tools.length > 0);
-  }, [activeTools]);
+  const activeCategories = useMemo(
+    () =>
+      CATEGORIES.map((cat) => ({
+        ...cat,
+        tools: activeTools.filter((t) => t.category === cat.id),
+      })).filter((cat) => cat.tools.length > 0),
+    [activeTools]
+  );
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [mobileMenuOpen]);
 
-  // Filter tools by search
+  // Escape closes whichever menu is open and returns focus to its trigger
+  useEffect(() => {
+    if (!mobileMenuOpen && !desktopDropdownOpen) return;
+    const onKey = (e) => {
+      if (e.key !== "Escape") return;
+      if (mobileMenuOpen) {
+        setMobileMenuOpen(false);
+        menuBtnRef.current?.focus();
+      }
+      if (desktopDropdownOpen) {
+        setDesktopDropdownOpen(false);
+        dropBtnRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileMenuOpen, desktopDropdownOpen]);
+
+  // Close menus on navigation
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setDesktopDropdownOpen(false);
+  }, [pathname]);
+
   const filteredCategories = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return activeCategories;
@@ -61,112 +154,70 @@ export default function Header() {
       .filter((cat) => cat.tools.length > 0);
   }, [activeCategories, searchQuery]);
 
+  const cur = (href) => (pathname === href ? "page" : undefined);
+
   return (
-    <>
-      <header className="sticky top-0 z-40 border-b border-brand-border bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+    <div className="hd">
+      <style>{CSS}</style>
+
+      <header className="hd-bar">
+        <div className="hd-in">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-hero-gradient shadow-sm group-hover:shadow-md transition-all">
-              <span className="text-white text-base font-black">ع</span>
-            </div>
-            <div>
-              <span className="text-base sm:text-lg font-black text-brand-dark block leading-tight">
-                أدوات عربية
-              </span>
-              <span className="text-[10px] text-ink-muted hidden sm:block">
-                {toolCount.toLocaleString("ar-EG")} أداة وحاسبة مجانية
-              </span>
-            </div>
+          <a href="/" className="hd-logo" aria-label="أدوات عربية — الصفحة الرئيسية">
+            <span className="hd-mark" aria-hidden="true">ع</span>
+            <span>
+              <span className="hd-name">أدوات عربية</span>
+              <span className="hd-count">{count} أداة وحاسبة مجانية</span>
+            </span>
           </a>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1.5 lg:gap-2">
-            <a
-              href="/ar/sa"
-              onClick={() => {
-                if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
-                  window.trackEvent("country_switched", { country: "sa", from: "header_desktop" });
-                }
-              }}
-              className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 border border-emerald-200/80 px-2.5 py-1.5 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 shadow-2xs"
-            >
-              <span>🇸🇦</span>
-              <span>السعودية</span>
-            </a>
-            <a
-              href="/ar/ae"
-              onClick={() => {
-                if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
-                  window.trackEvent("country_switched", { country: "ae", from: "header_desktop" });
-                }
-              }}
-              className="inline-flex items-center gap-1 rounded-xl bg-red-50 border border-red-200/80 px-2.5 py-1.5 text-xs font-bold text-red-800 transition hover:bg-red-100 shadow-2xs"
-            >
-              <span>🇦🇪</span>
-              <span>الإمارات</span>
-            </a>
+          <nav className="hd-nav" aria-label="التنقل الرئيسي">
+            {COUNTRIES.map((c) => (
+              <a key={c.id} href={c.href} className="hd-link hd-country" onClick={() => track(c.id, "header_desktop")}>
+                {c.label}
+              </a>
+            ))}
             {TOP_TOOLS.slice(0, 5).map((t) => (
-              <a
-                key={t.href}
-                href={t.href}
-                className="rounded-xl px-2.5 py-1.5 text-xs font-bold text-ink-secondary transition hover:bg-brand-light hover:text-brand-dark"
-              >
+              <a key={t.href} href={t.href} className="hd-link" aria-current={cur(t.href)}>
                 {t.label}
               </a>
             ))}
 
-            {/* Desktop 'All Tools' Dropdown */}
-            <div className="relative">
+            {/* All Tools dropdown */}
+            <div className="hd-rel">
               <button
+                ref={dropBtnRef}
                 type="button"
+                className="hd-btn"
+                aria-expanded={desktopDropdownOpen}
+                aria-controls="hd-all-tools"
                 onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
-                className="inline-flex items-center gap-1 rounded-xl bg-brand-light px-3 py-1.5 text-xs font-bold text-brand-dark hover:bg-brand hover:text-white transition-all shadow-sm"
               >
-                <span>جميع الأدوات ({toolCount.toLocaleString("ar-EG")})</span>
-                <span className="text-[10px]">▼</span>
+                جميع الأدوات ({count})
+                <span aria-hidden="true">{desktopDropdownOpen ? "▲" : "▼"}</span>
               </button>
 
               {desktopDropdownOpen && (
                 <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setDesktopDropdownOpen(false)}
-                  />
-                  <div className="absolute left-0 mt-2 z-50 w-[520px] rounded-2xl border border-brand-border bg-white p-4 shadow-xl space-y-3 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                      <span className="text-xs font-black text-brand-dark">
-                        دليل جميع الأدوات ({toolCount} أداة)
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setDesktopDropdownOpen(false)}
-                        className="text-xs text-ink-muted hover:text-ink font-bold"
-                      >
+                  <div className="hd-scrim" onClick={() => setDesktopDropdownOpen(false)} />
+                  <div id="hd-all-tools" className="hd-menu">
+                    <div className="hd-menu-h">
+                      <span>دليل جميع الأدوات ({count} أداة)</span>
+                      <button type="button" className="hd-x" aria-label="إغلاق القائمة" onClick={() => setDesktopDropdownOpen(false)}>
                         ✕
                       </button>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-3.5 max-h-[380px] overflow-y-auto p-1">
+                    <div className="hd-cols">
                       {activeCategories.map((cat) => (
-                        <div key={cat.id} className="space-y-1.5">
-                          <h4 className="text-[11px] font-bold text-ink-muted pb-0.5 border-b border-brand-border/40 flex items-center gap-1">
-                            <span>{cat.icon}</span>
-                            <span>{cat.nameAr}</span>
-                          </h4>
-                          <div className="space-y-1">
-                            {cat.tools.map((t) => (
-                              <a
-                                key={t.href}
-                                href={t.href}
-                                onClick={() => setDesktopDropdownOpen(false)}
-                                className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-ink hover:bg-brand-light hover:text-brand-dark transition-all"
-                              >
-                                <span>{t.icon}</span>
-                                <span className="truncate">{t.nameAr}</span>
-                              </a>
-                            ))}
-                          </div>
+                        <div key={cat.id}>
+                          <h3 className="hd-cat">{cat.nameAr}</h3>
+                          {cat.tools.map((t) => (
+                            <a key={t.href} href={t.href} className="hd-item" aria-current={cur(t.href)}
+                              onClick={() => setDesktopDropdownOpen(false)}>
+                              {t.nameAr}
+                            </a>
+                          ))}
                         </div>
                       ))}
                     </div>
@@ -176,151 +227,93 @@ export default function Header() {
             </div>
           </nav>
 
-          {/* Mobile Hamburger Button */}
-          <div className="flex md:hidden items-center gap-2">
+          {/* Mobile menu button */}
+          <div className="hd-mob">
             <button
+              ref={menuBtnRef}
               type="button"
+              className="hd-btn"
+              aria-haspopup="dialog"
+              aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-brand-border bg-brand-surface px-3 py-1.5 text-xs font-bold text-brand-dark hover:bg-brand-light transition-all"
-              aria-label="فتح قائمة الأدوات"
             >
-              <span>☰</span>
-              <span>الأدوات ({toolCount.toLocaleString("ar-EG")})</span>
+              <span aria-hidden="true">☰</span>
+              الأدوات ({count})
             </button>
           </div>
         </div>
 
-        {/* Mobile Horizontal Quick Bar */}
-        <div className="flex md:hidden items-center gap-1.5 overflow-x-auto px-4 py-1.5 border-t border-brand-border/40 bg-brand-surface/30 scrollbar-none">
-          <a
-            href="/ar/sa"
-            onClick={() => {
-              if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
-                window.trackEvent("country_switched", { country: "sa", from: "header_mobile" });
-              }
-            }}
-            className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 border border-emerald-200/80"
-          >
-            🇸🇦 السعودية
-          </a>
-          <a
-            href="/ar/ae"
-            onClick={() => {
-              if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
-                window.trackEvent("country_switched", { country: "ae", from: "header_mobile" });
-              }
-            }}
-            className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-800 border border-red-200/80"
-          >
-            🇦🇪 الإمارات
-          </a>
+        {/* Mobile quick bar */}
+        <nav className="hd-quick" aria-label="أدوات سريعة">
+          {COUNTRIES.map((c) => (
+            <a key={c.id} href={c.href} className="hd-chip" style={{ borderWidth: 2, fontWeight: 800 }}
+              onClick={() => track(c.id, "header_mobile")}>
+              {c.label}
+            </a>
+          ))}
           {TOP_TOOLS.map((t) => (
-            <a
-              key={t.href}
-              href={t.href}
-              className="shrink-0 rounded-lg bg-white px-2.5 py-1 text-[11px] font-bold text-ink-secondary border border-brand-border/60 hover:bg-brand-light hover:text-brand-dark"
-            >
+            <a key={t.href} href={t.href} className="hd-chip" aria-current={cur(t.href)}>
               {t.label}
             </a>
           ))}
-        </div>
+        </nav>
       </header>
 
-      {/* ─── Mobile Slide-out Drawer Menu ─── */}
+      {/* Mobile drawer */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-
-          {/* Drawer Content */}
-          <div className="relative mr-auto w-full max-w-sm bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-right duration-200">
-            {/* Drawer Header */}
-            <div className="flex items-center justify-between p-4 border-b border-brand-border bg-brand-surface/50">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-hero-gradient">
-                  <span className="text-white text-xs font-black">ع</span>
-                </div>
-                <div>
-                  <span className="text-sm font-bold text-ink block">أدوات عربية</span>
-                  <span className="text-[10px] text-ink-muted">
-                    {toolCount.toLocaleString("ar-EG")} أداة وحاسبة مجانية
-                  </span>
-                </div>
+        <div className="hd-over" role="dialog" aria-modal="true" aria-label="قائمة الأدوات">
+          <div className="hd-back" onClick={() => setMobileMenuOpen(false)} />
+          <div className="hd-drawer">
+            <div className="hd-dh">
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span className="hd-mark" style={{ width: 32, height: 32, fontSize: 15 }} aria-hidden="true">ع</span>
+                <span>
+                  <b style={{ display: "block", fontSize: 15 }}>أدوات عربية</b>
+                  <span style={{ fontSize: 11, color: "var(--mu)" }}>{count} أداة وحاسبة مجانية</span>
+                </span>
               </div>
-
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-surface text-ink hover:bg-rose-50 hover:text-rose-600 transition-all text-sm font-bold"
-                aria-label="إغلاق القائمة"
-              >
+              <button type="button" className="hd-x" aria-label="إغلاق القائمة"
+                onClick={() => { setMobileMenuOpen(false); menuBtnRef.current?.focus(); }}>
                 ✕
               </button>
             </div>
 
-            {/* Quick Search Input */}
-            <div className="p-3 border-b border-brand-border/60 bg-white">
-              <div className="relative">
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-ink-muted">🔍</span>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="ابحث عن أي أداة أو حاسبة..."
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2 pr-9 pl-3 text-xs font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                />
-              </div>
+            <div className="hd-ds">
+              <label className="hd-lbl" htmlFor="hd-search">ابحث عن أداة أو حاسبة</label>
+              <input
+                id="hd-search"
+                type="search"
+                className="hd-field"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="مثال: الزكاة"
+              />
             </div>
 
-            {/* Tools List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-5">
+            <div className="hd-dl">
               {filteredCategories.length === 0 ? (
-                <div className="text-center py-8 text-xs text-ink-muted">
-                  لا توجد أدوات مطابقة لبحثك
-                </div>
+                <div className="hd-empty" role="status">لا توجد أدوات مطابقة لبحثك. جرّب كلمة أقصر.</div>
               ) : (
                 filteredCategories.map((cat) => (
-                  <div key={cat.id} className="space-y-2">
-                    <h3 className="text-xs font-bold text-brand-dark pb-1 border-b border-brand-border/60 flex items-center gap-1.5">
-                      <span>{cat.icon}</span>
-                      <span>{cat.nameAr}</span>
-                    </h3>
-                    <div className="grid grid-cols-1 gap-1.5">
-                      {cat.tools.map((t) => (
-                        <a
-                          key={t.href}
-                          href={t.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-xl p-2.5 text-xs font-bold text-ink hover:bg-brand-light hover:text-brand-dark transition-all border border-transparent hover:border-brand-border"
-                        >
-                          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-surface text-base shrink-0">
-                            {t.icon}
-                          </span>
-                          <span className="truncate">{t.nameAr}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
+                  <section key={cat.id}>
+                    <h3 className="hd-cat" style={{ fontSize: 13, color: "var(--ink)", borderBottomWidth: 2 }}>{cat.nameAr}</h3>
+                    {cat.tools.map((t) => (
+                      <a key={t.href} href={t.href} className="hd-dm" aria-current={cur(t.href)}
+                        onClick={() => setMobileMenuOpen(false)}>
+                        {t.nameAr}
+                      </a>
+                    ))}
+                  </section>
                 ))
               )}
             </div>
 
-            {/* Drawer Footer */}
-            <div className="p-3 border-t border-brand-border bg-brand-surface/40 text-center">
-              <a
-                href="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="inline-block w-full rounded-xl bg-hero-gradient text-white py-2 text-xs font-bold shadow-sm"
-              >
-                🏠 الصفحة الرئيسية
-              </a>
+            <div className="hd-df">
+              <a href="/" className="hd-home" onClick={() => setMobileMenuOpen(false)}>الصفحة الرئيسية</a>
             </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useId } from "react";
 
 const COUNTRIES = [
   {
     id: "sa",
-    name: "🇸🇦 السعودية",
+    name: "السعودية",
     currency: "SAR",
     dayMultiplier: 1.5, // 100% + 50% (نظام العمل م 107)
     nightMultiplier: 1.5,
@@ -15,7 +15,7 @@ const COUNTRIES = [
   },
   {
     id: "ae",
-    name: "🇦🇪 الإمارات",
+    name: "الإمارات",
     currency: "AED",
     dayMultiplier: 1.25, // 100% + 25% (قانون 33 م 19)
     nightMultiplier: 1.5, // 100% + 50% (من 10 مساءً إلى 4 صباحاً)
@@ -25,7 +25,7 @@ const COUNTRIES = [
   },
   {
     id: "kw",
-    name: "🇰🇼 الكويت",
+    name: "الكويت",
     currency: "KWD",
     dayMultiplier: 1.25,
     nightMultiplier: 1.5,
@@ -35,7 +35,7 @@ const COUNTRIES = [
   },
   {
     id: "qa",
-    name: "🇶🇦 قطر",
+    name: "قطر",
     currency: "QAR",
     dayMultiplier: 1.25,
     nightMultiplier: 1.5,
@@ -45,7 +45,7 @@ const COUNTRIES = [
   },
   {
     id: "eg",
-    name: "🇪🇬 مصر",
+    name: "مصر",
     currency: "EGP",
     dayMultiplier: 1.35, // 100% + 35% نهاراً
     nightMultiplier: 1.70, // 100% + 70% ليلاً
@@ -60,7 +60,29 @@ function toNum(v) {
   return isNaN(n) || n < 0 ? 0 : n;
 }
 
+function HoursField({ label, value, onChange, multiplier }) {
+  const id = useId();
+  return (
+    <div>
+      <label className="ot-label" htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        type="number"
+        inputMode="decimal"
+        min="0"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-describedby={`${id}-m`}
+        className="ot-input ot-center"
+      />
+      <p className="ot-mult" id={`${id}-m`}>× <bdi>{Math.round(multiplier * 100)}%</bdi></p>
+    </div>
+  );
+}
+
 export default function OvertimeCalculator({ initialCountry = "sa" }) {
+  const salaryId = useId();
+
   const [countryId, setCountryId] = useState(initialCountry);
   const [salary, setSalary] = useState("8000");
   const [dayHours, setDayHours] = useState("10");
@@ -69,6 +91,7 @@ export default function OvertimeCalculator({ initialCountry = "sa" }) {
 
   const country = COUNTRIES.find((c) => c.id === countryId) || COUNTRIES[0];
 
+  // Calculation logic (unchanged)
   const results = useMemo(() => {
     const s = toNum(salary);
     const dH = toNum(dayHours);
@@ -105,152 +128,167 @@ export default function OvertimeCalculator({ initialCountry = "sa" }) {
   }, [salary, dayHours, nightHours, weekendHours, country]);
 
   const fmt = (n) =>
-    n.toLocaleString("ar-EG", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <div className="mx-auto max-w-lg">
-      <div className="mb-6 rounded-2xl bg-hero-gradient p-6 text-white shadow-result">
-        <div className="mb-1 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">⏱️</span>
-            <h1 className="text-2xl font-extrabold">حاسبة العمل الإضافي (أوفر تايم)</h1>
-          </div>
-          <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">
-            وفق قوانين العمل 2026
-          </span>
-        </div>
-        <p className="text-sm text-white/80">
-          احسب أجر ساعات العمل الإضافية النهارية والليلية والعطلات وفق الأنظمة المعتمدة
-        </p>
-      </div>
+    <div className="ot" dir="rtl">
+      <style>{css}</style>
 
-      <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card sm:p-7 space-y-4">
+      <header className="ot-head">
+        <p className="ot-kicker">وفق قوانين العمل 2026</p>
+        <h1 className="ot-h1">حاسبة العمل الإضافي (أوفر تايم)</h1>
+        <p className="ot-lead">
+          احسب أجر ساعات العمل الإضافية النهارية والليلية والعطلات وفق الأنظمة المعتمدة.
+        </p>
+      </header>
+
+      <div className="ot-box">
         {/* Country Selection */}
-        <div>
-          <label className="mb-2 block text-xs font-bold text-ink-secondary">دولة العمل والنظام القانوني</label>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <fieldset className="ot-fieldset">
+          <legend className="ot-label">دولة العمل والنظام القانوني</legend>
+          <div className="ot-seg">
             {COUNTRIES.map((c) => (
               <button
                 key={c.id}
                 type="button"
+                className="ot-btn"
+                aria-pressed={countryId === c.id}
                 onClick={() => setCountryId(c.id)}
-                className={`rounded-xl border p-2.5 text-right transition-all ${
-                  countryId === c.id
-                    ? "border-brand bg-brand-light font-bold text-brand-dark shadow-sm"
-                    : "border-brand-border bg-white text-ink-secondary hover:border-brand-200 text-xs"
-                }`}
               >
-                <span className="text-xs">{c.name}</span>
+                {c.name}
               </button>
             ))}
           </div>
-          <p className="mt-2 text-[11px] text-brand-dark font-medium bg-brand-surface/70 p-2 rounded-lg">
-            📜 {country.lawNote}
-          </p>
-        </div>
+          <p className="ot-note">{country.lawNote}</p>
+        </fieldset>
 
         {/* Salary Input */}
         <div>
-          <label className="mb-1 block text-sm font-medium text-ink-secondary">
+          <label className="ot-label" htmlFor={salaryId}>
             الراتب الشهري الأساسي ({country.currency})
           </label>
-          <div className="relative flex items-center">
+          <div className="ot-suffix-wrap">
             <input
+              id={salaryId}
               type="number"
               inputMode="decimal"
               placeholder="مثال: 8000"
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
-              className="input w-full text-right pl-12"
+              className="ot-input"
+              style={{ paddingInlineEnd: "3.5rem" }}
             />
-            <span className="absolute left-3 text-xs font-semibold text-ink-muted">
-              {country.currency}
-            </span>
+            <span className="ot-suffix" aria-hidden="true">{country.currency}</span>
           </div>
-          <p className="mt-1 text-[11px] text-ink-muted">
-            أجر الساعة الأساسي = {fmt(results.hourlyWage)} {country.currency} (مبني على {country.hoursDivisor} ساعة عمل شهرية)
+          <p className="ot-small">
+            أجر الساعة الأساسي = <bdi>{fmt(results.hourlyWage)} {country.currency}</bdi> (مبني على <bdi>{country.hoursDivisor}</bdi> ساعة عمل شهرية)
           </p>
         </div>
 
         {/* Overtime Hours Inputs */}
-        <div className="rounded-xl border border-brand-border/80 bg-slate-50/70 p-4 space-y-3">
-          <span className="text-xs font-bold text-ink block">ساعات العمل الإضافي المنجزة هذا الشهر:</span>
-
-          <div className="grid grid-cols-3 gap-2">
-            <div>
-              <label className="text-[11px] font-semibold text-ink-secondary block mb-1">
-                ☀️ ساعات نهارية
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={dayHours}
-                onChange={(e) => setDayHours(e.target.value)}
-                className="input w-full text-center text-xs"
-              />
-              <span className="text-[10px] text-ink-muted block mt-1 text-center">
-                × {country.dayMultiplier * 100}%
-              </span>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-semibold text-ink-secondary block mb-1">
-                🌙 ساعات ليلية
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={nightHours}
-                onChange={(e) => setNightHours(e.target.value)}
-                className="input w-full text-center text-xs"
-              />
-              <span className="text-[10px] text-ink-muted block mt-1 text-center">
-                × {country.nightMultiplier * 100}%
-              </span>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-semibold text-ink-secondary block mb-1">
-                🎉 عطلات وأعياد
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={weekendHours}
-                onChange={(e) => setWeekendHours(e.target.value)}
-                className="input w-full text-center text-xs"
-              />
-              <span className="text-[10px] text-ink-muted block mt-1 text-center">
-                × {country.weekendMultiplier * 100}%
-              </span>
-            </div>
+        <fieldset className="ot-fieldset ot-hours">
+          <legend className="ot-label">ساعات العمل الإضافي المنجزة هذا الشهر</legend>
+          <div className="ot-three">
+            <HoursField label="ساعات نهارية" value={dayHours} onChange={setDayHours} multiplier={country.dayMultiplier} />
+            <HoursField label="ساعات ليلية" value={nightHours} onChange={setNightHours} multiplier={country.nightMultiplier} />
+            <HoursField label="عطلات وأعياد" value={weekendHours} onChange={setWeekendHours} multiplier={country.weekendMultiplier} />
           </div>
-        </div>
+        </fieldset>
 
-        {/* Results Box */}
-        {results.totalHours > 0 && (
-          <div className="rounded-xl border border-brand-border bg-brand-light p-4 space-y-2.5">
-            <div className="flex justify-between text-sm">
-              <span className="text-ink-secondary">إجمالي ساعات العمل الإضافي:</span>
-              <span className="font-bold text-ink">{results.totalHours} ساعة</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-ink-secondary">أجر الساعة الإضافية العادية:</span>
-              <span className="font-bold text-ink">{fmt(results.dayRate)} {country.currency}</span>
-            </div>
-            <div className="border-t border-brand-border/60 pt-2 flex justify-between text-base">
-              <span className="font-bold text-brand-dark">صافي بدل العمل الإضافي المستحق:</span>
-              <span className="font-extrabold text-brand text-lg">
-                {fmt(results.totalOvertimePay)} {country.currency}
-              </span>
-            </div>
-            <div className="flex justify-between text-xs text-ink-muted pt-1 border-t border-brand-border/40">
-              <span>إجمالي الراتب مع العمل الإضافي:</span>
-              <span className="font-bold text-ink">{fmt(results.totalSalaryWithOvertime)} {country.currency}</span>
-            </div>
-          </div>
+        {/* Results */}
+        {results.totalHours > 0 ? (
+          <section className="ot-result" aria-live="polite" aria-labelledby="ot-res-label">
+            <p className="ot-result-label" id="ot-res-label">صافي بدل العمل الإضافي المستحق</p>
+            <p className="ot-result-big"><bdi>{fmt(results.totalOvertimePay)} {country.currency}</bdi></p>
+            <dl className="ot-result-rows">
+              <div>
+                <dt>إجمالي ساعات العمل الإضافي</dt>
+                <dd><bdi>{results.totalHours}</bdi> ساعة</dd>
+              </div>
+              <div>
+                <dt>أجر الساعة الإضافية العادية</dt>
+                <dd><bdi>{fmt(results.dayRate)} {country.currency}</bdi></dd>
+              </div>
+              <div>
+                <dt>إجمالي الراتب مع العمل الإضافي</dt>
+                <dd><bdi>{fmt(results.totalSalaryWithOvertime)} {country.currency}</bdi></dd>
+              </div>
+            </dl>
+          </section>
+        ) : (
+          <p className="ot-empty" role="status">أدخل عدد الساعات الإضافية لإظهار النتيجة.</p>
         )}
       </div>
     </div>
   );
 }
+
+// ─── Styles: Ink & Signal ──────────────────────────────────────────────────────
+// Reads the site's --c-* tokens when present, with the palette as fallback.
+// Orange is only ever a background, always with black text.
+const css = `
+.ot{
+  --i-bg:var(--c-bg,#F5F5F2);
+  --i-ink:var(--c-ink,#0D0D0D);
+  --i-mute:var(--c-mute,#55554F);
+  --i-soft:var(--c-soft,#DEDED8);
+  --i-accent:var(--c-accent,#FF6A1A);
+  --i-on-accent:#0D0D0D;
+  background:var(--i-bg);color:var(--i-ink);
+  max-width:40rem;margin:0 auto;padding:2rem 1rem 3rem;line-height:1.6;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .ot{
+    --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+    --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+  }
+}
+:root[data-theme="dark"] .ot{
+  --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+  --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+}
+.ot *{box-sizing:border-box}
+.ot h1,.ot p,.ot dl,.ot dd{margin:0;padding:0}
+.ot button,.ot input{font:inherit;color:inherit}
+.ot :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
+.ot bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+
+.ot-head{margin-bottom:1.75rem}
+.ot-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
+.ot-h1{font-size:clamp(1.9rem,5vw,2.6rem);font-weight:900;line-height:1.15;margin-bottom:.6rem}
+.ot-lead{color:var(--i-mute)}
+
+.ot-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem;display:grid;gap:1.5rem}
+@media (min-width:640px){.ot-box{padding:1.75rem}}
+.ot-fieldset{border:0;margin:0;padding:0;min-width:0}
+.ot-label{display:block;font-size:.8rem;font-weight:700;margin-bottom:.4rem;padding:0}
+.ot-small{margin-top:.4rem;font-size:.78rem;color:var(--i-mute)}
+.ot-note{margin-top:.75rem;border:2px dashed var(--i-ink);border-radius:4px;padding:.5rem .7rem;font-size:.8rem;font-weight:600}
+
+.ot-seg{display:grid;gap:.4rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:560px){.ot-seg{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ot-btn{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.45rem .75rem;font-size:.85rem;font-weight:700;cursor:pointer;min-height:2.6rem}
+.ot-btn:hover{background:var(--i-soft)}
+.ot-btn[aria-pressed="true"]{background:var(--i-ink);color:var(--i-bg)}
+
+.ot-input{width:100%;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.6rem .75rem;font-size:.95rem;font-weight:700;min-height:2.75rem}
+.ot-center{text-align:center}
+.ot-suffix-wrap{position:relative}
+.ot-suffix{position:absolute;inset-inline-end:.75rem;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:var(--i-mute);pointer-events:none}
+
+.ot-hours{border:2px solid var(--i-ink);border-radius:4px;padding:1rem}
+.ot-hours .ot-label{padding:0 .35rem}
+.ot-three{display:grid;gap:.75rem;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:420px){.ot-three{grid-template-columns:minmax(0,1fr)}}
+.ot-mult{margin-top:.3rem;text-align:center;font-size:.78rem;font-weight:700;color:var(--i-mute)}
+
+.ot-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem}
+.ot-result-label{font-size:.9rem;font-weight:700}
+.ot-result-big{font-size:clamp(2rem,7vw,3rem);font-weight:900;line-height:1.15;margin:.2rem 0 1rem}
+.ot-result-rows{border-top:2px solid var(--i-on-accent)}
+.ot-result-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.5rem 0;border-bottom:1px solid var(--i-on-accent);font-size:.9rem}
+.ot-result-rows>div:last-child{border-bottom:0;padding-bottom:0}
+.ot-result-rows dt{font-weight:600}
+.ot-result-rows dd{font-weight:800}
+.ot-empty{border:2px dashed var(--i-ink);border-radius:4px;padding:1rem;text-align:center;font-weight:700;font-size:.9rem}
+`;

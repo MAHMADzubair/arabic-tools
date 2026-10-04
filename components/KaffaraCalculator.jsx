@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useId } from "react";
 
 // Types of Kaffarah and Fidya
 const kaffaraTypes = [
   {
     id: "fasting_fidya",
     title: "فدية الصيام (عجز دائم أو مرض)",
-    icon: "🌙",
     shortDesc: "إطعام مسكين واحد عن كل يوم أفطره المريض المزمن أو الشيخ الكبير.",
     ruleType: "taam_per_day", // 1 مسكين لكل يوم
     personsPerUnit: 1,
@@ -19,7 +18,6 @@ const kaffaraTypes = [
   {
     id: "yameen_kaffara",
     title: "كفارة اليمين المنعقدة",
-    icon: "✋",
     shortDesc: "إطعام 10 مساكين أو كسوتهم، ومن عجز صام 3 أيام.",
     ruleType: "fixed_persons",
     personsPerUnit: 10,
@@ -31,7 +29,6 @@ const kaffaraTypes = [
   {
     id: "nadhr_kaffara",
     title: "كفارة النذر المعلق",
-    icon: "📜",
     shortDesc: "إطعام 10 مساكين (حكمها ككفارة اليمين تماماً).",
     ruleType: "fixed_persons",
     personsPerUnit: 10,
@@ -43,7 +40,6 @@ const kaffaraTypes = [
   {
     id: "ramadan_major",
     title: "كفارة الجماع في نهار رمضان",
-    icon: "⚠️",
     shortDesc: "كفارة مغلظة مرتبة: صيام شهرين متتابعين، فإن عجز فإطعام 60 مسكيناً.",
     ruleType: "fixed_persons",
     personsPerUnit: 60,
@@ -55,7 +51,6 @@ const kaffaraTypes = [
   {
     id: "ihram_fidyah",
     title: "فدية محظورات الإحرام (الأذى)",
-    icon: "🕋",
     shortDesc: "إطعام 6 مساكين، أو صيام 3 أيام، أو ذبح شاة (فدية من صيام أو صدقة أو نسك).",
     ruleType: "fixed_persons",
     personsPerUnit: 6,
@@ -68,24 +63,35 @@ const kaffaraTypes = [
 
 // Average cost of feeding 1 poor person per day by country (وجبة إطعام مسكين)
 const countryMealPresets = [
-  { code: "KSA", country: "السعودية", flag: "🇸🇦", cost: 15, currency: "SAR", note: "وجبة مشبعة أو نصف صاع أرز (10 - 20 ر.س)" },
-  { code: "UAE", country: "الإمارات", flag: "🇦🇪", cost: 15, currency: "AED", note: "قيمة وجبة الإطعام المعتمدة (15 د.إ)" },
-  { code: "EGY", country: "مصر", flag: "🇪🇬", cost: 35, currency: "EGP", note: "الحد الأدنى المعلن من دار الإفتاء المصرية" },
-  { code: "QAR", country: "قطر", flag: "🇶🇦", cost: 15, currency: "QAR", note: "إدارة صندوق الزكاة القطرية" },
-  { code: "KWD", country: "الكويت", flag: "🇰🇼", cost: 1.5, currency: "KWD", note: "بيت الزكاة الكويتي (دينار ونصف)" },
-  { code: "JOR", country: "الأردن", flag: "🇯🇴", cost: 1.5, currency: "JOD", note: "دائرة الإفتاء العام الأردنية" },
-  { code: "OMN", country: "عمان", flag: "🇴🇲", cost: 1.5, currency: "OMR", note: "وزارة الأوقاف والشؤون الدينية" },
-  { code: "GLOBAL", country: "أوروبا / أمريكا", flag: "🌍", cost: 10, currency: "USD", note: "المراكز الإسلامية في الخارج (10$ للوجبة)" },
+  { code: "KSA", country: "السعودية", cost: 15, currency: "SAR", note: "وجبة مشبعة أو نصف صاع أرز (10 - 20 ر.س)" },
+  { code: "UAE", country: "الإمارات", cost: 15, currency: "AED", note: "قيمة وجبة الإطعام المعتمدة (15 د.إ)" },
+  { code: "EGY", country: "مصر", cost: 35, currency: "EGP", note: "الحد الأدنى المعلن من دار الإفتاء المصرية" },
+  { code: "QAR", country: "قطر", cost: 15, currency: "QAR", note: "إدارة صندوق الزكاة القطرية" },
+  { code: "KWD", country: "الكويت", cost: 1.5, currency: "KWD", note: "بيت الزكاة الكويتي (دينار ونصف)" },
+  { code: "JOR", country: "الأردن", cost: 1.5, currency: "JOD", note: "دائرة الإفتاء العام الأردنية" },
+  { code: "OMN", country: "عمان", cost: 1.5, currency: "OMR", note: "وزارة الأوقاف والشؤون الدينية" },
+  { code: "GLOBAL", country: "أوروبا / أمريكا", cost: 10, currency: "USD", note: "المراكز الإسلامية في الخارج (10$ للوجبة)" },
 ];
 
 function formatNumber(n, decimals = 1) {
-  return n.toLocaleString("ar-SA", {
+  return n.toLocaleString("en-US", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });
 }
 
+// Arabic number agreement for "مسكين" (1: مسكين واحد، 2: مسكينان، 3-10: مساكين، 11+: مسكيناً)
+function masakeen(n) {
+  if (n === 1) return "مسكين واحد";
+  if (n === 2) return "مسكينان";
+  if (n >= 3 && n <= 10) return `${n} مساكين`;
+  return `${n} مسكيناً`;
+}
+
 export default function KaffaraCalculator() {
+  const unitsId = useId();
+  const costId = useId();
+
   // Active type
   const [selectedTypeId, setSelectedTypeId] = useState("fasting_fidya");
 
@@ -129,7 +135,7 @@ export default function KaffaraCalculator() {
     setCurrency(c.currency);
   };
 
-  // Calculations
+  // Calculations (unchanged)
   const result = useMemo(() => {
     const units = Math.max(1, parseInt(unitsCount) || 1);
     const totalPersonsToFeed = units * activeType.personsPerUnit;
@@ -154,11 +160,11 @@ export default function KaffaraCalculator() {
 
   // Copy summary
   const handleCopy = () => {
-    let text = `📜 تقرير حساب ${activeType.title}\n`;
+    let text = `تقرير حساب ${activeType.title}\n`;
     text += `------------------------------------\n`;
     text += `النوع: ${activeType.title}\n`;
     text += `${activeType.unitLabel}: ${result.units}\n`;
-    text += `عدد المساكين الواجب إطعامهم: ${result.totalPersonsToFeed} مساكين\n\n`;
+    text += `عدد المساكين الواجب إطعامهم: ${masakeen(result.totalPersonsToFeed)}\n\n`;
 
     if (calcMode === "food") {
       text += `الإخراج عيناً طعاماً (أرز):\n`;
@@ -176,301 +182,338 @@ export default function KaffaraCalculator() {
 
     text += `\nالحكم والضابط الشرعي: ${activeType.rulingNote}`;
 
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }
   };
 
-  return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12">
-      {/* Header */}
-      <div className="mb-8 text-center sm:mb-12">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>⚖️</span>
-          <span>حساب الفدية والكفارات الشرعية</span>
-        </div>
-        <h1 className="mb-3 text-3xl font-extrabold text-ink sm:text-5xl">
-          حاسبة الكفارات والفدية الشرعية
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
-          احسب مقدار كفارة اليمين، فدية صيام رمضان للعاجز والمريض، كفارة النذر، وفدية محظورات الإحرام،
-          سواء عيناً بالأرز والطعام (بالكيلوجرام) أو نقداً بالريال والعملات العربية.
-        </p>
-      </div>
+  const bigResult =
+    calcMode === "cash"
+      ? `${formatNumber(result.totalCash, 2)} ${currency}`
+      : `${formatNumber(result.totalFoodKg)} كجم`;
 
-      {/* Main Grid */}
-      <div className="grid gap-8 lg:grid-cols-12">
-        {/* Left Inputs (6 cols) */}
-        <div className="space-y-6 lg:col-span-6">
-          {/* Card 1: Select Type */}
-          <div className="rounded-3xl border border-brand-border bg-white p-5 shadow-card sm:p-6 space-y-3">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink sm:text-lg">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand text-sm">
-                📌
-              </span>
+  return (
+    <div className="kf" dir="rtl">
+      <style>{css}</style>
+
+      <header className="kf-head">
+        <p className="kf-kicker">حساب الفدية والكفارات الشرعية</p>
+        <h1 className="kf-h1">حاسبة الكفارات والفدية الشرعية</h1>
+        <p className="kf-lead">
+          احسب مقدار كفارة اليمين، وفدية صيام رمضان للعاجز والمريض، وكفارة النذر، وفدية محظورات الإحرام،
+          عيناً بالأرز (بالكيلوجرام) أو نقداً بالعملة.
+        </p>
+      </header>
+
+      <div className="kf-grid">
+        {/* ── Inputs ─────────────────────────────────────────────────────────── */}
+        <div className="kf-col">
+          <section className="kf-box" aria-labelledby="kf-s1">
+            <h2 className="kf-h2" id="kf-s1">
+              <span className="kf-num">1</span>
               <span>اختر نوع الكفارة أو الفدية</span>
             </h2>
 
-            <div className="space-y-2">
+            <div className="kf-stack" role="group" aria-labelledby="kf-s1">
               {kaffaraTypes.map((type) => (
                 <button
                   key={type.id}
                   type="button"
+                  className="kf-type"
+                  aria-pressed={selectedTypeId === type.id}
                   onClick={() => handleTypeSelect(type)}
-                  className={`w-full text-right p-3 rounded-2xl border transition ${
-                    selectedTypeId === type.id
-                      ? "border-brand bg-brand-light/60 text-brand-dark ring-2 ring-brand/20 shadow-sm"
-                      : "border-brand-border bg-white text-ink hover:bg-brand-surface"
-                  }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-sm">
-                      <span>{type.icon}</span>
-                      <span>{type.title}</span>
-                    </div>
-                    <span className="rounded-lg bg-white px-2 py-0.5 text-[11px] font-extrabold text-brand shadow-sm">
-                      {type.personsPerUnit === 1
-                        ? "مسكين/يوم"
-                        : `${type.personsPerUnit} مساكين`}
+                  <span className="kf-type-top">
+                    <span className="kf-type-title">{type.title}</span>
+                    <span className="kf-tag">
+                      {type.personsPerUnit === 1 ? "مسكين/يوم" : `${type.personsPerUnit} مساكين`}
                     </span>
-                  </div>
-                  <p className="mt-1 text-xs text-ink-muted leading-relaxed">
-                    {type.shortDesc}
-                  </p>
+                  </span>
+                  <span className="kf-type-desc">{type.shortDesc}</span>
                 </button>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Card 2: Units Count & Cash/Food Mode */}
-          <div className="rounded-3xl border border-brand-border bg-white p-5 shadow-card sm:p-6 space-y-4">
-            {/* Units Input */}
-            <div>
-              <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                {activeType.unitLabel}:
-              </label>
-              <div className="flex items-center rounded-xl border border-brand-border bg-brand-surface p-1">
-                <button
-                  type="button"
-                  onClick={() => setUnitsCount((u) => Math.max(1, u - 1))}
-                  className="px-3.5 py-2 text-lg font-bold text-ink hover:text-brand"
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  min="1"
-                  value={unitsCount}
-                  onChange={(e) => setUnitsCount(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-full bg-transparent text-center text-base font-black text-ink focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setUnitsCount((u) => u + 1)}
-                  className="px-3.5 py-2 text-lg font-bold text-ink hover:text-brand"
-                >
-                  +
-                </button>
-              </div>
-            </div>
+          <section className="kf-box" aria-labelledby="kf-s2">
+            <h2 className="kf-h2" id="kf-s2">
+              <span className="kf-num">2</span>
+              <span>العدد وطريقة الإخراج</span>
+            </h2>
 
-            {/* Mode Switcher */}
-            <div>
-              <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                طريقة إخراج الإطعام:
-              </label>
-              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-brand-surface p-1.5 border border-brand-border">
-                <button
-                  type="button"
-                  onClick={() => setCalcMode("cash")}
-                  className={`flex flex-col items-center justify-center rounded-xl py-2 px-3 text-xs font-bold transition ${
-                    calcMode === "cash"
-                      ? "bg-white text-brand shadow-sm"
-                      : "text-ink-secondary hover:text-ink"
-                  }`}
-                >
-                  <span>💵 نقداً بالقيمة</span>
-                  <span className="text-[10px] font-normal text-ink-muted">(تكلفة وجبة مسكين)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCalcMode("food")}
-                  className={`flex flex-col items-center justify-center rounded-xl py-2 px-3 text-xs font-bold transition ${
-                    calcMode === "food"
-                      ? "bg-white text-brand shadow-sm"
-                      : "text-ink-secondary hover:text-ink"
-                  }`}
-                >
-                  <span>🌾 طعاماً عيناً</span>
-                  <span className="text-[10px] font-normal text-ink-muted">(أرز بالكيلوجرام)</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Cash Options if cash mode */}
-            {calcMode === "cash" && (
-              <div className="space-y-3 border-t border-brand-border/60 pt-3">
-                <label className="block text-xs font-bold text-ink-secondary">
-                  متوسط تكلفة وجبة المسكين حسب الدولة:
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                  {countryMealPresets.map((c) => (
-                    <button
-                      key={c.code}
-                      type="button"
-                      onClick={() => handleCountrySelect(c)}
-                      className={`p-1.5 rounded-xl border text-xs font-bold transition ${
-                        selectedCountryCode === c.code && !isCustomMealCost
-                          ? "border-brand bg-brand text-white shadow-sm ring-2 ring-brand/20"
-                          : "border-brand-border bg-white text-ink hover:bg-brand-surface"
-                      }`}
-                    >
-                      <div className="flex items-center justify-center gap-1">
-                        <span>{c.flag}</span>
-                        <span className="truncate">{c.country}</span>
-                      </div>
-                      <p className={`text-[10px] mt-0.5 ${selectedCountryCode === c.code && !isCustomMealCost ? "text-accent" : "text-brand"}`}>
-                        {c.cost} {c.currency}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-bold text-ink-secondary">
-                      قيمة الوجبة الواحدة ({currency}):
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setIsCustomMealCost(!isCustomMealCost)}
-                      className="text-[11px] font-bold text-brand hover:underline"
-                    >
-                      {isCustomMealCost ? "استعادة التلقائي" : "تعديل يدوي"}
-                    </button>
-                  </div>
+            <div className="kf-stack kf-stack-lg">
+              <div>
+                <label className="kf-label" htmlFor={unitsId}>{activeType.unitLabel}</label>
+                <div className="kf-stepper">
+                  <button
+                    type="button"
+                    className="kf-btn"
+                    aria-label={`إنقاص: ${activeType.unitLabel}`}
+                    onClick={() => setUnitsCount((u) => Math.max(1, u - 1))}
+                  >
+                    −
+                  </button>
                   <input
+                    id={unitsId}
                     type="number"
+                    inputMode="numeric"
                     min="1"
-                    step="any"
-                    value={isCustomMealCost ? customCostInput : mealCost}
-                    onChange={(e) => {
-                      setIsCustomMealCost(true);
-                      setCustomCostInput(e.target.value);
-                    }}
-                    className="w-full rounded-xl border border-brand-border px-3 py-2 text-sm font-bold text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    value={unitsCount}
+                    onChange={(e) => setUnitsCount(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="kf-input kf-center"
                   />
-                  <p className="mt-1 text-[11px] text-ink-muted">
-                    {activeCountry.note}
-                  </p>
+                  <button
+                    type="button"
+                    className="kf-btn"
+                    aria-label={`زيادة: ${activeType.unitLabel}`}
+                    onClick={() => setUnitsCount((u) => u + 1)}
+                  >
+                    +
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
+
+              <fieldset className="kf-fieldset">
+                <legend className="kf-label">طريقة إخراج الإطعام</legend>
+                <div className="kf-seg kf-seg-2">
+                  <button
+                    type="button"
+                    className="kf-btn kf-btn-tall"
+                    aria-pressed={calcMode === "cash"}
+                    onClick={() => setCalcMode("cash")}
+                  >
+                    <span>نقداً بالقيمة</span>
+                    <span className="kf-btn-sub">تكلفة وجبة مسكين</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="kf-btn kf-btn-tall"
+                    aria-pressed={calcMode === "food"}
+                    onClick={() => setCalcMode("food")}
+                  >
+                    <span>طعاماً عيناً</span>
+                    <span className="kf-btn-sub">أرز بالكيلوجرام</span>
+                  </button>
+                </div>
+              </fieldset>
+
+              {calcMode === "cash" && (
+                <div className="kf-stack kf-cash">
+                  <fieldset className="kf-fieldset">
+                    <legend className="kf-label">متوسط تكلفة وجبة المسكين حسب الدولة</legend>
+                    <div className="kf-seg kf-seg-countries">
+                      {countryMealPresets.map((c) => (
+                        <button
+                          key={c.code}
+                          type="button"
+                          className="kf-btn kf-btn-tall"
+                          aria-pressed={selectedCountryCode === c.code && !isCustomMealCost}
+                          onClick={() => handleCountrySelect(c)}
+                        >
+                          <span>{c.country}</span>
+                          <span className="kf-btn-sub">{c.cost} {c.currency}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+
+                  <div>
+                    <div className="kf-row">
+                      <label className="kf-label kf-label-flush" htmlFor={costId}>
+                        قيمة الوجبة الواحدة ({currency})
+                      </label>
+                      <button
+                        type="button"
+                        className="kf-link"
+                        onClick={() => setIsCustomMealCost(!isCustomMealCost)}
+                      >
+                        {isCustomMealCost ? "استعادة التلقائي" : "تعديل يدوي"}
+                      </button>
+                    </div>
+                    <input
+                      id={costId}
+                      type="number"
+                      inputMode="decimal"
+                      min="1"
+                      step="any"
+                      value={isCustomMealCost ? customCostInput : mealCost}
+                      onChange={(e) => {
+                        setIsCustomMealCost(true);
+                        setCustomCostInput(e.target.value);
+                      }}
+                      className="kf-input"
+                    />
+                    <p className="kf-small">{activeCountry.note}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
 
-        {/* Right Output Card (6 cols) */}
-        <div className="space-y-6 lg:col-span-6">
-          <div className="rounded-3xl border border-brand-border bg-white p-6 shadow-card sm:p-8">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <span className="inline-block rounded-full bg-brand-light px-3 py-1 text-xs font-bold text-brand-dark">
-                  النتيجة الواجبة شرعاً
-                </span>
-                <h2 className="mt-1 text-2xl font-black text-ink">
-                  إجمالي المقدار المطلوب
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand transition hover:bg-brand-100"
-              >
-                <span>{copied ? "✓ تم النسخ!" : "📋 نسخ التقرير"}</span>
+        {/* ── Output ─────────────────────────────────────────────────────────── */}
+        <div className="kf-col">
+          <section className="kf-result" aria-live="polite" aria-labelledby="kf-res-label">
+            <p className="kf-result-label" id="kf-res-label">
+              {calcMode === "cash"
+                ? `المبلغ المطلوب نقداً لإطعام ${masakeen(result.totalPersonsToFeed)}`
+                : `إجمالي الأرز المطلوب لإطعام ${masakeen(result.totalPersonsToFeed)}`}
+            </p>
+            <p className="kf-result-big"><bdi>{bigResult}</bdi></p>
+            <p className="kf-result-foot">
+              المستحقون: {masakeen(result.totalPersonsToFeed)} ({result.units} × {activeType.personsPerUnit})
+            </p>
+          </section>
+
+          <section className="kf-box" aria-labelledby="kf-s3">
+            <div className="kf-res-head">
+              <h2 className="kf-h2 kf-h2-flush" id="kf-s3">تفاصيل الحساب</h2>
+              <button type="button" className="kf-btn" onClick={handleCopy}>
+                {copied ? "تم النسخ" : "نسخ التقرير"}
               </button>
             </div>
+            <p className="kf-sr" role="status">{copied ? "تم نسخ التقرير" : ""}</p>
 
-            {/* Main Result Hero Box */}
-            <div className="mb-6 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-surface via-white to-brand-light/30 p-6 text-center">
-              <p className="text-xs font-bold text-ink-muted">
-                {calcMode === "cash"
-                  ? `المبلغ المطلوب نقداً لإطعام ${result.totalPersonsToFeed} مساكين`
-                  : `إجمالي الأرز والحبوب المطلوبة لإطعام ${result.totalPersonsToFeed} مساكين`}
-              </p>
-
-              <p className="mt-2 text-3xl font-black text-brand-dark sm:text-4xl">
-                {calcMode === "cash"
-                  ? `${formatNumber(result.totalCash, 2)} ${currency}`
-                  : `${formatNumber(result.totalFoodKg)} كيلوجرام`}
-              </p>
-
-              <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-800">
-                <span>🍽️ المستحقون:</span>
-                <span>إطعام {result.totalPersonsToFeed} مسكيناً ({result.units} × {activeType.personsPerUnit})</span>
+            <dl className="kf-rows">
+              <div>
+                <dt>النوع المحدد</dt>
+                <dd>{activeType.title}</dd>
               </div>
+              <div>
+                <dt>المقدار الواجب لكل مسكين</dt>
+                <dd>
+                  {calcMode === "cash"
+                    ? <>وجبة مشبعة (<bdi>{result.currentRate} {currency}</bdi>)</>
+                    : "نصف صاع (≈ 1.35 كجم أرز)"}
+                </dd>
+              </div>
+              <div>
+                <dt>إجمالي الحبوب بالصاع النبوي</dt>
+                <dd><bdi>{formatNumber(result.totalSaFood, 1)}</bdi> صاع (نصف صاع × {result.totalPersonsToFeed})</dd>
+              </div>
+              <div className="kf-rows-total">
+                <dt>إجمالي المطلوب إخراجه</dt>
+                <dd><bdi>{calcMode === "cash" ? `${formatNumber(result.totalCash, 2)} ${currency}` : `${formatNumber(result.totalFoodKg)} كجم أرز`}</bdi></dd>
+              </div>
+            </dl>
+
+            <div className="kf-ruling">
+              <h3 className="kf-ruling-title">الحكم والضابط الشرعي</h3>
+              <p>{activeType.rulingNote}</p>
             </div>
 
-            {/* Breakdown details */}
-            <div className="space-y-3 rounded-2xl border border-brand-border bg-brand-surface/40 p-4 text-xs font-mono">
-              <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                <span className="font-sans font-bold text-ink-secondary">
-                  النوع المحدد:
-                </span>
-                <span className="font-bold text-ink text-sm">
-                  {activeType.title}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                <span className="font-sans font-bold text-ink-secondary">
-                  المقدار الواجب لكل مسكين:
-                </span>
-                <span className="font-bold text-brand text-sm">
-                  {calcMode === "cash"
-                    ? `وجبة مشبعة (${result.currentRate} ${currency})`
-                    : `نصف صاع (≈ 1.35 كجم أرز)`}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                <span className="font-sans font-bold text-ink-secondary">
-                  إجمالي الحبوب بالأصوع النبوية:
-                </span>
-                <span className="font-bold text-ink text-sm">
-                  {formatNumber(result.totalSaFood, 1)} صاع نبوي (نصف صاع × {result.totalPersonsToFeed})
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between pt-1">
-                <span className="font-sans font-extrabold text-ink">
-                  إجمالي المطلوب إخراجه:
-                </span>
-                <span className="font-black text-brand text-base">
-                  {calcMode === "cash"
-                    ? `${formatNumber(result.totalCash, 2)} ${currency}`
-                    : `${formatNumber(result.totalFoodKg)} كجم أرز`}
-                </span>
-              </div>
-            </div>
-
-            {/* Alternative for inability (صيام الأيام عند العجز) */}
             {activeType.fastingAlternative && (
-              <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-xs leading-relaxed text-amber-900">
-                <h4 className="font-extrabold mb-1 flex items-center gap-1.5 text-amber-950">
-                  <span>⚠️</span>
-                  <span>حكم العجز المالي التام:</span>
-                </h4>
-                <p>
-                  {activeType.fastingAlternative}
-                </p>
-                <p className="mt-1 text-[11px] text-amber-800/90 font-medium">
-                  ملاحظة: لا يُنتقل إلى الصيام في كفارة اليمين إلا عند العجز المالي الحقيقي عن إطعام أو كسوة 10 مساكين.
+              <div className="kf-alt">
+                <h3 className="kf-ruling-title">تنبيه: حكم العجز المالي التام</h3>
+                <p>{activeType.fastingAlternative}</p>
+                <p className="kf-small">
+                  لا يُنتقل إلى الصيام في كفارة اليمين إلا عند العجز المالي الحقيقي عن إطعام أو كسوة 10 مساكين.
                 </p>
               </div>
             )}
-          </div>
+          </section>
         </div>
       </div>
     </div>
   );
 }
+
+// ─── Styles: Ink & Signal ──────────────────────────────────────────────────────
+// Reads the site's --c-* tokens when present, with the palette as fallback.
+// Orange is only ever a background, always with black text.
+const css = `
+.kf{
+  --i-bg:var(--c-bg,#F5F5F2);
+  --i-ink:var(--c-ink,#0D0D0D);
+  --i-mute:var(--c-mute,#55554F);
+  --i-soft:var(--c-soft,#DEDED8);
+  --i-accent:var(--c-accent,#FF6A1A);
+  --i-on-accent:#0D0D0D;
+  background:var(--i-bg);color:var(--i-ink);
+  max-width:64rem;margin:0 auto;padding:2rem 1rem 3rem;line-height:1.6;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .kf{
+    --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+    --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+  }
+}
+:root[data-theme="dark"] .kf{
+  --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+  --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+}
+.kf *{box-sizing:border-box}
+.kf h1,.kf h2,.kf h3,.kf p,.kf dl,.kf dd{margin:0;padding:0}
+.kf button,.kf input,.kf select{font:inherit;color:inherit}
+.kf :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
+.kf bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+
+.kf-head{margin-bottom:2rem;max-width:44rem}
+.kf-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
+.kf-h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;line-height:1.15;margin-bottom:.75rem}
+.kf-lead{color:var(--i-mute);max-width:38rem}
+
+.kf-grid{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1024px){.kf-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
+.kf-col{display:grid;gap:1.5rem;min-width:0}
+
+.kf-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem}
+.kf-h2{display:flex;align-items:center;gap:.65rem;font-size:1.1rem;font-weight:800;margin-bottom:1rem}
+.kf-h2-flush{margin-bottom:0}
+.kf-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:800;border-radius:2px}
+.kf-stack{display:grid;gap:.6rem}
+.kf-stack-lg{gap:1.25rem}
+.kf-cash{border-top:2px solid var(--i-ink);padding-top:1rem;gap:1rem}
+
+.kf-label{display:block;font-size:.8rem;font-weight:700;margin-bottom:.35rem;padding:0}
+.kf-label-flush{margin-bottom:0}
+.kf-fieldset{border:0;margin:0;padding:0;min-width:0}
+.kf-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.kf-input{width:100%;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.6rem .75rem;font-size:.95rem;font-weight:700;min-height:2.75rem}
+.kf-center{text-align:center}
+.kf-small{margin-top:.35rem;font-size:.78rem;color:var(--i-mute)}
+.kf-row{display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin-bottom:.35rem}
+.kf-link{border:0;background:none;padding:.25rem 0;font-size:.8rem;font-weight:700;text-decoration:underline;cursor:pointer}
+
+.kf-btn{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.45rem .75rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:2.5rem}
+.kf-btn:hover{background:var(--i-soft)}
+.kf-btn[aria-pressed="true"]{background:var(--i-ink);color:var(--i-bg)}
+.kf-btn-tall{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;line-height:1.35}
+.kf-btn-sub{font-size:.7rem;font-weight:500}
+.kf-seg{display:grid;gap:.4rem}
+.kf-seg-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.kf-seg-countries{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:640px){.kf-seg-countries{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (min-width:1024px){.kf-seg-countries{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1200px){.kf-seg-countries{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kf-stepper{display:grid;grid-template-columns:2.75rem minmax(0,1fr) 2.75rem;gap:.4rem}
+.kf-stepper .kf-btn{padding:0;font-size:1.1rem}
+
+.kf-type{display:grid;gap:.25rem;width:100%;text-align:start;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.75rem;cursor:pointer}
+.kf-type:hover{background:var(--i-soft)}
+.kf-type[aria-pressed="true"]{background:var(--i-ink);color:var(--i-bg)}
+.kf-type-top{display:flex;justify-content:space-between;align-items:center;gap:.75rem}
+.kf-type-title{font-size:.9rem;font-weight:800}
+.kf-type-desc{font-size:.78rem;line-height:1.5}
+.kf-tag{flex:none;border:2px solid currentColor;border-radius:2px;padding:0 .45rem;font-size:.72rem;font-weight:700;line-height:1.5;white-space:nowrap}
+
+.kf-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.5rem}
+.kf-result-label{font-size:.9rem;font-weight:700}
+.kf-result-big{font-size:clamp(2rem,6vw,3.25rem);font-weight:900;line-height:1.15;margin:.35rem 0 1rem}
+.kf-result-foot{border-top:2px solid var(--i-on-accent);padding-top:.75rem;font-size:.9rem;font-weight:600}
+
+.kf-res-head{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.kf-rows{border:2px solid var(--i-ink);border-radius:4px}
+.kf-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.25rem 1rem;padding:.7rem .85rem;border-bottom:2px solid var(--i-ink);font-size:.88rem}
+.kf-rows>div:last-child{border-bottom:0}
+.kf-rows dt{font-weight:600;color:var(--i-mute)}
+.kf-rows dd{font-weight:800}
+.kf-rows-total{background:var(--i-soft)}
+.kf-rows-total dt{color:var(--i-ink);font-weight:800}
+
+.kf-ruling{margin-top:1.25rem;border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.85rem 1rem;font-size:.88rem}
+.kf-alt{margin-top:1rem;border:2px dashed var(--i-ink);border-radius:4px;padding:.85rem 1rem;font-size:.88rem}
+.kf-ruling-title{font-size:.9rem;font-weight:800;margin-bottom:.25rem}
+`;

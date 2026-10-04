@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useId } from "react";
 
 const currencyOptions = [
   { code: "SAR", label: "ريال سعودي" },
@@ -17,22 +17,90 @@ function toNumber(val) {
 }
 
 function formatCurrency(amount, currency) {
-  return `${amount.toLocaleString("ar-SA", {
+  return `${amount.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })} ${currency}`;
 }
 
+// ─── Small UI pieces ───────────────────────────────────────────────────────────
+function Num({ label, value, onChange, suffix, placeholder }) {
+  const id = useId();
+  return (
+    <div>
+      <label className="inh-label" htmlFor={id}>{label}</label>
+      <div className="inh-suffix-wrap">
+        <input
+          id={id}
+          type="number"
+          inputMode="decimal"
+          min="0"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="inh-input"
+        />
+        {suffix && <span className="inh-suffix" aria-hidden="true">{suffix}</span>}
+      </div>
+    </div>
+  );
+}
+
+function Stepper({ label, value, onChange }) {
+  const id = useId();
+  return (
+    <div>
+      <label className="inh-label" htmlFor={id}>{label}</label>
+      <div className="inh-stepper">
+        <button type="button" className="inh-btn" aria-label={`إنقاص: ${label}`} onClick={() => onChange(Math.max(0, value - 1))}>−</button>
+        <input
+          id={id}
+          type="number"
+          inputMode="numeric"
+          min="0"
+          value={value}
+          onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+          className="inh-input inh-center"
+        />
+        <button type="button" className="inh-btn" aria-label={`زيادة: ${label}`} onClick={() => onChange(value + 1)}>+</button>
+      </div>
+    </div>
+  );
+}
+
+function Seg({ legend, options, value, onChange, hideLegend }) {
+  return (
+    <fieldset className="inh-fieldset">
+      <legend className={hideLegend ? "inh-sr" : "inh-label"}>{legend}</legend>
+      <div className="inh-seg" style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
+        {options.map((o) => (
+          <button
+            key={String(o.v)}
+            type="button"
+            className="inh-btn"
+            aria-pressed={value === o.v}
+            onClick={() => onChange(o.v)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+// ─── Main component ────────────────────────────────────────────────────────────
 export default function InheritanceCalculator() {
   // Estate state
   const [totalEstate, setTotalEstate] = useState("1000000");
   const [debts, setDebts] = useState("0");
   const [wasiyyah, setWasiyyah] = useState("0");
   const [currency, setCurrency] = useState("SAR");
+  const currencyId = useId();
 
   // Deceased info
   const [deceasedGender, setDeceasedGender] = useState("male"); // 'male' | 'female'
-  
+
   // Spouses
   const [wivesCount, setWivesCount] = useState(1);
   const [husbandAlive, setHusbandAlive] = useState(true);
@@ -102,12 +170,12 @@ export default function InheritanceCalculator() {
     }
   };
 
-  // Calculation logic
+  // Calculation logic (unchanged)
   const calculation = useMemo(() => {
     const gross = toNumber(totalEstate);
     const debtVal = toNumber(debts);
     const estateAfterDebts = Math.max(0, gross - debtVal);
-    
+
     // Wasiyyah cannot exceed 1/3 of estate after debts in Shariah
     const maxAllowedWasiyyah = estateAfterDebts / 3;
     const requestedWasiyyah = toNumber(wasiyyah);
@@ -144,7 +212,6 @@ export default function InheritanceCalculator() {
           shareLabel: shareText,
           isAsaba: false,
           reason,
-          color: "bg-rose-500",
         });
       }
     } else {
@@ -162,7 +229,6 @@ export default function InheritanceCalculator() {
           shareLabel: shareText,
           isAsaba: false,
           reason,
-          color: "bg-blue-500",
         });
       }
     }
@@ -201,7 +267,6 @@ export default function InheritanceCalculator() {
         shareLabel: shareText,
         isAsaba: false,
         reason,
-        color: "bg-emerald-500",
       });
 
       if (grandmotherAlive) {
@@ -217,7 +282,6 @@ export default function InheritanceCalculator() {
         shareLabel: "1/6 (السدس)",
         isAsaba: false,
         reason: "فرضاً لانعدام الأم والفرع الأقرب منها",
-        color: "bg-teal-500",
       });
     }
 
@@ -233,7 +297,6 @@ export default function InheritanceCalculator() {
           shareLabel: "1/6 (السدس)",
           isAsaba: false,
           reason: "فرضاً لوجود الفرع الوارث المذكر (الابن)",
-          color: "bg-amber-500",
         });
       } else if (daughters > 0) {
         // أب مع بنات دون بنين: السدس فرضاً + الباقي تعصيباً
@@ -246,7 +309,6 @@ export default function InheritanceCalculator() {
           isAsaba: true,
           fatherDualMode: true,
           reason: "السدس فرضاً لوجود فرع وارث مؤنث + الباقي تعصيباً إن وجد",
-          color: "bg-amber-500",
         });
       } else {
         // لا أولاد: الأب عصبة بالنفس يأخذ كل ما تبقى
@@ -258,7 +320,6 @@ export default function InheritanceCalculator() {
           shareLabel: "الباقي (عصبة)",
           isAsaba: true,
           reason: "عصبة بالنفس لانعدام الفرع الوارث",
-          color: "bg-amber-500",
         });
       }
 
@@ -276,7 +337,6 @@ export default function InheritanceCalculator() {
           shareLabel: "1/6 (السدس)",
           isAsaba: false,
           reason: "فرضاً لقيامه مقام الأب مع وجود الفرع الوارث المذكر",
-          color: "bg-amber-600",
         });
       } else if (daughters > 0) {
         heirs.push({
@@ -288,7 +348,6 @@ export default function InheritanceCalculator() {
           isAsaba: true,
           fatherDualMode: true,
           reason: "السدس فرضاً + الباقي تعصيباً لقيامه مقام الأب",
-          color: "bg-amber-600",
         });
       } else {
         heirs.push({
@@ -299,7 +358,6 @@ export default function InheritanceCalculator() {
           shareLabel: "الباقي (عصبة)",
           isAsaba: true,
           reason: "عصبة بالنفس لقيامه مقام الأب لعدم وجود فرع وارث",
-          color: "bg-amber-600",
         });
       }
     }
@@ -320,7 +378,6 @@ export default function InheritanceCalculator() {
         shareLabel: shareText,
         isAsaba: false,
         reason,
-        color: "bg-pink-500",
       });
     }
 
@@ -355,7 +412,6 @@ export default function InheritanceCalculator() {
           shareLabel: "الباقي (عصبة مع الغير)",
           isAsaba: true,
           reason: "عصبة مع الغير لوجودهن مع البنات (اجعلوا الأخوات مع البنات عصبة)",
-          color: "bg-indigo-500",
         });
       } else if (!hasChildren) {
         if (fullBrothers > 0) {
@@ -371,7 +427,6 @@ export default function InheritanceCalculator() {
             isAsaba: true,
             isSiblingsAsaba: true,
             reason: "عصبة بالغير للذكر مثل حظ الأنثيين لعدم وجود فرع وارث ولا أب",
-            color: "bg-indigo-500",
           });
         } else if (fullSisters > 0) {
           const share = fullSisters === 1 ? 1 / 2 : 2 / 3;
@@ -386,7 +441,6 @@ export default function InheritanceCalculator() {
               fullSisters === 1
                 ? "فرضاً لانفرادها لعدم وجود الفرع الوارث ولا الأب ولا المعصب"
                 : "فرضاً لتعددهن لعدم وجود الفرع الوارث ولا الأب ولا المعصب",
-            color: "bg-indigo-500",
           });
         }
       }
@@ -404,7 +458,6 @@ export default function InheritanceCalculator() {
           isAsaba: true,
           isChildrenAsaba: true,
           reason: "عصبة بالغير: للذكر مثل حظ الأنثيين بعد أصحاب الفروض",
-          color: "bg-violet-600",
         });
       } else {
         heirs.push({
@@ -416,7 +469,6 @@ export default function InheritanceCalculator() {
           isAsaba: true,
           isSonsOnlyAsaba: true,
           reason: "عصبة بالنفس: يأخذون جميع ما تبقى بعد أصحاب الفروض بالتساوي",
-          color: "bg-violet-600",
         });
       }
     }
@@ -429,7 +481,7 @@ export default function InheritanceCalculator() {
 
     const hasAnyAsaba = heirs.some((h) => h.isAsaba);
 
-    let statusType = "normal"; // 'normal' | 'awl' | 'radd' | 'asaba_full'
+    let statusType = "normal"; // 'normal' | 'awl' | 'radd' | 'asaba'
     let statusNote = "";
 
     let finalDistribution = [];
@@ -439,7 +491,7 @@ export default function InheritanceCalculator() {
       statusType = "awl";
       statusNote =
         "عالت المسألة: زادت مجموع السهام الشرعية عن أصل التركة، فتُقسّم التركة بالمحاصة الشرعية بنسبة وتناسب عادلة.";
-      
+
       finalDistribution = heirs.map((h) => {
         const adjustedFraction = h.shareFraction / fixedSharesSum;
         const amount = adjustedFraction * netEstate;
@@ -540,8 +592,8 @@ export default function InheritanceCalculator() {
       if (nonSpouseHeirs.length > 0) {
         statusType = "radd";
         statusNote =
-          "مسألة فيها رد: زادت التركة عن فروض الورثة ولا يوجد عصبة، فرُدَّ الباقي على ذوي الفروض عدا الزوجين حسب الراجح فقهياً.";
-        
+          "مسألة فيها رد: زادت التركة عن فروض الورثة ولا يوجد عصبة، فرُدَّ الباقي على ذوي الفروض عدا الزوجين حسب الراجح فقهياً.";
+
         const spouseFraction = spouseHeir ? spouseHeir.shareFraction : 0;
         const spouseAmount = spouseFraction * netEstate;
         const remainingForRadd = netEstate - spouseAmount;
@@ -645,7 +697,7 @@ export default function InheritanceCalculator() {
 
   // Copy summary text
   const copySummary = () => {
-    let summary = `📋 تقرير قسمة الميراث الشرعي\n`;
+    let summary = `تقرير قسمة الميراث الشرعي\n`;
     summary += `---------------------------------\n`;
     summary += `قيمة التركة الإجمالية: ${formatCurrency(calculation.gross, currency)}\n`;
     if (calculation.debtVal > 0) {
@@ -677,79 +729,67 @@ export default function InheritanceCalculator() {
 
     summary += `\n* تم الحساب وفق أحكام الشريعة الإسلامية. للمسائل القضائية يرجى مراجعة المحاكم الشرعية.`;
 
-    navigator.clipboard.writeText(summary);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(summary);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }
   };
 
+  const statusTitle =
+    calculation.statusType === "awl"
+      ? "مسألة عائلة (العول)"
+      : calculation.statusType === "radd"
+      ? "مسألة فيها رد"
+      : "حالة المسألة";
+
+  const presets = [
+    { k: "family_standard", label: "زوجة وأبناء وبنات وأبوان" },
+    { k: "female_with_daughters", label: "متوفاة (زوج وبنات وأم)" },
+    { k: "only_daughters", label: "بنات فقط مع والدين" },
+    { k: "no_children", label: "زوجة ووالدان (دون أبناء)" },
+  ];
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:py-12">
+    <div className="inh" dir="rtl">
+      <style>{css}</style>
+
       {/* Header */}
-      <div className="mb-8 text-center sm:mb-12">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>⚖️</span>
-          <span>علم الفرائض والمواريث الإسلامية</span>
-        </div>
-        <h1 className="mb-3 text-3xl font-extrabold text-ink sm:text-5xl">
-          حاسبة الميراث الشرعية
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
-          احسب توزيع التركة بين الورثة بدقة وفقاً لأحكام القرآن الكريم والسنة النبوية،
+      <header className="inh-head">
+        <p className="inh-kicker">علم الفرائض والمواريث الإسلامية</p>
+        <h1 className="inh-h1">حاسبة الميراث الشرعية</h1>
+        <p className="inh-lead">
+          احسب توزيع التركة بين الورثة وفق أحكام القرآن الكريم والسنة النبوية،
           مع مراعاة الفروض والعصبات والعول والرد وحجب الحرمان.
         </p>
 
-        {/* Quick Presets */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-xs font-bold text-ink-muted">نماذج جاهزة سريعة:</span>
-          <button
-            onClick={() => applyPreset("family_standard")}
-            className="rounded-lg border border-brand-border bg-white px-3 py-1 text-xs font-semibold text-ink-secondary transition hover:border-brand hover:text-brand"
-          >
-            زوجة وأبناء وبنات وأبوان
-          </button>
-          <button
-            onClick={() => applyPreset("female_with_daughters")}
-            className="rounded-lg border border-brand-border bg-white px-3 py-1 text-xs font-semibold text-ink-secondary transition hover:border-brand hover:text-brand"
-          >
-            متوفاة (زوج وبنات وأم)
-          </button>
-          <button
-            onClick={() => applyPreset("only_daughters")}
-            className="rounded-lg border border-brand-border bg-white px-3 py-1 text-xs font-semibold text-ink-secondary transition hover:border-brand hover:text-brand"
-          >
-            بنات فقط مع والدين
-          </button>
-          <button
-            onClick={() => applyPreset("no_children")}
-            className="rounded-lg border border-brand-border bg-white px-3 py-1 text-xs font-semibold text-ink-secondary transition hover:border-brand hover:text-brand"
-          >
-            زوجة ووالدان (دون أبناء)
-          </button>
+        <div className="inh-presets" role="group" aria-label="نماذج جاهزة سريعة">
+          <span className="inh-presets-label">نماذج جاهزة:</span>
+          {presets.map((p) => (
+            <button key={p.k} type="button" className="inh-btn" onClick={() => applyPreset(p.k)}>
+              {p.label}
+            </button>
+          ))}
         </div>
-      </div>
+      </header>
 
-      <div className="grid gap-8 lg:grid-cols-12">
-        {/* Left / Top form controls (5 cols) */}
-        <div className="space-y-6 lg:col-span-5">
-          {/* Card 1: Estate & Currency */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card sm:p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-ink sm:text-lg">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand text-sm">
-                💰
-              </span>
+      <div className="inh-grid">
+        {/* ── Inputs ─────────────────────────────────────────────────────────── */}
+        <div className="inh-col">
+          <section className="inh-box" aria-labelledby="inh-s1">
+            <h2 className="inh-h2" id="inh-s1">
+              <span className="inh-num">1</span>
               <span>قيمة التركة والوصية</span>
             </h2>
 
-            <div className="space-y-4">
-              {/* Currency selector */}
+            <div className="inh-stack">
               <div>
-                <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                  العملة
-                </label>
+                <label className="inh-label" htmlFor={currencyId}>العملة</label>
                 <select
+                  id={currencyId}
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-3 py-2 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="inh-input"
                 >
                   {currencyOptions.map((c) => (
                     <option key={c.code} value={c.code}>
@@ -759,544 +799,400 @@ export default function InheritanceCalculator() {
                 </select>
               </div>
 
-              {/* Total Estate */}
-              <div>
-                <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                  إجمالي قيمة التركة (أموال، عقارات، أصول)
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    min="0"
-                    value={totalEstate}
-                    onChange={(e) => setTotalEstate(e.target.value)}
-                    placeholder="مثال: 500000"
-                    className="w-full rounded-xl border border-brand-border px-3 py-2.5 text-base font-bold text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-                  />
-                  <span className="absolute left-3 top-3 text-xs font-bold text-ink-muted">
-                    {currency}
-                  </span>
-                </div>
-              </div>
+              <Num
+                label="إجمالي قيمة التركة (أموال، عقارات، أصول)"
+                value={totalEstate}
+                onChange={setTotalEstate}
+                suffix={currency}
+                placeholder="500000"
+              />
 
-              {/* Debts */}
-              <div>
-                <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                  الديون وتكاليف الجنازة (تُخصم أولاً شرعاً)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={debts}
-                  onChange={(e) => setDebts(e.target.value)}
-                  placeholder="0"
-                  className="w-full rounded-xl border border-brand-border px-3 py-2 text-sm text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-                />
-              </div>
+              <Num
+                label="الديون وتكاليف الجنازة (تُخصم أولاً شرعاً)"
+                value={debts}
+                onChange={setDebts}
+                placeholder="0"
+              />
 
-              {/* Wasiyyah */}
               <div>
-                <div className="mb-1.5 flex items-center justify-between">
-                  <label className="text-xs font-bold text-ink-secondary">
-                    الوصية لغير وارث (الحد الأقصى الثلث)
-                  </label>
-                  {calculation.wasiyyahCapped && (
-                    <span className="text-[11px] font-semibold text-amber-600">
-                      قُيّدت بالثلث شرعاً
-                    </span>
-                  )}
-                </div>
-                <input
-                  type="number"
-                  min="0"
+                <Num
+                  label="الوصية لغير وارث (الحد الأقصى الثلث)"
                   value={wasiyyah}
-                  onChange={(e) => setWasiyyah(e.target.value)}
+                  onChange={setWasiyyah}
                   placeholder="0"
-                  className="w-full rounded-xl border border-brand-border px-3 py-2 text-sm text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
-              </div>
-
-              {/* Net estate badge */}
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-3 text-center">
-                <p className="text-xs font-bold text-emerald-800">صافي التركة الموزعة</p>
-                <p className="text-xl font-extrabold text-emerald-700 sm:text-2xl">
-                  {formatCurrency(calculation.netEstate, currency)}
-                </p>
+                {calculation.wasiyyahCapped && (
+                  <p className="inh-note" role="status">
+                    تنبيه: قُيّدت الوصية بالثلث شرعاً ({formatCurrency(calculation.maxAllowedWasiyyah, currency)}).
+                  </p>
+                )}
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Card 2: Deceased Info & Primary Relatives */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card sm:p-6">
-            <h2 className="mb-4 flex items-center gap-2 text-base font-bold text-ink sm:text-lg">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand text-sm">
-                👤
-              </span>
+          <section className="inh-box" aria-labelledby="inh-s2">
+            <h2 className="inh-h2" id="inh-s2">
+              <span className="inh-num">2</span>
               <span>بيانات المتوفى والورثة الأساسيين</span>
             </h2>
 
-            <div className="space-y-5">
-              {/* Gender selector */}
-              <div>
-                <label className="mb-2 block text-xs font-bold text-ink-secondary">
-                  المتوفى هو:
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setDeceasedGender("male")}
-                    className={`rounded-xl border p-2.5 text-center font-bold text-sm transition ${
-                      deceasedGender === "male"
-                        ? "border-brand bg-brand text-white shadow-sm"
-                        : "border-brand-border bg-white text-ink hover:bg-brand-surface"
-                    }`}
-                  >
-                    ذكر (رجل)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeceasedGender("female")}
-                    className={`rounded-xl border p-2.5 text-center font-bold text-sm transition ${
-                      deceasedGender === "female"
-                        ? "border-brand bg-brand text-white shadow-sm"
-                        : "border-brand-border bg-white text-ink hover:bg-brand-surface"
-                    }`}
-                  >
-                    أنثى (امرأة)
-                  </button>
-                </div>
-              </div>
+            <div className="inh-stack inh-stack-lg">
+              <Seg
+                legend="المتوفى هو:"
+                value={deceasedGender}
+                onChange={setDeceasedGender}
+                options={[
+                  { v: "male", label: "ذكر (رجل)" },
+                  { v: "female", label: "أنثى (امرأة)" },
+                ]}
+              />
 
-              {/* Spouse input */}
               {deceasedGender === "male" ? (
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                    عدد الزوجات على قيد الحياة
-                  </label>
-                  <div className="grid grid-cols-5 gap-1.5">
-                    {[0, 1, 2, 3, 4].map((count) => (
-                      <button
-                        key={count}
-                        type="button"
-                        onClick={() => setWivesCount(count)}
-                        className={`rounded-lg border py-2 text-xs font-bold transition ${
-                          wivesCount === count
-                            ? "border-brand bg-brand-light text-brand-dark ring-2 ring-brand/30"
-                            : "border-brand-border bg-white text-ink hover:bg-brand-surface"
-                        }`}
-                      >
-                        {count === 0 ? "لا توجد" : count}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <Seg
+                  legend="عدد الزوجات على قيد الحياة"
+                  value={wivesCount}
+                  onChange={setWivesCount}
+                  options={[0, 1, 2, 3, 4].map((c) => ({ v: c, label: c === 0 ? "لا توجد" : String(c) }))}
+                />
               ) : (
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                    هل الزوج على قيد الحياة؟
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setHusbandAlive(true)}
-                      className={`rounded-lg border py-2 text-xs font-bold transition ${
-                        husbandAlive
-                          ? "border-brand bg-brand-light text-brand-dark ring-2 ring-brand/30"
-                          : "border-brand-border bg-white text-ink hover:bg-brand-surface"
-                      }`}
-                    >
-                      نعم (حي)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setHusbandAlive(false)}
-                      className={`rounded-lg border py-2 text-xs font-bold transition ${
-                        !husbandAlive
-                          ? "border-brand bg-brand-light text-brand-dark ring-2 ring-brand/30"
-                          : "border-brand-border bg-white text-ink hover:bg-brand-surface"
-                      }`}
-                    >
-                      متوفى
-                    </button>
-                  </div>
-                </div>
+                <Seg
+                  legend="هل الزوج على قيد الحياة؟"
+                  value={husbandAlive}
+                  onChange={setHusbandAlive}
+                  options={[
+                    { v: true, label: "نعم (حي)" },
+                    { v: false, label: "متوفى" },
+                  ]}
+                />
               )}
 
-              {/* Parents */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-brand-border p-3">
-                  <span className="text-xs font-bold text-ink">الأب</span>
-                  <div className="mt-2 flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setFatherAlive(true)}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${
-                        fatherAlive
-                          ? "bg-brand text-white"
-                          : "bg-brand-surface text-ink-secondary hover:bg-brand-border"
-                      }`}
-                    >
-                      حي
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFatherAlive(false)}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${
-                        !fatherAlive
-                          ? "bg-ink-secondary text-white"
-                          : "bg-brand-surface text-ink-secondary hover:bg-brand-border"
-                      }`}
-                    >
-                      متوفى
-                    </button>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-brand-border p-3">
-                  <span className="text-xs font-bold text-ink">الأم</span>
-                  <div className="mt-2 flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setMotherAlive(true)}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${
-                        motherAlive
-                          ? "bg-brand text-white"
-                          : "bg-brand-surface text-ink-secondary hover:bg-brand-border"
-                      }`}
-                    >
-                      حية
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMotherAlive(false)}
-                      className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition ${
-                        !motherAlive
-                          ? "bg-ink-secondary text-white"
-                          : "bg-brand-surface text-ink-secondary hover:bg-brand-border"
-                      }`}
-                    >
-                      متوفاة
-                    </button>
-                  </div>
-                </div>
+              <div className="inh-two">
+                <Seg
+                  legend="الأب"
+                  value={fatherAlive}
+                  onChange={setFatherAlive}
+                  options={[
+                    { v: true, label: "حي" },
+                    { v: false, label: "متوفى" },
+                  ]}
+                />
+                <Seg
+                  legend="الأم"
+                  value={motherAlive}
+                  onChange={setMotherAlive}
+                  options={[
+                    { v: true, label: "حية" },
+                    { v: false, label: "متوفاة" },
+                  ]}
+                />
               </div>
 
-              {/* Children (Sons and Daughters) */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                    عدد الأبناء (الذكور)
-                  </label>
-                  <div className="flex items-center rounded-xl border border-brand-border bg-brand-surface">
-                    <button
-                      type="button"
-                      onClick={() => setSonsCount((s) => Math.max(0, s - 1))}
-                      className="px-3 py-2 text-base font-bold text-ink hover:text-brand"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      min="0"
-                      value={sonsCount}
-                      onChange={(e) => setSonsCount(parseInt(e.target.value) || 0)}
-                      className="w-full bg-transparent text-center text-sm font-bold text-ink focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setSonsCount((s) => s + 1)}
-                      className="px-3 py-2 text-base font-bold text-ink hover:text-brand"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                    عدد البنات (الإناث)
-                  </label>
-                  <div className="flex items-center rounded-xl border border-brand-border bg-brand-surface">
-                    <button
-                      type="button"
-                      onClick={() => setDaughtersCount((d) => Math.max(0, d - 1))}
-                      className="px-3 py-2 text-base font-bold text-ink hover:text-brand"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      min="0"
-                      value={daughtersCount}
-                      onChange={(e) => setDaughtersCount(parseInt(e.target.value) || 0)}
-                      className="w-full bg-transparent text-center text-sm font-bold text-ink focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setDaughtersCount((d) => d + 1)}
-                      className="px-3 py-2 text-base font-bold text-ink hover:text-brand"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
+              <div className="inh-two">
+                <Stepper label="عدد الأبناء (الذكور)" value={sonsCount} onChange={setSonsCount} />
+                <Stepper label="عدد البنات (الإناث)" value={daughtersCount} onChange={setDaughtersCount} />
               </div>
 
-              {/* Extended Relatives Accordion Toggle */}
               <div>
                 <button
                   type="button"
+                  className="inh-btn inh-toggle"
+                  aria-expanded={showExtended}
+                  aria-controls="inh-extended"
                   onClick={() => setShowExtended(!showExtended)}
-                  className="flex w-full items-center justify-between rounded-xl border border-dashed border-brand-border p-3 text-xs font-bold text-ink hover:bg-brand-surface"
                 >
-                  <span className="flex items-center gap-2">
-                    <span>➕</span>
-                    <span>أقارب آخرون (أجداد، إخوة وأخوات)</span>
-                  </span>
-                  <span>{showExtended ? "▲ إخفاء" : "▼ إظهار"}</span>
+                  <span>أقارب آخرون (أجداد، إخوة وأخوات)</span>
+                  <span>{showExtended ? "إخفاء" : "إظهار"}</span>
                 </button>
 
                 {showExtended && (
-                  <div className="mt-3 space-y-4 rounded-xl border border-brand-border bg-brand-surface/40 p-4">
-                    <p className="text-[11px] text-ink-muted leading-relaxed">
+                  <div id="inh-extended" className="inh-extended">
+                    <p className="inh-small">
                       ملاحظة شرعية: يُحجب الإخوة والأخوات بوجود الأب أو الابن الذكر، ويُحجب الأجداد بوجود الآباء.
                     </p>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <label className="flex items-center gap-2 text-xs font-semibold text-ink">
+                    <div className="inh-two">
+                      <label className="inh-check">
                         <input
                           type="checkbox"
                           checked={grandfatherAlive}
                           onChange={(e) => setGrandfatherAlive(e.target.checked)}
-                          className="h-4 w-4 rounded text-brand focus:ring-brand"
                         />
                         <span>الجد لأب حي</span>
                       </label>
-
-                      <label className="flex items-center gap-2 text-xs font-semibold text-ink">
+                      <label className="inh-check">
                         <input
                           type="checkbox"
                           checked={grandmotherAlive}
                           onChange={(e) => setGrandmotherAlive(e.target.checked)}
-                          className="h-4 w-4 rounded text-brand focus:ring-brand"
                         />
                         <span>الجدة حية</span>
                       </label>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="mb-1 block text-xs font-medium text-ink-secondary">
-                          الإخوة الأشقاء (ذكور)
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={fullBrothersCount}
-                          onChange={(e) => setFullBrothersCount(parseInt(e.target.value) || 0)}
-                          className="w-full rounded-lg border border-brand-border bg-white px-2.5 py-1.5 text-xs text-ink focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="mb-1 block text-xs font-medium text-ink-secondary">
-                          الأخوات الشقيقات (إناث)
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={fullSistersCount}
-                          onChange={(e) => setFullSistersCount(parseInt(e.target.value) || 0)}
-                          className="w-full rounded-lg border border-brand-border bg-white px-2.5 py-1.5 text-xs text-ink focus:outline-none"
-                        />
-                      </div>
+                    <div className="inh-two">
+                      <Stepper label="الإخوة الأشقاء (ذكور)" value={fullBrothersCount} onChange={setFullBrothersCount} />
+                      <Stepper label="الأخوات الشقيقات (إناث)" value={fullSistersCount} onChange={setFullSistersCount} />
                     </div>
                   </div>
                 )}
               </div>
             </div>
-          </div>
+          </section>
         </div>
 
-        {/* Right / Bottom results display (7 cols) */}
-        <div className="space-y-6 lg:col-span-7">
-          {/* Main Results Card */}
-          <div className="rounded-3xl border border-brand-border bg-white p-6 shadow-card sm:p-8">
-            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <span className="inline-block rounded-full bg-brand-light px-3 py-1 text-xs font-bold text-brand-dark">
-                  نتيجة القسمة الشرعية
-                </span>
-                <h2 className="mt-1 text-2xl font-black text-ink">
-                  جدول توزيع الأنصبة
-                </h2>
-              </div>
+        {/* ── Results ────────────────────────────────────────────────────────── */}
+        <div className="inh-col">
+          <section className="inh-result" aria-labelledby="inh-net-label" aria-live="polite">
+            <p className="inh-result-label" id="inh-net-label">صافي التركة القابلة للقسمة</p>
+            <p className="inh-result-big"><bdi>{formatCurrency(calculation.netEstate, currency)}</bdi></p>
+            <dl className="inh-result-rows">
+              <div><dt>إجمالي التركة</dt><dd><bdi>{formatCurrency(calculation.gross, currency)}</bdi></dd></div>
+              <div><dt>الديون ومؤن التجهيز</dt><dd><bdi>{formatCurrency(calculation.debtVal, currency)}</bdi></dd></div>
+              <div><dt>الوصية المنفذة</dt><dd><bdi>{formatCurrency(calculation.actualWasiyyah, currency)}</bdi></dd></div>
+            </dl>
+          </section>
 
-              <button
-                onClick={copySummary}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-2 text-xs font-bold text-brand transition hover:bg-brand-100"
-              >
-                <span>{copied ? "✓ تم النسخ بنجاح!" : "📋 نسخ التقرير"}</span>
+          <section className="inh-box" aria-labelledby="inh-s3">
+            <div className="inh-res-head">
+              <h2 className="inh-h2 inh-h2-flush" id="inh-s3">جدول توزيع الأنصبة</h2>
+              <button type="button" className="inh-btn" onClick={copySummary}>
+                {copied ? "تم النسخ" : "نسخ التقرير"}
               </button>
             </div>
+            <p className="inh-sr" role="status">{copied ? "تم نسخ التقرير" : ""}</p>
 
-            {/* Status Banner */}
-            <div
-              className={`mb-6 rounded-2xl border p-4 text-xs font-semibold leading-relaxed sm:text-sm ${
-                calculation.statusType === "awl"
-                  ? "border-amber-200 bg-amber-50 text-amber-900"
-                  : calculation.statusType === "radd"
-                  ? "border-teal-200 bg-teal-50 text-teal-900"
-                  : "border-brand-border bg-brand-surface text-ink"
-              }`}
-            >
-              <div className="flex items-center gap-2 font-bold mb-1">
-                <span>{calculation.statusType === "awl" ? "⚠️" : calculation.statusType === "radd" ? "🔄" : "✨"}</span>
-                <span>
-                  {calculation.statusType === "awl"
-                    ? "مسألة عائلة (العول)"
-                    : calculation.statusType === "radd"
-                    ? "مسألة فيها رد"
-                    : "حالة المسألة: مطابقة للشريعة"}
-                </span>
-              </div>
+            <div className="inh-status" data-k={calculation.statusType}>
+              <p className="inh-status-title">{statusTitle}</p>
               <p>{calculation.statusNote}</p>
             </div>
 
-            {/* Visual distribution bar */}
             {calculation.heirs.length > 0 && (
-              <div className="mb-8">
-                <div className="mb-2 flex items-center justify-between text-xs font-bold text-ink-secondary">
-                  <span>التوزيع النسبي للتركة</span>
-                  <span>100%</span>
-                </div>
-                <div className="flex h-5 w-full overflow-hidden rounded-full bg-gray-100 p-0.5 shadow-inner">
+              <div className="inh-bar-wrap">
+                <p className="inh-small inh-bold">التوزيع النسبي للتركة</p>
+                <div
+                  className="inh-bar"
+                  role="img"
+                  aria-label={calculation.heirs
+                    .map((h) => `${h.title}: ${h.percentage.toFixed(1)}%`)
+                    .join("، ")}
+                >
                   {calculation.heirs.map((h, i) => (
                     <div
                       key={i}
-                      style={{ width: `${Math.max(2, h.percentage)}%` }}
-                      className={`h-full ${h.color} transition-all duration-300 first:rounded-r-full last:rounded-l-full relative group cursor-pointer`}
-                      title={`${h.title}: ${h.percentage.toFixed(1)}%`}
-                    />
+                      className="inh-bar-seg"
+                      data-t={i % 3}
+                      style={{ flex: `${Math.max(2, h.percentage)} 1 0` }}
+                    >
+                      {h.percentage >= 6 ? i + 1 : ""}
+                    </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Heirs Cards list */}
             {calculation.heirs.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-brand-border py-12 text-center text-ink-muted">
-                <span className="text-4xl">⚖️</span>
-                <p className="mt-2 text-sm font-bold">يرجى تحديد ورثة على قيد الحياة لإظهار الأنصبة</p>
+              <div className="inh-empty">
+                <p>حدّد ورثة على قيد الحياة لإظهار الأنصبة.</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <ol className="inh-list">
                 {calculation.heirs.map((h, idx) => (
-                  <div
-                    key={idx}
-                    className="group relative overflow-hidden rounded-2xl border border-brand-border bg-white p-4 shadow-sm transition hover:border-brand hover:shadow-md sm:p-5"
-                  >
-                    {/* Colored side stripe */}
-                    <div className={`absolute top-0 right-0 h-full w-1.5 ${h.color}`} />
-
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      {/* Heir title and reason */}
-                      <div className="pr-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-base font-extrabold text-ink sm:text-lg">
-                            {h.title}
-                          </h3>
-                          <span className="rounded-full bg-brand-light px-2.5 py-0.5 text-xs font-bold text-brand-dark">
-                            {h.shareLabel}
-                          </span>
-                          <span className="text-xs font-bold text-ink-muted">
-                            ({h.percentage.toFixed(1)}%)
-                          </span>
+                  <li key={idx} className="inh-heir">
+                    <div className="inh-heir-main">
+                      <span className="inh-chip" data-t={idx % 3} aria-hidden="true">{idx + 1}</span>
+                      <div>
+                        <div className="inh-heir-title">
+                          <h3>{h.title}</h3>
+                          <span className="inh-tag">{h.shareLabel}</span>
+                          <span className="inh-small inh-bold">({h.percentage.toFixed(1)}%)</span>
                         </div>
-                        <p className="mt-1 text-xs text-ink-secondary">
-                          {h.reason}
-                        </p>
-                        {h.subBreakdown && (
-                          <p className="mt-1.5 inline-block rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-800">
-                            {h.subBreakdown}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Amounts */}
-                      <div className="text-left sm:shrink-0">
-                        <p className="text-lg font-black text-brand-dark sm:text-xl">
-                          {formatCurrency(h.amount, currency)}
-                        </p>
-                        {h.count > 1 && h.perPerson && !h.subBreakdown && (
-                          <p className="text-xs font-semibold text-ink-muted">
-                            لكل فرد: {formatCurrency(h.perPerson, currency)}
-                          </p>
-                        )}
+                        <p className="inh-small">{h.reason}</p>
+                        {h.subBreakdown && <p className="inh-sub">{h.subBreakdown}</p>}
                       </div>
                     </div>
-                  </div>
+
+                    <div className="inh-amount">
+                      <p className="inh-amount-main"><bdi>{formatCurrency(h.amount, currency)}</bdi></p>
+                      {h.count > 1 && h.perPerson && !h.subBreakdown && (
+                        <p className="inh-small inh-bold">
+                          لكل فرد: <bdi>{formatCurrency(h.perPerson, currency)}</bdi>
+                        </p>
+                      )}
+                    </div>
+                  </li>
                 ))}
-              </div>
+              </ol>
             )}
 
-            {/* Blocked Heirs note if any */}
             {calculation.blockedHeirs.length > 0 && (
-              <div className="mt-6 rounded-2xl border border-rose-100 bg-rose-50/60 p-4">
-                <h4 className="mb-2 flex items-center gap-1.5 text-xs font-bold text-rose-800">
-                  <span>🚫</span>
-                  <span>المحجوبون من الميراث شرعاً (حجب حرمان):</span>
-                </h4>
-                <div className="flex flex-wrap gap-2">
+              <div className="inh-blocked">
+                <h3 className="inh-blocked-title">المحجوبون من الميراث شرعاً (حجب حرمان)</h3>
+                <ul>
                   {calculation.blockedHeirs.map((b, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-white px-2.5 py-1 text-xs font-semibold text-rose-700 shadow-sm"
-                    >
-                      <span className="font-bold">{b.title}:</span>
-                      <span className="text-[11px] text-rose-600">{b.reason}</span>
-                    </span>
+                    <li key={i}>
+                      <span className="inh-tag">محجوب</span>
+                      <span><strong>{b.title}:</strong> {b.reason}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
 
-            {/* Summary metrics footer */}
-            <div className="mt-8 grid grid-cols-2 gap-3 border-t border-brand-border pt-6 sm:grid-cols-3">
-              <div className="rounded-xl bg-brand-surface p-3 text-center">
-                <p className="text-[11px] font-bold text-ink-muted">إجمالي التركة</p>
-                <p className="text-sm font-extrabold text-ink">
-                  {formatCurrency(calculation.gross, currency)}
-                </p>
+            <div className="inh-metrics">
+              <div>
+                <p className="inh-small inh-bold">إجمالي التركة</p>
+                <p className="inh-metric"><bdi>{formatCurrency(calculation.gross, currency)}</bdi></p>
               </div>
-              <div className="rounded-xl bg-brand-surface p-3 text-center">
-                <p className="text-[11px] font-bold text-ink-muted">إجمالي الموزع</p>
-                <p className="text-sm font-extrabold text-brand">
-                  {formatCurrency(calculation.totalDistributed, currency)}
-                </p>
+              <div>
+                <p className="inh-small inh-bold">إجمالي الموزع</p>
+                <p className="inh-metric"><bdi>{formatCurrency(calculation.totalDistributed, currency)}</bdi></p>
               </div>
-              <div className="col-span-2 rounded-xl bg-brand-surface p-3 text-center sm:col-span-1">
-                <p className="text-[11px] font-bold text-ink-muted">عدد الأصناف الوارثة</p>
-                <p className="text-sm font-extrabold text-ink">
-                  {calculation.heirs.length} فئات مستحقة
-                </p>
+              <div>
+                <p className="inh-small inh-bold">عدد الفئات الوارثة</p>
+                <p className="inh-metric">{calculation.heirs.length}</p>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Shariah Guide & Disclaimer Box */}
-          <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-5 text-ink-secondary shadow-sm">
-            <h4 className="mb-2 flex items-center gap-2 text-sm font-bold text-amber-900">
-              <span>📜</span>
-              <span>تنبيه وإرشاد شرعي هام:</span>
-            </h4>
-            <p className="text-xs leading-relaxed text-amber-800">
-              تم بناء هذه الحاسبة وفق القواعد المعتمدة في الفقه الإسلامي ومذهب جمهور العلماء في علم الفرائض والمواريث، بما في ذلك أحكام الفروض المقدرة (النصف، الربع، الثمن، الثلثان، الثلث، السدس) والتعصيب، والعول، والرد.
-              <br className="my-1" />
-              هذه الأداة مخصصة للحساب والتعليم وتيسير فهم الأنصبة. في حالات التركات ذات النزاعات أو الإشكالات القضائية والوصايا المعقدة، يُرجى الرجوع إلى المحاكم الشرعية أو الهيئات الإفتائية المعتمدة في بلدك.
+          <aside className="inh-disclaimer" aria-labelledby="inh-d">
+            <h3 id="inh-d" className="inh-disclaimer-title">تنبيه وإرشاد شرعي</h3>
+            <p>
+              بُنيت هذه الحاسبة على القواعد المعتمدة عند جمهور العلماء في علم الفرائض: الفروض المقدرة
+              (النصف، الربع، الثمن، الثلثان، الثلث، السدس) والتعصيب والعول والرد.
             </p>
-          </div>
+            <p>
+              الأداة للحساب والتعليم وتيسير فهم الأنصبة. في التركات المتنازع عليها أو ذات الوصايا المعقدة،
+              راجع المحكمة الشرعية أو جهة الإفتاء المعتمدة في بلدك.
+            </p>
+          </aside>
         </div>
       </div>
     </div>
   );
 }
+
+// ─── Styles: Ink & Signal ──────────────────────────────────────────────────────
+// Colors read the site's --c-* tokens when present, with the palette as fallback.
+// Orange is only ever a background, always with black text.
+const css = `
+.inh{
+  --i-bg:var(--c-bg,#F5F5F2);
+  --i-ink:var(--c-ink,#0D0D0D);
+  --i-mute:var(--c-mute,#55554F);
+  --i-soft:var(--c-soft,#DEDED8);
+  --i-accent:var(--c-accent,#FF6A1A);
+  --i-on-accent:#0D0D0D;
+  background:var(--i-bg);color:var(--i-ink);
+  max-width:72rem;margin:0 auto;padding:2rem 1rem 3rem;line-height:1.6;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .inh{
+    --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+    --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+  }
+}
+:root[data-theme="dark"] .inh{
+  --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+  --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+}
+.inh *{box-sizing:border-box}
+.inh h1,.inh h2,.inh h3,.inh p,.inh dl,.inh dd,.inh ol,.inh ul{margin:0;padding:0}
+.inh ol,.inh ul{list-style:none}
+.inh button,.inh input,.inh select{font:inherit;color:inherit}
+.inh :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
+.inh bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+
+.inh-head{margin-bottom:2rem;max-width:44rem}
+.inh-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
+.inh-h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;line-height:1.15;margin-bottom:.75rem}
+.inh-lead{color:var(--i-mute);font-size:1rem;max-width:38rem}
+.inh-presets{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:1.25rem}
+.inh-presets-label{font-size:.8rem;font-weight:700;color:var(--i-mute)}
+
+.inh-grid{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1024px){.inh-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start}}
+.inh-col{display:grid;gap:1.5rem;min-width:0}
+
+.inh-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem}
+.inh-h2{display:flex;align-items:center;gap:.65rem;font-size:1.1rem;font-weight:800;margin-bottom:1rem}
+.inh-h2-flush{margin-bottom:0}
+.inh-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:800;border-radius:2px}
+.inh-stack{display:grid;gap:1rem}
+.inh-stack-lg{gap:1.25rem}
+.inh-two{display:grid;gap:.75rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+
+.inh-label{display:block;font-size:.8rem;font-weight:700;margin-bottom:.35rem;padding:0}
+.inh-fieldset{border:0;margin:0;padding:0;min-width:0}
+.inh-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.inh-input{width:100%;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.6rem .75rem;font-size:.95rem;font-weight:600;min-height:2.75rem}
+.inh-center{text-align:center}
+.inh-suffix-wrap{position:relative}
+.inh-suffix-wrap .inh-input{padding-inline-end:3.5rem}
+.inh-suffix{position:absolute;inset-inline-end:.75rem;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:var(--i-mute);pointer-events:none}
+
+.inh-btn{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.45rem .75rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:2.5rem}
+.inh-btn:hover{background:var(--i-soft)}
+.inh-btn[aria-pressed="true"]{background:var(--i-ink);color:var(--i-bg)}
+.inh-seg{display:grid;gap:.4rem}
+.inh-stepper{display:grid;grid-template-columns:2.75rem minmax(0,1fr) 2.75rem;gap:.4rem}
+.inh-stepper .inh-btn{padding:0;font-size:1.1rem}
+.inh-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;border-style:dashed;text-align:start}
+.inh-extended{display:grid;gap:1rem;margin-top:.75rem;border:2px solid var(--i-ink);border-radius:4px;padding:1rem}
+.inh-check{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:700;cursor:pointer}
+.inh-check input{width:1.2rem;height:1.2rem;accent-color:var(--i-accent)}
+.inh-small{font-size:.78rem;color:var(--i-mute)}
+.inh-bold{font-weight:700}
+.inh-note{margin-top:.5rem;border:2px dashed var(--i-ink);border-radius:4px;padding:.4rem .6rem;font-size:.8rem;font-weight:700}
+
+.inh-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem}
+.inh-result-label{font-size:.9rem;font-weight:700}
+.inh-result-big{font-size:clamp(2rem,6vw,3.25rem);font-weight:900;line-height:1.15;margin:.25rem 0 1rem}
+.inh-result-rows{border-top:2px solid var(--i-on-accent)}
+.inh-result-rows>div{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--i-on-accent);font-size:.9rem}
+.inh-result-rows>div:last-child{border-bottom:0;padding-bottom:0}
+.inh-result-rows dt{font-weight:600}
+.inh-result-rows dd{font-weight:800}
+
+.inh-res-head{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.inh-status{border:2px solid var(--i-ink);border-radius:4px;padding:.9rem 1rem;font-size:.9rem;margin-bottom:1.25rem}
+.inh-status[data-k="awl"]{border-style:dashed;border-width:3px}
+.inh-status[data-k="radd"]{border-style:double;border-width:5px}
+.inh-status-title{font-weight:800;margin-bottom:.2rem}
+
+.inh-bar-wrap{margin-bottom:1.5rem}
+.inh-bar{display:flex;height:2.1rem;margin-top:.4rem;border:2px solid var(--i-ink);border-radius:4px;overflow:hidden}
+.inh-bar-seg{display:flex;align-items:center;justify-content:center;min-width:0;font-size:.75rem;font-weight:800;border-inline-start:2px solid var(--i-bg)}
+.inh-bar-seg:first-child{border-inline-start:0}
+[data-t="0"].inh-bar-seg,[data-t="0"].inh-chip{background:var(--i-ink);color:var(--i-bg)}
+[data-t="1"].inh-bar-seg,[data-t="1"].inh-chip{background:var(--i-accent);color:var(--i-on-accent)}
+[data-t="2"].inh-bar-seg,[data-t="2"].inh-chip{background:var(--i-soft);color:var(--i-ink)}
+
+.inh-empty{border:2px dashed var(--i-ink);border-radius:4px;padding:2.5rem 1rem;text-align:center;font-weight:700}
+.inh-list{display:grid;gap:.9rem}
+.inh-heir{display:grid;gap:.75rem;border:2px solid var(--i-ink);border-radius:4px;padding:1rem}
+@media (min-width:640px){.inh-heir{grid-template-columns:minmax(0,1fr) auto;align-items:center}}
+.inh-heir-main{display:flex;gap:.75rem;align-items:flex-start;min-width:0}
+.inh-chip{display:inline-flex;flex:none;width:1.9rem;height:1.9rem;align-items:center;justify-content:center;border:2px solid var(--i-ink);border-radius:2px;font-size:.85rem;font-weight:800}
+.inh-heir-title{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.inh-heir-title h3{font-size:1.05rem;font-weight:800}
+.inh-tag{display:inline-block;border:2px solid var(--i-ink);border-radius:2px;padding:0 .45rem;font-size:.75rem;font-weight:700;line-height:1.5;white-space:nowrap}
+.inh-sub{display:inline-block;margin-top:.4rem;border-inline-start:4px solid var(--i-ink);background:var(--i-soft);padding:.15rem .6rem;font-size:.75rem;font-weight:700}
+.inh-amount{text-align:start}
+@media (min-width:640px){.inh-amount{text-align:end}}
+.inh-amount-main{font-size:1.25rem;font-weight:900}
+
+.inh-blocked{margin-top:1.5rem;border:2px dashed var(--i-ink);border-radius:4px;padding:1rem}
+.inh-blocked-title{font-size:.9rem;font-weight:800;margin-bottom:.6rem}
+.inh-blocked ul{display:grid;gap:.5rem}
+.inh-blocked li{display:flex;flex-wrap:wrap;gap:.5rem;align-items:baseline;font-size:.85rem}
+
+.inh-metrics{display:grid;gap:.75rem;margin-top:1.75rem;padding-top:1.25rem;border-top:2px solid var(--i-ink);grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:640px){.inh-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.inh-metrics>div{border:2px solid var(--i-ink);border-radius:4px;padding:.7rem;text-align:center}
+.inh-metrics>div:last-child{grid-column:span 2}
+@media (min-width:640px){.inh-metrics>div:last-child{grid-column:auto}}
+.inh-metric{font-size:.95rem;font-weight:800}
+
+.inh-disclaimer{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:1rem 1.25rem;display:grid;gap:.5rem;font-size:.85rem}
+.inh-disclaimer-title{font-size:.95rem;font-weight:800}
+`;

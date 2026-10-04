@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * components/RoiCalculator.jsx
+ * Ink & Signal: ROI / CAGR calculator.
+ * The useMemo calculation block is unchanged, except `rating` no longer
+ * carries color classes (it now has a `loss` flag instead).
+ */
 import { useState, useMemo } from "react";
 
 const CURRENCIES = [
@@ -13,14 +19,60 @@ const CURRENCIES = [
 ];
 
 const PRESETS = [
-  { label: "📈 أسهم وصناديق استثمارية", initial: 100000, final: 145000, years: 3, months: 0, income: 12000, expenses: 2000 },
-  { label: "🏢 عقار تأجيري وتمليك", initial: 600000, final: 750000, years: 5, months: 0, income: 150000, expenses: 35000 },
-  { label: "📢 حملة تسويقية وإعلانية", initial: 10000, final: 32000, years: 0, months: 3, income: 0, expenses: 1000 },
-  { label: "🚀 مشروع ريادي ناشئ", initial: 250000, final: 600000, years: 4, months: 0, income: 0, expenses: 20000 },
+  { label: "أسهم وصناديق استثمارية", initial: 100000, final: 145000, years: 3, months: 0, income: 12000, expenses: 2000 },
+  { label: "عقار تأجيري وتمليك", initial: 600000, final: 750000, years: 5, months: 0, income: 150000, expenses: 35000 },
+  { label: "حملة تسويقية وإعلانية", initial: 10000, final: 32000, years: 0, months: 3, income: 0, expenses: 1000 },
+  { label: "مشروع ريادي ناشئ", initial: 250000, final: 600000, years: 4, months: 0, income: 0, expenses: 20000 },
 ];
 
 function fmt(n, sym) {
-  return `${Number(n).toLocaleString("ar-EG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+  return `${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+}
+
+/** Keeps signs / digits / % in a stable left-to-right order inside RTL text. */
+function Num({ children }) {
+  return <span className="ro-ltr">{children}</span>;
+}
+
+function MoneyField({ id, label, value, onChange, sym }) {
+  return (
+    <div className="ro-field">
+      <label htmlFor={id} className="ro-label">{label}</label>
+      <div className="ro-input-wrap">
+        <span className="ro-sym" aria-hidden="true">{sym}</span>
+        <input
+          id={id}
+          type="number"
+          inputMode="decimal"
+          min="0"
+          step="any"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="ro-input"
+        />
+      </div>
+    </div>
+  );
+}
+
+function NumField({ id, label, value, onChange, max }) {
+  return (
+    <div className="ro-field">
+      <label htmlFor={id} className="ro-label">{label}</label>
+      <div className="ro-input-wrap">
+        <input
+          id={id}
+          type="number"
+          inputMode="numeric"
+          min="0"
+          max={max}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="ro-input"
+        />
+      </div>
+    </div>
+  );
 }
 
 export default function RoiCalculator() {
@@ -33,8 +85,8 @@ export default function RoiCalculator() {
   const [investMonths, setInvestMonths] = useState(0);
 
   // Additional income/expenses
-  const [recurringIncome, setRecurringIncome] = useState(15000); // e.g. dividends or rental cashflow
-  const [additionalExpenses, setAdditionalExpenses] = useState(3000); // maintenance, management fees
+  const [recurringIncome, setRecurringIncome] = useState(15000);
+  const [additionalExpenses, setAdditionalExpenses] = useState(3000);
 
   const [copied, setCopied] = useState(false);
 
@@ -51,41 +103,29 @@ export default function RoiCalculator() {
     const income = Math.max(0, Number(recurringIncome) || 0);
     const exp = Math.max(0, Number(additionalExpenses) || 0);
 
-    // Total Inflow = Final Value + Extra Incomes
     const totalReturn = finalVal + income;
-    // Total Outflow = Initial + Extra Expenses
     const totalCost = init + exp;
-
-    // Net Profit
     const netProfit = totalReturn - totalCost;
-
-    // Total ROI %
     const totalRoi = totalCost > 0 ? (netProfit / totalCost) * 100 : 0;
 
-    // Annualized ROI (Compound Annual Growth Rate - CAGR)
     let cagr = 0;
     if (totalYears > 0 && totalCost > 0 && totalReturn > 0) {
       cagr = (Math.pow(totalReturn / totalCost, 1 / totalYears) - 1) * 100;
     }
 
-    // Simple Annualized ROI
     const simpleAnnualRoi = totalYears > 0 ? totalRoi / totalYears : totalRoi;
-
-    // Multiple of Money (MoM)
     const multiple = totalCost > 0 ? (totalReturn / totalCost).toFixed(2) : "0.00";
 
-    // Visual Percentage breakdown
     const initShare = totalReturn > 0 ? Math.min(100, (init / totalReturn) * 100) : 50;
     const profitShare = totalReturn > 0 ? Math.max(0, (netProfit / totalReturn) * 100) : 0;
 
-    // Performance assessment
-    let rating = { label: "متوسط", color: "text-amber-600", bg: "bg-amber-100 text-amber-900", tip: "العائد يتماشى مع متوسط عوائد السوق التقليدية." };
+    let rating = { label: "متوسط", loss: false, tip: "العائد يتماشى مع متوسط عوائد السوق التقليدية." };
     if (netProfit < 0) {
-      rating = { label: "خسارة استثمارية", color: "text-rose-600", bg: "bg-rose-100 text-rose-900", tip: "العائد سلبي، ينبغي إعادة تقييم استراتيجية الاستثمار وتخفيف التكاليف." };
+      rating = { label: "خسارة استثمارية", loss: true, tip: "العائد سلبي، ينبغي إعادة تقييم استراتيجية الاستثمار وتخفيف التكاليف." };
     } else if (cagr >= 20 || totalRoi >= 100) {
-      rating = { label: "استثنائي وفائق", color: "text-emerald-600", bg: "bg-emerald-100 text-emerald-900", tip: "أداء استثماري استثنائي يتجاوز متوسط مؤشرات الأسواق العالمية بكثير!" };
+      rating = { label: "استثنائي وفائق", loss: false, tip: "أداء استثماري استثنائي يتجاوز متوسط مؤشرات الأسواق العالمية بكثير." };
     } else if (cagr >= 10 || totalRoi >= 30) {
-      rating = { label: "جيد جداً وقوي", color: "text-teal-600", bg: "bg-teal-100 text-teal-900", tip: "عائد ممتاز يتفوق على معدلات التضخم وعوائد الودائع البنكية." };
+      rating = { label: "جيد جداً وقوي", loss: false, tip: "عائد ممتاز يتفوق على معدلات التضخم وعوائد الودائع البنكية." };
     }
 
     return {
@@ -107,6 +147,11 @@ export default function RoiCalculator() {
     };
   }, [initialInvestment, finalValue, investYears, investMonths, recurringIncome, additionalExpenses]);
 
+  // CAGR is meaningless with no duration: show a dash instead of 0%
+  const hasCagr = stats.totalYears > 0 && stats.totalCost > 0 && stats.totalReturn > 0;
+  const cagrText = hasCagr ? `${stats.cagr}%` : "—";
+  const roiText = `${stats.totalRoi >= 0 ? "+" : ""}${stats.totalRoi}%`;
+
   const handleApplyPreset = (p) => {
     setInitialInvestment(p.initial);
     setFinalValue(p.final);
@@ -116,51 +161,53 @@ export default function RoiCalculator() {
     setAdditionalExpenses(p.expenses);
   };
 
-  const handleCopy = () => {
-    if (!stats) return;
-    const text = `📊 تقرير العائد على الاستثمار (ROI):
-• رأس المال المستثمر: ${fmt(stats.init, sym)}
-• القيمة النهائية المستردة: ${fmt(stats.finalVal, sym)}
-• الأرباح الدورية (توزيعات/إيجار): ${fmt(stats.income, sym)}
-• مدة الاستثمار: ${stats.totalYears} سنة
-• صافي الأرباح المحققة: ${fmt(stats.netProfit, sym)}
-• إجمالي العائد على الاستثمار (Total ROI): ${stats.totalRoi}%
-• معدل النمو السنوي المركب (CAGR): ${stats.cagr}% سنوياً
-• مضاعف رأس المال: ${stats.multiple}x
-• تقييم الأداء: ${stats.rating.label}
+  const handleCopy = async () => {
+    const text = `تقرير العائد على الاستثمار (ROI):
+- رأس المال المستثمر: ${fmt(stats.init, sym)}
+- القيمة النهائية المستردة: ${fmt(stats.finalVal, sym)}
+- الأرباح الدورية (توزيعات/إيجار): ${fmt(stats.income, sym)}
+- المصاريف الإضافية: ${fmt(stats.exp, sym)}
+- مدة الاستثمار: ${stats.totalYears} سنة
+- صافي الأرباح المحققة: ${fmt(stats.netProfit, sym)}
+- إجمالي العائد على الاستثمار (Total ROI): ${stats.totalRoi}%
+- معدل النمو السنوي المركب (CAGR): ${cagrText}
+- مضاعف رأس المال: ${stats.multiple}x
+- تقييم الأداء: ${stats.rating.label}
 
 تم الحساب عبر حاسبة العائد على الاستثمار | الأدوات العربية`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      /* clipboard blocked: do nothing */
+    }
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12" dir="rtl">
+    <div className="ro-root" dir="rtl">
+      <RoiStyles />
+
       {/* Header */}
-      <div className="mb-8 text-center space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>💼</span>
-          <span>حاسبة العائد على الاستثمار ROI و CAGR</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">
-          حاسبة العائد على الاستثمار (ROI Calculator)
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm text-ink-secondary sm:text-base">
+      <header className="ro-header ro-noprint">
+        <p className="ro-kicker-tag">ROI · CAGR</p>
+        <h1 className="ro-h1">حاسبة العائد على الاستثمار (ROI Calculator)</h1>
+        <p className="ro-lead">
           احسب صافي أرباحك الاستثمارية، ومعدل العائد السنوي المركب (CAGR)، ومضاعف رأس المال لمشاريعك العقارية والتجارية وحملاتك التسويقية.
         </p>
-      </div>
+      </header>
 
-      {/* Currency & Presets */}
-      <div className="mb-6 rounded-2xl border border-brand-border bg-brand-surface/40 p-4 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs font-bold text-ink-muted">⚡ نماذج استثمارية جاهزة للتجربة:</p>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-ink-secondary">العملة:</span>
+      {/* Currency & presets */}
+      <section className="ro-box ro-noprint" aria-label="العملة والنماذج الجاهزة">
+        <div className="ro-bar-row">
+          <p className="ro-small-title">نماذج استثمارية جاهزة للتجربة:</p>
+          <div className="ro-cur">
+            <label htmlFor="roi-currency" className="ro-label">العملة:</label>
             <select
+              id="roi-currency"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              className="rounded-xl border border-brand-border bg-white px-3 py-1 text-xs font-bold text-ink focus:border-brand focus:outline-none shadow-sm"
+              className="ro-select"
             >
               {CURRENCIES.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -170,257 +217,349 @@ export default function RoiCalculator() {
             </select>
           </div>
         </div>
-
-        <div className="flex flex-wrap gap-2">
+        <div className="ro-presets">
           {PRESETS.map((p, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleApplyPreset(p)}
-              className="rounded-xl border border-brand-border bg-white px-3 py-1.5 text-xs font-medium text-ink-secondary hover:border-brand hover:text-brand-dark transition-all shadow-sm"
-            >
+            <button key={idx} type="button" onClick={() => handleApplyPreset(p)} className="ro-preset">
               {p.label}
             </button>
           ))}
         </div>
-      </div>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        {/* ─── Left Inputs Column (3 cols) ─── */}
-        <div className="lg:col-span-3 space-y-5">
-
-          {/* Core Capital Inputs */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="text-base font-bold text-ink flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">💰</span>
-              1. رأس المال والقيمة المستردة
+      <div className="ro-grid">
+        {/* ─── Inputs ─── */}
+        <div className="ro-col ro-noprint">
+          <section className="ro-card" aria-labelledby="roi-s1">
+            <h2 id="roi-s1" className="ro-h2">
+              <span className="ro-num" aria-hidden="true">1</span>
+              رأس المال والقيمة المستردة
             </h2>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary">المبلغ المستثمر مبدئياً (Initial Cost)</label>
-                <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={initialInvestment}
-                    onChange={(e) => setInitialInvestment(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary">القيمة النهائية المستردة (Final Value)</label>
-                <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={finalValue}
-                    onChange={(e) => setFinalValue(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                  />
-                </div>
-              </div>
+            <div className="ro-two">
+              <MoneyField
+                id="roi-initial"
+                label="المبلغ المستثمر مبدئياً (Initial Cost)"
+                value={initialInvestment}
+                onChange={setInitialInvestment}
+                sym={sym}
+              />
+              <MoneyField
+                id="roi-final"
+                label="القيمة النهائية المستردة (Final Value)"
+                value={finalValue}
+                onChange={setFinalValue}
+                sym={sym}
+              />
+              <NumField
+                id="roi-years"
+                label="فترة الاستثمار (بالسنوات)"
+                value={investYears}
+                onChange={setInvestYears}
+                max="50"
+              />
+              <NumField
+                id="roi-months"
+                label="أشهر إضافية (0 - 11)"
+                value={investMonths}
+                onChange={setInvestMonths}
+                max="11"
+              />
             </div>
+          </section>
 
-            {/* Duration */}
-            <div className="grid gap-3 sm:grid-cols-2 pt-1">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary">فترة الاستثمار (بالسنوات)</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="50"
-                  value={investYears}
-                  onChange={(e) => setInvestYears(e.target.value)}
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface/40 px-4 py-2.5 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary">أشهر إضافية (0 - 11)</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="11"
-                  value={investMonths}
-                  onChange={(e) => setInvestMonths(e.target.value)}
-                  className="w-full rounded-xl border border-brand-border bg-brand-surface/40 px-4 py-2.5 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Cashflows & Extra Incomes/Expenses */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="text-base font-bold text-ink flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">💵</span>
-              2. العوائد والمصاريف الدورية الإضافية
+          <section className="ro-card" aria-labelledby="roi-s2">
+            <h2 id="roi-s2" className="ro-h2">
+              <span className="ro-num" aria-hidden="true">2</span>
+              العوائد والمصاريف الدورية الإضافية
             </h2>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary">
-                  إجمالي التوزيعات النقدية / الإيجارات المستلمة
-                </label>
-                <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={recurringIncome}
-                    onChange={(e) => setRecurringIncome(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary">
-                  مصاريف إضافية (صيانة، إدارة، ضرائب)
-                </label>
-                <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    value={additionalExpenses}
-                    onChange={(e) => setAdditionalExpenses(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                  />
-                </div>
-              </div>
+            <div className="ro-two">
+              <MoneyField
+                id="roi-income"
+                label="إجمالي التوزيعات النقدية / الإيجارات المستلمة"
+                value={recurringIncome}
+                onChange={setRecurringIncome}
+                sym={sym}
+              />
+              <MoneyField
+                id="roi-exp"
+                label="مصاريف إضافية (صيانة، إدارة، ضرائب)"
+                value={additionalExpenses}
+                onChange={setAdditionalExpenses}
+                sym={sym}
+              />
             </div>
-          </div>
+          </section>
 
-          {/* Educational Note */}
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 text-xs text-emerald-950 space-y-2 leading-relaxed">
-            <p className="font-bold flex items-center gap-1 text-sm">
-              <span>💡</span>
-              <span>ما الفرق بين العائد الإجمالي (ROI) ومعدل النمو السنوي المركب (CAGR)؟</span>
+          <aside className="ro-note">
+            <p className="ro-note-title">ما الفرق بين العائد الإجمالي (ROI) ومعدل النمو السنوي المركب (CAGR)؟</p>
+            <p>
+              <strong>العائد الإجمالي (Total ROI):</strong> يقيس الربح الكلي على مدار كامل فترة الاستثمار كنسبة مئوية، دون النظر لطول المدة الزمنية.
             </p>
             <p>
-              • <strong>العائد الإجمالي (Total ROI):</strong> يقيس الربح الكلي على مدار كامل فترة الاستثمار كنسبة مئوية، دون النظر لطول المدة الزمنية.
+              <strong>معدل النمو السنوي المركب (CAGR):</strong> يقيس النمو الفعلي لكل سنة بمفردها مع إعادة استثمار الأرباح، وهو المعيار الأنسب للمقارنة العادلة بين استثمارات مختلفة الآجال.
             </p>
-            <p>
-              • <strong>معدل النمو السنوي المركب (CAGR):</strong> يقيس النمو الفعلي لكل سنة بمفردها مع إعادة استثمار الأرباح، وهو المعيار الذهبي للمقارنة العادلة بين استثمارات مختلفة الآجال.
-            </p>
-          </div>
-
+          </aside>
         </div>
 
-        {/* ─── Right Results Column (2 cols) ─── */}
-        <div className="lg:col-span-2">
-          <div className="sticky top-24 space-y-4">
-
-            {/* Main ROI Card */}
-            <div className="rounded-2xl bg-hero-gradient p-6 text-white shadow-xl space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-200">إجمالي العائد على الاستثمار (ROI)</span>
-                <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">
-                  {stats ? `${stats.multiple}x ضعف` : "—"}
-                </span>
-              </div>
-
-              <div>
-                <p className="text-4xl font-black tracking-tight">
-                  {stats.totalRoi >= 0 ? `+${stats.totalRoi}%` : `${stats.totalRoi}%`}
-                </p>
-                <div className="mt-2 flex items-center gap-3 text-xs font-bold text-emerald-200">
-                  <span className="bg-white/20 px-2.5 py-1 rounded-lg">
-                    صافي الربح: {fmt(stats.netProfit, sym)}
-                  </span>
-                  <span className="bg-white/15 px-2.5 py-1 rounded-lg">
-                    السنوي المركب: {stats.cagr}%
-                  </span>
-                </div>
-              </div>
-
-              {/* Visual Breakdown Bar */}
-              <div className="space-y-1.5 pt-2">
-                <div className="flex justify-between text-[11px] text-white/90 font-bold">
-                  <span>رأس المال ({stats.initShare}%)</span>
-                  <span>الأرباح المحققة ({stats.profitShare}%)</span>
-                </div>
-                <div className="h-3 w-full rounded-full bg-white/30 overflow-hidden flex">
-                  <div className="h-full bg-white/50" style={{ width: `${stats.initShare}%` }} title="رأس المال" />
-                  <div className="h-full bg-emerald-400" style={{ width: `${stats.profitShare}%` }} title="الأرباح" />
-                </div>
-              </div>
-
-              {/* Rating Card */}
-              <div className="rounded-xl bg-white/15 p-3 text-xs leading-relaxed backdrop-blur-sm">
-                <span className="font-bold text-amber-300">📊 تقييم الأداء: </span>
-                {stats.rating.label} — {stats.rating.tip}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="flex-1 rounded-xl bg-white/20 hover:bg-white/30 py-2 text-xs font-bold text-center transition-all"
-                >
-                  {copied ? "✓ تم نسخ التقرير" : "📋 نسخ النتيجة"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="rounded-xl bg-white/10 hover:bg-white/20 px-3 py-2 text-xs font-medium transition-all"
-                >
-                  🖨️ طباعة
-                </button>
-              </div>
+        {/* ─── Results ─── */}
+        <div className="ro-col ro-sticky">
+          <section className="ro-result" aria-live="polite" aria-labelledby="roi-result-title">
+            <div className="ro-result-top">
+              <h2 id="roi-result-title" className="ro-result-label">إجمالي العائد على الاستثمار (ROI)</h2>
+              <span className="ro-mult"><Num>{stats.multiple}x</Num></span>
             </div>
 
-            {/* Financial Details Table */}
-            <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-              <h3 className="text-sm font-bold text-ink">مؤشرات الأداء المالي</h3>
+            <p className="ro-big"><Num>{roiText}</Num></p>
 
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">إجمالي رأس المال والتكاليف</span>
-                  <span className="font-bold text-ink">{fmt(stats.totalCost, sym)}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">إجمالي المردود والأرباح الدورية</span>
-                  <span className="font-bold text-ink">{fmt(stats.totalReturn, sym)}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">صافي الربح الفعلي</span>
-                  <span className={`font-black text-sm ${stats.netProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                    {fmt(stats.netProfit, sym)}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">معدل العائد السنوي المركب (CAGR)</span>
-                  <span className="font-bold text-brand-dark">{stats.cagr}% سنوياً</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">معدل العائد البسيط السنوي</span>
-                  <span className="font-bold text-ink">{stats.simpleAnnualRoi}% سنوياً</span>
-                </div>
-                <div className="flex justify-between py-1.5">
-                  <span className="text-ink-secondary">مضاعف الاستثمار (Investment Multiple)</span>
-                  <span className="font-bold text-brand-dark text-sm">{stats.multiple}x</span>
-                </div>
-              </div>
+            <div className="ro-chips">
+              <span className="ro-chip">
+                صافي الربح: <Num>{fmt(stats.netProfit, sym)}</Num>
+              </span>
+              <span className="ro-chip">
+                السنوي المركب: <Num>{cagrText}</Num>
+              </span>
             </div>
 
-          </div>
+            {/* Breakdown bar */}
+            <div className="ro-barbox">
+              <div
+                className="ro-track"
+                role="img"
+                aria-label={`رأس المال ${stats.initShare}% والأرباح ${stats.profitShare}% من إجمالي المردود`}
+              >
+                <div className="ro-seg-cap" style={{ width: `${stats.initShare}%` }} />
+                <div className="ro-seg-profit" style={{ width: `${stats.profitShare}%` }} />
+              </div>
+              <ul className="ro-legend">
+                <li><span className="ro-sw ro-sw-cap" aria-hidden="true" /> رأس المال (<Num>{stats.initShare}%</Num>)</li>
+                <li><span className="ro-sw ro-sw-profit" aria-hidden="true" /> الأرباح المحققة (<Num>{stats.profitShare}%</Num>)</li>
+              </ul>
+            </div>
+
+            <p className={`ro-rating ${stats.rating.loss ? "ro-rating-loss" : ""}`}>
+              {stats.rating.loss && <span className="ro-tag" aria-hidden="true">!</span>}
+              <span>
+                <strong>تقييم الأداء:</strong> {stats.rating.label} — {stats.rating.tip}
+              </span>
+            </p>
+
+            <div className="ro-actions ro-noprint">
+              <button type="button" onClick={handleCopy} className="ro-btn">
+                {copied ? "تم نسخ التقرير" : "نسخ النتيجة"}
+              </button>
+              <button type="button" onClick={() => window.print()} className="ro-btn ro-btn-ghost">
+                طباعة
+              </button>
+            </div>
+          </section>
+
+          <section className="ro-card ro-card-flush" aria-labelledby="roi-kpi">
+            <h3 id="roi-kpi" className="ro-kpi-title">مؤشرات الأداء المالي</h3>
+            <dl className="ro-dl">
+              <div className="ro-dl-row">
+                <dt>إجمالي رأس المال والتكاليف</dt>
+                <dd><Num>{fmt(stats.totalCost, sym)}</Num></dd>
+              </div>
+              <div className="ro-dl-row">
+                <dt>إجمالي المردود والأرباح الدورية</dt>
+                <dd><Num>{fmt(stats.totalReturn, sym)}</Num></dd>
+              </div>
+              <div className="ro-dl-row">
+                <dt>صافي الربح الفعلي</dt>
+                <dd className="ro-strong">
+                  {stats.netProfit < 0 && <span className="ro-loss-tag">خسارة</span>}
+                  <Num>{fmt(stats.netProfit, sym)}</Num>
+                </dd>
+              </div>
+              <div className="ro-dl-row">
+                <dt>معدل العائد السنوي المركب (CAGR)</dt>
+                <dd><Num>{cagrText}</Num>{hasCagr && " سنوياً"}</dd>
+              </div>
+              <div className="ro-dl-row">
+                <dt>معدل العائد البسيط السنوي</dt>
+                <dd><Num>{stats.simpleAnnualRoi}%</Num> سنوياً</dd>
+              </div>
+              <div className="ro-dl-row">
+                <dt>مضاعف الاستثمار (Investment Multiple)</dt>
+                <dd className="ro-strong"><Num>{stats.multiple}x</Num></dd>
+              </div>
+            </dl>
+          </section>
         </div>
       </div>
 
-      <p className="mt-8 text-center text-xs text-ink-muted">
-        💼 أداة استرشادية لتقييم الجدوى الاقتصادية وعوائد الأصول الاستثمارية. استشر مستشاراً مالياً مرخصاً لقرارات الاستثمار الكبرى.
+      <p className="ro-disclaimer">
+        <span className="ro-tag" aria-hidden="true">!</span>
+        <span>
+          <span className="ro-sr">تنبيه: </span>
+          أداة استرشادية لتقييم الجدوى الاقتصادية وعوائد الأصول الاستثمارية. استشر مستشاراً مالياً مرخصاً لقرارات الاستثمار الكبرى.
+        </span>
       </p>
     </div>
+  );
+}
+
+/**
+ * Local styles. Map the --ro-* fallbacks to your real Ink & Signal tokens.
+ */
+function RoiStyles() {
+  return (
+    <style>{`
+      .ro-root{
+        --ro-ink:#0a0a0a; --ro-paper:#ffffff; --ro-muted:#f0f0f0;
+        --ro-text2:#404040; --ro-orange:#ff5a1f;
+        max-width:64rem; margin:0 auto; padding:2rem 1rem;
+        color:var(--ro-ink); background:var(--ro-paper);
+      }
+      @media (min-width:640px){ .ro-root{ padding:3rem 1rem; } }
+      @media (prefers-color-scheme: dark){
+        :root:not([data-theme="light"]) .ro-root{
+          --ro-ink:#f5f5f5; --ro-paper:#0a0a0a; --ro-muted:#1a1a1a; --ro-text2:#d4d4d4;
+        }
+      }
+      :root[data-theme="dark"] .ro-root{
+        --ro-ink:#f5f5f5; --ro-paper:#0a0a0a; --ro-muted:#1a1a1a; --ro-text2:#d4d4d4;
+      }
+
+      .ro-ltr{ direction:ltr; unicode-bidi:isolate; display:inline-block; }
+      .ro-sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+      .ro-root :focus-visible{ outline:3px solid var(--ro-orange); outline-offset:2px; }
+
+      /* Header */
+      .ro-header{ text-align:center; margin-bottom:2rem; display:grid; gap:.75rem; justify-items:center; }
+      .ro-kicker-tag{
+        margin:0; padding:.125rem .75rem; border:2px solid var(--ro-ink);
+        font-size:.75rem; font-weight:800; letter-spacing:.06em;
+      }
+      .ro-h1{ margin:0; font-size:1.875rem; font-weight:800; line-height:1.4; }
+      @media (min-width:640px){ .ro-h1{ font-size:2.25rem; } }
+      .ro-lead{ margin:0; max-width:42rem; font-size:.9375rem; line-height:1.9; color:var(--ro-text2); }
+
+      /* Boxes & cards */
+      .ro-box{ border:2px solid var(--ro-ink); padding:1rem; margin-bottom:1.5rem; display:grid; gap:.75rem; }
+      .ro-bar-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.75rem; }
+      .ro-small-title{ margin:0; font-size:.75rem; font-weight:800; }
+      .ro-cur{ display:flex; align-items:center; gap:.5rem; }
+      .ro-presets{ display:flex; flex-wrap:wrap; gap:.5rem; }
+
+      .ro-preset,.ro-select{
+        border:2px solid var(--ro-ink); background:var(--ro-paper); color:var(--ro-ink);
+        padding:.375rem .75rem; font-size:.75rem; font-weight:700; font-family:inherit; cursor:pointer;
+      }
+      .ro-preset:hover{ background:var(--ro-orange); color:#0a0a0a; }
+
+      .ro-grid{ display:grid; grid-template-columns:1fr; gap:1.5rem; }
+      @media (min-width:1024px){ .ro-grid{ grid-template-columns:3fr 2fr; align-items:start; } }
+      .ro-col{ display:grid; gap:1.25rem; }
+      @media (min-width:1024px){ .ro-sticky{ position:sticky; top:1rem; } }
+
+      .ro-card{ border:2px solid var(--ro-ink); padding:1.25rem; display:grid; gap:1rem; }
+      .ro-card-flush{ padding:0; gap:0; }
+      .ro-h2{ margin:0; display:flex; align-items:center; gap:.625rem; font-size:1rem; font-weight:800; }
+      .ro-num{
+        flex:none; width:1.75rem; height:1.75rem; display:inline-flex;
+        align-items:center; justify-content:center;
+        border:2px solid var(--ro-ink); font-size:.8125rem; font-weight:800;
+      }
+      .ro-two{ display:grid; gap:1rem; grid-template-columns:1fr; }
+      @media (min-width:640px){ .ro-two{ grid-template-columns:1fr 1fr; } }
+
+      /* Fields */
+      .ro-field{ display:grid; gap:.375rem; align-content:start; }
+      .ro-label{ font-size:.75rem; font-weight:800; line-height:1.6; }
+      .ro-input-wrap{ display:flex; border:2px solid var(--ro-ink); background:var(--ro-paper); }
+      .ro-input-wrap:focus-within{ outline:3px solid var(--ro-orange); outline-offset:2px; }
+      .ro-sym{
+        flex:none; padding:0 .75rem; display:inline-flex; align-items:center;
+        background:var(--ro-muted); border-inline-end:2px solid var(--ro-ink);
+        font-size:.75rem; font-weight:800;
+      }
+      .ro-input{
+        flex:1; min-width:0; border:0; background:transparent; color:var(--ro-ink);
+        padding:.625rem .75rem; font-size:.875rem; font-weight:700; font-family:inherit;
+      }
+      .ro-input:focus-visible{ outline:none; }
+
+      /* Note (informational) */
+      .ro-note{
+        border:2px solid var(--ro-ink); border-inline-start:6px solid var(--ro-orange);
+        padding:1rem; font-size:.75rem; line-height:1.9; color:var(--ro-text2); display:grid; gap:.5rem;
+      }
+      .ro-note p{ margin:0; }
+      .ro-note strong{ color:var(--ro-ink); font-weight:800; }
+      .ro-note-title{ font-size:.8125rem; font-weight:800; color:var(--ro-ink); }
+
+      /* Result panel (orange, black text) */
+      .ro-result{
+        background:var(--ro-orange); color:#0a0a0a; border:2px solid var(--ro-ink);
+        padding:1.25rem; display:grid; gap:1rem;
+      }
+      .ro-result-top{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+      .ro-result-label{ margin:0; font-size:.75rem; font-weight:800; }
+      .ro-mult{ border:2px solid #0a0a0a; padding:0 .5rem; font-size:.75rem; font-weight:800; }
+      .ro-big{ margin:0; font-size:2.5rem; font-weight:900; line-height:1.2; }
+      .ro-chips{ display:flex; flex-wrap:wrap; gap:.5rem; }
+      .ro-chip{ border:2px solid #0a0a0a; padding:.25rem .625rem; font-size:.75rem; font-weight:800; }
+
+      .ro-barbox{ background:#ffffff; border:2px solid #0a0a0a; padding:.75rem; display:grid; gap:.5rem; }
+      .ro-track{ display:flex; height:1rem; border:2px solid #0a0a0a; background:#ffffff; overflow:hidden; }
+      .ro-seg-cap{ background:#0a0a0a; height:100%; }
+      .ro-seg-profit{ background:#ff5a1f; height:100%; border-inline-start:2px solid #0a0a0a; }
+      .ro-legend{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:.25rem 1rem; font-size:.6875rem; font-weight:700; }
+      .ro-legend li{ display:flex; align-items:center; gap:.375rem; }
+      .ro-sw{ width:.75rem; height:.75rem; border:2px solid #0a0a0a; display:inline-block; }
+      .ro-sw-cap{ background:#0a0a0a; }
+      .ro-sw-profit{ background:#ff5a1f; }
+
+      .ro-rating{
+        margin:0; padding:.75rem; border:2px solid #0a0a0a; background:#ffffff;
+        font-size:.75rem; line-height:1.8; display:flex; gap:.5rem; align-items:flex-start;
+      }
+      .ro-rating-loss{ border-style:dashed; }
+      .ro-tag{
+        flex:none; width:1.25rem; height:1.25rem; display:inline-flex;
+        align-items:center; justify-content:center; font-weight:800;
+        border:2px solid currentColor;
+      }
+
+      .ro-actions{ display:flex; gap:.5rem; }
+      .ro-btn{
+        flex:1; padding:.5rem .75rem; background:#0a0a0a; color:#ffffff;
+        border:2px solid #0a0a0a; font-size:.75rem; font-weight:800; font-family:inherit; cursor:pointer;
+      }
+      .ro-btn:hover{ background:#ffffff; color:#0a0a0a; }
+      .ro-btn-ghost{ flex:none; background:transparent; color:#0a0a0a; }
+      .ro-result .ro-btn:focus-visible{ outline:3px solid #0a0a0a; outline-offset:3px; }
+
+      /* KPI list */
+      .ro-kpi-title{ margin:0; padding:.875rem 1.25rem; border-bottom:2px solid var(--ro-ink); font-size:.875rem; font-weight:800; }
+      .ro-dl{ margin:0; display:grid; }
+      .ro-dl-row{
+        display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;
+        padding:.625rem 1.25rem; border-bottom:1px solid var(--ro-ink); font-size:.75rem;
+      }
+      .ro-dl-row:last-child{ border-bottom:0; }
+      .ro-dl-row dt{ margin:0; color:var(--ro-text2); }
+      .ro-dl-row dd{ margin:0; font-weight:800; display:flex; align-items:center; gap:.5rem; }
+      .ro-strong{ font-size:.875rem; }
+      .ro-loss-tag{ border:2px dashed var(--ro-ink); padding:0 .375rem; font-size:.625rem; font-weight:800; }
+
+      /* Disclaimer */
+      .ro-disclaimer{
+        margin:2rem 0 0; padding:.75rem 1rem; border:2px dashed var(--ro-ink);
+        display:flex; gap:.5rem; align-items:flex-start;
+        font-size:.75rem; line-height:1.8; color:var(--ro-text2);
+      }
+
+      /* Print: results only */
+      @media print{
+        .ro-noprint{ display:none !important; }
+        .ro-root{ color:#000; background:none; padding:0; }
+        .ro-grid{ grid-template-columns:1fr; }
+        .ro-sticky{ position:static; }
+        .ro-result{ -webkit-print-color-adjust:exact; print-color-adjust:exact; border-color:#000; }
+        .ro-card,.ro-disclaimer{ border-color:#000; color:#000; }
+        .ro-dl-row dt,.ro-disclaimer{ color:#000; }
+      }
+    `}</style>
   );
 }

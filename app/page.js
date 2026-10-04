@@ -51,8 +51,7 @@ const TOKENS_CSS = `
   --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B;
 }
 body{background:var(--bg);color:var(--text)}
-/* ledger-paper hero background: thin horizontal rules */
-.register{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 47px,var(--border) 47px,var(--border) 48px)}
+.tear{height:12px;background:conic-gradient(from -45deg at bottom,#0000,var(--card) 1deg 90deg,#0000 91deg) 50%/16px 100%}
 :focus-visible{outline:2px solid var(--text);outline-offset:3px}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
@@ -79,33 +78,68 @@ export default function HomePage() {
   return (
     <div className="bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: TOKENS_CSS }} />
+
       {/* ── Hero ── */}
-      <section className="register border-b border-[var(--border)] px-4 py-12 sm:py-20">
-        <div className="mx-auto max-w-3xl overflow-hidden rounded-3xl border border-[var(--card-border)] bg-[var(--card)] text-center text-[var(--card-text)]">
-          <div className="px-5 pb-8 pt-10 sm:px-10 sm:pt-14">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[var(--orange)] px-4 py-1.5 text-sm font-bold text-[var(--on-orange)]">
-              <span>✨</span>
-              <span>{totalTools} أداة مجانية — بدون تسجيل</span>
-            </div>
-            <h1 className="mb-4 text-3xl font-black leading-[1.35] tracking-tight sm:text-5xl sm:leading-[1.3]">
-              أدوات عربية شاملة
+      <section className="border-b border-[var(--border)] px-4 py-14 sm:py-20">
+        <div className="mx-auto grid max-w-5xl items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+          <div>
+            <h1 className="text-4xl font-black leading-[1.3] tracking-tight sm:text-5xl lg:text-6xl">
+              كل حساباتك
               <br />
-              <span className="inline-block rounded-lg bg-[var(--orange)] px-3 text-[var(--on-orange)]">
-                سريعة ودقيقة
+              في مكان واحد،
+              <br />
+              <span className="underline decoration-[var(--orange)] decoration-[6px] underline-offset-[14px]">
+                بلا تسجيل
               </span>
             </h1>
-            <p className="mx-auto max-w-xl text-base leading-8 text-[var(--card-muted)] sm:text-lg">
-              {totalTools} أداة ومحول مالي وإسلامي ويومي مبنية للمستخدم العربي — مصنّفة في {CATEGORIES.length.toLocaleString("ar-EG")} تصنيفات، دقيقة وسريعة ومجانية تماماً.
+            <p className="mt-6 max-w-lg text-base leading-8 text-[var(--text-2)] sm:text-lg">
+              حاسبات ومحولات مالية وإسلامية ويومية مبنية للمستخدم العربي. تُحسب الأرقام داخل متصفحك، والخدمة مجانية تماماً.
             </p>
+            <a
+              href={`#${activeCategories[0]?.id ?? "upcoming"}`}
+              className="mt-8 inline-block rounded-xl bg-[var(--orange)] px-7 py-3.5 text-base font-black text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
+            >
+              تصفح الأدوات
+            </a>
           </div>
 
-          <div className="grid grid-cols-3 divide-x divide-x-reverse divide-[var(--card-border)] border-t border-[var(--card-border)]">
-            {stats.map((s) => (
-              <div key={s.label} className="px-2 py-5 text-center">
-                <p className="text-2xl font-black sm:text-3xl">{s.value}</p>
-                <p className="mt-1 text-xs text-[var(--card-muted)] sm:text-sm">{s.label}</p>
+          {/* Receipt: a live "statement" of what the site holds */}
+          <div className="mx-auto w-full max-w-sm lg:rotate-[-1.5deg]" aria-label="ملخص الموقع">
+            <div className="bg-[var(--card)] px-6 pt-6 text-[var(--card-text)]">
+              <div className="flex items-baseline justify-between border-b border-dashed border-[var(--card-muted)] pb-3">
+                <p className="text-lg font-black">كشف الأدوات</p>
+                <p className="text-xs text-[var(--card-muted)]">أدوات عربية</p>
               </div>
-            ))}
+              <ul className="py-3">
+                {activeCategories.map((cat) => (
+                  <li key={cat.id}>
+                    <a href={`#${cat.id}`} className="flex items-baseline gap-2 py-1.5 text-sm hover:underline">
+                      <span className="shrink-0 font-semibold">{cat.nameAr}</span>
+                      <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
+                      <span className="shrink-0 font-black tabular-nums">{cat.tools.length.toLocaleString("ar-EG")}</span>
+                    </a>
+                  </li>
+                ))}
+                <li className="flex items-baseline gap-2 py-1.5 text-sm">
+                  <span className="shrink-0 font-semibold">تسجيل مطلوب</span>
+                  <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
+                  <span className="shrink-0 font-black">٠</span>
+                </li>
+                <li className="flex items-baseline gap-2 py-1.5 text-sm">
+                  <span className="shrink-0 font-semibold">رسوم الاستخدام</span>
+                  <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
+                  <span className="shrink-0 font-black">٠</span>
+                </li>
+              </ul>
+              <div className="-mx-6 flex items-center justify-between bg-[var(--orange)] px-6 py-4 text-[var(--on-orange)]">
+                <span className="font-black">{stats[0].label}</span>
+                <span className="text-3xl font-black tabular-nums">{stats[0].value}</span>
+              </div>
+              <p className="py-4 text-center text-xs text-[var(--card-muted)]">
+                {stats[1].value} تصنيفات · تُحدَّث القائمة مع كل أداة جديدة
+              </p>
+            </div>
+            <div className="tear" aria-hidden="true" />
           </div>
         </div>
       </section>
@@ -140,22 +174,22 @@ export default function HomePage() {
         {activeCategories.map((cat) => (
           <section key={cat.id} id={cat.id} className="scroll-mt-20">
             {/* Section header */}
-            <div className="mb-6 flex items-center gap-3">
+            <div className="mb-6 flex items-end gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--card)] text-xl text-[var(--card-text)]">
                 {cat.icon}
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex min-w-0 flex-wrap items-baseline gap-x-3">
                 <h2 className="text-xl font-black text-[var(--text)] sm:text-2xl">
                   {cat.nameAr}
                 </h2>
-                <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-xs font-semibold text-[var(--text-3)]">
+                <span className="text-xs font-semibold text-[var(--text-3)]">
                   {cat.nameEn}
                 </span>
-                <span className="rounded-full bg-[var(--orange)] px-2.5 py-0.5 text-xs font-bold text-[var(--on-orange)]">
-                  {cat.tools.length} أدوات
-                </span>
               </div>
-              <div className="h-px flex-1 bg-[var(--border)]" />
+              <div className="mb-2 flex-1 border-b-2 border-dotted border-[var(--border)]" aria-hidden="true" />
+              <span className="mb-1 shrink-0 rounded-md bg-[var(--orange)] px-2.5 py-0.5 text-xs font-black text-[var(--on-orange)]">
+                {cat.tools.length} أدوات
+              </span>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

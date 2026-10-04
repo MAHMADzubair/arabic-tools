@@ -1,9 +1,18 @@
 "use client";
 
+/**
+ * components/UaeFinalSettlementCalculator.jsx
+ * Ink & Signal: UAE final settlement calculator.
+ * toNum / fmt / calcServiceDuration, all state, presets and the useMemo
+ * calculations are unchanged. Changes: local styling (no Tailwind colours),
+ * emoji removed, every control has a label (htmlFor), toggles use
+ * aria-pressed, +/− never rely on colour alone, the literal "**" around
+ * "الراتب الأساسي" is now a real <strong>, and the printed document is a
+ * fixed ink-on-white page with an orange header band.
+ */
 import { useState, useMemo } from "react";
-import Link from "next/link";
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
+// ─── Helpers (unchanged) ───────────────────────────────────────────────────────
 function toNum(v) {
   const n = parseFloat(String(v).replace(/,/g, ""));
   return isNaN(n) || n < 0 ? 0 : n;
@@ -49,37 +58,114 @@ function calcServiceDuration(startStr, endStr, unpaidAbsenceDays = 0) {
   };
 }
 
-export default function UaeFinalSettlementCalculator() {
-  // ── Section A: Employee Scope & Status ────────────────────────────────────
-  const [isCitizen, setIsCitizen] = useState("non_citizen"); // "non_citizen" | "citizen"
-  const [isMOHRE, setIsMOHRE] = useState("yes"); // "yes" | "other"
-  const [savingsScheme, setSavingsScheme] = useState("no"); // "no" | "yes" | "uncertain"
-  const [workPattern, setWorkPattern] = useState("full_time"); // "full_time" | "part_time"
+// ─── Small UI pieces ───────────────────────────────────────────────────────────
+function Field({ id, label, hint, req, optional, children }) {
+  return (
+    <div className="fs-field">
+      <label htmlFor={id} className="fs-label">
+        {label}
+        {req && <span aria-hidden="true"> *</span>}
+        {optional && <span className="fs-hint"> (اختياري)</span>}
+      </label>
+      {children}
+      {hint && <p id={`${id}-hint`} className="fs-small">{hint}</p>}
+    </div>
+  );
+}
 
-  // ── Section B: Dates & Service ────────────────────────────────────────────
+function NumField({ id, label, hint, req, optional, value, onChange, ...rest }) {
+  return (
+    <Field id={id} label={label} hint={hint} req={req} optional={optional}>
+      <input id={id} type="number" inputMode="decimal" dir="ltr" className="fs-input"
+        value={value} onChange={(e) => onChange(e.target.value)}
+        aria-describedby={hint ? `${id}-hint` : undefined} {...rest} />
+    </Field>
+  );
+}
+
+function SelField({ id, label, value, onChange, children }) {
+  return (
+    <Field id={id} label={label}>
+      <select id={id} className="fs-input" value={value} onChange={(e) => onChange(e.target.value)}>
+        {children}
+      </select>
+    </Field>
+  );
+}
+
+function Seg({ id, label, value, onChange, options }) {
+  return (
+    <div className="fs-field">
+      <p id={id} className="fs-label">{label}</p>
+      <div className="fs-seg" role="group" aria-labelledby={id}>
+        {options.map((o) => (
+          <button key={o.v} type="button" aria-pressed={value === o.v} onClick={() => onChange(o.v)}>{o.l}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Step({ n, id, children }) {
+  return (
+    <div className="fs-step">
+      <span className="fs-num" aria-hidden="true">{n}</span>
+      <h2 id={id} className="fs-h2">{children}</h2>
+    </div>
+  );
+}
+
+function Note({ title, children, dashed = false }) {
+  return (
+    <aside className={`fs-note ${dashed ? "fs-note-dash" : ""}`}>
+      <span className="fs-mark" aria-hidden="true">!</span>
+      <p className="fs-note-text">{title && <strong>{title} </strong>}{children}</p>
+    </aside>
+  );
+}
+
+function Calc({ label, value, sub }) {
+  return (
+    <div className="fs-calc">
+      <p className="fs-small">{label}</p>
+      <p className="fs-calc-v"><span className="fs-ltr">{value}</span></p>
+      {sub && <p className="fs-small">{sub}</p>}
+    </div>
+  );
+}
+
+// ─── Component ─────────────────────────────────────────────────────────────────
+export default function UaeFinalSettlementCalculator() {
+  // Section A
+  const [isCitizen, setIsCitizen] = useState("non_citizen");
+  const [isMOHRE, setIsMOHRE] = useState("yes");
+  const [savingsScheme, setSavingsScheme] = useState("no");
+  const [workPattern, setWorkPattern] = useState("full_time");
+
+  // Section B
   const [joiningDate, setJoiningDate] = useState("2022-01-01");
   const [lastWorkingDate, setLastWorkingDate] = useState(new Date().toISOString().split("T")[0]);
   const [unpaidAbsenceDays, setUnpaidAbsenceDays] = useState("0");
 
-  // ── Section C: Salary Details ─────────────────────────────────────────────
+  // Section C
   const [basicSalary, setBasicSalary] = useState("6000");
   const [grossSalary, setGrossSalary] = useState("9000");
 
-  // ── Section D: Final Salary (آخر شهر) ──────────────────────────────────────
-  const [salaryMode, setSalaryMode] = useState("days"); // "days" | "amount"
+  // Section D
+  const [salaryMode, setSalaryMode] = useState("days");
   const [workedDaysInLastMonth, setWorkedDaysInLastMonth] = useState("30");
   const [manualSalaryDue, setManualSalaryDue] = useState("0");
 
-  // ── Section E: Annual Leave ───────────────────────────────────────────────
+  // Section E
   const [unusedLeaveDays, setUnusedLeaveDays] = useState("10");
 
-  // ── Section F: Notice Period ──────────────────────────────────────────────
-  const [isNoticeServed, setIsNoticeServed] = useState("yes"); // "yes" | "no"
-  const [whoBreachedNotice, setWhoBreachedNotice] = useState("employer"); // "employer" | "employee"
+  // Section F
+  const [isNoticeServed, setIsNoticeServed] = useState("yes");
+  const [whoBreachedNotice, setWhoBreachedNotice] = useState("employer");
   const [requiredNoticeDays, setRequiredNoticeDays] = useState("30");
   const [servedNoticeDays, setServedNoticeDays] = useState("0");
 
-  // ── Section G: Other Additions & Deductions ───────────────────────────────
+  // Section G
   const [overdueSalary, setOverdueSalary] = useState("0");
   const [commissions, setCommissions] = useState("0");
   const [repatriationTicket, setRepatriationTicket] = useState("1000");
@@ -89,16 +175,16 @@ export default function UaeFinalSettlementCalculator() {
   const [assetsDue, setAssetsDue] = useState("0");
   const [otherDeductions, setOtherDeductions] = useState("0");
 
-  // ── Printable metadata ────────────────────────────────────────────────────
+  // Printable metadata
   const [employeeName, setEmployeeName] = useState("");
   const [employerName, setEmployerName] = useState("");
   const [employeeId, setEmployeeId] = useState("");
 
   // UI state
-  const [activeTab, setActiveTab] = useState("form"); // "form" | "preview"
+  const [activeTab, setActiveTab] = useState("form");
   const [showFormulaDetails, setShowFormulaDetails] = useState(false);
 
-  // ─── Preset loader ────────────────────────────────────────────────────────
+  // ─── Preset loader (unchanged) ──────────────────────────────────────────────
   const applyPreset = (type) => {
     if (type === "standard") {
       setIsCitizen("non_citizen");
@@ -111,7 +197,7 @@ export default function UaeFinalSettlementCalculator() {
       setBasicSalary("6000");
       setGrossSalary("9000");
       setSalaryMode("days");
-      setWorkedDaysInLastMonth("0"); // final salary already paid in this scenario
+      setWorkedDaysInLastMonth("0");
       setUnusedLeaveDays("10");
       setIsNoticeServed("yes");
       setRepatriationTicket("1000");
@@ -148,7 +234,7 @@ export default function UaeFinalSettlementCalculator() {
     }
   };
 
-  // ─── Reset Handler ────────────────────────────────────────────────────────
+  // ─── Reset (unchanged) ──────────────────────────────────────────────────────
   const handleReset = () => {
     setIsCitizen("non_citizen");
     setIsMOHRE("yes");
@@ -179,7 +265,7 @@ export default function UaeFinalSettlementCalculator() {
     setActiveTab("form");
   };
 
-  // ─── Calculations ─────────────────────────────────────────────────────────
+  // ─── Calculations (unchanged) ───────────────────────────────────────────────
   const service = useMemo(
     () => calcServiceDuration(joiningDate, lastWorkingDate, unpaidAbsenceDays),
     [joiningDate, lastWorkingDate, unpaidAbsenceDays]
@@ -191,7 +277,6 @@ export default function UaeFinalSettlementCalculator() {
     const dailyBasic = basic / 30;
     const dailyGross = gross / 30;
 
-    // 1. Gratuity Calculation (Article 51 of Law 33/2021)
     let rawGratuity = 0;
     let gratuity = 0;
     let isCapped = false;
@@ -227,7 +312,6 @@ export default function UaeFinalSettlementCalculator() {
       }
     }
 
-    // 2. Final Salary Calculation
     let finalSalaryDue = 0;
     if (salaryMode === "days") {
       const days = Math.min(31, toNum(workedDaysInLastMonth));
@@ -236,13 +320,11 @@ export default function UaeFinalSettlementCalculator() {
       finalSalaryDue = toNum(manualSalaryDue);
     }
 
-    // 3. Annual Leave Payout (Basic Salary basis)
     const leaveDays = toNum(unusedLeaveDays);
     const leavePayout = leaveDays * dailyBasic;
 
-    // 4. Notice Period Compensation (Gross Salary basis)
     let noticeAmount = 0;
-    let noticeDirection = "none"; // "none" | "to_employee" | "to_employer"
+    let noticeDirection = "none";
     if (isNoticeServed === "no") {
       const req = toNum(requiredNoticeDays);
       const srv = toNum(servedNoticeDays);
@@ -251,1088 +333,597 @@ export default function UaeFinalSettlementCalculator() {
       noticeDirection = whoBreachedNotice === "employer" ? "to_employee" : "to_employer";
     }
 
-    // 5. Other Additions
     const totalAdditions =
       toNum(overdueSalary) +
       toNum(commissions) +
       toNum(repatriationTicket) +
       toNum(otherAdditions);
 
-    // 6. Deductions
     const regularDeductions = toNum(loans) + toNum(assetsDue) + toNum(otherDeductions);
     const noticeDeduction = noticeDirection === "to_employer" ? noticeAmount : 0;
     const totalDeductions = regularDeductions + noticeDeduction;
 
-    // 7. Gross & Net Total Settlement
     const noticeAddition = noticeDirection === "to_employee" ? noticeAmount : 0;
     const grossTotalDues = finalSalaryDue + gratuity + leavePayout + noticeAddition + totalAdditions;
     const netSettlement = Math.max(0, grossTotalDues - totalDeductions);
 
     return {
-      dailyBasic,
-      dailyGross,
-      rawGratuity,
-      gratuity,
-      isCapped,
-      gratuityNote,
-      twoYearCap,
-      finalSalaryDue,
-      leavePayout,
-      noticeAmount,
-      noticeDirection,
-      totalAdditions,
-      regularDeductions,
-      totalDeductions,
-      grossTotalDues,
-      netSettlement,
+      dailyBasic, dailyGross, rawGratuity, gratuity, isCapped, gratuityNote, twoYearCap,
+      finalSalaryDue, leavePayout, noticeAmount, noticeDirection, totalAdditions,
+      regularDeductions, totalDeductions, grossTotalDues, netSettlement,
     };
   }, [
-    isCitizen,
-    savingsScheme,
-    service,
-    basicSalary,
-    grossSalary,
-    salaryMode,
-    workedDaysInLastMonth,
-    manualSalaryDue,
-    unusedLeaveDays,
-    isNoticeServed,
-    whoBreachedNotice,
-    requiredNoticeDays,
-    servedNoticeDays,
-    overdueSalary,
-    commissions,
-    repatriationTicket,
-    otherAdditions,
-    loans,
-    assetsDue,
-    otherDeductions,
+    isCitizen, savingsScheme, service, basicSalary, grossSalary, salaryMode,
+    workedDaysInLastMonth, manualSalaryDue, unusedLeaveDays, isNoticeServed,
+    whoBreachedNotice, requiredNoticeDays, servedNoticeDays, overdueSalary,
+    commissions, repatriationTicket, otherAdditions, loans, assetsDue, otherDeductions,
   ]);
 
-  // ─── Print Handler ────────────────────────────────────────────────────────
   const handlePrint = () => {
     setActiveTab("preview");
     setTimeout(() => window.print(), 250);
   };
 
-  const inputCls =
-    "w-full rounded-xl border border-brand-border bg-white px-3 py-2.5 text-sm font-semibold text-ink placeholder:text-ink-muted/50 focus:border-brand focus:outline-none transition";
-  const labelCls = "block text-xs font-bold text-ink-secondary mb-1";
+  const goPreview = () => {
+    setActiveTab("preview");
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
-    <div className="rounded-2xl border border-brand-border bg-white shadow-card overflow-hidden" dir="rtl">
-      
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-l from-emerald-800 via-teal-900 to-slate-900 px-6 py-5 text-white no-print">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl p-2 rounded-xl bg-white/10 border border-white/20">📋</span>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg sm:text-xl font-black tracking-tight">
-                  حاسبة المخالصة النهائية في الإمارات
-                </h1>
-                <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
-                  قانون العمل 2026
-                </span>
-              </div>
-              <p className="text-xs text-teal-200 mt-1">
-                تصفية شاملة لمستحقات العامل: مكافأة نهاية الخدمة، كسر الراتب، رصيد الإجازات، وبدل الإنذار
-              </p>
-            </div>
-          </div>
+    <div className="fs-root" dir="rtl">
+      <FinalStyles />
 
-          {/* Quick Preset Buttons */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-teal-200 font-bold hidden sm:inline">أمثلة سريعة:</span>
-            <button
-              type="button"
-              onClick={() => applyPreset("standard")}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all border bg-white/10 text-white border-white/20 hover:bg-white/20"
-            >
-              مثال: 4 سنوات (6 آلاف)
-            </button>
-            <button
-              type="button"
-              onClick={() => applyPreset("senior")}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all border bg-white/10 text-white border-white/20 hover:bg-white/20"
-            >
-              مثال: خبرة عليا + إنذار
-            </button>
+      {/* Header */}
+      <header className="fs-card fs-noprint">
+        <div className="fs-head-row">
+          <div>
+            <h1 className="fs-h1">حاسبة المخالصة النهائية في الإمارات</h1>
+            <p className="fs-lead">تصفية شاملة لمستحقات العامل: مكافأة نهاية الخدمة، كسر الراتب، رصيد الإجازات، وبدل الإنذار</p>
           </div>
+          <p className="fs-tag">قانون العمل 2026</p>
         </div>
 
-        {/* Tab Controls */}
-        <div className="flex items-center gap-2 mt-5 pt-3 border-t border-white/10">
-          <button
-            type="button"
-            onClick={() => setActiveTab("form")}
-            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 ${
-              activeTab === "form"
-                ? "bg-white text-emerald-950 shadow-md"
-                : "bg-white/10 text-white hover:bg-white/20"
-            }`}
-          >
-            <span>📝</span>
-            <span>إدخال بيانات التصفية</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab("preview");
-              if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 ${
-              activeTab === "preview"
-                ? "bg-white text-emerald-950 shadow-md"
-                : "bg-white/10 text-white hover:bg-white/20"
-            }`}
-          >
-            <span>📄</span>
-            <span>معاينة نموذج المخالصة والطباعة</span>
-          </button>
+        <div className="fs-actions">
+          <span className="fs-small-b">أمثلة سريعة:</span>
+          <button type="button" className="fs-btn fs-btn-sm" onClick={() => applyPreset("standard")}>4 سنوات (6 آلاف)</button>
+          <button type="button" className="fs-btn fs-btn-sm" onClick={() => applyPreset("senior")}>خبرة عليا + إنذار</button>
         </div>
-      </div>
 
-      {/* ══ FORM VIEW ════════════════════════════════════════════════════════ */}
+        <div className="fs-tabs" role="group" aria-label="العرض">
+          <button type="button" aria-pressed={activeTab === "form"} onClick={() => setActiveTab("form")}>إدخال بيانات التصفية</button>
+          <button type="button" aria-pressed={activeTab === "preview"} onClick={goPreview}>معاينة نموذج المخالصة والطباعة</button>
+        </div>
+      </header>
+
+      {/* ══ FORM ══ */}
       {activeTab === "form" && (
-        <div className="p-4 sm:p-6 space-y-6 no-print">
+        <div className="fs-stack fs-noprint">
 
-          {/* ── Section 1: Scope & Status ──────────────────────────────────── */}
-          <section className="space-y-3">
-            <div className="border-b border-brand-border/60 pb-2">
-              <h2 className="text-sm font-extrabold text-ink flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-black flex items-center justify-center">
-                  ١
-                </span>
-                صفة الموظف ونطاق العمل القانوني
-              </h2>
+          {/* 1 — Scope */}
+          <section className="fs-card" aria-labelledby="fs-s1">
+            <Step n="1" id="fs-s1">صفة الموظف ونطاق العمل القانوني</Step>
+            <div className="fs-two">
+              <Seg id="fs-cit" label="هل الموظف مواطن إماراتي أم غير مواطن؟" value={isCitizen} onChange={setIsCitizen}
+                options={[{ v: "non_citizen", l: "غير مواطن (مقيم)" }, { v: "citizen", l: "مواطن إماراتي" }]} />
+              <Seg id="fs-moh" label="هل يعمل بالقطاع الخاص الخاضع لـ MOHRE؟" value={isMOHRE} onChange={setIsMOHRE}
+                options={[{ v: "yes", l: "نعم (قانون العمل 33)" }, { v: "other", l: "لا / منطقة حرة مالية" }]} />
+            </div>
+            <div className="fs-two">
+              <SelField id="fs-sav" label="هل الموظف مشمول بنظام الادخار البديل لمكافأة نهاية الخدمة؟" value={savingsScheme} onChange={setSavingsScheme}>
+                <option value="no">لا (نظام المكافأة التراكمي التقليدي)</option>
+                <option value="yes">نعم (مشترك في صناديق نظام الادخار الاستثماري)</option>
+                <option value="uncertain">غير متأكد</option>
+              </SelField>
+              <SelField id="fs-pat" label="نوع ونمط العمل" value={workPattern} onChange={setWorkPattern}>
+                <option value="full_time">دوام كامل (Full-Time)</option>
+                <option value="part_time">دوام جزئي أو نمط مرن/مؤقت</option>
+              </SelField>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>هل الموظف مواطن إماراتي أم غير مواطن؟</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsCitizen("non_citizen")}
-                    className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                      isCitizen === "non_citizen"
-                        ? "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm"
-                        : "border-brand-border bg-white text-ink-secondary hover:bg-slate-50"
-                    }`}
-                  >
-                    غير مواطن (مقيم)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsCitizen("citizen")}
-                    className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                      isCitizen === "citizen"
-                        ? "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm"
-                        : "border-brand-border bg-white text-ink-secondary hover:bg-slate-50"
-                    }`}
-                  >
-                    مواطن إماراتي
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className={labelCls}>هل يعمل بالقطاع الخاص الخاضع لـ MOHRE؟</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsMOHRE("yes")}
-                    className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                      isMOHRE === "yes"
-                        ? "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm"
-                        : "border-brand-border bg-white text-ink-secondary hover:bg-slate-50"
-                    }`}
-                  >
-                    نعم (قانون العمل 33)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsMOHRE("other")}
-                    className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                      isMOHRE === "other"
-                        ? "border-amber-600 bg-amber-50 text-amber-900 shadow-sm"
-                        : "border-brand-border bg-white text-ink-secondary hover:bg-slate-50"
-                    }`}
-                  >
-                    لا / منطقة حرة مالية
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>هل الموظف مشمول بنظام الادخار البديل لمكافأة نهاية الخدمة؟</label>
-                <select
-                  value={savingsScheme}
-                  onChange={(e) => setSavingsScheme(e.target.value)}
-                  className={inputCls}
-                >
-                  <option value="no">لا (نظام المكافأة التراكمي التقليدي)</option>
-                  <option value="yes">نعم (مشترك في صناديق نظام الادخار الاستثماري)</option>
-                  <option value="uncertain">غير متأكد</option>
-                </select>
-              </div>
-
-              <div>
-                <label className={labelCls}>نوع ونمط العمل</label>
-                <select
-                  value={workPattern}
-                  onChange={(e) => setWorkPattern(e.target.value)}
-                  className={inputCls}
-                >
-                  <option value="full_time">دوام كامل (Full-Time)</option>
-                  <option value="part_time">دوام جزئي أو نمط مرن/مؤقت</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Special-case warnings */}
             {isCitizen === "citizen" && (
-              <div className="rounded-xl border border-amber-300 bg-amber-50 p-3.5 text-xs text-amber-950 flex items-start gap-2.5">
-                <span className="text-base shrink-0">🇦🇪</span>
-                <p className="leading-relaxed">
-                  <strong>تنبيه للمواطنين:</strong> هذه الحاسبة مخصصة أساساً للعمال غير المواطنين في القطاع الخاص. يخضع المواطنون الإماراتيون لأنظمة المعاشات والتأمينات الاجتماعية (الهيئة العامة للمعاشات GPSSA أو صندوق أبوظبي للتقاعد)، ولا تُحتسب لهم مكافأة نهاية الخدمة العمالية للوافدين تلقائياً.
-                </p>
-              </div>
+              <Note title="تنبيه للمواطنين:">هذه الحاسبة مخصصة أساساً للعمال غير المواطنين في القطاع الخاص. يخضع المواطنون الإماراتيون لأنظمة المعاشات والتأمينات الاجتماعية (الهيئة العامة للمعاشات GPSSA أو صندوق أبوظبي للتقاعد)، ولا تُحتسب لهم مكافأة نهاية الخدمة العمالية للوافدين تلقائياً.</Note>
             )}
-
             {isMOHRE === "other" && (
-              <div className="rounded-xl border border-blue-300 bg-blue-50 p-3.5 text-xs text-blue-950 flex items-start gap-2.5">
-                <span className="text-base shrink-0">🏛️</span>
-                <p className="leading-relaxed">
-                  <strong>تنبيه للمناطق الحرة والجهات الخاصة:</strong> تخضع المناطق الحرة المالية (مثل مركز دبي المالي العالمي DIFC وسوق أبوظبي العالمي ADGM) لقوانين عمل مستقلة وبرامج ادخار وإيداع إلزامية (مثل نظام DEWS). يرجى مراجعة لوائح جهة العمل المختصة.
-                </p>
-              </div>
+              <Note title="تنبيه للمناطق الحرة والجهات الخاصة:">تخضع المناطق الحرة المالية (مثل مركز دبي المالي العالمي DIFC وسوق أبوظبي العالمي ADGM) لقوانين عمل مستقلة وبرامج ادخار وإيداع إلزامية (مثل نظام DEWS). يرجى مراجعة لوائح جهة العمل المختصة.</Note>
             )}
-
             {savingsScheme !== "no" && (
-              <div className="rounded-xl border border-purple-300 bg-purple-50 p-3.5 text-xs text-purple-950 flex items-start gap-2.5">
-                <span className="text-base shrink-0">📈</span>
-                <p className="leading-relaxed">
-                  <strong>تنبيه نظام الادخار البديل:</strong> إذا كانت المنشأة مسجلة في النظام الاختياري البديل لمكافأة نهاية الخدمة، تُودع اشتراكات شهرية في محافظ وصناديق استثمارية معتمدة؛ وتُستحق أموال الصندوق وعوائدها الاستثمارية مباشرة من مدير الصندوق بدلاً من حساب مكافأة السنوات التراكمية التقليدية.
-                </p>
-              </div>
+              <Note title="تنبيه نظام الادخار البديل:">إذا كانت المنشأة مسجلة في النظام الاختياري البديل لمكافأة نهاية الخدمة، تُودع اشتراكات شهرية في محافظ وصناديق استثمارية معتمدة؛ وتُستحق أموال الصندوق وعوائدها الاستثمارية مباشرة من مدير الصندوق بدلاً من حساب مكافأة السنوات التراكمية التقليدية.</Note>
             )}
-
             {workPattern === "part_time" && (
-              <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-xs text-slate-800">
-                ℹ️ <strong>ملاحظة الدوام الجزئي:</strong> وفق اللائحة التنفيذية لقانون العمل، تُحسب مكافأة نهاية الخدمة للدوام الجزئي بنسبة وتناسب وفق عدد الساعات المنفذة مقارنة بالدوام الكامل، ويلزم مراجعة العقد الفردي.
-              </div>
+              <Note dashed title="ملاحظة الدوام الجزئي:">وفق اللائحة التنفيذية لقانون العمل، تُحسب مكافأة نهاية الخدمة للدوام الجزئي بنسبة وتناسب وفق عدد الساعات المنفذة مقارنة بالدوام الكامل، ويلزم مراجعة العقد الفردي.</Note>
             )}
           </section>
 
-          {/* ── Section 2: Dates & Service Duration ────────────────────────── */}
-          <section className="space-y-3">
-            <div className="border-b border-brand-border/60 pb-2">
-              <h2 className="text-sm font-extrabold text-ink flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-black flex items-center justify-center">
-                  ٢
-                </span>
-                تواريخ الخدمة ومدة العمل الفعلية
-              </h2>
+          {/* 2 — Dates */}
+          <section className="fs-card" aria-labelledby="fs-s2">
+            <Step n="2" id="fs-s2">تواريخ الخدمة ومدة العمل الفعلية</Step>
+            <div className="fs-three">
+              <Field id="fs-join" label="تاريخ بدء العمل" req>
+                <input id="fs-join" type="date" dir="ltr" className="fs-input" value={joiningDate} onChange={(e) => setJoiningDate(e.target.value)} />
+              </Field>
+              <Field id="fs-last" label="آخر يوم عمل" req>
+                <input id="fs-last" type="date" dir="ltr" className="fs-input" value={lastWorkingDate} onChange={(e) => setLastWorkingDate(e.target.value)} />
+              </Field>
+              <NumField id="fs-abs" label="أيام الغياب بدون راتب" optional min="0" placeholder="0"
+                hint="تُستبعد من مدة الخدمة لحساب المكافأة نظاماً" value={unpaidAbsenceDays} onChange={setUnpaidAbsenceDays} />
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label className={labelCls}>تاريخ بدء العمل <span className="text-rose-500">*</span></label>
-                <input
-                  type="date"
-                  value={joiningDate}
-                  onChange={(e) => setJoiningDate(e.target.value)}
-                  className={inputCls}
-                />
-              </div>
-              <div>
-                <label className={labelCls}>آخر يوم عمل <span className="text-rose-500">*</span></label>
-                <input
-                  type="date"
-                  value={lastWorkingDate}
-                  onChange={(e) => setLastWorkingDate(e.target.value)}
-                  className={inputCls}
-                />
-              </div>
-              <div>
-                <label className={labelCls}>أيام الغياب بدون راتب <span className="text-gray-400 font-normal">(إن وُجدت)</span></label>
-                <input
-                  type="number"
-                  min="0"
-                  value={unpaidAbsenceDays}
-                  onChange={(e) => setUnpaidAbsenceDays(e.target.value)}
-                  className={inputCls}
-                  placeholder="0"
-                />
-                <p className="text-[10px] text-ink-muted mt-0.5">تُستبعد من مدة الخدمة لحساب المكافأة نظاماً</p>
-              </div>
-            </div>
-
-            {/* Service Summary Card */}
-            <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">⏳</span>
-                <div>
-                  <span className="text-ink-secondary">صافي مدة الخدمة المحتسبة: </span>
-                  <strong className="text-emerald-950 font-black text-sm">{service.formatted}</strong>
-                </div>
-              </div>
-              {service.isValid && (
-                <span className="text-emerald-800 font-semibold bg-white px-2.5 py-1 rounded-lg border border-emerald-200">
-                  {service.netYears.toFixed(2)} سنة خدمة فعلية
-                </span>
-              )}
+            <div className="fs-box fs-row-between" aria-live="polite">
+              <p className="fs-text">صافي مدة الخدمة المحتسبة: <strong>{service.formatted}</strong></p>
+              {service.isValid && <p className="fs-tag">{service.netYears.toFixed(2)} سنة خدمة فعلية</p>}
             </div>
           </section>
 
-          {/* ── Section 3: Salary Details ──────────────────────────────────── */}
-          <section className="space-y-3">
-            <div className="border-b border-brand-border/60 pb-2">
-              <h2 className="text-sm font-extrabold text-ink flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-black flex items-center justify-center">
-                  ٣
-                </span>
-                بيانات الأجر (الأساسي والإجمالي)
-              </h2>
+          {/* 3 — Salary */}
+          <section className="fs-card" aria-labelledby="fs-s3">
+            <Step n="3" id="fs-s3">بيانات الأجر (الأساسي والإجمالي)</Step>
+            <div className="fs-two">
+              <NumField id="fs-basic" label="الراتب الأساسي الأخير (Basic Salary)" req min="0" step="50" placeholder="مثال: 6000"
+                hint="تُحسب عليه مكافأة نهاية الخدمة وبدل رصيد الإجازات السنوية (المادة 51)" value={basicSalary} onChange={setBasicSalary} />
+              <NumField id="fs-gross" label="الراتب الإجمالي الأخير (Gross Salary)" req min="0" step="50" placeholder="مثال: 9000"
+                hint="يشمل الأساسي والبدلات (السكن، النقل)؛ تُحسب عليه تعويضات الإنذار والراتب المتبقي" value={grossSalary} onChange={setGrossSalary} />
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>
-                  الراتب الأساسي الأخير (Basic Salary) <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="50"
-                  value={basicSalary}
-                  onChange={(e) => setBasicSalary(e.target.value)}
-                  className={inputCls}
-                  placeholder="مثال: 6000"
-                />
-                <p className="text-[11px] text-ink-muted mt-1">
-                  تُحسب عليه مكافأة نهاية الخدمة وبدل رصيد الإجازات السنوية (المادة 51)
-                </p>
-              </div>
-
-              <div>
-                <label className={labelCls}>
-                  الراتب الإجمالي الأخير (Gross Salary) <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="50"
-                  value={grossSalary}
-                  onChange={(e) => setGrossSalary(e.target.value)}
-                  className={inputCls}
-                  placeholder="مثال: 9000"
-                />
-                <p className="text-[11px] text-ink-muted mt-1">
-                  يشمل الأساسي والبدلات (السكن، النقل)؛ تُحسب عليه تعويضات الإنذار والراتب المتبقي
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-2.5 rounded-xl border border-brand-border/60">
-              <div>
-                <span className="text-ink-muted block">أجر اليوم الأساسي (الأساسي ÷ 30):</span>
-                <strong className="text-ink font-mono text-sm">{fmt(calcs.dailyBasic)} AED</strong>
-              </div>
-              <div>
-                <span className="text-ink-muted block">أجر اليوم الإجمالي (الإجمالي ÷ 30):</span>
-                <strong className="text-ink font-mono text-sm">{fmt(calcs.dailyGross)} AED</strong>
-              </div>
+            <div className="fs-two">
+              <Calc label="أجر اليوم الأساسي (الأساسي ÷ 30)" value={`${fmt(calcs.dailyBasic)} AED`} />
+              <Calc label="أجر اليوم الإجمالي (الإجمالي ÷ 30)" value={`${fmt(calcs.dailyGross)} AED`} />
             </div>
           </section>
 
-          {/* ── Section 4: Final Month Outstanding Salary ──────────────────── */}
-          <section className="space-y-3">
-            <div className="border-b border-brand-border/60 pb-2">
-              <h2 className="text-sm font-extrabold text-ink flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-black flex items-center justify-center">
-                  ٤
-                </span>
-                الراتب المستحق عن آخر فترة عمل (كسر الشهر)
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>طريقة احتساب الراتب المتبقي:</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSalaryMode("days")}
-                    className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                      salaryMode === "days"
-                        ? "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm"
-                        : "border-brand-border bg-white text-ink-secondary hover:bg-slate-50"
-                    }`}
-                  >
-                    حسب عدد الأيام
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSalaryMode("amount")}
-                    className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                      salaryMode === "amount"
-                        ? "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm"
-                        : "border-brand-border bg-white text-ink-secondary hover:bg-slate-50"
-                    }`}
-                  >
-                    إدخال مبلغ محدد
-                  </button>
-                </div>
-              </div>
-
+          {/* 4 — Final month */}
+          <section className="fs-card" aria-labelledby="fs-s4">
+            <Step n="4" id="fs-s4">الراتب المستحق عن آخر فترة عمل (كسر الشهر)</Step>
+            <div className="fs-two">
+              <Seg id="fs-mode" label="طريقة احتساب الراتب المتبقي" value={salaryMode} onChange={setSalaryMode}
+                options={[{ v: "days", l: "حسب عدد الأيام" }, { v: "amount", l: "إدخال مبلغ محدد" }]} />
               {salaryMode === "days" ? (
-                <div>
-                  <label className={labelCls}>أيام العمل المستحقة في الشهر الأخير (0–31):</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="31"
-                    value={workedDaysInLastMonth}
-                    onChange={(e) => setWorkedDaysInLastMonth(e.target.value)}
-                    className={inputCls}
-                  />
-                  <p className="text-[10px] text-ink-muted mt-1">
-                    يُحسب على أساس الأجر الإجمالي وقسمة الشهر على 30 يوماً ({fmt(calcs.dailyGross)} AED/يوم)
-                  </p>
-                </div>
+                <NumField id="fs-days" label="أيام العمل المستحقة في الشهر الأخير (0–31)" min="0" max="31"
+                  hint={`يُحسب على أساس الأجر الإجمالي وقسمة الشهر على 30 يوماً (${fmt(calcs.dailyGross)} AED/يوم)`}
+                  value={workedDaysInLastMonth} onChange={setWorkedDaysInLastMonth} />
               ) : (
-                <div>
-                  <label className={labelCls}>المبلغ الصافي المستحق عن الراتب الأخير (AED):</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={manualSalaryDue}
-                    onChange={(e) => setManualSalaryDue(e.target.value)}
-                    className={inputCls}
-                  />
-                </div>
+                <NumField id="fs-man" label="المبلغ الصافي المستحق عن الراتب الأخير (AED)" min="0" value={manualSalaryDue} onChange={setManualSalaryDue} />
               )}
             </div>
+            <Calc label="قيمة راتب آخر شهر المحتسبة" value={`${fmt(calcs.finalSalaryDue)} AED`} />
+          </section>
 
-            <div className="text-xs bg-slate-50 p-2.5 rounded-xl border border-brand-border/60 flex justify-between items-center">
-              <span className="text-ink-secondary">قيمة راتب آخر شهر المحتسبة:</span>
-              <strong className="text-emerald-800 font-bold text-sm font-mono">
-                {fmt(calcs.finalSalaryDue)} AED
-              </strong>
+          {/* 5 — Leave */}
+          <section className="fs-card" aria-labelledby="fs-s5">
+            <Step n="5" id="fs-s5">بدل رصيد الإجازة السنوية غير المستخدمة</Step>
+            <div className="fs-two">
+              <Field id="fs-leave" label="عدد أيام رصيد الإجازات المتبقية والمستحقة"
+                hint={<>يُحسب التعويض النقدي لرصيد الإجازات نظاماً على أساس <strong>الراتب الأساسي</strong> (أجر اليوم: {fmt(calcs.dailyBasic)} AED)</>}>
+                <input id="fs-leave" type="number" inputMode="decimal" dir="ltr" className="fs-input" min="0" step="0.5" placeholder="مثال: 10"
+                  value={unusedLeaveDays} onChange={(e) => setUnusedLeaveDays(e.target.value)} aria-describedby="fs-leave-hint" />
+              </Field>
+              <Calc label="بدل رصيد الإجازة المستحق" value={`${fmt(calcs.leavePayout)} AED`}
+                sub={`المعادلة: ${unusedLeaveDays || 0} يوم × ${fmt(calcs.dailyBasic)} درهم`} />
             </div>
           </section>
 
-          {/* ── Section 5: Annual Leave Payout ─────────────────────────────── */}
-          <section className="space-y-3">
-            <div className="border-b border-brand-border/60 pb-2">
-              <h2 className="text-sm font-extrabold text-ink flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-black flex items-center justify-center">
-                  ٥
-                </span>
-                بدل رصيد الإجازة السنوية غير المستخدمة
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-              <div>
-                <label className={labelCls}>عدد أيام رصيد الإجازات المتبقية والمستحقة:</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  value={unusedLeaveDays}
-                  onChange={(e) => setUnusedLeaveDays(e.target.value)}
-                  className={inputCls}
-                  placeholder="مثال: 10"
-                />
-                <p className="text-[10px] text-ink-muted mt-1">
-                  يُحسب التعويض النقدي لرصيد الإجازات نظاماً على أساس **الراتب الأساسي** (أجر اليوم: {fmt(calcs.dailyBasic)} AED)
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-brand-border/70 bg-slate-50 p-3 text-xs space-y-1">
-                <span className="text-ink-muted block">بدل رصيد الإجازة المستحق:</span>
-                <strong className="text-emerald-800 font-black text-base font-mono block">
-                  {fmt(calcs.leavePayout)} AED
-                </strong>
-                <span className="text-[10px] text-ink-secondary block">
-                  معادلة: {unusedLeaveDays || 0} يوم × {fmt(calcs.dailyBasic)} درهم
-                </span>
-              </div>
-            </div>
-          </section>
-
-          {/* ── Section 6: Notice Period ───────────────────────────────────── */}
-          <section className="space-y-3">
-            <div className="border-b border-brand-border/60 pb-2">
-              <h2 className="text-sm font-extrabold text-ink flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-black flex items-center justify-center">
-                  ٦
-                </span>
-                فترة الإنذار والتعويض عنها
-              </h2>
-            </div>
-
-            <div>
-              <label className={labelCls}>هل تم الالتزام بفترة الإنذار المتفق عليها كاملة؟</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsNoticeServed("yes")}
-                  className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                    isNoticeServed === "yes"
-                      ? "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm"
-                      : "border-brand-border bg-white text-ink-secondary hover:bg-slate-50"
-                  }`}
-                >
-                  نعم (تم إكمال الإنذار ولا يوجد تعويض)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsNoticeServed("no")}
-                  className={`rounded-xl border p-2.5 text-xs font-bold transition ${
-                    isNoticeServed === "no"
-                      ? "border-amber-600 bg-amber-50 text-amber-900 shadow-sm"
-                      : "border-brand-border bg-white text-ink-secondary hover:bg-slate-50"
-                  }`}
-                >
-                  لا (يوجد إخلال أو إنهاء فوري)
-                </button>
-              </div>
-            </div>
+          {/* 6 — Notice */}
+          <section className="fs-card" aria-labelledby="fs-s6">
+            <Step n="6" id="fs-s6">فترة الإنذار والتعويض عنها</Step>
+            <Seg id="fs-notice" label="هل تم الالتزام بفترة الإنذار المتفق عليها كاملة؟" value={isNoticeServed} onChange={setIsNoticeServed}
+              options={[{ v: "yes", l: "نعم (تم إكمال الإنذار ولا يوجد تعويض)" }, { v: "no", l: "لا (يوجد إخلال أو إنهاء فوري)" }]} />
 
             {isNoticeServed === "no" && (
-              <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className={labelCls}>من الطرف الذي لم يلتزم بالإنذار؟</label>
-                    <select
-                      value={whoBreachedNotice}
-                      onChange={(e) => setWhoBreachedNotice(e.target.value)}
-                      className={inputCls}
-                    >
-                      <option value="employer">صاحب العمل (تعويض لصالح الموظف +)</option>
-                      <option value="employee">الموظف (خصم من مستحقات الموظف −)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className={labelCls}>مدة الإنذار التعاقدية (أيام):</label>
-                    <input
-                      type="number"
-                      min="30"
-                      max="90"
-                      value={requiredNoticeDays}
-                      onChange={(e) => setRequiredNoticeDays(e.target.value)}
-                      className={inputCls}
-                    />
-                    <p className="text-[10px] text-ink-muted mt-0.5">القانون يحددها بين 30 إلى 90 يوماً</p>
-                  </div>
-                  <div>
-                    <label className={labelCls}>الأيام المنجزة فعلياً من الإنذار:</label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={servedNoticeDays}
-                      onChange={(e) => setServedNoticeDays(e.target.value)}
-                      className={inputCls}
-                    />
-                  </div>
+              <div className="fs-dash fs-stack">
+                <div className="fs-three">
+                  <SelField id="fs-who" label="من الطرف الذي لم يلتزم بالإنذار؟" value={whoBreachedNotice} onChange={setWhoBreachedNotice}>
+                    <option value="employer">صاحب العمل (تعويض لصالح الموظف +)</option>
+                    <option value="employee">الموظف (خصم من مستحقات الموظف −)</option>
+                  </SelField>
+                  <NumField id="fs-req" label="مدة الإنذار التعاقدية (أيام)" min="30" max="90"
+                    hint="القانون يحددها بين 30 إلى 90 يوماً" value={requiredNoticeDays} onChange={setRequiredNoticeDays} />
+                  <NumField id="fs-srv" label="الأيام المنجزة فعلياً من الإنذار" min="0" value={servedNoticeDays} onChange={setServedNoticeDays} />
                 </div>
-
-                <div className="p-3 bg-white rounded-lg border border-amber-200 flex justify-between items-center text-xs">
+                <div className="fs-box fs-row-between" aria-live="polite">
                   <div>
-                    <span className="font-bold">
+                    <p className="fs-small-b">
                       {calcs.noticeDirection === "to_employee"
                         ? "بدل الإنذار المستحق لصالح الموظف (+):"
                         : "بدل الإنذار الواجب خصمه لصالح صاحب العمل (−):"}
-                    </span>
-                    <p className="text-[10px] text-ink-muted mt-0.5">
-                      يُحسب على أساس الأجر الإجمالي الأخير ({fmt(calcs.dailyGross)} AED/يوم)
                     </p>
+                    <p className="fs-small">يُحسب على أساس الأجر الإجمالي الأخير ({fmt(calcs.dailyGross)} AED/يوم)</p>
                   </div>
-                  <strong
-                    className={`font-mono text-sm font-black ${
-                      calcs.noticeDirection === "to_employee" ? "text-emerald-700" : "text-rose-700"
-                    }`}
-                  >
-                    {calcs.noticeDirection === "to_employee" ? "+" : "−"} {fmt(calcs.noticeAmount)} AED
-                  </strong>
+                  <p className="fs-calc-v">
+                    <span className="fs-ltr">{calcs.noticeDirection === "to_employee" ? "+" : "−"} {fmt(calcs.noticeAmount)} AED</span>
+                  </p>
                 </div>
               </div>
             )}
           </section>
 
-          {/* ── Section 7: Other Additions & Deductions ─────────────────────── */}
-          <section className="space-y-4">
-            <div className="border-b border-brand-border/60 pb-2">
-              <h2 className="text-sm font-extrabold text-ink flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-black flex items-center justify-center">
-                  ٧
-                </span>
-                مستحقات إضافية وخصومات
-              </h2>
+          {/* 7 — Additions / deductions */}
+          <section className="fs-card" aria-labelledby="fs-s7">
+            <Step n="7" id="fs-s7">مستحقات إضافية وخصومات</Step>
+
+            <fieldset className="fs-fieldset">
+              <legend className="fs-legend">مستحقات وإضافات أخرى للموظف (+)</legend>
+              <div className="fs-two">
+                <NumField id="fs-over" label="رواتب متأخرة سابقة (AED)" min="0" value={overdueSalary} onChange={setOverdueSalary} />
+                <NumField id="fs-comm" label="عمولات أو مكافآت (AED)" min="0" value={commissions} onChange={setCommissions} />
+                <NumField id="fs-tick" label="بدل تذكرة العودة (AED)" min="0" hint="اختياري بحسب شروط عقد العمل والمغادرة" value={repatriationTicket} onChange={setRepatriationTicket} />
+                <NumField id="fs-oadd" label="مستحقات أخرى (AED)" min="0" value={otherAdditions} onChange={setOtherAdditions} />
+              </div>
+            </fieldset>
+
+            <fieldset className="fs-fieldset fs-fieldset-dash">
+              <legend className="fs-legend">استقطاعات وخصومات على الموظف (−)</legend>
+              <div className="fs-three">
+                <NumField id="fs-loan" label="سلف وقروض متبقية (AED)" min="0" value={loans} onChange={setLoans} />
+                <NumField id="fs-asset" label="عهد أو مبالغ مستحقة للشركة (AED)" min="0" value={assetsDue} onChange={setAssetsDue} />
+                <NumField id="fs-odeds" label="خصومات أخرى (AED)" min="0" value={otherDeductions} onChange={setOtherDeductions} />
+              </div>
+            </fieldset>
+          </section>
+
+          {/* Summary */}
+          <section className="fs-result" aria-live="polite" aria-labelledby="fs-sum">
+            <div className="fs-row-between">
+              <h2 id="fs-sum" className="fs-result-h">ملخص بنود التصفية العمالية التقديرية</h2>
+              <p className="fs-small-b">الدرهم الإماراتي (AED)</p>
+            </div>
+            <div className="fs-tbox">
+              <div className="fs-trow"><span>1. الراتب المستحق عن آخر فترة</span><span className="fs-ltr">{fmt(calcs.finalSalaryDue)}</span></div>
+              <div className="fs-trow">
+                <span>2. مكافأة نهاية الخدمة (قانون 33){calcs.isCapped && <span className="fs-chip">مطابق لسقف السنتين</span>}</span>
+                <span className="fs-ltr">{fmt(calcs.gratuity)}</span>
+              </div>
+              {calcs.gratuityNote && <p className="fs-trow-note">{calcs.gratuityNote}</p>}
+              <div className="fs-trow"><span>3. بدل رصيد الإجازات السنوية</span><span className="fs-ltr">{fmt(calcs.leavePayout)}</span></div>
+              {calcs.noticeDirection === "to_employee" && (
+                <div className="fs-trow"><span>4. بدل الإنذار (لصالح الموظف)</span><span className="fs-ltr">+ {fmt(calcs.noticeAmount)}</span></div>
+              )}
+              {calcs.totalAdditions > 0 && (
+                <div className="fs-trow"><span>5. مستحقات وإضافات أخرى</span><span className="fs-ltr">+ {fmt(calcs.totalAdditions)}</span></div>
+              )}
+              {calcs.totalDeductions > 0 && (
+                <div className="fs-trow fs-trow-b"><span>6. إجمالي الخصومات والاستقطاعات</span><span className="fs-ltr">− {fmt(calcs.totalDeductions)}</span></div>
+              )}
+            </div>
+            <div className="fs-grand">
+              <span>صافي المخالصة النهائية التقديرية</span>
+              <span className="fs-ltr">{fmt(calcs.netSettlement)} AED</span>
             </div>
 
-            {/* Additions */}
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4 space-y-3">
-              <h3 className="text-xs font-black text-emerald-900 flex items-center gap-1.5">
-                <span>➕</span> مستحقات وإضافات أخرى للموظف:
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                <div>
-                  <label className={labelCls}>رواتب متأخرة سابقة (AED)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={overdueSalary}
-                    onChange={(e) => setOverdueSalary(e.target.value)}
-                    className={inputCls}
-                  />
+            <div className="fs-tbox fs-pad">
+              <button type="button" className="fs-link" aria-expanded={showFormulaDetails} aria-controls="fs-formula" onClick={() => setShowFormulaDetails(!showFormulaDetails)}>
+                كيف تم الحساب والمعادلات القانونية؟
+              </button>
+              {showFormulaDetails && (
+                <div id="fs-formula" className="fs-stack">
+                  <p className="fs-text"><strong>مكافأة نهاية الخدمة:</strong> تُحسب على أساس الأجر اليومي الأساسي ({fmt(calcs.dailyBasic)} درهم): أجر 21 يوماً عن كل سنة من السنوات الخمس الأولى، و30 يوماً عن كل سنة بعدها، مع سقف أقصى لا يتجاوز أجر سنتين ({fmt(calcs.twoYearCap)} درهم).</p>
+                  <p className="fs-text"><strong>بدل الإجازة السنوية:</strong> يُحسب حصراً على الراتب الأساسي الأخير ({fmt(calcs.dailyBasic)} درهم × {unusedLeaveDays} يوم).</p>
+                  <p className="fs-text"><strong>بدل الإنذار:</strong> يُحسب على الأجر الإجمالي الكامل شاملاً البدلات ({fmt(calcs.dailyGross)} درهم/يوم).</p>
                 </div>
-                <div>
-                  <label className={labelCls}>عمولات أو مكافآت (AED)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={commissions}
-                    onChange={(e) => setCommissions(e.target.value)}
-                    className={inputCls}
-                  />
-                </div>
-                <div>
-                  <label className={labelCls}>بدل تذكرة العودة (AED)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={repatriationTicket}
-                    onChange={(e) => setRepatriationTicket(e.target.value)}
-                    className={inputCls}
-                  />
-                  <p className="text-[10px] text-ink-muted mt-0.5">اختياري بحسب شروط عقد العمل والمغادرة</p>
-                </div>
-                <div>
-                  <label className={labelCls}>مستحقات أخرى (AED)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={otherAdditions}
-                    onChange={(e) => setOtherAdditions(e.target.value)}
-                    className={inputCls}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Deductions */}
-            <div className="rounded-xl border border-rose-200 bg-rose-50/40 p-4 space-y-3">
-              <h3 className="text-xs font-black text-rose-900 flex items-center gap-1.5">
-                <span>➖</span> استقطاعات وخصومات على الموظف:
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className={labelCls}>سلف وقروض متبقية (AED)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={loans}
-                    onChange={(e) => setLoans(e.target.value)}
-                    className={inputCls}
-                  />
-                </div>
-                <div>
-                  <label className={labelCls}>عهد أو مبالغ مستحقة للشركة (AED)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={assetsDue}
-                    onChange={(e) => setAssetsDue(e.target.value)}
-                    className={inputCls}
-                  />
-                </div>
-                <div>
-                  <label className={labelCls}>خصومات أخرى (AED)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={otherDeductions}
-                    onChange={(e) => setOtherDeductions(e.target.value)}
-                    className={inputCls}
-                  />
-                </div>
-              </div>
+              )}
             </div>
           </section>
 
-          {/* ── Summary & Grand Total Card ─────────────────────────────────── */}
-          <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50/70 via-teal-50/40 to-white p-5 space-y-3">
-            <div className="flex items-center justify-between border-b border-emerald-100 pb-2.5">
-              <h3 className="text-sm font-black text-ink">📊 ملخص بنود التصفية العمالية التقديرية</h3>
-              <span className="text-xs text-emerald-800 font-bold">الدرهم الإماراتي (AED)</span>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between items-center text-ink">
-                <span>1. الراتب المستحق عن آخر فترة:</span>
-                <span className="font-mono font-bold">{fmt(calcs.finalSalaryDue)} AED</span>
-              </div>
-
-              <div className="flex justify-between items-center text-ink">
-                <div>
-                  <span>2. مكافأة نهاية الخدمة (قانون 33):</span>
-                  {calcs.isCapped && (
-                    <span className="text-[10px] text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded mr-1.5">
-                      مطابق لسقف السنتين
-                    </span>
-                  )}
-                </div>
-                <span className="font-mono font-bold text-emerald-800">{fmt(calcs.gratuity)} AED</span>
-              </div>
-              {calcs.gratuityNote && (
-                <p className="text-[11px] text-ink-muted -mt-1 pr-3">{calcs.gratuityNote}</p>
-              )}
-
-              <div className="flex justify-between items-center text-ink">
-                <span>3. بدل رصيد الإجازات السنوية:</span>
-                <span className="font-mono font-bold">{fmt(calcs.leavePayout)} AED</span>
-              </div>
-
-              {calcs.noticeDirection === "to_employee" && (
-                <div className="flex justify-between items-center text-emerald-800 font-bold">
-                  <span>4. بدل الإنذار (لصالح الموظف):</span>
-                  <span className="font-mono">+{fmt(calcs.noticeAmount)} AED</span>
-                </div>
-              )}
-
-              {calcs.totalAdditions > 0 && (
-                <div className="flex justify-between items-center text-ink">
-                  <span>5. مستحقات وإضافات أخرى:</span>
-                  <span className="font-mono font-bold">+{fmt(calcs.totalAdditions)} AED</span>
-                </div>
-              )}
-
-              {calcs.totalDeductions > 0 && (
-                <div className="flex justify-between items-center text-rose-700 font-bold border-t border-emerald-100/80 pt-1.5">
-                  <span>6. إجمالي الخصومات والاستقطاعات:</span>
-                  <span className="font-mono">- {fmt(calcs.totalDeductions)} AED</span>
-                </div>
-              )}
-
-              <div className="border-t-2 border-emerald-300 pt-3 flex justify-between items-center text-sm font-black text-ink">
-                <span>صافي المخالصة النهائية التقديرية:</span>
-                <span className="text-xl font-black text-emerald-800 font-mono">
-                  {fmt(calcs.netSettlement)} AED
-                </span>
-              </div>
-            </div>
-
-            {/* Expandable Explanation */}
-            <div className="border-t border-emerald-100 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowFormulaDetails(!showFormulaDetails)}
-                className="text-xs font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
-              >
-                <span>🔍 كيف تم الحساب والمعادلات القانونية؟</span>
-                <span>{showFormulaDetails ? "▲" : "▼"}</span>
-              </button>
-
-              {showFormulaDetails && (
-                <div className="mt-3 p-3 rounded-xl bg-white border border-emerald-100 space-y-2 text-xs text-ink-secondary">
-                  <p>
-                    • <strong>مكافأة نهاية الخدمة:</strong> تقسم على أساس الأجر اليومي الأساسي ({fmt(calcs.dailyBasic)} درهم):
-                    أجر 21 يوماً عن كل سنة من السنوات الخمس الأولى، و30 يوماً عن كل سنة بعدها، مع سقف أقصى لا يتجاوز أجر سنتين ({fmt(calcs.twoYearCap)} درهم).
-                  </p>
-                  <p>
-                    • <strong>بدل الإجازة السنوية:</strong> يحسب حصراً على الراتب الأساسي الأخير ({fmt(calcs.dailyBasic)} درهم × {unusedLeaveDays} يوم).
-                  </p>
-                  <p>
-                    • <strong>بدل الإنذار:</strong> يحسب على الأجر الإجمالي الكامل شاملاً البدلات ({fmt(calcs.dailyGross)} درهم/يوم).
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ── Action Buttons ────────────────────────────────────────────── */}
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("preview");
-                if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="flex-1 min-w-[140px] rounded-xl bg-emerald-700 py-3 text-sm font-extrabold text-white hover:bg-emerald-800 transition-all shadow-md flex items-center justify-center gap-2"
-            >
-              <span>📄</span>
-              <span>معاينة نموذج المخالصة</span>
-            </button>
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="flex-1 min-w-[140px] rounded-xl border-2 border-emerald-700 bg-white py-3 text-sm font-extrabold text-emerald-800 hover:bg-emerald-50 transition-all flex items-center justify-center gap-2"
-            >
-              <span>🖨️</span>
-              <span>طباعة المخالصة (A4 / PDF)</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-ink-secondary hover:bg-gray-50 transition-colors"
-            >
-              🔄 إعادة تعيين
-            </button>
+          {/* Actions */}
+          <div className="fs-actions fs-bottom">
+            <button type="button" className="fs-btn fs-btn-p" onClick={goPreview}>معاينة نموذج المخالصة</button>
+            <button type="button" className="fs-btn" onClick={handlePrint}>طباعة المخالصة (A4 / PDF)</button>
+            <button type="button" className="fs-btn fs-btn-plain" onClick={handleReset}>إعادة تعيين</button>
           </div>
         </div>
       )}
 
-      {/* ══ PREVIEW & PRINT VIEW ════════════════════════════════════════════ */}
-      <div className={`${activeTab === "preview" ? "block" : "hidden"} print:block p-4 sm:p-6`}>
-        
-        {/* Navigation & Print Top Bar (hidden during print) */}
-        <div className="flex items-center justify-between gap-3 mb-6 no-print bg-slate-100 p-3 rounded-xl border border-gray-200">
-          <button
-            type="button"
-            onClick={() => setActiveTab("form")}
-            className="flex items-center gap-1.5 rounded-xl border border-gray-300 bg-white px-4 py-2 text-xs font-bold text-ink hover:bg-gray-50 transition"
-          >
-            <span>←</span>
-            <span>العودة لتعديل البيانات</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="flex items-center gap-1.5 rounded-xl bg-emerald-800 px-5 py-2 text-xs font-extrabold text-white hover:bg-emerald-900 transition shadow-sm"
-          >
-            <span>🖨️</span>
-            <span>طباعة المستند أو تصدير كـ PDF</span>
-          </button>
+      {/* ══ PREVIEW & PRINT ══ */}
+      <div className={`fs-preview ${activeTab === "preview" ? "fs-show" : ""}`}>
+        <div className="fs-actions fs-noprint fs-prev-bar">
+          <button type="button" className="fs-btn" onClick={() => setActiveTab("form")}>العودة لتعديل البيانات</button>
+          <button type="button" className="fs-btn fs-btn-p" onClick={handlePrint}>طباعة المستند أو تصدير كـ PDF</button>
         </div>
 
-        {/* ═══ Physical A4 Document ═════════════════════════════════════════ */}
-        <div className="bg-white border-2 border-gray-300 rounded-2xl p-6 sm:p-8 text-black print:border-0 print:p-0 print:m-0 print:shadow-none print:w-full print:max-w-none">
-          
-          {/* Header */}
-          <div className="border-b-2 border-black pb-4 mb-5 text-center">
-            <h2 className="text-xl sm:text-2xl font-black text-black">
-              نموذج مخالصة نهائية تقديرية
-            </h2>
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wider mt-0.5">
-              Estimated Final Settlement Statement
-            </p>
-            <p className="text-[11px] text-gray-500 mt-1">
-              دولة الإمارات العربية المتحدة — قطاع خاص (وفق مرسوم قانون تنظيم علاقات العمل رقم 33 لسنة 2021)
-            </p>
+        <article className="fs-doc">
+          <div className="fs-doc-head">
+            <h2 className="fs-doc-title">نموذج مخالصة نهائية تقديرية</h2>
+            <p className="fs-doc-sub">Estimated Final Settlement Statement</p>
+            <p className="fs-doc-small">دولة الإمارات العربية المتحدة — قطاع خاص (وفق مرسوم قانون تنظيم علاقات العمل رقم 33 لسنة 2021)</p>
           </div>
 
-          {/* Metadata Inputs in Print View */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5 text-xs bg-gray-50 p-3 rounded-xl border border-gray-200 print:bg-transparent print:border-gray-300">
-            <div>
-              <span className="text-gray-500 block">اسم الموظف / Employee Name:</span>
-              <input
-                type="text"
-                placeholder="أدخل اسم الموظف..."
-                value={employeeName}
-                onChange={(e) => setEmployeeName(e.target.value)}
-                className="w-full bg-transparent font-bold text-black border-b border-dashed border-gray-400 focus:outline-none text-xs py-0.5 print:border-none"
-              />
+          <div className="fs-doc-body">
+            <div className="fs-doc-meta">
+              <div>
+                <label htmlFor="fs-m-name" className="fs-doc-cap">اسم الموظف / Employee Name</label>
+                <input id="fs-m-name" type="text" placeholder="أدخل اسم الموظف..." value={employeeName} onChange={(e) => setEmployeeName(e.target.value)} className="fs-doc-input" />
+              </div>
+              <div>
+                <label htmlFor="fs-m-co" className="fs-doc-cap">اسم المنشأة / Company</label>
+                <input id="fs-m-co" type="text" placeholder="أدخل اسم الشركة..." value={employerName} onChange={(e) => setEmployerName(e.target.value)} className="fs-doc-input" />
+              </div>
+              <div>
+                <label htmlFor="fs-m-id" className="fs-doc-cap">الرقم الوظيفي / Employee ID</label>
+                <input id="fs-m-id" type="text" placeholder="اختياري..." value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} className="fs-doc-input" />
+              </div>
             </div>
-            <div>
-              <span className="text-gray-500 block">اسم المنشأة / Company:</span>
-              <input
-                type="text"
-                placeholder="أدخل اسم الشركة..."
-                value={employerName}
-                onChange={(e) => setEmployerName(e.target.value)}
-                className="w-full bg-transparent font-bold text-black border-b border-dashed border-gray-400 focus:outline-none text-xs py-0.5 print:border-none"
-              />
-            </div>
-            <div>
-              <span className="text-gray-500 block">الرقم الوظيفي / Employee ID:</span>
-              <input
-                type="text"
-                placeholder="اختياري..."
-                value={employeeId}
-                onChange={(e) => setEmployeeId(e.target.value)}
-                className="w-full bg-transparent font-bold text-black border-b border-dashed border-gray-400 focus:outline-none text-xs py-0.5 print:border-none"
-              />
-            </div>
-          </div>
 
-          {/* Service & Wage Info */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-slate-50 p-3 rounded-xl border border-gray-200 mb-5 print:bg-gray-100">
-            <div>
-              <span className="text-gray-500 block">تاريخ بدء العمل:</span>
-              <span className="font-bold text-black font-mono">{joiningDate || "—"}</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block">آخر يوم عمل:</span>
-              <span className="font-bold text-black font-mono">{lastWorkingDate || "—"}</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block">مدة الخدمة الفعلية:</span>
-              <span className="font-bold text-black">{service.formatted}</span>
-            </div>
-            <div>
-              <span className="text-gray-500 block">تاريخ الاحتساب:</span>
-              <span className="font-bold text-black font-mono">{new Date().toISOString().split("T")[0]}</span>
-            </div>
-          </div>
+            <dl className="fs-doc-info">
+              <div><dt>تاريخ بدء العمل</dt><dd dir="ltr">{joiningDate || "—"}</dd></div>
+              <div><dt>آخر يوم عمل</dt><dd dir="ltr">{lastWorkingDate || "—"}</dd></div>
+              <div><dt>مدة الخدمة الفعلية</dt><dd>{service.formatted}</dd></div>
+              <div><dt>تاريخ الاحتساب</dt><dd dir="ltr">{new Date().toISOString().split("T")[0]}</dd></div>
+              <div><dt>الراتب الأساسي الأخير</dt><dd dir="ltr">{fmt(basicSalary)} AED</dd></div>
+              <div><dt>الراتب الإجمالي الأخير</dt><dd dir="ltr">{fmt(grossSalary)} AED</dd></div>
+            </dl>
 
-          <div className="grid grid-cols-2 gap-3 text-xs border border-gray-200 rounded-xl p-3 mb-5">
-            <div>
-              <span className="text-gray-500">الراتب الأساسي الأخير:</span>
-              <strong className="text-black font-mono font-bold mr-1.5">{fmt(basicSalary)} AED</strong>
-            </div>
-            <div>
-              <span className="text-gray-500">الراتب الإجمالي الأخير:</span>
-              <strong className="text-black font-mono font-bold mr-1.5">{fmt(grossSalary)} AED</strong>
-            </div>
-          </div>
-
-          {/* Itemized Table */}
-          <div className="mb-6 overflow-x-auto">
-            <table className="w-full text-xs border-collapse">
-              <thead>
-                <tr className="bg-black text-white print:bg-black print:text-white">
-                  <th className="p-2 text-right">#</th>
-                  <th className="p-2 text-right">بيان الاستحقاق / التفصيل</th>
-                  <th className="p-2 text-center">النوع</th>
-                  <th className="p-2 text-left">المبلغ بالدرهم (AED)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                <tr className="border-b border-gray-200">
-                  <td className="p-2 font-mono text-gray-500">1</td>
-                  <td className="p-2">
-                    <p className="font-bold text-black">الراتب المستحق عن آخر شهر / كسر الشهر</p>
-                    <p className="text-[10px] text-gray-500">محسوب حسب الأجر الإجمالي</p>
-                  </td>
-                  <td className="p-2 text-center font-bold text-emerald-800">مستحق (+)</td>
-                  <td className="p-2 font-mono text-left font-bold">{fmt(calcs.finalSalaryDue)}</td>
-                </tr>
-
-                <tr className="border-b border-gray-200">
-                  <td className="p-2 font-mono text-gray-500">2</td>
-                  <td className="p-2">
-                    <p className="font-bold text-black">مكافأة نهاية الخدمة (قانون تنظيم علاقات العمل رقم 33)</p>
-                    <p className="text-[10px] text-gray-500">
-                      {service.netYears.toFixed(2)} سنة خدمة — محسوبة على الراتب الأساسي ({fmt(calcs.dailyBasic)} AED/يوم)
-                      {calcs.isCapped && " [مطابق لسقف أجر سنتين]"}
-                    </p>
-                  </td>
-                  <td className="p-2 text-center font-bold text-emerald-800">مستحق (+)</td>
-                  <td className="p-2 font-mono text-left font-bold">{fmt(calcs.gratuity)}</td>
-                </tr>
-
-                <tr className="border-b border-gray-200">
-                  <td className="p-2 font-mono text-gray-500">3</td>
-                  <td className="p-2">
-                    <p className="font-bold text-black">بدل رصيد الإجازات السنوية غير المستخدمة</p>
-                    <p className="text-[10px] text-gray-500">
-                      {unusedLeaveDays || 0} يوم × الراتب الأساسي اليومي ({fmt(calcs.dailyBasic)} AED)
-                    </p>
-                  </td>
-                  <td className="p-2 text-center font-bold text-emerald-800">مستحق (+)</td>
-                  <td className="p-2 font-mono text-left font-bold">{fmt(calcs.leavePayout)}</td>
-                </tr>
-
-                {calcs.noticeDirection === "to_employee" && (
-                  <tr className="border-b border-gray-200">
-                    <td className="p-2 font-mono text-gray-500">4</td>
-                    <td className="p-2">
-                      <p className="font-bold text-black">تعويض بدل مهلة الإنذار (لصالح الموظف)</p>
-                      <p className="text-[10px] text-gray-500">عدم التزام صاحب العمل بفترة الإنذار كاملة</p>
-                    </td>
-                    <td className="p-2 text-center font-bold text-emerald-800">مستحق (+)</td>
-                    <td className="p-2 font-mono text-left font-bold">{fmt(calcs.noticeAmount)}</td>
+            <div className="fs-doc-scroll">
+              <table className="fs-doc-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>بيان الاستحقاق / التفصيل</th>
+                    <th>النوع</th>
+                    <th>المبلغ بالدرهم (AED)</th>
                   </tr>
-                )}
-
-                {calcs.totalAdditions > 0 && (
-                  <tr className="border-b border-gray-200">
-                    <td className="p-2 font-mono text-gray-500">5</td>
-                    <td className="p-2">
-                      <p className="font-bold text-black">مستحقات وإضافات أخرى (رواتب سابقة / عمولات / تذكرة عودة)</p>
-                    </td>
-                    <td className="p-2 text-center font-bold text-emerald-800">مستحق (+)</td>
-                    <td className="p-2 font-mono text-left font-bold">{fmt(calcs.totalAdditions)}</td>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td><p className="fs-doc-strong">الراتب المستحق عن آخر شهر / كسر الشهر</p><p className="fs-doc-small">محسوب حسب الأجر الإجمالي</p></td>
+                    <td>مستحق (+)</td>
+                    <td dir="ltr" className="fs-doc-strong">{fmt(calcs.finalSalaryDue)}</td>
                   </tr>
-                )}
-
-                {calcs.totalDeductions > 0 && (
-                  <tr className="border-b border-gray-200 bg-rose-50/40">
-                    <td className="p-2 font-mono text-gray-500">6</td>
-                    <td className="p-2">
-                      <p className="font-bold text-rose-900">إجمالي الخصومات والاستقطاعات</p>
-                      <p className="text-[10px] text-rose-700">
-                        سلف: {fmt(loans)} AED | عهد: {fmt(assetsDue)} AED
-                        {calcs.noticeDirection === "to_employer" && ` | بدل إنذار لصالح الشركة: ${fmt(calcs.noticeAmount)} AED`}
-                        {toNum(otherDeductions) > 0 && ` | أخرى: ${fmt(otherDeductions)} AED`}
+                  <tr>
+                    <td>2</td>
+                    <td>
+                      <p className="fs-doc-strong">مكافأة نهاية الخدمة (قانون تنظيم علاقات العمل رقم 33)</p>
+                      <p className="fs-doc-small">
+                        {service.netYears.toFixed(2)} سنة خدمة — محسوبة على الراتب الأساسي ({fmt(calcs.dailyBasic)} AED/يوم)
+                        {calcs.isCapped && " [مطابق لسقف أجر سنتين]"}
                       </p>
                     </td>
-                    <td className="p-2 text-center font-bold text-rose-800">خصم (−)</td>
-                    <td className="p-2 font-mono text-left font-bold text-rose-800">- {fmt(calcs.totalDeductions)}</td>
+                    <td>مستحق (+)</td>
+                    <td dir="ltr" className="fs-doc-strong">{fmt(calcs.gratuity)}</td>
                   </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>
+                      <p className="fs-doc-strong">بدل رصيد الإجازات السنوية غير المستخدمة</p>
+                      <p className="fs-doc-small">{unusedLeaveDays || 0} يوم × الراتب الأساسي اليومي ({fmt(calcs.dailyBasic)} AED)</p>
+                    </td>
+                    <td>مستحق (+)</td>
+                    <td dir="ltr" className="fs-doc-strong">{fmt(calcs.leavePayout)}</td>
+                  </tr>
+                  {calcs.noticeDirection === "to_employee" && (
+                    <tr>
+                      <td>4</td>
+                      <td><p className="fs-doc-strong">تعويض بدل مهلة الإنذار (لصالح الموظف)</p><p className="fs-doc-small">عدم التزام صاحب العمل بفترة الإنذار كاملة</p></td>
+                      <td>مستحق (+)</td>
+                      <td dir="ltr" className="fs-doc-strong">{fmt(calcs.noticeAmount)}</td>
+                    </tr>
+                  )}
+                  {calcs.totalAdditions > 0 && (
+                    <tr>
+                      <td>5</td>
+                      <td><p className="fs-doc-strong">مستحقات وإضافات أخرى (رواتب سابقة / عمولات / تذكرة عودة)</p></td>
+                      <td>مستحق (+)</td>
+                      <td dir="ltr" className="fs-doc-strong">{fmt(calcs.totalAdditions)}</td>
+                    </tr>
+                  )}
+                  {calcs.totalDeductions > 0 && (
+                    <tr>
+                      <td>6</td>
+                      <td>
+                        <p className="fs-doc-strong">إجمالي الخصومات والاستقطاعات</p>
+                        <p className="fs-doc-small">
+                          سلف: {fmt(loans)} AED | عهد: {fmt(assetsDue)} AED
+                          {calcs.noticeDirection === "to_employer" && ` | بدل إنذار لصالح الشركة: ${fmt(calcs.noticeAmount)} AED`}
+                          {toNum(otherDeductions) > 0 && ` | أخرى: ${fmt(otherDeductions)} AED`}
+                        </p>
+                      </td>
+                      <td>خصم (−)</td>
+                      <td dir="ltr" className="fs-doc-strong">− {fmt(calcs.totalDeductions)}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="fs-doc-tot-wrap">
+              <div className="fs-doc-tot">
+                <div className="fs-doc-trow"><span>إجمالي المستحقات</span><span dir="ltr">{fmt(calcs.grossTotalDues)} AED</span></div>
+                {calcs.totalDeductions > 0 && (
+                  <div className="fs-doc-trow"><span>إجمالي الخصومات</span><span dir="ltr">− {fmt(calcs.totalDeductions)} AED</span></div>
                 )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Grand Total Box */}
-          <div className="flex justify-end mb-6">
-            <div className="w-full sm:w-80 border-2 border-black rounded-xl p-3.5 space-y-2 bg-gray-50 print:bg-transparent">
-              <div className="flex justify-between text-xs text-gray-700">
-                <span>إجمالي المستحقات:</span>
-                <span className="font-mono font-bold">{fmt(calcs.grossTotalDues)} AED</span>
-              </div>
-              {calcs.totalDeductions > 0 && (
-                <div className="flex justify-between text-xs text-rose-700">
-                  <span>إجمالي الخصومات:</span>
-                  <span className="font-mono font-bold">- {fmt(calcs.totalDeductions)} AED</span>
-                </div>
-              )}
-              <div className="border-t-2 border-black pt-2 flex justify-between items-center text-sm font-black text-black">
-                <span>صافي المخالصة النهائية:</span>
-                <span className="font-mono text-base font-black">{fmt(calcs.netSettlement)} AED</span>
+                <div className="fs-doc-grand"><span>صافي المخالصة النهائية</span><span dir="ltr">{fmt(calcs.netSettlement)} AED</span></div>
               </div>
             </div>
-          </div>
 
-          {/* Signatures */}
-          <div className="border-t border-gray-300 pt-6 mt-8 grid grid-cols-2 gap-8 text-xs">
-            <div>
-              <p className="font-bold text-black mb-6">توقيع الموظف / Employee Signature:</p>
-              <div className="border-b border-black w-48 mb-1"></div>
-              <p className="text-[10px] text-gray-500">التاريخ: ___ / ___ / 2026م</p>
+            <div className="fs-doc-sigs">
+              <div>
+                <div className="fs-doc-line" />
+                <p className="fs-doc-strong">توقيع الموظف / Employee Signature</p>
+                <p className="fs-doc-small">التاريخ: ___ / ___ / ______</p>
+              </div>
+              <div>
+                <div className="fs-doc-line" />
+                <p className="fs-doc-strong">ختم وتوقيع المنشأة / Employer Stamp &amp; Signature</p>
+                <p className="fs-doc-small">التاريخ: ___ / ___ / ______</p>
+              </div>
             </div>
-            <div className="text-left">
-              <p className="font-bold text-black mb-6">ختم وتوقيع المنشأة / Employer Stamp & Signature:</p>
-              <div className="border-b border-black w-48 mb-1 mr-auto"></div>
-              <p className="text-[10px] text-gray-500">التاريخ: ___ / ___ / 2026م</p>
-            </div>
-          </div>
 
-          {/* Print Disclaimer */}
-          <div className="border-t border-gray-200 pt-4 mt-6 text-center text-[10px] text-gray-500 leading-relaxed">
-            <p className="font-bold text-gray-700">
-              إخلاء مسؤولية رسمي
-            </p>
-            <p className="mt-0.5">
-              هذه الحاسبة تقديرية وتعتمد على البيانات التي يدخلها المستخدم، ولا تمثل قراراً رسمياً من وزارة الموارد البشرية والتوطين (MOHRE) أو حكماً قانونياً نهائياً. قد تختلف المستحقات بحسب نوع العقد، نمط العمل، جهة الاختصاص، نظام الادخار البديل، أو الظروف الخاصة بإنهاء العلاقة العمالية.
-            </p>
-            <p className="mt-0.5 font-mono text-[9px] text-gray-400">
-              arabic-tools-xi.vercel.app/ar/ae/final-settlement-calculator
-            </p>
+            <div className="fs-doc-disc">
+              <span className="fs-doc-excl" aria-hidden="true">!</span>
+              <div>
+                <p className="fs-doc-strong">إخلاء مسؤولية رسمي</p>
+                <p>هذه الحاسبة تقديرية وتعتمد على البيانات التي يدخلها المستخدم، ولا تمثل قراراً رسمياً من وزارة الموارد البشرية والتوطين (MOHRE) أو حكماً قانونياً نهائياً. قد تختلف المستحقات بحسب نوع العقد، نمط العمل، جهة الاختصاص، نظام الادخار البديل، أو الظروف الخاصة بإنهاء العلاقة العمالية.</p>
+                <p dir="ltr" className="fs-doc-url">arabic-tools-xi.vercel.app/ar/ae/final-settlement-calculator</p>
+              </div>
+            </div>
           </div>
-        </div>
+        </article>
       </div>
     </div>
+  );
+}
+
+/**
+ * Local styles. Map the --fs-* fallbacks to your real Ink & Signal tokens.
+ * The printed document (.fs-doc) always uses fixed ink-on-white colours.
+ */
+function FinalStyles() {
+  return (
+    <style>{`
+      .fs-root{
+        --fs-ink:#0a0a0a; --fs-paper:#ffffff; --fs-muted:#f0f0f0;
+        --fs-text2:#404040; --fs-orange:#ff5a1f;
+        max-width:52rem; margin:0 auto; padding:1.5rem 1rem;
+        color:var(--fs-ink); background:var(--fs-paper); display:grid; gap:1rem;
+      }
+      @media (prefers-color-scheme: dark){
+        :root:not([data-theme="light"]) .fs-root{
+          --fs-ink:#f5f5f5; --fs-paper:#0a0a0a; --fs-muted:#1a1a1a; --fs-text2:#d4d4d4;
+        }
+      }
+      :root[data-theme="dark"] .fs-root{
+        --fs-ink:#f5f5f5; --fs-paper:#0a0a0a; --fs-muted:#1a1a1a; --fs-text2:#d4d4d4;
+      }
+      .fs-root :focus-visible{ outline:3px solid var(--fs-orange); outline-offset:2px; }
+      .fs-ltr{ direction:ltr; unicode-bidi:isolate; display:inline-block; }
+      .fs-stack{ display:grid; gap:1rem; }
+
+      /* Text */
+      .fs-h1{ margin:0; font-size:1.375rem; font-weight:800; line-height:1.5; }
+      .fs-h2{ margin:0; font-size:.9375rem; font-weight:800; line-height:1.6; }
+      .fs-lead{ margin:.25rem 0 0; font-size:.75rem; line-height:1.8; color:var(--fs-text2); }
+      .fs-text{ margin:0; font-size:.75rem; line-height:1.9; color:var(--fs-text2); }
+      .fs-small{ margin:0; font-size:.6875rem; line-height:1.8; color:var(--fs-text2); }
+      .fs-small-b{ margin:0; font-size:.75rem; font-weight:800; }
+      .fs-tag{ margin:0; padding:.125rem .75rem; border:2px solid var(--fs-ink); font-size:.75rem; font-weight:800; white-space:nowrap; }
+
+      /* Cards */
+      .fs-card{ border:2px solid var(--fs-ink); padding:1.25rem; display:grid; gap:1rem; }
+      .fs-head-row{ display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between; align-items:flex-start; }
+      .fs-step{ display:flex; align-items:center; gap:.625rem; }
+      .fs-num{
+        flex:none; width:1.75rem; height:1.75rem; display:inline-flex; align-items:center; justify-content:center;
+        border:2px solid var(--fs-ink); font-size:.8125rem; font-weight:800;
+      }
+      .fs-box{ border:2px solid var(--fs-ink); padding:.75rem 1rem; display:grid; gap:.25rem; }
+      .fs-dash{ border:2px dashed var(--fs-ink); padding:1rem; }
+      .fs-row-between{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:.75rem; }
+      .fs-calc{ border:2px solid var(--fs-ink); padding:.625rem .75rem; display:grid; gap:.125rem; align-content:start; }
+      .fs-calc-v{ margin:0; font-size:1rem; font-weight:900; }
+      .fs-fieldset{ margin:0; border:2px solid var(--fs-ink); padding:1rem; display:grid; gap:.75rem; min-width:0; }
+      .fs-fieldset-dash{ border-style:dashed; }
+      .fs-legend{ padding:0 .5rem; font-size:.75rem; font-weight:800; }
+
+      /* Notes */
+      .fs-note{
+        display:flex; gap:.5rem; align-items:flex-start; border:2px solid var(--fs-ink);
+        border-inline-start:6px solid var(--fs-orange); padding:.625rem .75rem;
+      }
+      .fs-note-dash{ border:2px dashed var(--fs-ink); }
+      .fs-note-text{ margin:0; font-size:.75rem; line-height:1.9; color:var(--fs-text2); }
+      .fs-mark{
+        flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center;
+        border:2px solid currentColor; font-size:.75rem; font-weight:900; color:var(--fs-ink);
+      }
+
+      /* Buttons */
+      .fs-actions{ display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+      .fs-btn{
+        padding:.5rem .875rem; border:2px solid var(--fs-ink); font-size:.75rem; font-weight:800;
+        font-family:inherit; cursor:pointer; background:var(--fs-paper); color:var(--fs-ink);
+      }
+      .fs-btn:hover{ background:var(--fs-muted); }
+      .fs-btn-sm{ padding:.25rem .625rem; }
+      .fs-btn-p{ background:var(--fs-orange); color:#0a0a0a; }
+      .fs-btn-p:hover{ background:var(--fs-ink); color:var(--fs-paper); }
+      .fs-btn-plain{ border-style:dashed; }
+      .fs-bottom .fs-btn{ flex:1; padding:.75rem 1rem; font-size:.8125rem; }
+      .fs-link{
+        justify-self:start; background:none; border:0; padding:0; font-family:inherit; font-size:.75rem;
+        font-weight:800; color:var(--fs-ink); text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+      }
+
+      /* Tabs / segmented */
+      .fs-tabs,.fs-seg{ display:flex; border:2px solid var(--fs-ink); }
+      .fs-tabs button,.fs-seg button{
+        flex:1; padding:.5rem .75rem; border:0; background:var(--fs-paper); color:var(--fs-ink);
+        font-size:.75rem; font-weight:800; font-family:inherit; cursor:pointer; line-height:1.6;
+      }
+      .fs-tabs button + button,.fs-seg button + button{ border-inline-start:2px solid var(--fs-ink); }
+      .fs-tabs button[aria-pressed="true"],.fs-seg button[aria-pressed="true"]{ background:var(--fs-ink); color:var(--fs-paper); }
+
+      /* Fields */
+      .fs-two,.fs-three{ display:grid; gap:.875rem; grid-template-columns:1fr; }
+      @media (min-width:640px){ .fs-two{ grid-template-columns:1fr 1fr; } .fs-three{ grid-template-columns:repeat(3,1fr); } }
+      .fs-field{ display:grid; gap:.25rem; align-content:start; }
+      .fs-label{ margin:0; font-size:.75rem; font-weight:800; line-height:1.6; }
+      .fs-hint{ font-weight:600; color:var(--fs-text2); }
+      .fs-input{
+        width:100%; min-width:0; box-sizing:border-box; border:2px solid var(--fs-ink);
+        background:var(--fs-paper); color:var(--fs-ink); padding:.625rem .75rem;
+        font-size:.8125rem; font-weight:700; font-family:inherit;
+      }
+
+      /* Summary (orange panel, black text) */
+      .fs-result{ background:var(--fs-orange); color:#0a0a0a; border:2px solid var(--fs-ink); padding:1.25rem; display:grid; gap:.75rem; }
+      .fs-result .fs-small-b,.fs-result .fs-text{ color:#0a0a0a; }
+      .fs-result-h{ margin:0; font-size:.9375rem; font-weight:800; }
+      .fs-tbox{ background:#fff; color:#0a0a0a; border:2px solid #0a0a0a; }
+      .fs-pad{ padding:.75rem 1rem; display:grid; gap:.5rem; }
+      .fs-pad .fs-link{ color:#0a0a0a; }
+      .fs-trow{ display:flex; justify-content:space-between; gap:1rem; padding:.375rem .75rem; border-top:1px solid #0a0a0a; font-size:.75rem; font-weight:700; }
+      .fs-trow:first-child{ border-top:0; }
+      .fs-trow-b{ border-top:2px solid #0a0a0a; font-weight:800; }
+      .fs-trow-note{ margin:0; padding:0 .75rem .375rem; font-size:.6875rem; line-height:1.8; color:#404040; }
+      .fs-chip{ margin-inline-start:.5rem; border:1px solid #0a0a0a; padding:0 .375rem; font-size:.625rem; font-weight:800; }
+      .fs-grand{ display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; align-items:center; font-size:1.125rem; font-weight:900; }
+
+      /* Preview */
+      .fs-preview{ display:none; }
+      .fs-show{ display:block; }
+      .fs-prev-bar{ margin-bottom:1rem; }
+
+      /* Document: fixed ink on white, independent of theme */
+      .fs-doc{ --d-ink:#0a0a0a; --d-text2:#404040; --d-or:#ff5a1f; background:#fff; color:var(--d-ink); border:2px solid #0a0a0a; }
+      .fs-doc p{ margin:0; }
+      .fs-doc-head{ background:var(--d-or); color:#0a0a0a; border-bottom:2px solid #0a0a0a; padding:1.25rem 1.5rem; text-align:center; display:grid; gap:.25rem; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+      .fs-doc-title{ margin:0; font-size:1.5rem; font-weight:900; }
+      .fs-doc-sub{ font-size:.8125rem; font-weight:700; }
+      .fs-doc-small{ font-size:.6875rem; color:var(--d-text2); }
+      .fs-doc-head .fs-doc-small{ color:#0a0a0a; }
+      .fs-doc-body{ padding:1.25rem 1.5rem; display:grid; gap:1.25rem; }
+      .fs-doc-meta{ display:grid; gap:.75rem; grid-template-columns:1fr; border:2px solid var(--d-ink); padding:.75rem 1rem; }
+      @media (min-width:640px){ .fs-doc-meta{ grid-template-columns:repeat(3,1fr); } }
+      .fs-doc-cap{ display:block; font-size:.6875rem; font-weight:800; color:var(--d-text2); }
+      .fs-doc-input{ width:100%; box-sizing:border-box; border:0; border-bottom:2px dashed var(--d-ink); background:transparent; color:var(--d-ink); font-family:inherit; font-size:.8125rem; font-weight:800; padding:.25rem 0; }
+      .fs-doc-input:focus-visible{ outline:3px solid var(--d-or); outline-offset:2px; }
+      .fs-doc-info{ margin:0; display:grid; gap:.5rem 1rem; grid-template-columns:1fr 1fr; border:2px solid var(--d-ink); padding:.75rem 1rem; font-size:.75rem; }
+      @media (min-width:640px){ .fs-doc-info{ grid-template-columns:repeat(3,1fr); } }
+      .fs-doc-info dt{ color:var(--d-text2); font-size:.6875rem; }
+      .fs-doc-info dd{ margin:0; font-weight:800; }
+      .fs-doc-scroll{ overflow-x:auto; }
+      .fs-doc-table{ width:100%; border-collapse:collapse; font-size:.75rem; border:2px solid var(--d-ink); }
+      .fs-doc-table th{ background:#0a0a0a; color:#fff; text-align:right; padding:.5rem; font-weight:800; white-space:nowrap; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+      .fs-doc-table td{ padding:.5rem; border-bottom:1px solid var(--d-ink); color:var(--d-text2); vertical-align:top; }
+      .fs-doc-table tr:last-child td{ border-bottom:0; }
+      .fs-doc-table td:last-child{ text-align:left; white-space:nowrap; }
+      .fs-doc-strong{ font-weight:800; color:var(--d-ink) !important; }
+      .fs-doc-tot-wrap{ display:flex; justify-content:flex-end; }
+      .fs-doc-tot{ width:100%; max-width:20rem; border:2px solid var(--d-ink); }
+      .fs-doc-trow{ display:flex; justify-content:space-between; gap:1rem; padding:.375rem .75rem; border-bottom:1px solid var(--d-ink); font-size:.75rem; font-weight:700; }
+      .fs-doc-grand{ display:flex; justify-content:space-between; gap:1rem; padding:.625rem .75rem; background:var(--d-or); color:#0a0a0a; font-size:.875rem; font-weight:900; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+      .fs-doc-sigs{ display:grid; grid-template-columns:1fr 1fr; gap:2rem; padding-top:.75rem; text-align:center; font-size:.6875rem; }
+      .fs-doc-line{ border-bottom:2px solid var(--d-ink); height:3rem; margin-bottom:.5rem; }
+      .fs-doc-disc{ display:flex; gap:.5rem; align-items:flex-start; border:2px dashed var(--d-ink); padding:.625rem .75rem; font-size:.625rem; line-height:1.8; color:var(--d-text2); }
+      .fs-doc-disc > div{ display:grid; gap:.25rem; }
+      .fs-doc-excl{ flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center; border:2px solid var(--d-ink); font-weight:800; color:var(--d-ink); }
+      .fs-doc-url{ font-size:.5625rem; }
+
+      @media print{
+        .fs-noprint{ display:none !important; }
+        .fs-root{ padding:0; max-width:none; background:#fff; }
+        .fs-preview{ display:block; }
+        .fs-doc{ border:0; }
+        .fs-doc-scroll{ overflow:visible; }
+        .fs-doc-input{ border-bottom:0; }
+        .fs-doc-tot,.fs-doc-sigs,.fs-doc-disc,.fs-doc-table tr{ break-inside:avoid; }
+      }
+    `}</style>
   );
 }

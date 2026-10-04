@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useId } from "react";
 
 const CURRENCIES = [
   { id: "SAR", symbol: "ر.س", name: "ريال سعودي" },
@@ -13,17 +13,43 @@ const CURRENCIES = [
 ];
 
 const PRESETS = [
-  { label: "🛒 متجر إلكتروني (سلة/زد)", cost: 60, price: 140, shipping: 25, gatewayFee: 2.5, adSpend: 15, vat: 15 },
-  { label: "🏪 تجارة تجزئة وسوبرماركت", cost: 80, price: 105, shipping: 0, gatewayFee: 1.0, adSpend: 0, vat: 15 },
-  { label: "📦 دروب شيبينغ (Dropshipping)", cost: 45, price: 120, shipping: 15, gatewayFee: 3.0, adSpend: 30, vat: 0 },
-  { label: "💼 خدمات واستشارات", cost: 200, price: 650, shipping: 0, gatewayFee: 2.0, adSpend: 50, vat: 15 },
+  { label: "متجر إلكتروني (سلة/زد)", cost: 60, price: 140, shipping: 25, gatewayFee: 2.5, adSpend: 15, vat: 15 },
+  { label: "تجارة تجزئة وسوبرماركت", cost: 80, price: 105, shipping: 0, gatewayFee: 1.0, adSpend: 0, vat: 15 },
+  { label: "دروب شيبينغ (Dropshipping)", cost: 45, price: 120, shipping: 15, gatewayFee: 3.0, adSpend: 30, vat: 0 },
+  { label: "خدمات واستشارات", cost: 200, price: 650, shipping: 0, gatewayFee: 2.0, adSpend: 50, vat: 15 },
 ];
 
 function fmt(n, sym) {
-  return `${Number(n).toLocaleString("ar-EG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+  return `${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${sym}`;
+}
+
+function NumField({ label, value, onChange, suffix, min = "0", max, step }) {
+  const id = useId();
+  return (
+    <div>
+      <label className="pm-label" htmlFor={id}>{label}</label>
+      <div className="pm-suffix-wrap">
+        <input
+          id={id}
+          type="number"
+          inputMode="decimal"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="pm-input"
+          style={{ paddingInlineEnd: "3.5rem" }}
+        />
+        <span className="pm-suffix" aria-hidden="true">{suffix}</span>
+      </div>
+    </div>
+  );
 }
 
 export default function ProfitMarginCalculator() {
+  const currencyId = useId();
+
   const [currency, setCurrency] = useState("SAR");
   const [calcMode, setCalcMode] = useState("cost_price"); // "cost_price" | "target_margin" | "target_markup"
 
@@ -44,7 +70,7 @@ export default function ProfitMarginCalculator() {
 
   const sym = CURRENCIES.find((c) => c.id === currency)?.symbol || "ر.س";
 
-  // Calculations
+  // Calculations (unchanged)
   const stats = useMemo(() => {
     const cost = Math.max(0, Number(costPrice) || 0);
     let rev = 0;
@@ -132,7 +158,7 @@ export default function ProfitMarginCalculator() {
 
   const handleCopy = () => {
     if (!stats) return;
-    const text = `📊 تقرير تسعير وهامش الربح:
+    const text = `تقرير تسعير وهامش الربح:
 • سعر التكلفة: ${fmt(stats.cost, sym)}
 • سعر البيع المقترح: ${fmt(stats.rev, sym)}
 • إجمالي الربح الأساسي: ${fmt(stats.grossProfit, sym)}
@@ -147,383 +173,370 @@ ${
 }
 
 تم الحساب عبر حاسبة هامش الربح | الأدوات العربية`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
+  const headlineProfit = showAdvanced ? stats.netProfit : stats.grossProfit;
+  const headlineMargin = showAdvanced ? stats.netMarginPct : stats.marginPct;
+
+  const modes = [
+    { id: "cost_price", label: "معرفة الهامش من سعر البيع" },
+    { id: "target_margin", label: "تحديد السعر بهامش الربح %" },
+    { id: "target_markup", label: "تحديد السعر بالمارك اب %" },
+  ];
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12" dir="rtl">
-      {/* Header */}
-      <div className="mb-8 text-center space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>📈</span>
-          <span>حاسبة التسعير وهوامش الأرباح</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">
-          حاسبة هامش الربح والتسعير (Margin & Markup)
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm text-ink-secondary sm:text-base">
-          احسب هامش ربحك الحقيقي، ونسبة المارك اب، وسعر البيع الأمثل لمنتجاتك مع احتساب تكاليف الشحن والإعلانات وبوابات الدفع الإلكتروني.
+    <div className="pm" dir="rtl">
+      <style>{css}</style>
+
+      <header className="pm-head">
+        <p className="pm-kicker">حاسبة التسعير وهوامش الأرباح</p>
+        <h1 className="pm-h1">حاسبة هامش الربح والتسعير (Margin &amp; Markup)</h1>
+        <p className="pm-lead">
+          احسب هامش ربحك الحقيقي ونسبة المارك اب وسعر البيع الأمثل لمنتجاتك، مع احتساب تكاليف الشحن والإعلانات وبوابات الدفع الإلكتروني.
         </p>
-      </div>
+      </header>
 
-      {/* Currency & Presets Bar */}
-      <div className="mb-6 rounded-2xl border border-brand-border bg-brand-surface/40 p-4 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs font-bold text-ink-muted">⚡ نماذج تسعير شائعة للتجربة:</p>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-ink-secondary">العملة:</span>
-            <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="rounded-xl border border-brand-border bg-white px-3 py-1 text-xs font-bold text-ink focus:border-brand focus:outline-none shadow-sm"
-            >
-              {CURRENCIES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.symbol} - {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
+      {/* Currency & Presets */}
+      <section className="pm-bar-top pm-noprint" aria-label="العملة والنماذج الجاهزة">
+        <div className="pm-presets" role="group" aria-label="نماذج تسعير شائعة للتجربة">
+          <span className="pm-small pm-bold">نماذج تسعير شائعة للتجربة:</span>
           {PRESETS.map((p, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleApplyPreset(p)}
-              className="rounded-xl border border-brand-border bg-white px-3 py-1.5 text-xs font-medium text-ink-secondary hover:border-brand hover:text-brand-dark transition-all shadow-sm"
-            >
+            <button key={idx} type="button" className="pm-btn" onClick={() => handleApplyPreset(p)}>
               {p.label}
             </button>
           ))}
         </div>
-      </div>
+        <div className="pm-currency">
+          <label className="pm-label pm-label-flush" htmlFor={currencyId}>العملة</label>
+          <select
+            id={currencyId}
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="pm-input pm-select"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.symbol} - {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        {/* ─── Left Inputs Column (3 cols) ─── */}
-        <div className="lg:col-span-3 space-y-5">
+      <div className="pm-grid">
+        {/* ─── Inputs ─── */}
+        <div className="pm-col pm-noprint">
+          <section className="pm-box" aria-labelledby="pm-s1">
+            <h2 className="pm-h2" id="pm-s1"><span className="pm-num">1</span><span>اختر طريقة الحساب والتسعير</span></h2>
 
-          {/* Mode Selector */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="text-base font-bold text-ink flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">🧮</span>
-              1. اختر طريقة الحساب والتسعير
-            </h2>
+            <div className="pm-stack">
+              <fieldset className="pm-fieldset">
+                <legend className="pm-sr">طريقة الحساب</legend>
+                <div className="pm-seg">
+                  {modes.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      className="pm-btn pm-btn-tall"
+                      aria-pressed={calcMode === m.id}
+                      onClick={() => setCalcMode(m.id)}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
 
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-              <button
-                type="button"
-                onClick={() => setCalcMode("cost_price")}
-                className={`rounded-xl border p-3 text-center text-xs font-bold transition-all ${
-                  calcMode === "cost_price"
-                    ? "border-brand bg-brand-light text-brand-dark shadow-sm"
-                    : "border-brand-border bg-brand-surface/40 text-ink-secondary hover:bg-white"
-                }`}
-              >
-                معرفة الهامش من سعر البيع
-              </button>
-              <button
-                type="button"
-                onClick={() => setCalcMode("target_margin")}
-                className={`rounded-xl border p-3 text-center text-xs font-bold transition-all ${
-                  calcMode === "target_margin"
-                    ? "border-brand bg-brand-light text-brand-dark shadow-sm"
-                    : "border-brand-border bg-brand-surface/40 text-ink-secondary hover:bg-white"
-                }`}
-              >
-                تحديد السعر بهامش الربح %
-              </button>
-              <button
-                type="button"
-                onClick={() => setCalcMode("target_markup")}
-                className={`rounded-xl border p-3 text-center text-xs font-bold transition-all ${
-                  calcMode === "target_markup"
-                    ? "border-brand bg-brand-light text-brand-dark shadow-sm"
-                    : "border-brand-border bg-brand-surface/40 text-ink-secondary hover:bg-white"
-                }`}
-              >
-                تحديد السعر بالمارك اب %
-              </button>
-            </div>
+              <div className="pm-two">
+                <NumField
+                  label="تكلفة المنتج / الخدمة (Cost)"
+                  suffix={sym}
+                  step="any"
+                  value={costPrice}
+                  onChange={setCostPrice}
+                />
 
-            {/* Inputs based on mode */}
-            <div className="grid gap-3 sm:grid-cols-2 pt-2">
-              {/* Cost Price */}
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-ink-secondary">تكلفة المنتج / الخدمة (Cost)</label>
-                <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                  <input
-                    type="number"
-                    min="0"
+                {calcMode === "cost_price" && (
+                  <NumField
+                    label="سعر البيع النهائي (Revenue / Price)"
+                    suffix={sym}
                     step="any"
-                    value={costPrice}
-                    onChange={(e) => setCostPrice(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
+                    value={sellingPrice}
+                    onChange={setSellingPrice}
                   />
-                </div>
+                )}
+                {calcMode === "target_margin" && (
+                  <NumField
+                    label="هامش الربح المستهدف (Margin %)"
+                    suffix="%"
+                    min="1"
+                    max="99"
+                    step="any"
+                    value={targetMargin}
+                    onChange={setTargetMargin}
+                  />
+                )}
+                {calcMode === "target_markup" && (
+                  <NumField
+                    label="نسبة المارك اب المستهدفة (Markup %)"
+                    suffix="%"
+                    min="1"
+                    step="any"
+                    value={targetMarkup}
+                    onChange={setTargetMarkup}
+                  />
+                )}
               </div>
-
-              {calcMode === "cost_price" && (
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-ink-secondary">سعر البيع النهائي (Revenue / Price)</label>
-                  <div className="relative">
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="any"
-                      value={sellingPrice}
-                      onChange={(e) => setSellingPrice(e.target.value)}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {calcMode === "target_margin" && (
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-ink-secondary">هامش الربح المستهدف (Margin %)</label>
-                  <div className="relative">
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">%</span>
-                    <input
-                      type="number"
-                      min="1"
-                      max="99"
-                      step="any"
-                      value={targetMargin}
-                      onChange={(e) => setTargetMargin(e.target.value)}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {calcMode === "target_markup" && (
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-ink-secondary">نسبة المارك اب المستهدفة (Markup %)</label>
-                  <div className="relative">
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">%</span>
-                    <input
-                      type="number"
-                      min="1"
-                      step="any"
-                      value={targetMarkup}
-                      onChange={(e) => setTargetMarkup(e.target.value)}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
+          </section>
 
-          {/* Advanced E-commerce & Operations Fees */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-ink flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">📦</span>
-                2. تكاليف التجارة الإلكترونية والتشغيل (اختياري)
-              </h2>
+          <section className="pm-box" aria-labelledby="pm-s2">
+            <div className="pm-row">
+              <h2 className="pm-h2 pm-h2-flush" id="pm-s2"><span className="pm-num">2</span><span>تكاليف التجارة الإلكترونية والتشغيل (اختياري)</span></h2>
               <button
                 type="button"
+                className="pm-btn"
+                aria-expanded={showAdvanced}
+                aria-controls="pm-adv"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-xs font-bold text-brand hover:underline"
               >
-                {showAdvanced ? "إخفاء التفاصيل ▲" : "تفعيل التكاليف ▼"}
+                {showAdvanced ? "إخفاء التفاصيل" : "تفعيل التكاليف"}
               </button>
             </div>
 
             {showAdvanced && (
-              <div className="grid gap-3 sm:grid-cols-3 pt-1">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-ink-secondary">تكلفة الشحن والتوصيل</label>
-                  <div className="relative">
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={shippingCost}
-                      onChange={(e) => setShippingCost(e.target.value)}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2 pr-8 pl-2 text-xs font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-ink-secondary">عمولة بوابة الدفع (مدى/فيزا)</label>
-                  <div className="relative">
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">%</span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value={paymentGatewayPct}
-                      onChange={(e) => setPaymentGatewayPct(e.target.value)}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2 pr-8 pl-2 text-xs font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-ink-secondary">تكلفة الإعلانات لكل طلب (CAC)</label>
-                  <div className="relative">
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={adSpendPerUnit}
-                      onChange={(e) => setAdSpendPerUnit(e.target.value)}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2 pr-8 pl-2 text-xs font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                    />
-                  </div>
-                </div>
+              <div id="pm-adv" className="pm-three">
+                <NumField label="تكلفة الشحن والتوصيل" suffix={sym} value={shippingCost} onChange={setShippingCost} />
+                <NumField label="عمولة بوابة الدفع (مدى/فيزا)" suffix="%" step="0.1" value={paymentGatewayPct} onChange={setPaymentGatewayPct} />
+                <NumField label="تكلفة الإعلانات لكل طلب (CAC)" suffix={sym} value={adSpendPerUnit} onChange={setAdSpendPerUnit} />
               </div>
             )}
-          </div>
+          </section>
 
-          {/* Education Box: Margin vs Markup */}
-          <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-4 text-xs text-blue-950 space-y-2 leading-relaxed">
-            <p className="font-bold flex items-center gap-1 text-sm">
-              <span>💡</span>
-              <span>الفرق الجوهري بين هامش الربح (Margin) والمارك اب (Markup):</span>
+          <aside className="pm-edu" aria-labelledby="pm-edu">
+            <h2 className="pm-edu-title" id="pm-edu">الفرق الجوهري بين هامش الربح (Margin) والمارك اب (Markup)</h2>
+            <p>
+              <strong>هامش الربح (Profit Margin):</strong> نسبة الربح المحسوبة من <u>سعر البيع النهائي</u>، ولا يمكن أن يتجاوز 100%.
             </p>
             <p>
-              • <strong>هامش الربح (Profit Margin):</strong> نسبة الربح المحسوبة من <u>سعر البيع النهائي</u>. (لا يمكن أن يتجاوز 100%).
+              <strong>المارك اب (Markup):</strong> نسبة الزيادة المضافة فوق <u>سعر التكلفة الأصلي</u>، ويمكن أن يتجاوز 100% و500%.
             </p>
-            <p>
-              • <strong>المارك اب (Markup):</strong> نسبة الزيادة المضافة فوق <u>سعر التكلفة الأصلي</u>. (يمكن أن يتجاوز 100% و 500%).
+            <p className="pm-bold">
+              مثال: منتج تكلفته 100 وبيع بـ 200: ربحك 100، المارك اب = 100%، بينما هامش الربح = 50% فقط.
             </p>
-            <p className="font-semibold text-blue-900 pt-1">
-              مثال: منتج تكلفته 100 وبيع بـ 200: ربحك 100، المارك اب = 100%، بينما هامش الربح = 50% فقط!
-            </p>
-          </div>
-
+          </aside>
         </div>
 
-        {/* ─── Right Results Column (2 cols) ─── */}
-        <div className="lg:col-span-2">
-          <div className="sticky top-24 space-y-4">
+        {/* ─── Results ─── */}
+        <div className="pm-col">
+          <div className="pm-sticky">
+            <section className="pm-result" aria-live="polite" aria-labelledby="pm-res-label">
+              <p className="pm-result-label" id="pm-res-label">
+                {showAdvanced ? "صافي الربح الفعلي بعد المصاريف" : "إجمالي الربح الأساسي"}
+              </p>
+              <p className="pm-result-big"><bdi>{fmt(headlineProfit, sym)}</bdi></p>
+              <p className="pm-result-sub">سعر البيع: <bdi>{fmt(stats.rev, sym)}</bdi></p>
 
-            {/* Main Result Card */}
-            <div className="rounded-2xl bg-hero-gradient p-6 text-white shadow-xl space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-200">
-                  {showAdvanced ? "صافي الربح الفعلي بعد المصاريف" : "إجمالي الربح الأساسي"}
-                </span>
-                <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">
-                  سعر البيع: {fmt(stats.rev, sym)}
-                </span>
+              <div className="pm-result-cells">
+                <div>
+                  <p className="pm-result-sm">الهامش</p>
+                  <p className="pm-result-val"><bdi>{headlineMargin}%</bdi></p>
+                </div>
+                <div>
+                  <p className="pm-result-sm">المارك اب</p>
+                  <p className="pm-result-val"><bdi>{stats.markupPct}%</bdi></p>
+                </div>
               </div>
 
-              <div>
-                <p className="text-4xl font-black tracking-tight">
-                  {fmt(showAdvanced ? stats.netProfit : stats.grossProfit, sym)}
+              {headlineProfit < 0 && (
+                <p className="pm-warn" role="alert">
+                  تنبيه: سعر البيع أقل من إجمالي التكاليف، والنتيجة خسارة.
                 </p>
-                <div className="mt-2 flex items-center gap-3 text-xs font-bold text-emerald-200">
-                  <span className="bg-white/20 px-2.5 py-1 rounded-lg">
-                    الهامش: {showAdvanced ? stats.netMarginPct : stats.marginPct}%
-                  </span>
-                  <span className="bg-white/15 px-2.5 py-1 rounded-lg">
-                    المارك اب: {stats.markupPct}%
-                  </span>
+              )}
+            </section>
+
+            {/* Distribution */}
+            <section className="pm-box" aria-labelledby="pm-dist">
+              <h2 className="pm-h2 pm-h2-sm" id="pm-dist">توزيع سعر البيع</h2>
+              <div
+                className="pm-bar"
+                role="img"
+                aria-label={`التكلفة ${stats.costShare}% ${showAdvanced ? `والمصاريف ${stats.feesShare}% ` : ""}والربح ${stats.profitShare}%`}
+              >
+                <div className="pm-bar-seg" data-t="0" style={{ flex: `${stats.costShare} 1 0` }} />
+                {showAdvanced && <div className="pm-bar-seg" data-t="2" style={{ flex: `${stats.feesShare} 1 0` }} />}
+                <div className="pm-bar-seg" data-t="1" style={{ flex: `${stats.profitShare} 1 0` }} />
+              </div>
+              <ul className="pm-legend">
+                <li><span className="pm-sw" data-t="0" aria-hidden="true" />التكلفة <bdi>({stats.costShare}%)</bdi></li>
+                {showAdvanced && <li><span className="pm-sw" data-t="2" aria-hidden="true" />المصاريف <bdi>({stats.feesShare}%)</bdi></li>}
+                <li><span className="pm-sw" data-t="1" aria-hidden="true" />الربح <bdi>({stats.profitShare}%)</bdi></li>
+              </ul>
+            </section>
+
+            {/* Details */}
+            <section className="pm-box" aria-labelledby="pm-det">
+              <div className="pm-row pm-row-wrap">
+                <h2 className="pm-h2 pm-h2-sm pm-h2-flush" id="pm-det">تفاصيل ومؤشرات التسعير</h2>
+                <div className="pm-actions pm-noprint">
+                  <button type="button" className="pm-btn" onClick={handleCopy}>
+                    {copied ? "تم نسخ التقرير" : "نسخ النتيجة"}
+                  </button>
+                  <button type="button" className="pm-btn" onClick={() => window.print()}>
+                    طباعة
+                  </button>
                 </div>
               </div>
+              <p className="pm-sr" role="status">{copied ? "تم نسخ التقرير" : ""}</p>
 
-              {/* Visual Breakdown Bar */}
-              <div className="space-y-1.5 pt-2">
-                <div className="flex justify-between text-[11px] text-white/90 font-bold">
-                  <span>التكلفة ({stats.costShare}%)</span>
-                  {showAdvanced && <span>المصاريف ({stats.feesShare}%)</span>}
-                  <span>الربح ({stats.profitShare}%)</span>
-                </div>
-                <div className="h-3 w-full rounded-full bg-white/30 overflow-hidden flex">
-                  <div className="h-full bg-rose-400" style={{ width: `${stats.costShare}%` }} title="تكلفة المنتج" />
-                  {showAdvanced && (
-                    <div className="h-full bg-amber-400" style={{ width: `${stats.feesShare}%` }} title="المصاريف الإضافية" />
-                  )}
-                  <div className="h-full bg-emerald-400" style={{ width: `${stats.profitShare}%` }} title="صافي الربح" />
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="flex-1 rounded-xl bg-white/20 hover:bg-white/30 py-2 text-xs font-bold text-center transition-all"
-                >
-                  {copied ? "✓ تم نسخ التقرير" : "📋 نسخ النتيجة"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="rounded-xl bg-white/10 hover:bg-white/20 px-3 py-2 text-xs font-medium transition-all"
-                >
-                  🖨️ طباعة
-                </button>
-              </div>
-            </div>
-
-            {/* Financial Details Table */}
-            <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-              <h3 className="text-sm font-bold text-ink">تفاصيل ومؤشرات التسعير</h3>
-
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">سعر التكلفة الأصلي</span>
-                  <span className="font-bold text-ink">{fmt(stats.cost, sym)}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">سعر البيع المقترح</span>
-                  <span className="font-bold text-brand-dark text-sm">{fmt(stats.rev, sym)}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">إجمالي الربح الإجمالي</span>
-                  <span className="font-bold text-emerald-600">{fmt(stats.grossProfit, sym)}</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">هامش الربح الإجمالي (Margin)</span>
-                  <span className="font-bold text-ink">{stats.marginPct}%</span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                  <span className="text-ink-secondary">نسبة المارك اب (Markup)</span>
-                  <span className="font-bold text-ink">{stats.markupPct}%</span>
-                </div>
-
+              <dl className="pm-rows">
+                <div><dt>سعر التكلفة الأصلي</dt><dd><bdi>{fmt(stats.cost, sym)}</bdi></dd></div>
+                <div><dt>سعر البيع المقترح</dt><dd><bdi>{fmt(stats.rev, sym)}</bdi></dd></div>
+                <div><dt>إجمالي الربح الإجمالي</dt><dd><bdi>{fmt(stats.grossProfit, sym)}</bdi></dd></div>
+                <div><dt>هامش الربح الإجمالي (Margin)</dt><dd><bdi>{stats.marginPct}%</bdi></dd></div>
+                <div><dt>نسبة المارك اب (Markup)</dt><dd><bdi>{stats.markupPct}%</bdi></dd></div>
                 {showAdvanced && (
                   <>
-                    <div className="flex justify-between py-1.5 border-b border-brand-border/30 text-ink-muted">
-                      <span>الشحن والتوصيل</span>
-                      <span>- {fmt(stats.totalShipping, sym)}</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-brand-border/30 text-ink-muted">
-                      <span>عمولة بوابة الدفع ({paymentGatewayPct}%)</span>
-                      <span>- {fmt(stats.totalGateway, sym)}</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-brand-border/30 text-ink-muted">
-                      <span>تكلفة الإعلانات</span>
-                      <span>- {fmt(stats.totalAds, sym)}</span>
-                    </div>
-                    <div className="flex justify-between py-2 text-sm font-black text-brand-dark bg-brand-light/50 px-3 rounded-xl">
-                      <span>صافي الربح في جيبك</span>
-                      <span>{fmt(stats.netProfit, sym)}</span>
-                    </div>
+                    <div><dt>الشحن والتوصيل</dt><dd><bdi>− {fmt(stats.totalShipping, sym)}</bdi></dd></div>
+                    <div><dt>عمولة بوابة الدفع (<bdi>{paymentGatewayPct}%</bdi>)</dt><dd><bdi>− {fmt(stats.totalGateway, sym)}</bdi></dd></div>
+                    <div><dt>تكلفة الإعلانات</dt><dd><bdi>− {fmt(stats.totalAds, sym)}</bdi></dd></div>
+                    <div className="pm-rows-total"><dt>صافي الربح في جيبك</dt><dd><bdi>{fmt(stats.netProfit, sym)}</bdi></dd></div>
                   </>
                 )}
-              </div>
-            </div>
-
+              </dl>
+            </section>
           </div>
         </div>
       </div>
 
-      <p className="mt-8 text-center text-xs text-ink-muted">
-        💼 تم تصميم الحاسبة لمساعدة أصحاب المتاجر الإلكترونية والشركات ورواد الأعمال على اتخاذ قرارات تسعيرية مدروسة ومربحة.
+      <p className="pm-foot">
+        صُممت الحاسبة لمساعدة أصحاب المتاجر الإلكترونية والشركات ورواد الأعمال على اتخاذ قرارات تسعيرية مدروسة.
       </p>
     </div>
   );
 }
+
+// ─── Styles: Ink & Signal ──────────────────────────────────────────────────────
+// Reads the site's --c-* tokens when present, with the palette as fallback.
+// Orange is only ever a background, always with black text.
+const css = `
+.pm{
+  --i-bg:var(--c-bg,#F5F5F2);
+  --i-ink:var(--c-ink,#0D0D0D);
+  --i-mute:var(--c-mute,#55554F);
+  --i-soft:var(--c-soft,#DEDED8);
+  --i-accent:var(--c-accent,#FF6A1A);
+  --i-on-accent:#0D0D0D;
+  background:var(--i-bg);color:var(--i-ink);
+  max-width:64rem;margin:0 auto;padding:2rem 1rem 3rem;line-height:1.6;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .pm{
+    --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+    --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+  }
+}
+:root[data-theme="dark"] .pm{
+  --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+  --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+}
+.pm *{box-sizing:border-box}
+.pm h1,.pm h2,.pm p,.pm dl,.pm dd,.pm ul{margin:0;padding:0}
+.pm ul{list-style:none}
+.pm button,.pm input,.pm select{font:inherit;color:inherit}
+.pm :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
+.pm bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+
+.pm-head{margin-bottom:1.75rem;max-width:44rem}
+.pm-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
+.pm-h1{font-size:clamp(1.9rem,5vw,2.8rem);font-weight:900;line-height:1.2;margin-bottom:.75rem}
+.pm-lead{color:var(--i-mute);max-width:38rem}
+
+.pm-bar-top{display:grid;gap:1rem;margin-bottom:1.5rem;border:2px solid var(--i-ink);border-radius:4px;padding:1rem}
+@media (min-width:768px){.pm-bar-top{grid-template-columns:minmax(0,1fr) auto;align-items:end}}
+.pm-presets{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.pm-currency{display:grid;gap:.3rem}
+.pm-select{min-height:2.5rem;padding:.35rem .6rem;font-size:.85rem}
+
+.pm-grid{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1024px){.pm-grid{grid-template-columns:minmax(0,3fr) minmax(0,2fr);align-items:start}}
+.pm-col{display:grid;gap:1.5rem;min-width:0}
+.pm-sticky{display:grid;gap:1.5rem}
+@media (min-width:1024px){.pm-sticky{position:sticky;top:1rem}}
+
+.pm-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem}
+.pm-h2{display:flex;align-items:center;gap:.65rem;font-size:1.05rem;font-weight:800;margin-bottom:1rem}
+.pm-h2-sm{font-size:.95rem;margin-bottom:.75rem}
+.pm-h2-flush{margin-bottom:0}
+.pm-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:800;border-radius:2px}
+.pm-stack{display:grid;gap:1.1rem}
+.pm-two{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:560px){.pm-two{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pm-three{display:grid;gap:1rem;margin-top:1rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:640px){.pm-three{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pm-fieldset{border:0;margin:0;padding:0;min-width:0}
+.pm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pm-row{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:center}
+.pm-row-wrap{margin-bottom:.9rem}
+.pm-actions{display:flex;gap:.5rem}
+
+.pm-label{display:block;font-size:.8rem;font-weight:700;margin-bottom:.35rem;padding:0}
+.pm-label-flush{margin-bottom:0}
+.pm-small{font-size:.78rem;color:var(--i-mute)}
+.pm-bold{font-weight:700}
+.pm-input{width:100%;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.6rem .75rem;font-size:.95rem;font-weight:700;min-height:2.75rem}
+.pm-suffix-wrap{position:relative}
+.pm-suffix{position:absolute;inset-inline-end:.75rem;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:var(--i-mute);pointer-events:none}
+
+.pm-btn{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.45rem .75rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:2.5rem}
+.pm-btn:hover{background:var(--i-soft)}
+.pm-btn[aria-pressed="true"],.pm-btn[aria-expanded="true"]{background:var(--i-ink);color:var(--i-bg)}
+.pm-btn-tall{display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35}
+.pm-seg{display:grid;gap:.4rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:640px){.pm-seg{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.pm-edu{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:1rem 1.25rem;display:grid;gap:.5rem;font-size:.85rem}
+.pm-edu-title{font-size:.95rem;font-weight:800}
+
+.pm-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pm-result-label{font-size:.9rem;font-weight:700}
+.pm-result-big{font-size:clamp(2rem,6vw,2.75rem);font-weight:900;line-height:1.15;margin:.2rem 0 .25rem}
+.pm-result-sub{font-size:.85rem;font-weight:600;margin-bottom:1rem}
+.pm-result-cells{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
+.pm-result-cells>div{border:2px solid var(--i-on-accent);border-radius:4px;padding:.55rem .7rem}
+.pm-result-sm{font-size:.75rem;font-weight:600}
+.pm-result-val{font-size:1.05rem;font-weight:800}
+.pm-warn{margin-top:.9rem;border:2px dashed var(--i-on-accent);border-radius:4px;padding:.5rem .7rem;font-size:.85rem;font-weight:800}
+
+.pm-bar{display:flex;height:1.6rem;border:2px solid var(--i-ink);border-radius:4px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pm-bar-seg{min-width:0;border-inline-start:2px solid var(--i-bg)}
+.pm-bar-seg:first-child{border-inline-start:0}
+.pm-bar-seg[data-t="0"],.pm-sw[data-t="0"]{background:var(--i-ink)}
+.pm-bar-seg[data-t="1"],.pm-sw[data-t="1"]{background:var(--i-accent)}
+.pm-bar-seg[data-t="2"],.pm-sw[data-t="2"]{background:var(--i-soft)}
+.pm-legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.75rem;font-size:.8rem;font-weight:700}
+.pm-legend li{display:flex;align-items:center;gap:.4rem}
+.pm-sw{display:inline-block;width:.9rem;height:.9rem;border:2px solid var(--i-ink);border-radius:2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+.pm-rows{border:2px solid var(--i-ink);border-radius:4px}
+.pm-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.55rem .8rem;border-bottom:1px solid var(--i-ink);font-size:.85rem}
+.pm-rows>div:last-child{border-bottom:0}
+.pm-rows dt{font-weight:600;color:var(--i-mute)}
+.pm-rows dd{font-weight:800}
+.pm-rows-total{background:var(--i-soft)}
+.pm-rows-total dt{color:var(--i-ink);font-weight:800}
+
+.pm-foot{margin-top:2rem;border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.8rem 1rem;font-size:.8rem;color:var(--i-mute)}
+
+@media print{
+  .pm-noprint{display:none !important}
+  .pm{padding:0}
+  .pm-grid{grid-template-columns:minmax(0,1fr)}
+  .pm-sticky{position:static}
+}
+`;

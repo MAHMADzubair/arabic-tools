@@ -1,29 +1,115 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   formatAED as fmt,
   parseNum,
   calcLineVat,
   discountExceedsGross,
   isValidUaeTrn,
-  inputCls,
-  selectCls,
-  labelCls,
-  stepBadgeCls,
 } from "@/lib/businessUtils";
 import { EMIRATES } from "@/lib/countryBusinessConfig";
+
+const THEME_CSS = `
+.qg-theme{
+  --bg:#F5F5F2;
+  --surface:#FFFFFF;
+  --surface-2:#ECECE7;
+  --border:#D4D4CE;
+  --text:#0D0D0D;
+  --text-2:#555555;
+  --text-3:#6B6B66;
+  --ink:#0D0D0D;
+  --ink-text:#FFFFFF;
+  --orange:#FF5B04;
+  --orange-hover:#FF7A33;
+  --orange-press:#E64F00;
+  --success:#137A47;
+  --warning:#8A5A00;
+  --error:#C8321F;
+  --shadow:0 12px 30px rgba(13,13,13,.06);
+  background:var(--bg);
+  color:var(--text);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .qg-theme{
+    --bg:#0D0D0D;
+    --surface:#161616;
+    --surface-2:#1D1D1D;
+    --border:#2A2A2A;
+    --text:#F5F5F2;
+    --text-2:#B5B5B0;
+    --text-3:#8E8E89;
+    --ink:#F5F5F2;
+    --ink-text:#0D0D0D;
+    --success:#4ADE80;
+    --warning:#FBBF24;
+    --error:#FF7A6B;
+    --shadow:0 14px 34px rgba(0,0,0,.28);
+  }
+}
+:root[data-theme="dark"] .qg-theme{
+  --bg:#0D0D0D;
+  --surface:#161616;
+  --surface-2:#1D1D1D;
+  --border:#2A2A2A;
+  --text:#F5F5F2;
+  --text-2:#B5B5B0;
+  --text-3:#8E8E89;
+  --ink:#F5F5F2;
+  --ink-text:#0D0D0D;
+  --success:#4ADE80;
+  --warning:#FBBF24;
+  --error:#FF7A6B;
+  --shadow:0 14px 34px rgba(0,0,0,.28);
+}
+.qg-theme ::selection{background:var(--orange);color:#0D0D0D}
+.qg-theme :focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.qg-theme input,
+.qg-theme select,
+.qg-theme textarea,
+.qg-theme button{font:inherit}
+
+.qg-theme #quotation-print{
+  --surface:#FFFFFF;
+  --surface-2:#F5F5F2;
+  --border:#D4D4CE;
+  --text:#0D0D0D;
+  --text-2:#555555;
+  --text-3:#6B6B66;
+  --ink:#0D0D0D;
+  --ink-text:#FFFFFF;
+  --orange:#FF5B04;
+  --success:#137A47;
+  --warning:#8A5A00;
+  --error:#C8321F;
+}
+
+@media print{
+  .qg-theme{--bg:#FFFFFF;--surface:#FFFFFF;--surface-2:#F5F5F2;--border:#D4D4CE;--text:#0D0D0D;--text-2:#555555;--text-3:#6B6B66;--ink:#0D0D0D;--ink-text:#FFFFFF}
+}
+`;
+
+const inputCls =
+  "w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-semibold text-[var(--text)] placeholder:text-[var(--text-3)] transition-colors focus:border-[var(--orange)] focus:outline-none";
+const selectCls =
+  "w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm font-semibold text-[var(--text)] transition-colors focus:border-[var(--orange)] focus:outline-none";
+const labelCls =
+  "mb-1.5 block text-xs font-bold text-[var(--text-2)]";
+const stepBadgeCls =
+  "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--ink)] text-xs font-black text-[var(--ink-text)]";
+
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
 const DRAFT_KEY = "uae_quotation_draft_v1";
 
 const VAT_RATES = [
-  { id: "5",      label: "5% — خاضعة للضريبة",   rate: 0.05, tag: "5%",    color: "bg-blue-100 text-blue-800" },
-  { id: "0",      label: "0% — صفرية المعدل",      rate: 0,    tag: "0%",    color: "bg-emerald-100 text-emerald-800" },
-  { id: "exempt", label: "معفاة",                  rate: null, tag: "معفاة", color: "bg-amber-100 text-amber-800" },
-  { id: "out",    label: "خارج النطاق",             rate: null, tag: "خ.ن",  color: "bg-slate-100 text-slate-700" },
-  { id: "none",   label: "بدون ضريبة",              rate: null, tag: "—",    color: "bg-gray-100 text-gray-500" },
+  { id: "5",      label: "5% — خاضعة للضريبة",   rate: 0.05, tag: "5%",    color: "bg-[var(--orange)] text-[#0D0D0D]" },
+  { id: "0",      label: "0% — صفرية المعدل",      rate: 0,    tag: "0%",    color: "border border-[var(--success)] text-[var(--success)]" },
+  { id: "exempt", label: "معفاة",                  rate: null, tag: "معفاة", color: "border border-[var(--warning)] text-[var(--warning)]" },
+  { id: "out",    label: "خارج النطاق",             rate: null, tag: "خ.ن",  color: "border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-2)]" },
+  { id: "none",   label: "بدون ضريبة",              rate: null, tag: "—",    color: "border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-3)]" },
 ];
 
 const UNITS = ["وحدة", "ساعة", "يوم", "شهر", "متر", "كغ", "طن", "قطعة", "متر مربع", "نسخة"];
@@ -31,7 +117,7 @@ const UNITS = ["وحدة", "ساعة", "يوم", "شهر", "متر", "كغ", "ط
 const QUICK_TEMPLATES = [
   {
     id: "design",
-    label: "🎨 خدمات تصميم",
+    label: "خدمات تصميم",
     lines: [
       { name: "تصميم هوية بصرية (شعار + ألوان + خطوط)", qty: "1", unit: "مشروع", unitPrice: "3000", discount: "0", vatRateId: "5" },
       { name: "تصميم مواد تسويقية (بروشور + بوستر)", qty: "1", unit: "مجموعة", unitPrice: "1500", discount: "0", vatRateId: "5" },
@@ -39,7 +125,7 @@ const QUICK_TEMPLATES = [
   },
   {
     id: "web",
-    label: "💻 تطوير موقع",
+    label: "تطوير موقع",
     lines: [
       { name: "تصميم واجهة الموقع (UI/UX)", qty: "1", unit: "مشروع", unitPrice: "4000", discount: "0", vatRateId: "5" },
       { name: "تطوير وبرمجة الموقع", qty: "1", unit: "مشروع", unitPrice: "6000", discount: "500", vatRateId: "5" },
@@ -48,7 +134,7 @@ const QUICK_TEMPLATES = [
   },
   {
     id: "consulting",
-    label: "📊 استشارات",
+    label: "استشارات",
     lines: [
       { name: "جلسة استشارية أولى", qty: "2", unit: "ساعة", unitPrice: "500", discount: "0", vatRateId: "5" },
       { name: "إعداد تقرير تحليلي تفصيلي", qty: "1", unit: "تقرير", unitPrice: "2500", discount: "0", vatRateId: "5" },
@@ -56,7 +142,7 @@ const QUICK_TEMPLATES = [
   },
   {
     id: "construction",
-    label: "🔨 مقاولات",
+    label: "مقاولات",
     lines: [
       { name: "أعمال ترميم وصيانة", qty: "50", unit: "متر مربع", unitPrice: "200", discount: "0", vatRateId: "5" },
       { name: "مواد بناء وتشطيبات", qty: "1", unit: "مجموعة", unitPrice: "8000", discount: "500", vatRateId: "5" },
@@ -64,7 +150,7 @@ const QUICK_TEMPLATES = [
   },
   {
     id: "supply",
-    label: "📦 توريد منتجات",
+    label: "توريد منتجات",
     lines: [
       { name: "توريد معدات مكتبية", qty: "10", unit: "قطعة", unitPrice: "350", discount: "0", vatRateId: "5" },
       { name: "توريد أجهزة حاسوب محمول", qty: "5", unit: "جهاز", unitPrice: "3200", discount: "200", vatRateId: "5" },
@@ -72,7 +158,7 @@ const QUICK_TEMPLATES = [
   },
   {
     id: "marketing",
-    label: "📣 خدمات تسويق",
+    label: "خدمات تسويق",
     lines: [
       { name: "إدارة حسابات التواصل الاجتماعي (شهري)", qty: "3", unit: "شهر", unitPrice: "2000", discount: "0", vatRateId: "5" },
       { name: "إعداد وتنفيذ حملة إعلانية", qty: "1", unit: "حملة", unitPrice: "4500", discount: "0", vatRateId: "5" },
@@ -82,9 +168,9 @@ const QUICK_TEMPLATES = [
 
 const STATUS_OPTIONS = [
   { id: "",         label: "بدون حالة", style: "" },
-  { id: "draft",    label: "مسودة",     style: "bg-slate-100 text-slate-700 border-slate-300" },
-  { id: "sent",     label: "مرسل",      style: "bg-blue-100 text-blue-800 border-blue-300" },
-  { id: "accepted", label: "مقبول",     style: "bg-emerald-100 text-emerald-800 border-emerald-300" },
+  { id: "draft",    label: "مسودة",     style: "border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-2)]" },
+  { id: "sent",     label: "مرسل",      style: "border-[var(--orange)] bg-[var(--orange)] text-[#0D0D0D]" },
+  { id: "accepted", label: "مقبول",     style: "border-[var(--success)] text-[var(--success)]" },
 ];
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -164,9 +250,9 @@ export default function UaeQuotationGenerator() {
   const saveDraft = useCallback(() => {
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify({ seller, customer, details, lines, fees, terms }));
-      setDraftMsg("✅ تم حفظ المسودة على هذا الجهاز");
+      setDraftMsg("تم حفظ المسودة على هذا الجهاز");
       setTimeout(() => setDraftMsg(""), 3000);
-    } catch { setDraftMsg("⚠️ تعذّر الحفظ"); }
+    } catch { setDraftMsg("تعذّر الحفظ"); }
   }, [seller, customer, details, lines, fees, terms]);
 
   const restoreDraft = useCallback(() => {
@@ -180,14 +266,14 @@ export default function UaeQuotationGenerator() {
       if (d.lines)    setLines(d.lines);
       if (d.fees)     setFees(d.fees);
       if (d.terms)    setTerms(d.terms);
-      setDraftMsg("✅ تمت استعادة المسودة");
+      setDraftMsg("تمت استعادة المسودة");
       setTimeout(() => setDraftMsg(""), 3000);
-    } catch { setDraftMsg("⚠️ تعذّر الاستعادة"); }
+    } catch { setDraftMsg("تعذّرت الاستعادة"); }
   }, []);
 
   const clearDraft = useCallback(() => {
     localStorage.removeItem(DRAFT_KEY);
-    setDraftMsg("🗑 تم مسح المسودة");
+    setDraftMsg("تم مسح المسودة");
     setTimeout(() => setDraftMsg(""), 3000);
   }, []);
 
@@ -291,27 +377,27 @@ export default function UaeQuotationGenerator() {
 
   // ─── RENDER ──────────────────────────────────────────────────────────────────
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-4">
+    <div className="qg-theme mx-auto max-w-5xl space-y-5 px-4 py-6 sm:px-6 sm:py-8">
+      <style>{THEME_CSS}</style>
 
       {/* ── Header ── */}
-      <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card no-print">
+      <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)] no-print">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">📋</span>
-              <h1 className="text-xl font-extrabold text-ink">مولد عرض السعر في الإمارات</h1>
+              <h1 className="text-xl font-extrabold text-[var(--text)]">مولد عرض السعر في الإمارات</h1>
             </div>
-            <p className="text-xs text-ink-secondary">
+            <p className="text-xs text-[var(--text-2)]">
               أنشئ عرض سعر احترافي بالعربية والإنجليزية — للمستقلين والشركات والمتاجر والمقاولين
             </p>
           </div>
           <div className="flex gap-2 flex-wrap">
             <button onClick={() => setShowTemplates(v => !v)}
-              className="rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold px-3 py-1.5 hover:bg-amber-100 transition-all">
-              ⚡ قوالب سريعة
+              className="rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--warning)] text-xs font-bold px-3 py-1.5 hover:bg-[var(--surface-2)] transition-all">
+              قوالب سريعة
             </button>
             <button onClick={handleReset}
-              className="rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-xs font-bold px-3 py-1.5 hover:bg-slate-100 transition-all">
+              className="rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text-2)] text-xs font-bold px-3 py-1.5 hover:bg-[var(--surface-2)] transition-all">
               مسح
             </button>
           </div>
@@ -319,12 +405,12 @@ export default function UaeQuotationGenerator() {
 
         {/* Quick templates dropdown */}
         {showTemplates && (
-          <div className="mt-3 p-3 rounded-xl border border-amber-200 bg-amber-50/60 space-y-2">
-            <p className="text-xs font-bold text-amber-900 mb-2">اختر قالباً لتعبئة بنود توضيحية (مثال فقط — راجع قبل الإرسال)</p>
+          <div className="mt-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] space-y-2">
+            <p className="text-xs font-bold text-[var(--text)] mb-2">اختر قالباً لتعبئة بنود توضيحية (مثال فقط — راجع قبل الإرسال)</p>
             <div className="flex flex-wrap gap-2">
               {QUICK_TEMPLATES.map(t => (
                 <button key={t.id} onClick={() => applyTemplate(t)}
-                  className="rounded-lg bg-white border border-amber-200 text-amber-800 text-xs font-bold px-3 py-1.5 hover:bg-amber-100 transition-all">
+                  className="rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--warning)] text-xs font-bold px-3 py-1.5 hover:bg-[var(--surface-2)] transition-all">
                   {t.label}
                 </button>
               ))}
@@ -335,29 +421,29 @@ export default function UaeQuotationGenerator() {
         {/* Draft controls */}
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <button onClick={saveDraft}
-            className="rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold px-3 py-1.5 hover:bg-indigo-100 transition-all">
-            💾 حفظ المسودة
+            className="rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--orange)] text-xs font-bold px-3 py-1.5 hover:bg-[var(--surface-2)] transition-all">
+            حفظ المسودة
           </button>
           <button onClick={restoreDraft}
-            className="rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-xs font-bold px-3 py-1.5 hover:bg-slate-100 transition-all">
-            ↩️ استعادة آخر مسودة
+            className="rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text-2)] text-xs font-bold px-3 py-1.5 hover:bg-[var(--surface-2)] transition-all">
+            استعادة آخر مسودة
           </button>
           <button onClick={clearDraft}
-            className="rounded-lg bg-rose-50 border border-rose-200 text-rose-600 text-xs font-bold px-3 py-1.5 hover:bg-rose-100 transition-all">
-            🗑 مسح المسودة
+            className="rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--error)] text-xs font-bold px-3 py-1.5 hover:bg-[var(--surface-2)] transition-all">
+            مسح المسودة
           </button>
-          {draftMsg && <span className="text-xs font-bold text-ink-secondary">{draftMsg}</span>}
-          <span className="text-[10px] text-ink-muted mr-auto">محفوظ على هذا الجهاز فقط</span>
+          {draftMsg && <span className="text-xs font-bold text-[var(--text-2)]">{draftMsg}</span>}
+          <span className="text-[10px] text-[var(--text-3)] mr-auto">محفوظ على هذا الجهاز فقط</span>
         </div>
 
         {/* Tab bar */}
-        <div className="mt-4 flex gap-1 rounded-xl bg-slate-100 p-1">
+        <div className="mt-4 flex gap-1 rounded-xl bg-[var(--surface-2)] p-1">
           {[
-            { id: "form",    label: "📝 إدخال البيانات" },
-            { id: "preview", label: "👁 معاينة عرض السعر" },
+            { id: "form",    label: "إدخال البيانات" },
+            { id: "preview", label: "معاينة عرض السعر" },
           ].map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
-              className={`flex-1 rounded-lg text-xs font-bold py-2 transition-all ${activeTab === t.id ? "bg-white shadow text-indigo-700" : "text-ink-secondary hover:text-ink"}`}>
+              className={`flex-1 rounded-lg text-xs font-bold py-2 transition-all ${activeTab === t.id ? "bg-[var(--ink)] text-[var(--ink-text)]" : "text-[var(--text-2)] hover:text-[var(--text)]"}`}>
               {t.label}
             </button>
           ))}
@@ -369,8 +455,8 @@ export default function UaeQuotationGenerator() {
         <div className="space-y-4 no-print">
 
           {/* Step 1 — Quote details */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
-            <h2 className="text-sm font-extrabold text-ink mb-3 flex items-center gap-2">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
+            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>١</span>
               بيانات عرض السعر
             </h2>
@@ -415,18 +501,18 @@ export default function UaeQuotationGenerator() {
               </div>
             </div>
             {/* VAT toggle */}
-            <div className="mt-3 rounded-xl border border-blue-200 bg-blue-50/60 p-3 flex items-center justify-between gap-3 flex-wrap">
+            <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <p className="text-xs font-bold text-blue-900">هل تريد إظهار ضريبة القيمة المضافة (VAT)؟</p>
-                <p className="text-[10px] text-blue-700 mt-0.5">إضافة VAT لعرض السعر لا يجعله فاتورة ضريبية</p>
+                <p className="text-xs font-bold text-[var(--text)]">هل تريد إظهار ضريبة القيمة المضافة (VAT)؟</p>
+                <p className="text-[10px] text-[var(--text-2)] mt-0.5">إضافة VAT لعرض السعر لا يجعله فاتورة ضريبية</p>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => setDetails(d => ({ ...d, showVat: true }))}
-                  className={`rounded-lg px-4 py-1.5 text-xs font-bold border transition-all ${details.showVat ? "bg-blue-600 text-white border-blue-600" : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"}`}>
+                  className={`rounded-lg px-4 py-1.5 text-xs font-bold border transition-all ${details.showVat ? "bg-[var(--orange)] text-[#0D0D0D] border-[var(--orange)]" : "bg-[var(--surface)] text-[var(--text-2)] border-[var(--border)] hover:bg-[var(--surface-2)]"}`}>
                   نعم
                 </button>
                 <button onClick={() => setDetails(d => ({ ...d, showVat: false }))}
-                  className={`rounded-lg px-4 py-1.5 text-xs font-bold border transition-all ${!details.showVat ? "bg-slate-600 text-white border-slate-600" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}`}>
+                  className={`rounded-lg px-4 py-1.5 text-xs font-bold border transition-all ${!details.showVat ? "bg-[var(--ink)] text-[var(--ink-text)] border-[var(--ink)]" : "bg-[var(--surface)] text-[var(--text-2)] border-[var(--border)] hover:bg-[var(--surface-2)]"}`}>
                   لا
                 </button>
               </div>
@@ -434,8 +520,8 @@ export default function UaeQuotationGenerator() {
           </div>
 
           {/* Step 2 — Seller */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
-            <h2 className="text-sm font-extrabold text-ink mb-3 flex items-center gap-2">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
+            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٢</span>
               بيانات منشأتك (المُعِد)
             </h2>
@@ -480,22 +566,22 @@ export default function UaeQuotationGenerator() {
               <div>
                 <label className={labelCls}>
                   الرقم الضريبي TRN (اختياري)
-                  <span className="text-[10px] text-amber-700 font-normal mr-1">(تحقق شكلي فقط)</span>
+                  <span className="text-[10px] text-[var(--warning)] font-normal mr-1">(تحقق شكلي فقط)</span>
                 </label>
-                <input className={`${inputCls} ${seller.trn && !isValidUaeTrn(seller.trn) ? "border-rose-400" : seller.trn && isValidUaeTrn(seller.trn) ? "border-emerald-400" : ""}`}
+                <input className={`${inputCls} ${seller.trn && !isValidUaeTrn(seller.trn) ? "border-[var(--error)]" : seller.trn && isValidUaeTrn(seller.trn) ? "border-[var(--success)]" : ""}`}
                   placeholder="100XXXXXXXXXXXX" dir="ltr" maxLength={15}
                   value={seller.trn}
                   onChange={e => setSeller(s => ({ ...s, trn: e.target.value.replace(/\D/g, "") }))} />
                 {seller.trn && !isValidUaeTrn(seller.trn) && (
-                  <p className="text-[11px] text-rose-600 mt-1">يجب أن يكون الرقم الضريبي 15 رقماً</p>
+                  <p className="text-[11px] text-[var(--error)] mt-1">يجب أن يكون الرقم الضريبي 15 رقماً</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Step 3 — Customer */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
-            <h2 className="text-sm font-extrabold text-ink mb-3 flex items-center gap-2">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
+            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٣</span>
               بيانات العميل
             </h2>
@@ -535,7 +621,7 @@ export default function UaeQuotationGenerator() {
               </div>
               <div>
                 <label className={labelCls}>الرقم الضريبي TRN (اختياري)</label>
-                <input className={`${inputCls} ${customer.trn && !isValidUaeTrn(customer.trn) ? "border-rose-400" : customer.trn && isValidUaeTrn(customer.trn) ? "border-emerald-400" : ""}`}
+                <input className={`${inputCls} ${customer.trn && !isValidUaeTrn(customer.trn) ? "border-[var(--error)]" : customer.trn && isValidUaeTrn(customer.trn) ? "border-[var(--success)]" : ""}`}
                   placeholder="100XXXXXXXXXXXX" dir="ltr" maxLength={15}
                   value={customer.trn}
                   onChange={e => setCustomer(c => ({ ...c, trn: e.target.value.replace(/\D/g, "") }))} />
@@ -544,8 +630,8 @@ export default function UaeQuotationGenerator() {
           </div>
 
           {/* Step 4 — Line items */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
-            <h2 className="text-sm font-extrabold text-ink mb-3 flex items-center gap-2">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
+            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٤</span>
               البنود والخدمات
             </h2>
@@ -556,17 +642,17 @@ export default function UaeQuotationGenerator() {
                 const rateObj = VAT_RATES.find(r => r.id === line.vatRateId) || VAT_RATES[0];
                 const overDiscount = discountExceedsGross(line.qty, line.unitPrice, line.discount);
                 return (
-                  <div key={line.id} className="rounded-xl border border-gray-200 bg-slate-50/50 p-3 space-y-3">
+                  <div key={line.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-ink-secondary">بند {idx + 1}</span>
+                      <span className="text-xs font-extrabold text-[var(--text-2)]">بند {idx + 1}</span>
                       <div className="flex gap-2">
                         <button onClick={() => duplicateLine(line.id)}
-                          className="text-indigo-500 hover:text-indigo-700 text-xs font-bold transition-colors">
+                          className="text-[var(--text-2)] hover:text-[var(--orange)] text-xs font-bold transition-colors">
                           ⧉ تكرار
                         </button>
                         {lines.length > 1 && (
                           <button onClick={() => removeLine(line.id)}
-                            className="text-rose-500 hover:text-rose-700 text-xs font-bold transition-colors">
+                            className="text-[var(--error)] hover:text-[var(--error)] text-xs font-bold transition-colors">
                             ✕ حذف
                           </button>
                         )}
@@ -601,10 +687,10 @@ export default function UaeQuotationGenerator() {
                     <div className="grid gap-3 sm:grid-cols-3">
                       <div>
                         <label className={labelCls}>الخصم ({details.currency})</label>
-                        <input className={`${inputCls} ${overDiscount ? "border-rose-400" : ""}`}
+                        <input className={`${inputCls} ${overDiscount ? "border-[var(--error)]" : ""}`}
                           type="number" min="0" step="any" placeholder="0" dir="ltr" value={line.discount}
                           onChange={e => updateLine(line.id, "discount", e.target.value)} />
-                        {overDiscount && <p className="text-[11px] text-rose-600 mt-0.5">الخصم يتجاوز قيمة البند</p>}
+                        {overDiscount && <p className="text-[11px] text-[var(--error)] mt-0.5">الخصم يتجاوز قيمة البند</p>}
                       </div>
                       {details.showVat && (
                         <div>
@@ -618,7 +704,7 @@ export default function UaeQuotationGenerator() {
                       {/* Line summary chips */}
                       {parseNum(line.unitPrice) > 0 && (
                         <div className="flex flex-wrap gap-1.5 items-end pb-0.5">
-                          <span className="rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 px-2.5 py-0.5">
+                          <span className="rounded-full text-[11px] font-bold bg-[var(--surface-2)] text-[var(--text-2)] px-2.5 py-0.5">
                             {fmt(calc?.gross)} {details.currency}
                           </span>
                           {details.showVat && (
@@ -626,7 +712,7 @@ export default function UaeQuotationGenerator() {
                               {fmt(calc?.vatAmount)}
                             </span>
                           )}
-                          <span className="rounded-full text-[11px] font-black bg-indigo-100 text-indigo-800 px-2.5 py-0.5">
+                          <span className="rounded-full text-[11px] font-black bg-[var(--surface-2)] text-[var(--orange)] px-2.5 py-0.5">
                             {fmt(calc?.lineTotal)}
                           </span>
                         </div>
@@ -638,14 +724,14 @@ export default function UaeQuotationGenerator() {
             </div>
 
             <button onClick={addLine}
-              className="mt-3 w-full rounded-xl border-2 border-dashed border-indigo-200 text-indigo-600 font-bold text-xs py-3 hover:border-indigo-400 hover:bg-indigo-50/50 transition-all">
+              className="mt-3 w-full rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--orange)] font-bold text-xs py-3 hover:border-[var(--text)] hover:bg-[var(--surface-2)]/50 transition-all">
               + إضافة بند جديد
             </button>
           </div>
 
           {/* Step 5 — Optional fees */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
-            <h2 className="text-sm font-extrabold text-ink mb-3 flex items-center gap-2">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
+            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٥</span>
               رسوم إضافية (اختياري)
             </h2>
@@ -685,9 +771,9 @@ export default function UaeQuotationGenerator() {
           </div>
 
           {/* Totals card */}
-          <div className="rounded-2xl border border-indigo-200 bg-indigo-50/40 p-5 shadow-card">
-            <h2 className="text-sm font-extrabold text-ink mb-3 flex items-center gap-2">
-              <span className="text-base">🧮</span> ملخص الإجماليات
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-5 shadow-[var(--shadow)]">
+            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
+              <span className="text-base">ملخص</span> ملخص الإجماليات
             </h2>
             <div className="space-y-2 text-sm">
               {[
@@ -700,16 +786,16 @@ export default function UaeQuotationGenerator() {
                 details.showVat && { label: "إجمالي ضريبة القيمة المضافة", val: totals.totalVat, show: true, bold: true },
                 totals.totalFees > 0 && { label: "إجمالي الرسوم الإضافية", val: totals.totalFees, show: true },
               ].filter(Boolean).filter(r => r && r.show).map((row, i) => (
-                <div key={i} className={`flex justify-between items-center py-1 ${row.bold ? "border-t border-indigo-200 pt-2" : ""}`}>
-                  <span className={`text-xs ${row.bold ? "font-extrabold" : "font-medium"} text-ink-secondary`}>{row.label}</span>
-                  <span className={`text-sm font-black ${row.neg ? "text-rose-700" : row.bold ? "text-blue-800" : "text-ink"}`} dir="ltr">
+                <div key={i} className={`flex justify-between items-center py-1 ${row.bold ? "border-t border-[var(--border)] pt-2" : ""}`}>
+                  <span className={`text-xs ${row.bold ? "font-extrabold" : "font-medium"} text-[var(--text-2)]`}>{row.label}</span>
+                  <span className={`text-sm font-black ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--orange)]" : "text-[var(--text)]"}`} dir="ltr">
                     {row.neg ? "-" : ""}{fmt(Math.abs(row.val))} {details.currency}
                   </span>
                 </div>
               ))}
-              <div className="flex justify-between items-center border-t-2 border-indigo-300 pt-3 mt-2">
-                <span className="text-base font-extrabold text-ink">الإجمالي النهائي</span>
-                <span className="text-xl font-black text-indigo-700" dir="ltr">
+              <div className="flex justify-between items-center border-t-2 border-[var(--border)] pt-3 mt-2">
+                <span className="text-base font-extrabold text-[var(--text)]">الإجمالي النهائي</span>
+                <span className="text-xl font-black text-[var(--orange)]" dir="ltr">
                   {fmt(totals.grandTotal)} {details.currency}
                 </span>
               </div>
@@ -717,8 +803,8 @@ export default function UaeQuotationGenerator() {
           </div>
 
           {/* Step 6 — Terms */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
-            <h2 className="text-sm font-extrabold text-ink mb-3 flex items-center gap-2">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
+            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٦</span>
               الشروط والأحكام
             </h2>
@@ -764,25 +850,25 @@ export default function UaeQuotationGenerator() {
           {/* Action buttons */}
           <div className="flex flex-col sm:flex-row gap-3 no-print">
             <button onClick={() => setActiveTab("preview")}
-              className="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm py-3 transition-all">
-              👁 معاينة عرض السعر
+              className="flex-1 rounded-xl bg-[var(--orange)] hover:bg-[var(--ink)] text-[var(--ink-text)] font-extrabold text-sm py-3 transition-all">
+              معاينة عرض السعر
             </button>
             <button onClick={handlePrint}
-              className="flex-1 rounded-xl border border-indigo-300 text-indigo-700 hover:bg-indigo-50 font-extrabold text-sm py-3 transition-all">
-              🖨 طباعة / PDF
+              className="flex-1 rounded-xl border border-[var(--border)] text-[var(--orange)] hover:bg-[var(--surface-2)] font-extrabold text-sm py-3 transition-all">
+              طباعة / PDF
             </button>
             <button onClick={handleConvertToInvoice}
-              className="rounded-xl border border-emerald-300 text-emerald-700 hover:bg-emerald-50 font-bold text-sm px-5 py-3 transition-all whitespace-nowrap">
-              🧾 تحويل إلى فاتورة
+              className="rounded-xl border border-[var(--success)] text-[var(--success)] hover:bg-[var(--surface-2)] font-bold text-sm px-5 py-3 transition-all whitespace-nowrap">
+              تحويل إلى فاتورة
             </button>
             <button onClick={handleConvertToPO}
-              className="rounded-xl border border-indigo-300 text-indigo-700 hover:bg-indigo-50 font-bold text-sm px-5 py-3 transition-all whitespace-nowrap">
-              📦 تحويل إلى أمر شراء
+              className="rounded-xl border border-[var(--border)] text-[var(--orange)] hover:bg-[var(--surface-2)] font-bold text-sm px-5 py-3 transition-all whitespace-nowrap">
+              تحويل إلى أمر شراء
             </button>
           </div>
 
           {/* Convert notice */}
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 text-xs text-emerald-900 leading-relaxed">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-xs text-[var(--text)] leading-relaxed">
             <span className="font-bold">تحويل إلى فاتورة ضريبية: </span>
             يؤدي هذا الزر إلى فتح مولد الفاتورة الضريبية مع نقل بيانات عرض السعر تلقائياً عبر التخزين المحلي (في هذا الجهاز فقط). راجع بيانات الفاتورة قبل الإرسال.
           </div>
@@ -794,25 +880,25 @@ export default function UaeQuotationGenerator() {
         <>
           <div className="no-print flex gap-3">
             <button onClick={() => setActiveTab("form")}
-              className="rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs px-4 py-2 transition-all">
+              className="rounded-xl border border-[var(--border)] text-[var(--text-2)] hover:bg-[var(--surface-2)] font-bold text-xs px-4 py-2 transition-all">
               ← العودة للتعديل
             </button>
             <button onClick={handlePrint}
-              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 transition-all">
-              🖨 طباعة / PDF
+              className="rounded-xl bg-[var(--orange)] hover:bg-[var(--ink)] text-[var(--ink-text)] font-bold text-xs px-4 py-2 transition-all">
+              طباعة / PDF
             </button>
           </div>
 
           {/* A4 Print Document */}
           <div id="quotation-print"
-            className="bg-white rounded-2xl border border-slate-300 shadow-xl print:shadow-none print:border-0 print:rounded-none print:m-0 overflow-hidden">
+            className="bg-white text-[#0D0D0D] rounded-2xl border border-[var(--border)] shadow-[var(--shadow)] print:shadow-none print:border-0 print:rounded-none print:m-0 overflow-hidden">
 
             {/* Header band */}
-            <div className="bg-indigo-700 px-8 py-6 print:bg-indigo-700" style={{ WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
+            <div className="bg-[var(--ink)] px-8 py-6 print:bg-[var(--ink)]" style={{ WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-white text-2xl font-black">عرض سعر</p>
-                  <p className="text-indigo-200 text-sm font-semibold">QUOTATION</p>
+                  <p className="text-[var(--ink-text)] text-2xl font-black">عرض سعر</p>
+                  <p className="text-[var(--text-3)] text-sm font-semibold">QUOTATION</p>
                   {details.status && (
                     <span className={`mt-2 inline-block rounded-full text-[10px] font-black px-3 py-0.5 border ${STATUS_OPTIONS.find(s => s.id === details.status)?.style || ""}`}>
                       {STATUS_OPTIONS.find(s => s.id === details.status)?.label}
@@ -820,22 +906,22 @@ export default function UaeQuotationGenerator() {
                   )}
                 </div>
                 <div className="text-right" dir="ltr">
-                  <p className="text-indigo-200 text-xs">رقم عرض السعر / Quotation No.</p>
-                  <p className="text-white font-black text-lg">{details.quoteNumber || "—"}</p>
-                  {details.projectRef && <p className="text-indigo-300 text-xs mt-0.5">Ref: {details.projectRef}</p>}
-                  <p className="text-indigo-200 text-xs mt-1">{details.currency}</p>
+                  <p className="text-[var(--text-3)] text-xs">رقم عرض السعر / Quotation No.</p>
+                  <p className="text-[var(--ink-text)] font-black text-lg">{details.quoteNumber || "—"}</p>
+                  {details.projectRef && <p className="text-[var(--text-3)] text-xs mt-0.5">Ref: {details.projectRef}</p>}
+                  <p className="text-[var(--text-3)] text-xs mt-1">{details.currency}</p>
                 </div>
               </div>
               {/* Date strip */}
               <div className="mt-4 flex flex-wrap gap-6 text-xs" dir="ltr">
                 <div>
-                  <span className="text-indigo-300">التاريخ / Date: </span>
-                  <span className="text-white font-bold">{details.issueDate || "—"}</span>
+                  <span className="text-[var(--text-3)]">التاريخ / Date: </span>
+                  <span className="text-[var(--ink-text)] font-bold">{details.issueDate || "—"}</span>
                 </div>
                 {details.validUntil && (
                   <div>
-                    <span className="text-indigo-300">صالح حتى / Valid Until: </span>
-                    <span className="text-white font-bold">{details.validUntil}</span>
+                    <span className="text-[var(--text-3)]">صالح حتى / Valid Until: </span>
+                    <span className="text-[var(--ink-text)] font-bold">{details.validUntil}</span>
                   </div>
                 )}
               </div>
@@ -845,26 +931,26 @@ export default function UaeQuotationGenerator() {
 
               {/* Seller + Customer */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-4">
-                  <p className="text-[10px] font-black text-indigo-600 uppercase tracking-wide mb-2">إعداد · Prepared By</p>
-                  <p className="font-extrabold text-ink text-sm">{seller.name || "—"}</p>
-                  {seller.contactPerson && <p className="text-xs text-ink-secondary mt-0.5">{seller.contactPerson}</p>}
-                  {seller.address && <p className="text-xs text-ink-secondary">{seller.address}</p>}
-                  {seller.emirate && <p className="text-xs text-ink-secondary">{seller.emirate}، الإمارات</p>}
-                  {seller.phone && <p className="text-xs text-ink-secondary" dir="ltr">{seller.phone}</p>}
-                  {seller.email && <p className="text-xs text-ink-secondary" dir="ltr">{seller.email}</p>}
-                  {seller.website && <p className="text-xs text-indigo-600" dir="ltr">{seller.website}</p>}
-                  {seller.trn && <p className="text-[10px] text-ink-muted mt-1">TRN: <span dir="ltr">{seller.trn}</span></p>}
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+                  <p className="text-[10px] font-black text-[var(--orange)] uppercase tracking-wide mb-2">إعداد · Prepared By</p>
+                  <p className="font-extrabold text-[var(--text)] text-sm">{seller.name || "—"}</p>
+                  {seller.contactPerson && <p className="text-xs text-[var(--text-2)] mt-0.5">{seller.contactPerson}</p>}
+                  {seller.address && <p className="text-xs text-[var(--text-2)]">{seller.address}</p>}
+                  {seller.emirate && <p className="text-xs text-[var(--text-2)]">{seller.emirate}، الإمارات</p>}
+                  {seller.phone && <p className="text-xs text-[var(--text-2)]" dir="ltr">{seller.phone}</p>}
+                  {seller.email && <p className="text-xs text-[var(--text-2)]" dir="ltr">{seller.email}</p>}
+                  {seller.website && <p className="text-xs text-[var(--orange)]" dir="ltr">{seller.website}</p>}
+                  {seller.trn && <p className="text-[10px] text-[var(--text-3)] mt-1">TRN: <span dir="ltr">{seller.trn}</span></p>}
                 </div>
-                <div className="rounded-xl border border-slate-200 bg-slate-50/40 p-4">
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-wide mb-2">مُقدَّم إلى · Prepared For</p>
-                  <p className="font-extrabold text-ink text-sm">{customer.name || "—"}</p>
-                  {customer.contactPerson && <p className="text-xs text-ink-secondary mt-0.5">{customer.contactPerson}</p>}
-                  {customer.address && <p className="text-xs text-ink-secondary">{customer.address}</p>}
-                  {customer.emirate && <p className="text-xs text-ink-secondary">{customer.emirate}، الإمارات</p>}
-                  {customer.phone && <p className="text-xs text-ink-secondary" dir="ltr">{customer.phone}</p>}
-                  {customer.email && <p className="text-xs text-ink-secondary" dir="ltr">{customer.email}</p>}
-                  {customer.trn && <p className="text-[10px] text-ink-muted mt-1">TRN: <span dir="ltr">{customer.trn}</span></p>}
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+                  <p className="text-[10px] font-black text-[var(--text-2)] uppercase tracking-wide mb-2">مُقدَّم إلى · Prepared For</p>
+                  <p className="font-extrabold text-[var(--text)] text-sm">{customer.name || "—"}</p>
+                  {customer.contactPerson && <p className="text-xs text-[var(--text-2)] mt-0.5">{customer.contactPerson}</p>}
+                  {customer.address && <p className="text-xs text-[var(--text-2)]">{customer.address}</p>}
+                  {customer.emirate && <p className="text-xs text-[var(--text-2)]">{customer.emirate}، الإمارات</p>}
+                  {customer.phone && <p className="text-xs text-[var(--text-2)]" dir="ltr">{customer.phone}</p>}
+                  {customer.email && <p className="text-xs text-[var(--text-2)]" dir="ltr">{customer.email}</p>}
+                  {customer.trn && <p className="text-[10px] text-[var(--text-3)] mt-1">TRN: <span dir="ltr">{customer.trn}</span></p>}
                 </div>
               </div>
 
@@ -872,7 +958,7 @@ export default function UaeQuotationGenerator() {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs border-collapse">
                   <thead>
-                    <tr className="bg-slate-100 text-ink-secondary">
+                    <tr className="bg-[var(--surface-2)] text-[var(--text-2)]">
                       <th className="text-right p-2 font-extrabold">#</th>
                       <th className="text-right p-2 font-extrabold">الوصف / Description</th>
                       <th className="text-right p-2 font-extrabold">الكمية / Qty</th>
@@ -889,32 +975,32 @@ export default function UaeQuotationGenerator() {
                       const calc = lineCalcs[idx];
                       const rateObj = VAT_RATES.find(r => r.id === line.vatRateId) || VAT_RATES[0];
                       return (
-                        <tr key={line.id} className="hover:bg-slate-50/50">
-                          <td className="p-2 text-ink-muted">{idx + 1}</td>
-                          <td className="p-2 font-medium text-ink">{line.name || "—"}</td>
-                          <td className="p-2 text-ink-secondary" dir="ltr">{line.qty}</td>
-                          <td className="p-2 text-ink-muted">{line.unit}</td>
-                          <td className="p-2 text-ink-secondary" dir="ltr">{fmt(parseNum(line.unitPrice))}</td>
-                          <td className="p-2 text-rose-700" dir="ltr">{parseNum(line.discount) > 0 ? `(${fmt(parseNum(line.discount))})` : "—"}</td>
+                        <tr key={line.id} className="hover:bg-[var(--surface-2)]">
+                          <td className="p-2 text-[var(--text-3)]">{idx + 1}</td>
+                          <td className="p-2 font-medium text-[var(--text)]">{line.name || "—"}</td>
+                          <td className="p-2 text-[var(--text-2)]" dir="ltr">{line.qty}</td>
+                          <td className="p-2 text-[var(--text-3)]">{line.unit}</td>
+                          <td className="p-2 text-[var(--text-2)]" dir="ltr">{fmt(parseNum(line.unitPrice))}</td>
+                          <td className="p-2 text-[var(--error)]" dir="ltr">{parseNum(line.discount) > 0 ? `(${fmt(parseNum(line.discount))})` : "—"}</td>
                           {details.showVat && (
                             <td className="p-2">
                               <span className={`rounded-full text-[10px] font-bold px-1.5 py-0.5 ${rateObj.color}`}>{rateObj.tag}</span>
                             </td>
                           )}
                           {details.showVat && (
-                            <td className="p-2 text-blue-700 font-medium" dir="ltr">{fmt(calc?.vatAmount)}</td>
+                            <td className="p-2 text-[var(--text-2)] font-medium" dir="ltr">{fmt(calc?.vatAmount)}</td>
                           )}
-                          <td className="p-2 font-black text-ink" dir="ltr">{fmt(calc?.lineTotal)}</td>
+                          <td className="p-2 font-black text-[var(--text)]" dir="ltr">{fmt(calc?.lineTotal)}</td>
                         </tr>
                       );
                     })}
                     {/* Optional fees rows */}
                     {[fees.shipping, fees.service, fees.custom].filter(f => parseNum(f.amount) > 0 && f.label).map((f, i) => (
-                      <tr key={`fee-${i}`} className="bg-slate-50/30">
-                        <td className="p-2 text-ink-muted">—</td>
-                        <td className="p-2 text-ink-secondary italic">{f.label}</td>
+                      <tr key={`fee-${i}`} className="bg-[var(--surface-2)]">
+                        <td className="p-2 text-[var(--text-3)]">—</td>
+                        <td className="p-2 text-[var(--text-2)] italic">{f.label}</td>
                         <td colSpan={details.showVat ? 6 : 4} />
-                        <td className="p-2 font-bold text-ink" dir="ltr">{fmt(parseNum(f.amount))}</td>
+                        <td className="p-2 font-bold text-[var(--text)]" dir="ltr">{fmt(parseNum(f.amount))}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -923,7 +1009,7 @@ export default function UaeQuotationGenerator() {
 
               {/* Totals box */}
               <div className="flex justify-end">
-                <div className="w-full sm:w-72 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden">
+                <div className="w-full sm:w-72 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] overflow-hidden">
                   {[
                     { label: "المجموع الفرعي / Subtotal", val: totals.grossTotal },
                     totals.totalDiscount > 0 && { label: "الخصومات / Discounts", val: -totals.totalDiscount, neg: true },
@@ -933,14 +1019,14 @@ export default function UaeQuotationGenerator() {
                     details.showVat && { label: "إجمالي VAT / Total VAT", val: totals.totalVat, bold: true },
                     totals.totalFees > 0 && { label: "رسوم إضافية / Fees", val: totals.totalFees },
                   ].filter(Boolean).map((row, i) => (
-                    <div key={i} className={`flex justify-between px-4 py-2 text-xs ${row.bold ? "bg-blue-50 border-t border-blue-200" : "border-t border-slate-100 first:border-t-0"}`}>
-                      <span className={row.bold ? "font-extrabold text-blue-800" : "text-ink-secondary"}>{row.label}</span>
-                      <span className={`font-black ${row.neg ? "text-rose-700" : row.bold ? "text-blue-800" : "text-ink"}`} dir="ltr">
+                    <div key={i} className={`flex justify-between px-4 py-2 text-xs ${row.bold ? "bg-[var(--surface-2)] border-t border-[var(--border)]" : "border-t border-[var(--border)] first:border-t-0"}`}>
+                      <span className={row.bold ? "font-extrabold text-[var(--orange)]" : "text-[var(--text-2)]"}>{row.label}</span>
+                      <span className={`font-black ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--orange)]" : "text-[var(--text)]"}`} dir="ltr">
                         {row.neg ? "-" : ""}{fmt(Math.abs(row.val))} {details.currency}
                       </span>
                     </div>
                   ))}
-                  <div className="flex justify-between px-4 py-3 bg-indigo-700 text-white">
+                  <div className="flex justify-between px-4 py-3 bg-[var(--ink)] text-[var(--ink-text)]">
                     <span className="text-sm font-extrabold">الإجمالي / Grand Total</span>
                     <span className="text-sm font-black" dir="ltr">{fmt(totals.grandTotal)} {details.currency}</span>
                   </div>
@@ -949,44 +1035,44 @@ export default function UaeQuotationGenerator() {
 
               {/* Terms */}
               {(terms.validity || terms.payment || terms.delivery || terms.warranty || terms.exclusions || terms.cancellation) && (
-                <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-2">
-                  <p className="text-xs font-extrabold text-ink border-b border-slate-200 pb-2">الشروط والأحكام / Terms & Conditions</p>
-                  <div className="grid gap-1.5 sm:grid-cols-2 text-xs text-ink-secondary">
-                    {terms.validity    && <p><span className="font-bold text-ink">الصلاحية: </span>{terms.validity}</p>}
-                    {terms.payment     && <p><span className="font-bold text-ink">الدفع: </span>{terms.payment}</p>}
-                    {terms.delivery    && <p><span className="font-bold text-ink">التسليم: </span>{terms.delivery}</p>}
-                    {terms.warranty    && <p><span className="font-bold text-ink">الضمان: </span>{terms.warranty}</p>}
-                    {terms.exclusions  && <p className="sm:col-span-2"><span className="font-bold text-ink">الاستثناءات: </span>{terms.exclusions}</p>}
-                    {terms.cancellation && <p className="sm:col-span-2"><span className="font-bold text-ink">الإلغاء: </span>{terms.cancellation}</p>}
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4 space-y-2">
+                  <p className="text-xs font-extrabold text-[var(--text)] border-b border-[var(--border)] pb-2">الشروط والأحكام / Terms & Conditions</p>
+                  <div className="grid gap-1.5 sm:grid-cols-2 text-xs text-[var(--text-2)]">
+                    {terms.validity    && <p><span className="font-bold text-[var(--text)]">الصلاحية: </span>{terms.validity}</p>}
+                    {terms.payment     && <p><span className="font-bold text-[var(--text)]">الدفع: </span>{terms.payment}</p>}
+                    {terms.delivery    && <p><span className="font-bold text-[var(--text)]">التسليم: </span>{terms.delivery}</p>}
+                    {terms.warranty    && <p><span className="font-bold text-[var(--text)]">الضمان: </span>{terms.warranty}</p>}
+                    {terms.exclusions  && <p className="sm:col-span-2"><span className="font-bold text-[var(--text)]">الاستثناءات: </span>{terms.exclusions}</p>}
+                    {terms.cancellation && <p className="sm:col-span-2"><span className="font-bold text-[var(--text)]">الإلغاء: </span>{terms.cancellation}</p>}
                   </div>
                 </div>
               )}
 
               {/* Notes */}
               {terms.notes && (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-[10px] font-bold text-ink-muted mb-1">ملاحظات / Notes</p>
-                  <p className="text-xs text-ink-secondary leading-relaxed">{terms.notes}</p>
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+                  <p className="text-[10px] font-bold text-[var(--text-3)] mb-1">ملاحظات / Notes</p>
+                  <p className="text-xs text-[var(--text-2)] leading-relaxed">{terms.notes}</p>
                 </div>
               )}
 
               {/* Signatures */}
               <div className="grid grid-cols-2 gap-8 pt-4">
                 <div className="text-center">
-                  <div className="border-b-2 border-slate-300 mb-2 h-12" />
-                  <p className="text-xs font-bold text-ink-secondary">إعداد / Prepared By</p>
-                  <p className="text-[10px] text-ink-muted">{seller.name || ""}</p>
+                  <div className="border-b-2 border-[var(--border)] mb-2 h-12" />
+                  <p className="text-xs font-bold text-[var(--text-2)]">إعداد / Prepared By</p>
+                  <p className="text-[10px] text-[var(--text-3)]">{seller.name || ""}</p>
                 </div>
                 <div className="text-center">
-                  <div className="border-b-2 border-slate-300 mb-2 h-12" />
-                  <p className="text-xs font-bold text-ink-secondary">اعتماد العميل / Client Approval</p>
-                  <p className="text-[10px] text-ink-muted">{customer.name || ""}</p>
+                  <div className="border-b-2 border-[var(--border)] mb-2 h-12" />
+                  <p className="text-xs font-bold text-[var(--text-2)]">اعتماد العميل / Client Approval</p>
+                  <p className="text-[10px] text-[var(--text-3)]">{customer.name || ""}</p>
                 </div>
               </div>
 
               {/* Disclaimer */}
-              <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3 text-center">
-                <p className="text-[10px] text-amber-800 leading-relaxed">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-center">
+                <p className="text-[10px] text-[var(--warning)] leading-relaxed">
                   هذا عرض سعر تجاري وليس فاتورة ضريبية — غير مرتبط بهيئة الضرائب الاتحادية (FTA) ولا يحمل اعتمادها.
                   This is a commercial quotation, not a Tax Invoice. Not affiliated with or approved by the UAE FTA.
                 </p>

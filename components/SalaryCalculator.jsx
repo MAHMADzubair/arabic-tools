@@ -1,25 +1,31 @@
 "use client";
 
+/**
+ * components/SalaryCalculator.jsx
+ * Ink & Signal: net salary calculator.
+ * Tax/social logic (calcTax, calcSocial, useMemo) is unchanged, except:
+ * inputs are clamped to >= 0, and the unused `showPayslip` state is removed.
+ */
 import { useState, useMemo } from "react";
 
-/* ─── Country Tax Configs ────────────────────────────────────────────────── */
+/* ─── Country Tax Configs (data unchanged, flags removed) ───────────────── */
 const COUNTRIES = [
   {
-    id: "sa", name: "🇸🇦 السعودية", currency: "SAR", symbol: "ر.س",
+    id: "sa", code: "SA", name: "السعودية", currency: "SAR", symbol: "ر.س",
     taxName: "ضريبة الدخل", socialName: "التأمينات الاجتماعية (جوسي)",
     hasTax: false, socialRate: 0.10, socialCap: 45000,
     allowances: { housing: 0.25, transport: 800, food: 500 },
     note: "لا توجد ضريبة دخل على الرواتب في السعودية"
   },
   {
-    id: "ae", name: "🇦🇪 الإمارات", currency: "AED", symbol: "د.إ",
+    id: "ae", code: "AE", name: "الإمارات", currency: "AED", symbol: "د.إ",
     taxName: "ضريبة الدخل", socialName: "الضمان الاجتماعي",
     hasTax: false, socialRate: 0, socialCap: 0,
     allowances: { housing: 0.25, transport: 600, food: 400 },
     note: "لا توجد ضريبة دخل على الرواتب في الإمارات"
   },
   {
-    id: "eg", name: "🇪🇬 مصر", currency: "EGP", symbol: "ج.م",
+    id: "eg", code: "EG", name: "مصر", currency: "EGP", symbol: "ج.م",
     taxName: "ضريبة الدخل", socialName: "التأمين الاجتماعي",
     hasTax: true, socialRate: 0.11, socialCap: 12000,
     allowances: { housing: 0.20, transport: 500, food: 300 },
@@ -35,7 +41,7 @@ const COUNTRIES = [
     note: "شرائح ضريبية تصاعدية على الراتب الشهري"
   },
   {
-    id: "pk", name: "🇵🇰 باكستان", currency: "PKR", symbol: "₨",
+    id: "pk", code: "PK", name: "باكستان", currency: "PKR", symbol: "₨",
     taxName: "ضريبة الدخل", socialName: "EOBI",
     hasTax: true, socialRate: 0, socialFixed: 370, socialCap: 0,
     allowances: { housing: 0.45, transport: 0.10, food: 0 },
@@ -50,7 +56,7 @@ const COUNTRIES = [
     note: "شرائح ضريبية 2024-25 (سنوي / 12)"
   },
   {
-    id: "gb", name: "🇬🇧 المملكة المتحدة", currency: "GBP", symbol: "£",
+    id: "gb", code: "GB", name: "المملكة المتحدة", currency: "GBP", symbol: "£",
     taxName: "ضريبة الدخل", socialName: "التأمين الوطني (NI)",
     hasTax: true, socialRate: 0.08, socialCap: 50270/12,
     allowances: { housing: 0, transport: 0, food: 0 },
@@ -64,7 +70,7 @@ const COUNTRIES = [
     note: "يشمل NI عند الدخل فوق £12,570 سنوياً"
   },
   {
-    id: "us", name: "🇺🇸 الولايات المتحدة", currency: "USD", symbol: "$",
+    id: "us", code: "US", name: "الولايات المتحدة", currency: "USD", symbol: "$",
     taxName: "ضريبة الدخل الفيدرالية", socialName: "الضمان الاجتماعي + Medicare",
     hasTax: true, socialRate: 0.0765, socialCap: 168600/12,
     allowances: { housing: 0, transport: 0, food: 0 },
@@ -82,7 +88,7 @@ const COUNTRIES = [
   },
 ];
 
-/* ─── Tax Calculation ────────────────────────────────────────────────────── */
+/* ─── Tax Calculation (unchanged) ───────────────────────────────────────── */
 function calcTax(gross, country) {
   if (!country.hasTax || !country.brackets) return 0;
   let taxable = gross;
@@ -108,6 +114,37 @@ function calcSocial(gross, country) {
   return base * country.socialRate;
 }
 
+const nn = (v) => Math.max(0, Number(v) || 0);
+
+/** Keeps signs / digits / % in a stable left-to-right order inside RTL text. */
+function Num({ children }) {
+  return <span className="sc-ltr">{children}</span>;
+}
+
+function Field({ id, label, hint, value, onChange, sym, placeholder = "0", big = false }) {
+  return (
+    <div className="sc-field">
+      <label htmlFor={id} className="sc-label">
+        <span>{label}</span>
+        {hint && <span className="sc-hint">{hint}</span>}
+      </label>
+      <div className="sc-input-wrap">
+        <span className="sc-sym" aria-hidden="true">{sym}</span>
+        <input
+          id={id}
+          type="number"
+          inputMode="decimal"
+          min="0"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`sc-input ${big ? "sc-input-big" : ""}`}
+          placeholder={placeholder}
+        />
+      </div>
+    </div>
+  );
+}
+
 /* ─── Component ─────────────────────────────────────────────────────────── */
 export default function SalaryCalculator({
   initialCountry = "sa",
@@ -123,16 +160,13 @@ export default function SalaryCalculator({
   const [otherAllowances, setOtherAllowances] = useState(0);
   const [otherDeductions, setOtherDeductions] = useState(0);
   const [period, setPeriod] = useState("monthly"); // monthly | annual
-  const [showPayslip, setShowPayslip] = useState(false);
 
   const country = COUNTRIES.find((c) => c.id === countryId);
 
-  // Auto-set allowances when country changes
   const handleCountryChange = (id) => {
     const c = COUNTRIES.find((x) => x.id === id);
     if (!c) return;
     setCountryId(id);
-    // Reset allowances based on country presets
     if (c.allowances.housing < 1) {
       setHousingAllowance(Math.round(grossSalary * c.allowances.housing));
     } else {
@@ -148,17 +182,17 @@ export default function SalaryCalculator({
 
   const result = useMemo(() => {
     if (!country || !grossSalary) return null;
-    const gross = Number(grossSalary);
-    const housing = Number(housingAllowance);
-    const transport = Number(transportAllowance);
-    const food = Number(foodAllowance);
-    const other = Number(otherAllowances);
+    const gross = nn(grossSalary);
+    const housing = nn(housingAllowance);
+    const transport = nn(transportAllowance);
+    const food = nn(foodAllowance);
+    const other = nn(otherAllowances);
     const totalAllowances = housing + transport + food + other;
     const totalGross = gross + totalAllowances;
 
     const incomeTax = calcTax(gross, country);
     const socialInsurance = calcSocial(gross, country);
-    const extraDeductions = Number(otherDeductions);
+    const extraDeductions = nn(otherDeductions);
     const totalDeductions = incomeTax + socialInsurance + extraDeductions;
     const netPay = totalGross - totalDeductions;
     const effectiveTaxRate = totalGross > 0 ? (totalDeductions / totalGross) * 100 : 0;
@@ -185,264 +219,461 @@ export default function SalaryCalculator({
   const sym = country?.symbol || "";
 
   function fmt(n) {
-    return `${sym} ${Math.round(n).toLocaleString("ar-EG")}`;
+    return `${sym} ${Math.round(n).toLocaleString("en-US")}`;
   }
 
   const deductionItems = result
     ? [
-        { label: country?.taxName || "ضريبة الدخل", value: result.incomeTax, color: "bg-red-400" },
-        { label: country?.socialName || "التأمين الاجتماعي", value: result.socialInsurance, color: "bg-orange-400" },
-        { label: "خصومات أخرى", value: result.extraDeductions, color: "bg-yellow-400" },
+        { label: country?.taxName || "ضريبة الدخل", value: result.incomeTax },
+        { label: country?.socialName || "التأمين الاجتماعي", value: result.socialInsurance },
+        { label: "خصومات أخرى", value: result.extraDeductions },
       ]
     : [];
 
+  const netPct = result ? Math.min(100, Math.max(0, 100 - result.effectiveTaxRate)) : 0;
+  const housingPct = country?.allowances?.housing;
+  const housingHint = housingPct > 0 && housingPct < 1 ? `متعارف عليه: ${Math.round(housingPct * 100)}%` : "";
+
+  const allowanceFields = [
+    { id: "sc-housing", label: "بدل السكن", value: housingAllowance, setter: setHousingAllowance, hint: housingHint },
+    { id: "sc-transport", label: "بدل النقل", value: transportAllowance, setter: setTransportAllowance, hint: "" },
+    { id: "sc-food", label: "بدل الطعام", value: foodAllowance, setter: setFoodAllowance, hint: "" },
+    { id: "sc-other", label: "بدلات أخرى", value: otherAllowances, setter: setOtherAllowances, hint: "" },
+  ];
+
+  const earnings = result
+    ? [
+        { label: "الراتب الأساسي", value: result.grossBasic },
+        result.housing > 0 && { label: "بدل السكن", value: result.housing },
+        result.transport > 0 && { label: "بدل النقل", value: result.transport },
+        result.food > 0 && { label: "بدل الطعام", value: result.food },
+        result.other > 0 && { label: "بدلات أخرى", value: result.other },
+      ].filter(Boolean)
+    : [];
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12" dir="rtl">
+    <div className="sc-root" dir="rtl">
+      <SalaryStyles />
+
       {/* Header */}
-      <div className="mb-8 text-center space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>💰</span><span>{pageBadge || "حاسبة الراتب الصافي"}</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">
-          {pageTitle || "حاسبة الراتب الصافي وصافي الأجر"}
-        </h1>
-        <p className="mx-auto max-w-xl text-sm text-ink-secondary sm:text-base">
+      <header className="sc-header sc-noprint">
+        <p className="sc-kicker-tag">{pageBadge || "حاسبة الراتب الصافي"}</p>
+        <h1 className="sc-h1">{pageTitle || "حاسبة الراتب الصافي وصافي الأجر"}</h1>
+        <p className="sc-lead">
           {pageDesc || "احسب راتبك الصافي بعد الضرائب والتأمينات الاجتماعية والبدلات لـ 6 دول."}
         </p>
-      </div>
+      </header>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        {/* ─── Left: Inputs ─── */}
-        <div className="lg:col-span-3 space-y-5">
-
+      <div className="sc-grid">
+        {/* ─── Inputs ─── */}
+        <div className="sc-col sc-noprint">
           {/* Country */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">🌍</span>
+          <section className="sc-card" aria-labelledby="sc-s1">
+            <h2 id="sc-s1" className="sc-h2">
+              <span className="sc-num" aria-hidden="true">1</span>
               الدولة / نظام الضرائب
             </h2>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {COUNTRIES.map((c) => (
-                <button key={c.id} type="button" onClick={() => handleCountryChange(c.id)}
-                  className={`rounded-xl border p-3 text-xs font-semibold text-right transition-all ${
-                    countryId === c.id
-                      ? "border-brand bg-brand-light text-brand-dark shadow-sm"
-                      : "border-brand-border bg-brand-surface/40 text-ink-secondary hover:border-brand-200 hover:bg-white"
-                  }`}>
-                  <span>{c.name}</span>
-                  <span className="block text-[10px] font-normal opacity-70 mt-0.5">
-                    {c.hasTax ? `ضريبة تصاعدية` : "بدون ضريبة دخل"}
-                  </span>
-                </button>
-              ))}
+            <div className="sc-countries">
+              {COUNTRIES.map((c) => {
+                const on = countryId === c.id;
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => handleCountryChange(c.id)}
+                    className="sc-country"
+                  >
+                    <span className="sc-country-top">
+                      <span className="sc-code" aria-hidden="true">{c.code}</span>
+                      {on && <span className="sc-check" aria-hidden="true">✓</span>}
+                    </span>
+                    <span className="sc-country-name">{c.name}</span>
+                    <span className="sc-sub">{c.hasTax ? "ضريبة تصاعدية" : "بدون ضريبة دخل"}</span>
+                  </button>
+                );
+              })}
             </div>
             {country?.note && (
-              <p className="text-xs text-brand-700 bg-brand-light/60 rounded-xl p-2.5">
-                ℹ️ {country.note}
+              <p className="sc-note-line">
+                <span className="sc-tag" aria-hidden="true">i</span>
+                <span>{country.note}</span>
               </p>
             )}
-          </div>
+          </section>
 
-          {/* Period toggle + Gross Salary */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">💵</span>
+          {/* Gross + period */}
+          <section className="sc-card" aria-labelledby="sc-s2">
+            <div className="sc-title-row">
+              <h2 id="sc-s2" className="sc-h2">
+                <span className="sc-num" aria-hidden="true">2</span>
                 الراتب الأساسي
               </h2>
-              <div className="flex rounded-xl border border-brand-border overflow-hidden text-xs font-semibold">
-                <button type="button" onClick={() => setPeriod("monthly")}
-                  className={`px-3 py-1.5 transition-colors ${period === "monthly" ? "bg-brand text-white" : "bg-white text-ink-secondary hover:bg-brand-light"}`}>
-                  شهري
-                </button>
-                <button type="button" onClick={() => setPeriod("annual")}
-                  className={`px-3 py-1.5 transition-colors ${period === "annual" ? "bg-brand text-white" : "bg-white text-ink-secondary hover:bg-brand-light"}`}>
-                  سنوي
-                </button>
+              <div className="sc-seg" role="group" aria-label="فترة العرض">
+                <button type="button" aria-pressed={period === "monthly"} onClick={() => setPeriod("monthly")}>شهري</button>
+                <button type="button" aria-pressed={period === "annual"} onClick={() => setPeriod("annual")}>سنوي</button>
               </div>
             </div>
-            <div className="relative">
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-ink-muted">{sym}</span>
-              <input
-                type="number" min="0" value={grossSalary}
-                onChange={(e) => setGrossSalary(e.target.value)}
-                className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-3 pr-10 pl-4 text-lg font-extrabold text-ink focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20"
-                placeholder="الراتب الأساسي الشهري"
-              />
-            </div>
-            <p className="text-xs text-ink-muted">أدخل الراتب الأساسي الشهري — ستُضاف البدلات أدناه</p>
-          </div>
+            <Field
+              id="sc-gross"
+              label="الراتب الأساسي الشهري"
+              value={grossSalary}
+              onChange={setGrossSalary}
+              sym={sym}
+              placeholder="الراتب الأساسي الشهري"
+              big
+            />
+            <p className="sc-help">
+              أدخل الراتب الأساسي الشهري دائماً. خيار «سنوي» يعرض النتائج مضروبة في 12 فقط.
+            </p>
+          </section>
 
           {/* Allowances */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">➕</span>
+          <section className="sc-card" aria-labelledby="sc-s3">
+            <h2 id="sc-s3" className="sc-h2">
+              <span className="sc-num" aria-hidden="true">3</span>
               البدلات الشهرية
             </h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {[
-                { label: "🏠 بدل السكن", value: housingAllowance, setter: setHousingAllowance, hint: country?.allowances?.housing < 1 ? `متعارف عليه: ${country.allowances.housing * 100}%` : "" },
-                { label: "🚗 بدل النقل", value: transportAllowance, setter: setTransportAllowance, hint: "" },
-                { label: "🍽 بدل الطعام", value: foodAllowance, setter: setFoodAllowance, hint: "" },
-                { label: "🎁 بدلات أخرى", value: otherAllowances, setter: setOtherAllowances, hint: "" },
-              ].map((field) => (
-                <div key={field.label} className="space-y-1">
-                  <label className="text-xs font-semibold text-ink-secondary flex justify-between">
-                    <span>{field.label}</span>
-                    {field.hint && <span className="text-ink-muted">{field.hint}</span>}
-                  </label>
-                  <div className="relative">
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                    <input type="number" min="0" value={field.value}
-                      onChange={(e) => field.setter(e.target.value)}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-8 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                      placeholder="0"
-                    />
-                  </div>
-                </div>
+            <div className="sc-two">
+              {allowanceFields.map((f) => (
+                <Field key={f.id} id={f.id} label={f.label} hint={f.hint}
+                  value={f.value} onChange={f.setter} sym={sym} />
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Extra Deductions */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">➖</span>
+          {/* Extra deductions */}
+          <section className="sc-card" aria-labelledby="sc-s4">
+            <h2 id="sc-s4" className="sc-h2">
+              <span className="sc-num" aria-hidden="true">4</span>
               خصومات إضافية شهرية
             </h2>
-            <div className="relative">
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-              <input type="number" min="0" value={otherDeductions}
-                onChange={(e) => setOtherDeductions(e.target.value)}
-                className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-8 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                placeholder="قرض، تأمين صحي إضافي..."
-              />
-            </div>
-          </div>
+            <Field
+              id="sc-extra"
+              label="قرض، تأمين صحي إضافي..."
+              value={otherDeductions}
+              onChange={setOtherDeductions}
+              sym={sym}
+            />
+          </section>
         </div>
 
-        {/* ─── Right: Results ─── */}
-        <div className="lg:col-span-2">
-          <div className="sticky top-24 space-y-4">
+        {/* ─── Results ─── */}
+        <div className="sc-col sc-sticky">
+          <section className="sc-result" aria-live="polite" aria-labelledby="sc-res-title">
+            <h2 id="sc-res-title" className="sc-result-label">
+              صافي الراتب ({period === "monthly" ? "شهرياً" : "سنوياً"})
+            </h2>
+            <p className="sc-big"><Num>{result ? fmt(result.netPay) : "—"}</Num></p>
 
-            {/* Net Pay Hero */}
-            <div className="rounded-2xl bg-hero-gradient p-6 text-white shadow-lg">
-              <p className="text-sm font-medium opacity-80">صافي الراتب ({period === "monthly" ? "شهرياً" : "سنوياً"})</p>
-              <p className="text-4xl font-extrabold tracking-tight mt-1">
-                {result ? fmt(result.netPay) : "—"}
-              </p>
-              {result && (
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  <div className="rounded-xl bg-white/15 p-3 backdrop-blur-sm text-center">
-                    <p className="text-[10px] opacity-80">إجمالي الراتب</p>
-                    <p className="text-sm font-bold">{fmt(result.totalGross)}</p>
+            {result && (
+              <>
+                <div className="sc-stats">
+                  <div className="sc-stat">
+                    <p>إجمالي الراتب</p>
+                    <strong><Num>{fmt(result.totalGross)}</Num></strong>
                   </div>
-                  <div className="rounded-xl bg-white/15 p-3 backdrop-blur-sm text-center">
-                    <p className="text-[10px] opacity-80">إجمالي الخصومات</p>
-                    <p className="text-sm font-bold">{fmt(result.totalDeductions)}</p>
+                  <div className="sc-stat">
+                    <p>إجمالي الخصومات</p>
+                    <strong><Num>{fmt(result.totalDeductions)}</Num></strong>
                   </div>
                 </div>
-              )}
-              {result && (
-                <div className="mt-3 flex items-center gap-2">
-                  <div className="h-2 flex-1 rounded-full bg-white/20 overflow-hidden">
-                    <div className="h-full bg-white/80 rounded-full transition-all"
-                      style={{ width: `${100 - result.effectiveTaxRate}%` }} />
+
+                <div className="sc-barbox">
+                  <div
+                    className="sc-track"
+                    role="img"
+                    aria-label={`الصافي ${netPct.toFixed(1)}% من إجمالي الراتب`}
+                  >
+                    <div className="sc-fill" style={{ width: `${netPct}%` }} />
                   </div>
-                  <span className="text-xs font-bold opacity-90">
-                    {(100 - result.effectiveTaxRate).toFixed(1)}٪ صافي
-                  </span>
+                  <p className="sc-bar-text"><Num>{netPct.toFixed(1)}%</Num> صافي</p>
                 </div>
-              )}
+              </>
+            )}
+
+            <div className="sc-actions sc-noprint">
+              <button type="button" onClick={() => window.print()} className="sc-btn">
+                طباعة
+              </button>
             </div>
+          </section>
 
-            {/* Breakdown */}
-            {result && (
-              <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-                <h3 className="text-sm font-bold text-ink">تفصيل قسيمة الراتب</h3>
+          {result && (
+            <section className="sc-card sc-card-flush" aria-labelledby="sc-slip">
+              <h3 id="sc-slip" className="sc-slip-title">تفصيل قسيمة الراتب</h3>
 
-                {/* Earnings */}
-                <div className="space-y-2">
-                  <p className="text-xs font-bold text-green-700 uppercase tracking-wider">الإجمالي ＋</p>
-                  {[
-                    { label: "الراتب الأساسي", value: result.grossBasic },
-                    result.housing > 0 && { label: "بدل السكن", value: result.housing },
-                    result.transport > 0 && { label: "بدل النقل", value: result.transport },
-                    result.food > 0 && { label: "بدل الطعام", value: result.food },
-                    result.other > 0 && { label: "بدلات أخرى", value: result.other },
-                  ].filter(Boolean).map((item) => (
-                    <div key={item.label} className="flex justify-between text-xs py-1 border-b border-brand-border/40">
-                      <span className="text-ink-secondary">{item.label}</span>
-                      <span className="font-bold text-green-700">{fmt(item.value)}</span>
+              <div className="sc-block">
+                <p className="sc-block-title"><span aria-hidden="true">+</span> الإجمالي</p>
+                <dl className="sc-dl">
+                  {earnings.map((item) => (
+                    <div key={item.label} className="sc-dl-row">
+                      <dt>{item.label}</dt>
+                      <dd><Num>{fmt(item.value)}</Num></dd>
                     </div>
                   ))}
-                  <div className="flex justify-between text-sm py-1 font-bold">
-                    <span className="text-ink">الإجمالي الكلي</span>
-                    <span className="text-green-700">{fmt(result.totalGross)}</span>
+                  <div className="sc-dl-row sc-dl-total">
+                    <dt>الإجمالي الكلي</dt>
+                    <dd><Num>{fmt(result.totalGross)}</Num></dd>
                   </div>
-                </div>
+                </dl>
+              </div>
 
-                {/* Deductions */}
-                <div className="space-y-2">
-                  <p className="text-xs font-bold text-red-600 uppercase tracking-wider">الخصومات －</p>
+              <div className="sc-block">
+                <p className="sc-block-title"><span aria-hidden="true">−</span> الخصومات</p>
+                <dl className="sc-dl">
                   {deductionItems.filter((d) => d.value > 0).map((item) => (
-                    <div key={item.label} className="space-y-0.5">
-                      <div className="flex justify-between text-xs py-0.5">
-                        <span className="text-ink-secondary">{item.label}</span>
-                        <span className="font-bold text-red-600">({fmt(item.value)})</span>
+                    <div key={item.label} className="sc-ded">
+                      <div className="sc-dl-row sc-dl-flat">
+                        <dt>{item.label}</dt>
+                        <dd><Num>({fmt(item.value)})</Num></dd>
                       </div>
-                      <div className="h-1 w-full overflow-hidden rounded-full bg-brand-surface">
-                        <div className={`h-full rounded-full ${item.color} transition-all`}
-                          style={{ width: `${(item.value / result.totalGross) * 100}%` }} />
+                      <div className="sc-mini" aria-hidden="true">
+                        <div
+                          className="sc-mini-fill"
+                          style={{
+                            width: `${result.totalGross > 0 ? Math.min(100, (item.value / result.totalGross) * 100) : 0}%`,
+                          }}
+                        />
                       </div>
                     </div>
                   ))}
-                  <div className="flex justify-between text-sm py-1 font-bold border-t border-brand-border mt-2 pt-2">
-                    <span className="text-ink">إجمالي الخصومات</span>
-                    <span className="text-red-600">({fmt(result.totalDeductions)})</span>
+                  <div className="sc-dl-row sc-dl-total">
+                    <dt>إجمالي الخصومات</dt>
+                    <dd><Num>({fmt(result.totalDeductions)})</Num></dd>
                   </div>
-                </div>
-
-                {/* Net */}
-                <div className="flex justify-between items-center rounded-xl bg-brand-light p-3">
-                  <span className="text-sm font-extrabold text-brand-dark">💰 صافي الراتب</span>
-                  <span className="text-base font-extrabold text-brand-dark">{fmt(result.netPay)}</span>
-                </div>
-
-                {/* Effective rate */}
-                <div className="rounded-xl border border-brand-border bg-brand-surface/30 p-3 text-center">
-                  <p className="text-xs text-ink-muted">معدل الخصم الفعلي</p>
-                  <p className="text-2xl font-extrabold text-ink">{result.effectiveTaxRate.toFixed(1)}٪</p>
-                  <p className="text-xs text-ink-muted mt-0.5">من إجمالي الراتب</p>
-                </div>
+                </dl>
               </div>
-            )}
 
-            {/* Period switch reminder */}
-            {result && (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 text-xs text-amber-900 space-y-1">
-                <p className="font-bold">📊 مقارنة سريعة</p>
-                <div className="flex justify-between">
-                  <span>صافي شهري:</span>
-                  <span className="font-bold">{sym} {Math.round(result.netPay / (period === "annual" ? 12 : 1)).toLocaleString("ar-EG")}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>صافي سنوي:</span>
-                  <span className="font-bold">{sym} {Math.round(result.netPay * (period === "monthly" ? 12 : 1)).toLocaleString("ar-EG")}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>صافي يومي (÷٣٠):</span>
-                  <span className="font-bold">{sym} {Math.round(result.netPay / (period === "annual" ? 365 : 30)).toLocaleString("ar-EG")}</span>
-                </div>
+              <div className="sc-net">
+                <span>صافي الراتب</span>
+                <strong><Num>{fmt(result.netPay)}</Num></strong>
               </div>
-            )}
-          </div>
+
+              <div className="sc-eff">
+                <p>معدل الخصم الفعلي</p>
+                <strong><Num>{result.effectiveTaxRate.toFixed(1)}%</Num></strong>
+                <p>من إجمالي الراتب</p>
+              </div>
+            </section>
+          )}
+
+          {result && (
+            <section className="sc-quick" aria-labelledby="sc-quick-t">
+              <h3 id="sc-quick-t" className="sc-quick-title">مقارنة سريعة</h3>
+              <dl className="sc-dl sc-dl-plain">
+                <div className="sc-dl-row sc-dl-flat">
+                  <dt>صافي شهري:</dt>
+                  <dd><Num>{sym} {Math.round(result.netPay / (period === "annual" ? 12 : 1)).toLocaleString("en-US")}</Num></dd>
+                </div>
+                <div className="sc-dl-row sc-dl-flat">
+                  <dt>صافي سنوي:</dt>
+                  <dd><Num>{sym} {Math.round(result.netPay * (period === "monthly" ? 12 : 1)).toLocaleString("en-US")}</Num></dd>
+                </div>
+                <div className="sc-dl-row sc-dl-flat">
+                  <dt>صافي يومي (÷30):</dt>
+                  <dd><Num>{sym} {Math.round(result.netPay / (period === "annual" ? 365 : 30)).toLocaleString("en-US")}</Num></dd>
+                </div>
+              </dl>
+            </section>
+          )}
         </div>
       </div>
 
-      <p className="mt-8 text-center text-xs text-ink-muted">
-        ⚠️ الأرقام تقديرية للأغراض التخطيطية فقط. تختلف الضرائب الفعلية بحسب وضعك الضريبي الكامل واستقطاعاتك المؤهلة. استشر محاسباً معتمداً.
+      <p className="sc-disclaimer">
+        <span className="sc-tag" aria-hidden="true">!</span>
+        <span>
+          <span className="sc-sr">تنبيه: </span>
+          الأرقام تقديرية للأغراض التخطيطية فقط. تختلف الضرائب الفعلية بحسب وضعك الضريبي الكامل واستقطاعاتك المؤهلة. استشر محاسباً معتمداً.
+        </span>
       </p>
     </div>
+  );
+}
+
+/**
+ * Local styles. Map the --sc-* fallbacks to your real Ink & Signal tokens.
+ */
+function SalaryStyles() {
+  return (
+    <style>{`
+      .sc-root{
+        --sc-ink:#0a0a0a; --sc-paper:#ffffff; --sc-muted:#f0f0f0;
+        --sc-text2:#404040; --sc-orange:#ff5a1f;
+        max-width:64rem; margin:0 auto; padding:2rem 1rem;
+        color:var(--sc-ink); background:var(--sc-paper);
+      }
+      @media (min-width:640px){ .sc-root{ padding:3rem 1rem; } }
+      @media (prefers-color-scheme: dark){
+        :root:not([data-theme="light"]) .sc-root{
+          --sc-ink:#f5f5f5; --sc-paper:#0a0a0a; --sc-muted:#1a1a1a; --sc-text2:#d4d4d4;
+        }
+      }
+      :root[data-theme="dark"] .sc-root{
+        --sc-ink:#f5f5f5; --sc-paper:#0a0a0a; --sc-muted:#1a1a1a; --sc-text2:#d4d4d4;
+      }
+
+      .sc-ltr{ direction:ltr; unicode-bidi:isolate; display:inline-block; }
+      .sc-sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+      .sc-root :focus-visible{ outline:3px solid var(--sc-orange); outline-offset:2px; }
+
+      /* Header */
+      .sc-header{ text-align:center; margin-bottom:2rem; display:grid; gap:.75rem; justify-items:center; }
+      .sc-kicker-tag{ margin:0; padding:.125rem .75rem; border:2px solid var(--sc-ink); font-size:.75rem; font-weight:800; }
+      .sc-h1{ margin:0; font-size:1.875rem; font-weight:800; line-height:1.4; }
+      @media (min-width:640px){ .sc-h1{ font-size:2.25rem; } }
+      .sc-lead{ margin:0; max-width:36rem; font-size:.9375rem; line-height:1.9; color:var(--sc-text2); }
+
+      .sc-grid{ display:grid; grid-template-columns:1fr; gap:1.5rem; }
+      @media (min-width:1024px){ .sc-grid{ grid-template-columns:3fr 2fr; align-items:start; } }
+      .sc-col{ display:grid; gap:1.25rem; }
+      @media (min-width:1024px){ .sc-sticky{ position:sticky; top:1rem; } }
+
+      /* Cards */
+      .sc-card{ border:2px solid var(--sc-ink); padding:1.25rem; display:grid; gap:1rem; }
+      .sc-card-flush{ padding:0; gap:0; }
+      .sc-h2{ margin:0; display:flex; align-items:center; gap:.625rem; font-size:1rem; font-weight:800; }
+      .sc-num{
+        flex:none; width:1.75rem; height:1.75rem; display:inline-flex;
+        align-items:center; justify-content:center;
+        border:2px solid var(--sc-ink); font-size:.8125rem; font-weight:800;
+      }
+      .sc-title-row{ display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
+      .sc-two{ display:grid; gap:1rem; grid-template-columns:1fr; }
+      @media (min-width:640px){ .sc-two{ grid-template-columns:1fr 1fr; } }
+      .sc-help{ margin:0; font-size:.75rem; line-height:1.8; color:var(--sc-text2); }
+
+      /* Country picker */
+      .sc-countries{ display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
+      @media (min-width:640px){ .sc-countries{ grid-template-columns:repeat(3,1fr); } }
+      .sc-country{
+        display:grid; gap:.125rem; text-align:start; padding:.625rem .75rem;
+        border:2px solid var(--sc-ink); background:var(--sc-paper); color:var(--sc-ink);
+        font-family:inherit; cursor:pointer;
+      }
+      .sc-country:hover{ background:var(--sc-muted); }
+      .sc-country[aria-pressed="true"]{ background:var(--sc-orange); color:#0a0a0a; border-width:4px; padding:.5rem .625rem; }
+      .sc-country-top{ display:flex; align-items:center; justify-content:space-between; }
+      .sc-code{ border:2px solid currentColor; padding:0 .375rem; font-size:.625rem; font-weight:800; letter-spacing:.04em; line-height:1.6; }
+      .sc-check{ font-weight:900; font-size:.875rem; }
+      .sc-country-name{ font-size:.8125rem; font-weight:800; }
+      .sc-sub{ font-size:.625rem; font-weight:600; }
+
+      .sc-note-line{
+        margin:0; display:flex; gap:.5rem; align-items:flex-start;
+        border:2px dashed var(--sc-ink); padding:.625rem .75rem;
+        font-size:.75rem; line-height:1.8; color:var(--sc-text2);
+      }
+      .sc-tag{
+        flex:none; width:1.25rem; height:1.25rem; display:inline-flex;
+        align-items:center; justify-content:center; font-weight:800;
+        border:2px solid currentColor; color:var(--sc-ink);
+      }
+
+      /* Segmented toggle */
+      .sc-seg{ display:flex; border:2px solid var(--sc-ink); }
+      .sc-seg button{
+        padding:.375rem .875rem; border:0; background:var(--sc-paper); color:var(--sc-ink);
+        font-size:.75rem; font-weight:800; font-family:inherit; cursor:pointer;
+      }
+      .sc-seg button + button{ border-inline-start:2px solid var(--sc-ink); }
+      .sc-seg button[aria-pressed="true"]{ background:var(--sc-ink); color:var(--sc-paper); }
+
+      /* Fields */
+      .sc-field{ display:grid; gap:.375rem; align-content:start; }
+      .sc-label{ display:flex; justify-content:space-between; gap:.5rem; font-size:.75rem; font-weight:800; line-height:1.6; }
+      .sc-hint{ font-weight:600; color:var(--sc-text2); }
+      .sc-input-wrap{ display:flex; border:2px solid var(--sc-ink); background:var(--sc-paper); }
+      .sc-input-wrap:focus-within{ outline:3px solid var(--sc-orange); outline-offset:2px; }
+      .sc-sym{
+        flex:none; padding:0 .75rem; display:inline-flex; align-items:center;
+        background:var(--sc-muted); border-inline-end:2px solid var(--sc-ink);
+        font-size:.75rem; font-weight:800;
+      }
+      .sc-input{
+        flex:1; min-width:0; border:0; background:transparent; color:var(--sc-ink);
+        padding:.625rem .75rem; font-size:.875rem; font-weight:700; font-family:inherit;
+      }
+      .sc-input-big{ font-size:1.125rem; font-weight:800; padding:.75rem; }
+      .sc-input:focus-visible{ outline:none; }
+
+      /* Result panel (orange, black text) */
+      .sc-result{
+        background:var(--sc-orange); color:#0a0a0a; border:2px solid var(--sc-ink);
+        padding:1.25rem; display:grid; gap:1rem;
+      }
+      .sc-result-label{ margin:0; font-size:.8125rem; font-weight:800; }
+      .sc-big{ margin:0; font-size:2.25rem; font-weight:900; line-height:1.2; }
+      .sc-stats{ display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
+      .sc-stat{ border:2px solid #0a0a0a; padding:.5rem; text-align:center; }
+      .sc-stat p{ margin:0; font-size:.625rem; font-weight:700; }
+      .sc-stat strong{ font-size:.8125rem; font-weight:800; }
+      .sc-barbox{ background:#ffffff; border:2px solid #0a0a0a; padding:.625rem; display:grid; gap:.375rem; }
+      .sc-track{ height:.875rem; border:2px solid #0a0a0a; background:#ffffff; overflow:hidden; }
+      .sc-fill{ height:100%; background:#0a0a0a; }
+      .sc-bar-text{ margin:0; font-size:.75rem; font-weight:800; }
+      .sc-actions{ display:flex; gap:.5rem; }
+      .sc-btn{
+        flex:1; padding:.5rem .75rem; background:#0a0a0a; color:#ffffff;
+        border:2px solid #0a0a0a; font-size:.75rem; font-weight:800; font-family:inherit; cursor:pointer;
+      }
+      .sc-btn:hover{ background:#ffffff; color:#0a0a0a; }
+      .sc-result .sc-btn:focus-visible{ outline:3px solid #0a0a0a; outline-offset:3px; }
+
+      /* Payslip */
+      .sc-slip-title{ margin:0; padding:.875rem 1.25rem; border-bottom:2px solid var(--sc-ink); font-size:.875rem; font-weight:800; }
+      .sc-block{ padding:1rem 1.25rem; border-bottom:2px solid var(--sc-ink); display:grid; gap:.5rem; }
+      .sc-block-title{ margin:0; font-size:.75rem; font-weight:800; display:flex; gap:.375rem; align-items:center; }
+      .sc-block-title span{
+        width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center;
+        border:2px solid var(--sc-ink); font-weight:800;
+      }
+      .sc-dl{ margin:0; display:grid; }
+      .sc-dl-row{
+        display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+        padding:.375rem 0; border-bottom:1px solid var(--sc-ink); font-size:.75rem;
+      }
+      .sc-dl-row dt{ margin:0; color:var(--sc-text2); }
+      .sc-dl-row dd{ margin:0; font-weight:800; }
+      .sc-dl-flat{ border-bottom:0; }
+      .sc-dl-total{ border-bottom:0; border-top:2px solid var(--sc-ink); margin-top:.25rem; padding-top:.5rem; font-size:.8125rem; }
+      .sc-dl-total dt{ color:var(--sc-ink); font-weight:800; }
+      .sc-ded{ display:grid; gap:.125rem; }
+      .sc-mini{ height:.5rem; border:1px solid var(--sc-ink); }
+      .sc-mini-fill{ height:100%; background:var(--sc-ink); }
+
+      .sc-net{
+        display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;
+        padding:.875rem 1.25rem; background:var(--sc-orange); color:#0a0a0a;
+        border-bottom:2px solid var(--sc-ink); font-size:.9375rem;
+      }
+      .sc-net span,.sc-net strong{ font-weight:900; }
+      .sc-eff{ padding:1rem 1.25rem; text-align:center; }
+      .sc-eff p{ margin:0; font-size:.75rem; color:var(--sc-text2); }
+      .sc-eff strong{ display:block; font-size:1.5rem; font-weight:900; margin:.125rem 0; }
+
+      /* Quick comparison */
+      .sc-quick{ border:2px dashed var(--sc-ink); padding:1rem 1.25rem; display:grid; gap:.5rem; }
+      .sc-quick-title{ margin:0; font-size:.8125rem; font-weight:800; }
+      .sc-dl-plain .sc-dl-row{ padding:.25rem 0; }
+
+      /* Disclaimer */
+      .sc-disclaimer{
+        margin:2rem 0 0; padding:.75rem 1rem; border:2px dashed var(--sc-ink);
+        display:flex; gap:.5rem; align-items:flex-start;
+        font-size:.75rem; line-height:1.8; color:var(--sc-text2);
+      }
+
+      /* Print: results only */
+      @media print{
+        .sc-noprint{ display:none !important; }
+        .sc-root{ color:#000; background:none; padding:0; }
+        .sc-grid{ grid-template-columns:1fr; }
+        .sc-sticky{ position:static; }
+        .sc-result,.sc-net{ -webkit-print-color-adjust:exact; print-color-adjust:exact; border-color:#000; }
+        .sc-card,.sc-disclaimer,.sc-quick{ border-color:#000; color:#000; }
+        .sc-dl-row dt,.sc-disclaimer{ color:#000; }
+      }
+    `}</style>
   );
 }

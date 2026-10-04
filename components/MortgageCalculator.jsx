@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useId } from "react";
 
 /* ─── Country presets ────────────────────────────────────────────────────── */
 const COUNTRIES = [
-  { id: "sa", name: "🇸🇦 السعودية",  currency: "SAR", symbol: "ر.س", rate: 4.5,  years: 25, downPct: 10, stamp: 0,   insurance: 0.5, note: "لا توجد رسوم تسجيل عقاري للمسكن الأول" },
-  { id: "ae", name: "🇦🇪 الإمارات",  currency: "AED", symbol: "د.إ", rate: 4.75, years: 25, downPct: 20, stamp: 4,   insurance: 0.4, note: "رسوم DLD 4٪ على قيمة العقار" },
-  { id: "eg", name: "🇪🇬 مصر",        currency: "EGP", symbol: "ج.م", rate: 27.5, years: 20, downPct: 20, stamp: 3,   insurance: 0.5, note: "معدلات متغيرة — راجع البنك" },
-  { id: "pk", name: "🇵🇰 باكستان",   currency: "PKR", symbol: "₨",  rate: 19.5, years: 20, downPct: 30, stamp: 3,   insurance: 0.5, note: "معدلات البنك الحكومي الحالية" },
-  { id: "gb", name: "🇬🇧 المملكة المتحدة", currency: "GBP", symbol: "£",  rate: 4.2,  years: 25, downPct: 10, stamp: 5,   insurance: 0.3, note: "SDLT تنطبق فوق £250,000" },
-  { id: "us", name: "🇺🇸 الولايات المتحدة", currency: "USD", symbol: "$",  rate: 6.8,  years: 30, downPct: 20, stamp: 1.5, insurance: 0.8, note: "PMI يُلغى عند 20٪ دفعة أولى" },
+  { id: "sa", name: "السعودية",  currency: "SAR", symbol: "ر.س", rate: 4.5,  years: 25, downPct: 10, stamp: 0,   insurance: 0.5, note: "لا توجد رسوم تسجيل عقاري للمسكن الأول" },
+  { id: "ae", name: "الإمارات",  currency: "AED", symbol: "د.إ", rate: 4.75, years: 25, downPct: 20, stamp: 4,   insurance: 0.4, note: "رسوم DLD 4٪ على قيمة العقار" },
+  { id: "eg", name: "مصر",        currency: "EGP", symbol: "ج.م", rate: 27.5, years: 20, downPct: 20, stamp: 3,   insurance: 0.5, note: "معدلات متغيرة — راجع البنك" },
+  { id: "pk", name: "باكستان",   currency: "PKR", symbol: "₨",  rate: 19.5, years: 20, downPct: 30, stamp: 3,   insurance: 0.5, note: "معدلات البنك الحكومي الحالية" },
+  { id: "gb", name: "المملكة المتحدة", currency: "GBP", symbol: "£",  rate: 4.2,  years: 25, downPct: 10, stamp: 5,   insurance: 0.3, note: "SDLT تنطبق فوق £250,000" },
+  { id: "us", name: "الولايات المتحدة", currency: "USD", symbol: "$",  rate: 6.8,  years: 30, downPct: 20, stamp: 1.5, insurance: 0.8, note: "PMI يُلغى عند 20٪ دفعة أولى" },
 ];
 
 const RATE_TYPES = [
@@ -37,8 +37,60 @@ function buildSchedule(principal, annualRate, years) {
   });
 }
 
+/* ─── Small UI pieces ────────────────────────────────────────────────────── */
+function Range({ label, valueText, min, max, step, value, onChange, minText, midText, maxText }) {
+  const id = useId();
+  return (
+    <div>
+      <div className="mg-row">
+        <label className="mg-label mg-label-flush" htmlFor={id}>{label}</label>
+        <span className="mg-value"><bdi>{valueText}</bdi></span>
+      </div>
+      <input
+        id={id}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={onChange}
+        className="mg-range"
+      />
+      <div className="mg-range-marks" aria-hidden="true">
+        <span>{minText}</span>
+        {midText && <span>{midText}</span>}
+        <span>{maxText}</span>
+      </div>
+    </div>
+  );
+}
+
+function Switch({ label, hint, checked, onChange }) {
+  const id = useId();
+  return (
+    <div className="mg-switch-row">
+      <div>
+        <p className="mg-switch-label" id={`${id}-l`}>{label}</p>
+        <p className="mg-small"><bdi>{hint}</bdi></p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-labelledby={`${id}-l`}
+        className="mg-btn mg-switch"
+        onClick={() => onChange(!checked)}
+      >
+        {checked ? "مفعّل" : "معطّل"}
+      </button>
+    </div>
+  );
+}
+
 /* ─── Component ─────────────────────────────────────────────────────────── */
 export default function MortgageCalculator() {
+  const priceId = useId();
+
   const [countryId,   setCountryId]   = useState("sa");
   const [propPrice,   setPropPrice]   = useState(800000);
   const [downPct,     setDownPct]     = useState(10);
@@ -61,6 +113,7 @@ export default function MortgageCalculator() {
     setLoanYears(c.years);
   };
 
+  // Calculation logic (unchanged)
   const result = useMemo(() => {
     if (!country || !propPrice) return null;
     const price   = Number(propPrice);
@@ -93,238 +146,232 @@ export default function MortgageCalculator() {
   }, [country, propPrice, downPct, interestRate, loanYears, includeInsurance, includeStamp]);
 
   const sym = country?.symbol || "";
-  function fmt(n) { return `${sym} ${Math.round(n).toLocaleString("ar-EG")}`; }
-  function fmtN(n) { return Math.round(n).toLocaleString("ar-EG"); }
+  function fmt(n) { return `${sym} ${Math.round(n).toLocaleString("en-US")}`; }
+  function fmtN(n) { return Math.round(n).toLocaleString("en-US"); }
 
   const interestPct = result ? ((result.totalInterest / result.totalPaid) * 100).toFixed(1) : 0;
 
+  const summaryRows = result
+    ? [
+        { label: "قيمة العقار", value: fmt(Number(propPrice)) },
+        { label: "الدفعة الأولى", value: fmt(result.down) },
+        { label: "مبلغ القرض", value: fmt(result.principal) },
+        { label: "إجمالي الأقساط", value: fmt(result.totalPaid) },
+        { label: "إجمالي الفوائد", value: fmt(result.totalInterest) },
+        result.stampFee > 0 && { label: "رسوم التسجيل", value: fmt(result.stampFee) },
+        result.insuranceFee > 0 && { label: "تأمين الممتلكات (كامل)", value: fmt(result.insuranceFee) },
+        { label: "التكلفة الإجمالية للتملك", value: fmt(result.totalCost), total: true },
+      ].filter(Boolean)
+    : [];
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12" dir="rtl">
-      {/* Header */}
-      <div className="mb-8 text-center space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>🏠</span><span>حاسبة التمويل العقاري</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">حاسبة الرهن والتمويل العقاري</h1>
-        <p className="mx-auto max-w-xl text-sm text-ink-secondary sm:text-base">
-          احسب قسطك الشهري، إجمالي الفوائد، والتكلفة الكاملة لشراء العقار مع جدول سداد تفصيلي.
+    <div className="mg" dir="rtl">
+      <style>{css}</style>
+
+      <header className="mg-head">
+        <p className="mg-kicker">حاسبة التمويل العقاري</p>
+        <h1 className="mg-h1">حاسبة الرهن والتمويل العقاري</h1>
+        <p className="mg-lead">
+          احسب قسطك الشهري، وإجمالي الفوائد، والتكلفة الكاملة لشراء العقار مع جدول سداد تفصيلي.
         </p>
-      </div>
+      </header>
 
-      <div className="grid gap-6 lg:grid-cols-5">
+      <div className="mg-grid">
         {/* ─── Inputs ─── */}
-        <div className="lg:col-span-3 space-y-5">
-
+        <div className="mg-col">
           {/* Country */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">🌍</span>
-              الدولة
-            </h2>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <section className="mg-box" aria-labelledby="mg-s1">
+            <h2 className="mg-h2" id="mg-s1"><span className="mg-num">1</span><span>الدولة</span></h2>
+            <div className="mg-seg mg-seg-3" role="group" aria-labelledby="mg-s1">
               {COUNTRIES.map((c) => (
-                <button key={c.id} type="button" onClick={() => handleCountryChange(c.id)}
-                  className={`rounded-xl border p-2.5 text-xs font-semibold text-right transition-all ${
-                    countryId === c.id
-                      ? "border-brand bg-brand-light text-brand-dark shadow-sm"
-                      : "border-brand-border bg-brand-surface/40 text-ink-secondary hover:border-brand-200 hover:bg-white"
-                  }`}>
+                <button
+                  key={c.id}
+                  type="button"
+                  className="mg-btn"
+                  aria-pressed={countryId === c.id}
+                  onClick={() => handleCountryChange(c.id)}
+                >
                   {c.name}
                 </button>
               ))}
             </div>
-            {country?.note && (
-              <p className="text-xs text-brand-700 bg-brand-light/60 rounded-xl p-2.5">ℹ️ {country.note}</p>
-            )}
-          </div>
+            {country?.note && <p className="mg-note">{country.note}</p>}
+          </section>
 
           {/* Property price + Down payment */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">🏡</span>
-              تفاصيل العقار والتمويل
-            </h2>
-            <div className="space-y-3">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-ink-secondary">قيمة العقار ({sym})</label>
-                <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">{sym}</span>
-                  <input type="number" min="0" value={propPrice} onChange={(e) => setPropPrice(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2.5 pr-8 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none" />
+          <section className="mg-box" aria-labelledby="mg-s2">
+            <h2 className="mg-h2" id="mg-s2"><span className="mg-num">2</span><span>تفاصيل العقار والتمويل</span></h2>
+            <div className="mg-stack">
+              <div>
+                <label className="mg-label" htmlFor={priceId}>قيمة العقار ({sym})</label>
+                <div className="mg-suffix-wrap">
+                  <input
+                    id={priceId}
+                    type="number"
+                    inputMode="decimal"
+                    min="0"
+                    value={propPrice}
+                    onChange={(e) => setPropPrice(e.target.value)}
+                    className="mg-input"
+                    style={{ paddingInlineEnd: "3.5rem" }}
+                  />
+                  <span className="mg-suffix" aria-hidden="true">{sym}</span>
                 </div>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-semibold">
-                  <span className="text-ink-secondary">نسبة الدفعة الأولى</span>
-                  <span className="text-brand font-bold">{downPct}٪ = {fmt(Number(propPrice) * downPct / 100)}</span>
-                </div>
-                <input type="range" min="5" max="80" step="5" value={downPct}
-                  onChange={(e) => setDownPct(e.target.value)}
-                  className="w-full accent-brand cursor-pointer" />
-                <div className="flex justify-between text-[10px] text-ink-muted">
-                  <span>5٪ (أدنى)</span><span>20٪ (معياري)</span><span>80٪ (أعلى)</span>
-                </div>
-              </div>
+
+              <Range
+                label="نسبة الدفعة الأولى"
+                valueText={`${downPct}٪ = ${fmt(Number(propPrice) * downPct / 100)}`}
+                min="5" max="80" step="5"
+                value={downPct}
+                onChange={(e) => setDownPct(e.target.value)}
+                minText="5٪ (أدنى)" midText="20٪ (معياري)" maxText="80٪ (أعلى)"
+              />
+
               {result && (
-                <div className="flex justify-between rounded-xl bg-brand-light/60 px-4 py-2.5 text-xs font-semibold">
-                  <span className="text-ink-secondary">مبلغ القرض العقاري</span>
-                  <span className="text-brand-dark text-sm font-extrabold">{fmt(result.principal)}</span>
+                <div className="mg-line">
+                  <span>مبلغ القرض العقاري</span>
+                  <strong><bdi>{fmt(result.principal)}</bdi></strong>
                 </div>
               )}
             </div>
-          </div>
+          </section>
 
           {/* Rate + Term */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">📊</span>
-              معدل الفائدة ومدة القرض
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <div className="flex justify-between">
-                  <label className="text-xs font-semibold text-ink-secondary">معدل الفائدة السنوي</label>
-                  <span className="text-xs font-bold text-brand">{interestRate}٪</span>
-                </div>
-                <input type="range" min="1" max="35" step="0.25" value={interestRate}
+          <section className="mg-box" aria-labelledby="mg-s3">
+            <h2 className="mg-h2" id="mg-s3"><span className="mg-num">3</span><span>معدل الفائدة ومدة القرض</span></h2>
+            <div className="mg-stack mg-stack-lg">
+              <div className="mg-two">
+                <Range
+                  label="معدل الفائدة السنوي"
+                  valueText={`${interestRate}٪`}
+                  min="1" max="35" step="0.25"
+                  value={interestRate}
                   onChange={(e) => setInterestRate(e.target.value)}
-                  className="w-full accent-brand cursor-pointer" />
-                <div className="flex justify-between text-[10px] text-ink-muted"><span>1٪</span><span>35٪</span></div>
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex justify-between">
-                  <label className="text-xs font-semibold text-ink-secondary">مدة القرض</label>
-                  <span className="text-xs font-bold text-brand">{loanYears} سنة</span>
-                </div>
-                <input type="range" min="5" max="35" step="5" value={loanYears}
+                  minText="1٪" maxText="35٪"
+                />
+                <Range
+                  label="مدة القرض"
+                  valueText={`${loanYears} سنة`}
+                  min="5" max="35" step="5"
+                  value={loanYears}
                   onChange={(e) => setLoanYears(e.target.value)}
-                  className="w-full accent-brand cursor-pointer" />
-                <div className="flex justify-between text-[10px] text-ink-muted"><span>5 سنوات</span><span>35 سنة</span></div>
+                  minText="5 سنوات" maxText="35 سنة"
+                />
               </div>
+
+              <fieldset className="mg-fieldset">
+                <legend className="mg-label">نوع معدل الفائدة</legend>
+                <div className="mg-seg mg-seg-2">
+                  {RATE_TYPES.map((rt) => (
+                    <button
+                      key={rt.id}
+                      type="button"
+                      className="mg-btn mg-btn-tall"
+                      aria-pressed={rateType === rt.id}
+                      onClick={() => setRateType(rt.id)}
+                    >
+                      <span>{rt.name}</span>
+                      <span className="mg-btn-sub">{rt.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
             </div>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {RATE_TYPES.map((rt) => (
-                <button key={rt.id} type="button" onClick={() => setRateType(rt.id)}
-                  className={`rounded-xl border p-3 text-xs font-semibold text-right transition-all ${
-                    rateType === rt.id ? "border-brand bg-brand-light text-brand-dark" : "border-brand-border bg-brand-surface/40 text-ink-secondary hover:bg-white"
-                  }`}>
-                  <span className="font-bold">{rt.name}</span>
-                  <span className="block text-[10px] font-normal opacity-70 mt-0.5">{rt.desc}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          </section>
 
           {/* Fees toggles */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">📋</span>
-              الرسوم والتأمين
-            </h2>
-            {[
-              {
-                label: `رسوم التسجيل / الطوابع (${country?.stamp}٪)`,
-                hint: result ? fmt(result.stampFee) : "—",
-                value: includeStamp, setter: setIncludeStamp,
-              },
-              {
-                label: `تأمين الممتلكات السنوي (${country?.insurance}٪)`,
-                hint: result ? fmt((result.insuranceFee / Number(loanYears))) + " / سنة" : "—",
-                value: includeInsurance, setter: setIncludeInsurance,
-              },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-ink">{item.label}</p>
-                  <p className="text-xs text-ink-muted">{item.hint}</p>
-                </div>
-                <button type="button" onClick={() => item.setter(!item.value)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${item.value ? "bg-brand" : "bg-gray-200"}`}>
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${item.value ? "-translate-x-6" : "-translate-x-1"}`} />
-                </button>
-              </div>
-            ))}
-          </div>
+          <section className="mg-box" aria-labelledby="mg-s4">
+            <h2 className="mg-h2" id="mg-s4"><span className="mg-num">4</span><span>الرسوم والتأمين</span></h2>
+            <div className="mg-stack mg-stack-lg">
+              <Switch
+                label={`رسوم التسجيل / الطوابع (${country?.stamp}٪)`}
+                hint={result ? fmt(result.stampFee) : "—"}
+                checked={includeStamp}
+                onChange={setIncludeStamp}
+              />
+              <Switch
+                label={`تأمين الممتلكات السنوي (${country?.insurance}٪)`}
+                hint={result ? `${fmt(result.insuranceFee / Number(loanYears))} / سنة` : "—"}
+                checked={includeInsurance}
+                onChange={setIncludeInsurance}
+              />
+            </div>
+          </section>
         </div>
 
         {/* ─── Results ─── */}
-        <div className="lg:col-span-2">
-          <div className="sticky top-24 space-y-4">
-
+        <div className="mg-col">
+          <div className="mg-sticky">
             {/* Monthly payment hero */}
-            <div className="rounded-2xl bg-hero-gradient p-6 text-white shadow-lg space-y-3">
-              <p className="text-sm font-medium opacity-80">القسط الشهري</p>
-              <p className="text-4xl font-extrabold tracking-tight">{result ? fmt(result.pmt) : "—"}</p>
+            <section className="mg-result" aria-live="polite" aria-labelledby="mg-res-label">
+              <p className="mg-result-label" id="mg-res-label">القسط الشهري</p>
+              <p className="mg-result-big"><bdi>{result ? fmt(result.pmt) : "—"}</bdi></p>
               {result && (
                 <>
-                  <div className="mt-2 grid grid-cols-2 gap-2">
-                    <div className="rounded-xl bg-white/15 p-3 backdrop-blur-sm">
-                      <p className="text-[10px] opacity-80">إجمالي الفوائد</p>
-                      <p className="text-sm font-bold">{fmt(result.totalInterest)}</p>
+                  <div className="mg-two mg-result-cells">
+                    <div>
+                      <p className="mg-result-sm">إجمالي الفوائد</p>
+                      <p className="mg-result-val"><bdi>{fmt(result.totalInterest)}</bdi></p>
                     </div>
-                    <div className="rounded-xl bg-white/15 p-3 backdrop-blur-sm">
-                      <p className="text-[10px] opacity-80">التكلفة الكاملة</p>
-                      <p className="text-sm font-bold">{fmt(result.totalCost)}</p>
+                    <div>
+                      <p className="mg-result-sm">التكلفة الكاملة</p>
+                      <p className="mg-result-val"><bdi>{fmt(result.totalCost)}</bdi></p>
                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs opacity-80">
-                      <span>أصل القرض</span>
-                      <span>فائدة {interestPct}٪</span>
+                  <div className="mg-result-bar-wrap">
+                    <div className="mg-result-sm mg-between">
+                      <span>أصل القرض: <bdi>{(100 - interestPct).toFixed(1)}٪</bdi></span>
+                      <span>فائدة: <bdi>{interestPct}٪</bdi></span>
                     </div>
-                    <div className="h-2.5 flex rounded-full overflow-hidden bg-white/20">
-                      <div className="bg-white/90 transition-all" style={{ width: `${100 - interestPct}%` }} />
-                      <div className="bg-accent transition-all" style={{ width: `${interestPct}%` }} />
-                    </div>
-                    <div className="flex justify-between text-[10px] opacity-70">
-                      <span>{fmt(result.principal)}</span>
-                      <span>{fmt(result.totalInterest)}</span>
+                    <div
+                      className="mg-bar"
+                      role="img"
+                      aria-label={`أصل القرض ${(100 - interestPct).toFixed(1)}٪ وفائدة ${interestPct}٪`}
+                    >
+                      <div className="mg-bar-a" style={{ flex: `${100 - interestPct} 1 0` }} />
+                      <div className="mg-bar-b" style={{ flex: `${interestPct} 1 0` }} />
                     </div>
                   </div>
                 </>
               )}
-            </div>
+            </section>
 
-            {/* Summary cards */}
+            {/* Summary */}
             {result && (
-              <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-                <h3 className="text-sm font-bold text-ink">ملخص التمويل</h3>
-                {[
-                  { label: "قيمة العقار", value: fmt(Number(propPrice)), color: "text-ink" },
-                  { label: "الدفعة الأولى", value: fmt(result.down), color: "text-green-700" },
-                  { label: "مبلغ القرض", value: fmt(result.principal), color: "text-brand" },
-                  { label: "إجمالي الأقساط", value: fmt(result.totalPaid), color: "text-ink" },
-                  { label: "إجمالي الفوائد", value: fmt(result.totalInterest), color: "text-red-600" },
-                  result.stampFee > 0 && { label: "رسوم التسجيل", value: fmt(result.stampFee), color: "text-orange-600" },
-                  result.insuranceFee > 0 && { label: "تأمين الممتلكات (كامل)", value: fmt(result.insuranceFee), color: "text-orange-600" },
-                  { label: "التكلفة الإجمالية للتملك", value: fmt(result.totalCost), color: "text-ink font-extrabold" },
-                ].filter(Boolean).map((item) => (
-                  <div key={item.label} className="flex justify-between text-xs py-1 border-b border-brand-border/30 last:border-0">
-                    <span className="text-ink-secondary">{item.label}</span>
-                    <span className={`font-bold ${item.color}`}>{item.value}</span>
-                  </div>
-                ))}
-              </div>
+              <section className="mg-box" aria-labelledby="mg-sum">
+                <h2 className="mg-h2 mg-h2-sm" id="mg-sum">ملخص التمويل</h2>
+                <dl className="mg-rows">
+                  {summaryRows.map((item) => (
+                    <div key={item.label} className={item.total ? "mg-rows-total" : undefined}>
+                      <dt>{item.label}</dt>
+                      <dd><bdi>{item.value}</bdi></dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
             )}
 
             {/* Quick comparison */}
             {result && (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 text-xs text-amber-900 space-y-1.5">
-                <p className="font-bold">💡 لو زدت الدفعة الأولى</p>
-                {[25, 30, 40].map((pct) => {
-                  if (pct <= Number(downPct)) return null;
-                  const newPrincipal = Number(propPrice) * (1 - pct / 100);
-                  const r = Number(interestRate) / 100 / 12;
-                  const n = Number(loanYears) * 12;
-                  const newPmt = r > 0 ? (newPrincipal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1) : newPrincipal / n;
-                  return (
-                    <div key={pct} className="flex justify-between">
-                      <span>عند {pct}٪ دفعة أولى:</span>
-                      <span className="font-bold">{sym} {Math.round(newPmt).toLocaleString("ar-EG")} / شهر</span>
-                    </div>
-                  );
-                })}
-              </div>
+              <section className="mg-tip" aria-labelledby="mg-tip">
+                <h2 className="mg-h2 mg-h2-sm" id="mg-tip">لو زدت الدفعة الأولى</h2>
+                <dl className="mg-tip-rows">
+                  {[25, 30, 40].map((pct) => {
+                    if (pct <= Number(downPct)) return null;
+                    const newPrincipal = Number(propPrice) * (1 - pct / 100);
+                    const r = Number(interestRate) / 100 / 12;
+                    const n = Number(loanYears) * 12;
+                    const newPmt = r > 0 ? (newPrincipal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1) : newPrincipal / n;
+                    return (
+                      <div key={pct}>
+                        <dt>عند {pct}٪ دفعة أولى</dt>
+                        <dd><bdi>{sym} {Math.round(newPmt).toLocaleString("en-US")} / شهر</bdi></dd>
+                      </div>
+                    );
+                  })}
+                </dl>
+              </section>
             )}
           </div>
         </div>
@@ -332,61 +379,180 @@ export default function MortgageCalculator() {
 
       {/* Amortization Schedule */}
       {result && (
-        <div className="mt-10 rounded-2xl border border-brand-border bg-white p-5 sm:p-6 shadow-card space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h3 className="text-base font-bold text-ink">📅 جدول السداد التفصيلي</h3>
-            <div className="flex items-center gap-2">
-              <div className="flex rounded-xl border border-brand-border overflow-hidden text-xs font-semibold">
-                <button type="button" onClick={() => setScheduleView("yearly")}
-                  className={`px-3 py-1.5 transition-colors ${scheduleView === "yearly" ? "bg-brand text-white" : "bg-white text-ink-secondary hover:bg-brand-light"}`}>
-                  سنوي
-                </button>
-                <button type="button" onClick={() => setScheduleView("monthly")}
-                  className={`px-3 py-1.5 transition-colors ${scheduleView === "monthly" ? "bg-brand text-white" : "bg-white text-ink-secondary hover:bg-brand-light"}`}>
-                  شهري
-                </button>
+        <section className="mg-box mg-schedule" aria-labelledby="mg-sch">
+          <div className="mg-row mg-row-wrap">
+            <h2 className="mg-h2 mg-h2-flush" id="mg-sch">جدول السداد التفصيلي</h2>
+            <div className="mg-actions">
+              <div className="mg-seg mg-seg-2" role="group" aria-label="عرض الجدول">
+                <button type="button" className="mg-btn" aria-pressed={scheduleView === "yearly"} onClick={() => setScheduleView("yearly")}>سنوي</button>
+                <button type="button" className="mg-btn" aria-pressed={scheduleView === "monthly"} onClick={() => setScheduleView("monthly")}>شهري</button>
               </div>
-              <button type="button" onClick={() => setShowSchedule(!showSchedule)}
-                className="rounded-xl border border-brand-border bg-brand-surface/40 px-3 py-1.5 text-xs font-semibold text-ink hover:bg-white transition-colors">
+              <button
+                type="button"
+                className="mg-btn"
+                aria-expanded={showSchedule}
+                aria-controls="mg-table"
+                onClick={() => setShowSchedule(!showSchedule)}
+              >
                 {showSchedule ? "إخفاء" : "عرض الجدول"}
               </button>
             </div>
           </div>
 
           {showSchedule && (
-            <div className="overflow-x-auto rounded-xl border border-brand-border">
-              <table className="w-full text-xs min-w-[480px]">
-                <thead className="bg-brand-surface/60">
+            <div id="mg-table" className="mg-table-wrap" tabIndex={0} role="region" aria-label="جدول السداد">
+              <table className="mg-table">
+                <caption className="mg-sr">
+                  {scheduleView === "yearly" ? "جدول السداد السنوي" : "جدول السداد الشهري"}
+                </caption>
+                <thead>
                   <tr>
-                    <th className="p-3 text-right font-bold text-ink-secondary">
-                      {scheduleView === "yearly" ? "السنة" : "الشهر"}
-                    </th>
-                    <th className="p-3 text-right font-bold text-ink-secondary">القسط</th>
-                    <th className="p-3 text-right font-bold text-ink-secondary">الأصل</th>
-                    <th className="p-3 text-right font-bold text-ink-secondary">الفائدة</th>
-                    <th className="p-3 text-right font-bold text-ink-secondary">الرصيد المتبقي</th>
+                    <th scope="col">{scheduleView === "yearly" ? "السنة" : "الشهر"}</th>
+                    <th scope="col">القسط</th>
+                    <th scope="col">الأصل</th>
+                    <th scope="col">الفائدة</th>
+                    <th scope="col">الرصيد المتبقي</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(scheduleView === "yearly" ? result.yearly : result.schedule).map((row, idx) => (
-                    <tr key={idx} className={`border-t border-brand-border/40 ${idx % 2 === 0 ? "bg-white" : "bg-brand-surface/20"}`}>
-                      <td className="p-3 font-bold text-ink">{scheduleView === "yearly" ? `${row.year}` : row.month}</td>
-                      <td className="p-3">{fmtN(scheduleView === "yearly" ? row.totalPayment : row.payment)}</td>
-                      <td className="p-3 text-green-700 font-semibold">{fmtN(scheduleView === "yearly" ? row.totalPrincipal : row.principal)}</td>
-                      <td className="p-3 text-red-600 font-semibold">{fmtN(scheduleView === "yearly" ? row.totalInterest : row.interest)}</td>
-                      <td className="p-3 font-bold text-ink">{fmtN(scheduleView === "yearly" ? row.closingBalance : row.balance)}</td>
+                    <tr key={idx}>
+                      <th scope="row">{scheduleView === "yearly" ? row.year : row.month}</th>
+                      <td>{fmtN(scheduleView === "yearly" ? row.totalPayment : row.payment)}</td>
+                      <td>{fmtN(scheduleView === "yearly" ? row.totalPrincipal : row.principal)}</td>
+                      <td>{fmtN(scheduleView === "yearly" ? row.totalInterest : row.interest)}</td>
+                      <td>{fmtN(scheduleView === "yearly" ? row.closingBalance : row.balance)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
-        </div>
+        </section>
       )}
 
-      <p className="mt-8 text-center text-xs text-ink-muted">
-        ⚠️ الأرقام تقديرية للأغراض التخطيطية. لا تشمل رسوم الوساطة ورسوم التقييم العقاري وعمولات المصرف. استشر مستشاراً مالياً معتمداً قبل اتخاذ قرار الشراء.
+      <p className="mg-disclaimer">
+        تنبيه: الأرقام تقديرية للأغراض التخطيطية. لا تشمل رسوم الوساطة ورسوم التقييم العقاري وعمولات المصرف. استشر مستشاراً مالياً معتمداً قبل اتخاذ قرار الشراء.
       </p>
     </div>
   );
 }
+
+// ─── Styles: Ink & Signal ──────────────────────────────────────────────────────
+// Reads the site's --c-* tokens when present, with the palette as fallback.
+// Orange is only ever a background, always with black text.
+const css = `
+.mg{
+  --i-bg:var(--c-bg,#F5F5F2);
+  --i-ink:var(--c-ink,#0D0D0D);
+  --i-mute:var(--c-mute,#55554F);
+  --i-soft:var(--c-soft,#DEDED8);
+  --i-accent:var(--c-accent,#FF6A1A);
+  --i-on-accent:#0D0D0D;
+  --i-light:#F5F5F2;
+  background:var(--i-bg);color:var(--i-ink);
+  max-width:64rem;margin:0 auto;padding:2rem 1rem 3rem;line-height:1.6;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .mg{
+    --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+    --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+  }
+}
+:root[data-theme="dark"] .mg{
+  --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
+  --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+}
+.mg *{box-sizing:border-box}
+.mg h1,.mg h2,.mg p,.mg dl,.mg dd{margin:0;padding:0}
+.mg button,.mg input,.mg select{font:inherit;color:inherit}
+.mg :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
+.mg bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+
+.mg-head{margin-bottom:2rem;max-width:44rem}
+.mg-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
+.mg-h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;line-height:1.15;margin-bottom:.75rem}
+.mg-lead{color:var(--i-mute);max-width:38rem}
+
+.mg-grid{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1024px){.mg-grid{grid-template-columns:minmax(0,3fr) minmax(0,2fr);align-items:start}}
+.mg-col{display:grid;gap:1.5rem;min-width:0}
+.mg-sticky{display:grid;gap:1.5rem}
+@media (min-width:1024px){.mg-sticky{position:sticky;top:1rem}}
+
+.mg-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem}
+.mg-h2{display:flex;align-items:center;gap:.65rem;font-size:1.1rem;font-weight:800;margin-bottom:1rem}
+.mg-h2-sm{font-size:.95rem;margin-bottom:.75rem}
+.mg-h2-flush{margin-bottom:0}
+.mg-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:800;border-radius:2px}
+.mg-stack{display:grid;gap:1.1rem}
+.mg-stack-lg{gap:1.4rem}
+.mg-two{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:560px){.mg-two{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mg-fieldset{border:0;margin:0;padding:0;min-width:0}
+.mg-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.mg-label{display:block;font-size:.8rem;font-weight:700;margin-bottom:.35rem;padding:0}
+.mg-label-flush{margin-bottom:0}
+.mg-small{font-size:.78rem;color:var(--i-mute)}
+.mg-row{display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin-bottom:.4rem}
+.mg-row-wrap{flex-wrap:wrap;margin-bottom:0}
+.mg-value{font-size:.85rem;font-weight:800}
+.mg-input{width:100%;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.6rem .75rem;font-size:.95rem;font-weight:700;min-height:2.75rem}
+.mg-suffix-wrap{position:relative}
+.mg-suffix{position:absolute;inset-inline-end:.75rem;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:var(--i-mute);pointer-events:none}
+.mg-range{width:100%;accent-color:var(--i-accent);height:1.5rem;cursor:pointer}
+.mg-range-marks{display:flex;justify-content:space-between;font-size:.7rem;color:var(--i-mute)}
+
+.mg-btn{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.45rem .75rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:2.5rem}
+.mg-btn:hover{background:var(--i-soft)}
+.mg-btn[aria-pressed="true"],.mg-btn[aria-expanded="true"],.mg-btn[aria-checked="true"]{background:var(--i-ink);color:var(--i-bg)}
+.mg-btn-tall{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;line-height:1.35}
+.mg-btn-sub{font-size:.7rem;font-weight:500}
+.mg-seg{display:grid;gap:.4rem}
+.mg-seg-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mg-seg-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:640px){.mg-seg-3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.mg-note{margin-top:.75rem;border:2px dashed var(--i-ink);border-radius:4px;padding:.5rem .7rem;font-size:.8rem;font-weight:600}
+.mg-line{display:flex;justify-content:space-between;gap:1rem;border:2px solid var(--i-ink);border-radius:4px;padding:.6rem .85rem;font-size:.85rem}
+
+.mg-switch-row{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.mg-switch-label{font-size:.88rem;font-weight:700}
+.mg-switch{min-width:5rem}
+
+.mg-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem}
+.mg-result-label{font-size:.9rem;font-weight:700}
+.mg-result-big{font-size:clamp(2rem,6vw,2.75rem);font-weight:900;line-height:1.15;margin:.2rem 0 1rem}
+.mg-result-cells{grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
+.mg-result-cells>div{border:2px solid var(--i-on-accent);border-radius:4px;padding:.6rem .7rem}
+.mg-result-sm{font-size:.75rem;font-weight:600}
+.mg-result-val{font-size:.95rem;font-weight:800}
+.mg-between{display:flex;justify-content:space-between;gap:1rem}
+.mg-result-bar-wrap{margin-top:1rem;display:grid;gap:.4rem}
+.mg-bar{display:flex;height:1.4rem;border:2px solid var(--i-on-accent);border-radius:4px;overflow:hidden}
+.mg-bar-a{background:var(--i-on-accent)}
+.mg-bar-b{background:var(--i-light);border-inline-start:2px solid var(--i-on-accent)}
+
+.mg-rows{border:2px solid var(--i-ink);border-radius:4px}
+.mg-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.55rem .8rem;border-bottom:1px solid var(--i-ink);font-size:.85rem}
+.mg-rows>div:last-child{border-bottom:0}
+.mg-rows dt{font-weight:600;color:var(--i-mute)}
+.mg-rows dd{font-weight:800}
+.mg-rows-total{background:var(--i-soft)}
+.mg-rows-total dt{color:var(--i-ink);font-weight:800}
+
+.mg-tip{border:2px dashed var(--i-ink);border-radius:4px;padding:1rem}
+.mg-tip-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.3rem 0;font-size:.85rem}
+.mg-tip-rows dd{font-weight:800}
+
+.mg-schedule{margin-top:2rem}
+.mg-actions{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.mg-table-wrap{margin-top:1rem;max-height:26rem;overflow:auto;border:2px solid var(--i-ink);border-radius:4px}
+.mg-table{width:100%;min-width:30rem;border-collapse:collapse;font-size:.8rem;font-variant-numeric:tabular-nums}
+.mg-table th,.mg-table td{padding:.5rem .7rem;text-align:start;border-bottom:1px solid var(--i-ink)}
+.mg-table thead th{position:sticky;top:0;background:var(--i-ink);color:var(--i-bg);font-weight:800}
+.mg-table tbody th{font-weight:800}
+.mg-table tbody tr:nth-child(even){background:var(--i-soft)}
+
+.mg-disclaimer{margin-top:2rem;border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.8rem 1rem;font-size:.8rem;color:var(--i-mute)}
+`;

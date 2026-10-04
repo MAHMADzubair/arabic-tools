@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 
+const fieldCls =
+  "w-full rounded-xl border-2 border-[var(--text-3)] bg-[var(--surface)] px-4 py-3 text-base text-[var(--text)] placeholder:text-[var(--text-3)] transition-colors focus:border-[var(--text)] focus:outline-none";
+const labelCls = "mb-1.5 block text-sm font-bold text-[var(--text)]";
+const reqCls = "text-[var(--error)]";
+
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -18,14 +23,14 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="rounded-3xl border border-brand-border bg-white p-6 shadow-card sm:p-10">
+    <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-10">
       {submitted ? (
-        <div className="py-10 text-center space-y-4">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl text-emerald-600">
+        <div className="space-y-4 py-10 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[var(--success)] text-3xl font-black text-[var(--success)]">
             ✓
           </div>
-          <h2 className="text-2xl font-bold text-ink">شكراً لتواصلك معنا!</h2>
-          <p className="text-sm text-ink-secondary max-w-md mx-auto leading-relaxed">
+          <h2 className="text-2xl font-black text-[var(--text)]">شكراً لتواصلك معنا!</h2>
+          <p className="mx-auto max-w-md text-sm leading-8 text-[var(--text-2)]">
             تم استلام رسالتك بنجاح وسيقوم فريق العمل بمراجعتها والرد عليك عبر بريدك الإلكتروني في أقرب وقت ممكن.
           </p>
           <button
@@ -34,7 +39,7 @@ export default function ContactForm() {
               setSubmitted(false);
               setFormData({ name: "", email: "", subject: "استفسار عام", message: "" });
             }}
-            className="mt-4 rounded-xl bg-brand-light px-5 py-2 text-sm font-bold text-brand hover:bg-brand-100 transition"
+            className="mt-4 rounded-xl border-2 border-[var(--text)] px-6 py-2.5 text-sm font-black text-[var(--text)] transition-colors hover:bg-[var(--text)] hover:text-[var(--bg)]"
           >
             إرسال رسالة أخرى
           </button>
@@ -43,43 +48,46 @@ export default function ContactForm() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                الاسم الكامل <span className="text-accent">*</span>
+              <label htmlFor="cf-name" className={labelCls}>
+                الاسم الكامل <span className={reqCls}>*</span>
               </label>
               <input
+                id="cf-name"
                 type="text"
                 required
                 placeholder="مثال: أحمد محمد"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="input w-full"
+                className={fieldCls}
               />
             </div>
 
             <div>
-              <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-                البريد الإلكتروني <span className="text-accent">*</span>
+              <label htmlFor="cf-email" className={labelCls}>
+                البريد الإلكتروني <span className={reqCls}>*</span>
               </label>
               <input
+                id="cf-email"
                 type="email"
                 required
                 placeholder="name@example.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="input w-full text-left"
+                className={`${fieldCls} text-left`}
                 dir="ltr"
               />
             </div>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
+            <label htmlFor="cf-subject" className={labelCls}>
               موضوع الرسالة
             </label>
             <select
+              id="cf-subject"
               value={formData.subject}
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              className="input w-full"
+              className={fieldCls}
             >
               <option value="استفسار عام">استفسار عام</option>
               <option value="اقتراح أداة جديدة">اقتراح أداة أو ميزة جديدة</option>
@@ -89,31 +97,32 @@ export default function ContactForm() {
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
-              نص الرسالة <span className="text-accent">*</span>
+            <label htmlFor="cf-message" className={labelCls}>
+              نص الرسالة <span className={reqCls}>*</span>
             </label>
             <textarea
+              id="cf-message"
               required
               rows={5}
               placeholder="اكتب تفاصيل رسالتك أو ملاحظاتك هنا..."
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="input w-full resize-y"
+              className={`${fieldCls} resize-y`}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-hero-gradient py-3.5 text-base font-bold text-white shadow-sm hover:opacity-95 transition"
+            className="w-full rounded-xl bg-[var(--orange)] py-3.5 text-base font-black text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
           >
             إرسال الرسالة
           </button>
         </form>
       )}
 
-      <div className="mt-10 border-t border-brand-border/60 pt-6 text-center text-xs text-ink-muted space-y-1">
+      <div className="mt-10 space-y-1 border-t border-dashed border-[var(--border)] pt-6 text-center text-xs text-[var(--text-3)] sm:text-sm">
         <p>أو يمكنك مراسلتنا مباشرة عبر البريد الإلكتروني:</p>
-        <p className="font-mono text-sm font-bold text-brand" dir="ltr">
+        <p className="font-mono text-sm font-bold text-[var(--text)] sm:text-base" dir="ltr">
           support@arabic-tools.com
         </p>
       </div>

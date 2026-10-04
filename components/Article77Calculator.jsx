@@ -1,20 +1,29 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useId } from "react";
 
 function toNum(v) {
   const n = parseFloat(String(v));
   return isNaN(n) || n < 0 ? 0 : n;
 }
 
+// Western digits (9,000.00). For Arabic-Hindi digits change "en-US" to "ar-SA".
 function fmt(n) {
-  return n.toLocaleString("ar-SA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function track(event, params) {
+  if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+    window.trackEvent(event, params);
+  }
 }
 
 export default function Article77Calculator() {
+  const uid = useId();
+
   // Inputs
   const [contractType, setContractType] = useState("indefinite"); // "indefinite" | "fixed"
-  const [terminatingParty, setTerminatingParty] = useState("employer"); // "employer" (worker compensated) | "employee" (employer compensated)
+  const [terminatingParty, setTerminatingParty] = useState("employer"); // "employer" | "employee"
   const [hasAgreedClause, setHasAgreedClause] = useState("no"); // "no" | "yes"
   const [agreedAmount, setAgreedAmount] = useState("0");
 
@@ -23,16 +32,13 @@ export default function Article77Calculator() {
   const [transportAllowance, setTransportAllowance] = useState("1000");
   const [otherAllowances, setOtherAllowances] = useState("0");
 
-  // For Indefinite: Years & Months of service
   const [serviceYears, setServiceYears] = useState("4");
   const [serviceMonths, setServiceMonths] = useState("6");
-
-  // For Fixed-term: Remaining contract duration (months)
   const [remainingMonths, setRemainingMonths] = useState("5");
 
   const [copied, setCopied] = useState(false);
 
-  // Calculation
+  // ─── Calculation (unchanged) ───────────────────────────────────────────────
   const calc = useMemo(() => {
     const basic = toNum(basicSalary);
     const housing = toNum(housingAllowance);
@@ -46,22 +52,18 @@ export default function Article77Calculator() {
 
     if (contractType === "indefinite") {
       const yrs = toNum(serviceYears) + toNum(serviceMonths) / 12;
-      // Article 77 item 1: 15 days wage per year of service = 0.5 month wage per year
       statutoryRaw = 0.5 * totalWage * yrs;
       calculationFormulaDesc = `أجر 15 يوماً (نصف شهر = ${fmt(totalWage / 2)} ر.س) × ${yrs.toFixed(2)} سنة خدمة`;
     } else {
       const rem = toNum(remainingMonths);
-      // Article 77 item 2: wage for the remaining period
       statutoryRaw = totalWage * rem;
       calculationFormulaDesc = `أجر كامل المدة المتبقية (${rem} شهر) × ${fmt(totalWage)} ر.س`;
     }
 
-    // Article 77 item 3: Floor of at least 2 months' wage
     const statutoryFloor = 2 * totalWage;
     const floorApplied = statutoryRaw < statutoryFloor;
     const finalStatutory = Math.max(statutoryRaw, statutoryFloor);
 
-    // Final compensation considering custom agreed clause
     let finalCompensation = finalStatutory;
     let ruleApplied = "";
 
@@ -100,22 +102,20 @@ export default function Article77Calculator() {
     remainingMonths,
   ]);
 
-  // Track events
+  // Analytics (unchanged)
   useEffect(() => {
-    if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
-      window.trackEvent("calculator_used", {
-        tool: "article-77",
-        contract_type: contractType,
-        terminating_party: terminatingParty,
-      });
-      window.trackEvent("result_generated", {
-        tool: "article-77",
-        compensation: Math.round(calc.finalCompensation),
-      });
-    }
+    track("calculator_used", {
+      tool: "article-77",
+      contract_type: contractType,
+      terminating_party: terminatingParty,
+    });
+    track("result_generated", {
+      tool: "article-77",
+      compensation: Math.round(calc.finalCompensation),
+    });
   }, [calc.finalCompensation, contractType, terminatingParty]);
 
-  // Share text
+  // Share text (unchanged)
   const shareText = useMemo(() => {
     const beneficiaryText =
       terminatingParty === "employer" ? "مستحق للعامل (تعويض)" : "مستحق لصاحب العمل";
@@ -135,238 +135,172 @@ ${(process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app")}/ar
       navigator.clipboard.writeText(shareText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-      if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
-        window.trackEvent("share_clicked", { tool: "article-77", method: "clipboard" });
-      }
+      track("share_clicked", { tool: "article-77", method: "clipboard" });
     }
   };
 
   const handleWhatsApp = () => {
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
     window.open(url, "_blank");
-    if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
-      window.trackEvent("share_clicked", { tool: "article-77", method: "whatsapp" });
-    }
+    track("share_clicked", { tool: "article-77", method: "whatsapp" });
   };
 
+  const toEmployee = terminatingParty === "employer";
+
   return (
-    <div className="space-y-6">
-      {/* ── Main Calculator Card ── */}
-      <div className="rounded-2xl border-2 border-brand/20 bg-white p-5 sm:p-7 shadow-card">
+    <div className="a77">
+      <style>{CSS}</style>
+
+      <div className="a77-card">
         {/* Header */}
-        <div className="border-b border-brand-border pb-4 mb-6">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-200 mb-2">
-            <span>⚖️</span>
-            <span>نظام العمل السعودي — المرسوم الملكي م/51</span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black text-ink">
-            حاسبة التعويض عن إنهاء العقد غير المشروع (المادة 77)
-          </h1>
-          <p className="text-xs text-ink-muted mt-1">
+        <header className="a77-head">
+          <p className="a77-badge">نظام العمل السعودي — المرسوم الملكي م/51</p>
+          <h1 className="a77-title">حاسبة التعويض عن إنهاء العقد غير المشروع (المادة 77)</h1>
+          <p className="a77-sub">
             قدّر التعويض وفق قاعدة المادة 77 من نظام العمل السعودي عند فسخ عقد العمل دون سبب مشروع مع تطبيق الحد الأدنى النظامي (أجر شهرين).
           </p>
-        </div>
+        </header>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Right: Inputs */}
-          <div className="space-y-5">
-            {/* 1. Contract Type */}
-            <div>
-              <label className="block text-xs font-bold text-ink mb-1.5">
-                نوع عقد العمل:
-              </label>
-              <div className="grid grid-cols-2 gap-2">
+        <div className="a77-cols">
+          {/* ───────── Inputs ───────── */}
+          <div className="a77-stack">
+            {/* Contract type */}
+            <fieldset className="a77-fs">
+              <legend className="a77-label">نوع عقد العمل</legend>
+              <div className="a77-seg a77-seg--2" role="radiogroup" aria-label="نوع عقد العمل">
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={contractType === "indefinite"}
                   onClick={() => setContractType("indefinite")}
-                  className={`rounded-xl border p-3 text-right transition-all ${
-                    contractType === "indefinite"
-                      ? "border-brand bg-brand-light text-brand-dark font-black shadow-2xs"
-                      : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
-                  }`}
+                  className="a77-opt"
                 >
-                  <span className="block text-xs font-extrabold">غير محدد المدة</span>
-                  <span className="block text-[11px] text-ink-muted mt-0.5">15 يوماً عن كل سنة خدمة</span>
+                  <strong>غير محدد المدة</strong>
+                  <span>15 يوماً عن كل سنة خدمة</span>
                 </button>
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={contractType === "fixed"}
                   onClick={() => setContractType("fixed")}
-                  className={`rounded-xl border p-3 text-right transition-all ${
-                    contractType === "fixed"
-                      ? "border-brand bg-brand-light text-brand-dark font-black shadow-2xs"
-                      : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
-                  }`}
+                  className="a77-opt"
                 >
-                  <span className="block text-xs font-extrabold">محدد المدة</span>
-                  <span className="block text-[11px] text-ink-muted mt-0.5">أجر المدة الباقية كاملة</span>
+                  <strong>محدد المدة</strong>
+                  <span>أجر المدة الباقية كاملة</span>
                 </button>
               </div>
-            </div>
+            </fieldset>
 
-            {/* 2. Terminating Party */}
-            <div>
-              <label className="block text-xs font-bold text-ink mb-1.5">
-                الطرف المنهي للعقد (المتسبب بالإنهاء غير المشروع):
-              </label>
-              <div className="grid grid-cols-2 gap-2">
+            {/* Terminating party */}
+            <fieldset className="a77-fs">
+              <legend className="a77-label">الطرف المنهي للعقد (المتسبب بالإنهاء غير المشروع)</legend>
+              <div className="a77-seg a77-seg--2" role="radiogroup" aria-label="الطرف المنهي للعقد">
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={terminatingParty === "employer"}
                   onClick={() => setTerminatingParty("employer")}
-                  className={`rounded-xl border p-2.5 text-xs font-bold transition-all ${
-                    terminatingParty === "employer"
-                      ? "border-emerald-600 bg-emerald-50 text-emerald-900 font-black"
-                      : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
-                  }`}
+                  className="a77-opt"
                 >
-                  🏢 صاحب العمل (فصل تعسفي)
+                  <strong>صاحب العمل</strong>
+                  <span>فصل تعسفي</span>
                 </button>
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={terminatingParty === "employee"}
                   onClick={() => setTerminatingParty("employee")}
-                  className={`rounded-xl border p-2.5 text-xs font-bold transition-all ${
-                    terminatingParty === "employee"
-                      ? "border-amber-600 bg-amber-50 text-amber-900 font-black"
-                      : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
-                  }`}
+                  className="a77-opt"
                 >
-                  👤 العامل (ترك العمل دون سبب)
+                  <strong>العامل</strong>
+                  <span>ترك العمل دون سبب</span>
                 </button>
               </div>
-              <p className="mt-1 text-[11px] text-ink-muted">
-                {terminatingParty === "employer"
-                  ? "✓ التعويض يُدفع للعامل جبراً عن إنهاء خدماته التعسفي."
-                  : "⚠️ التعويض يُستحق لصاحب العمل جبراً عن إخلال العامل بمدّة العقد."}
+              <p className="a77-note">
+                {toEmployee
+                  ? "التعويض يُدفع للعامل جبراً عن إنهاء خدماته التعسفي."
+                  : "التعويض يُستحق لصاحب العمل جبراً عن إخلال العامل بمدّة العقد."}
               </p>
-            </div>
+            </fieldset>
 
-            {/* 3. Wage Breakdown */}
-            <div className="rounded-xl border border-brand-border bg-brand-surface/30 p-3.5 space-y-3">
-              <span className="text-xs font-extrabold text-ink block">
-                الأجر الفعلي المعتمد (الأساسي + البدلات):
-              </span>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-[11px] text-ink-muted block mb-1">الراتب الأساسي</label>
-                  <input
-                    type="number"
-                    value={basicSalary}
-                    onChange={(e) => setBasicSalary(e.target.value)}
-                    className="w-full rounded-lg border border-brand-border bg-white px-3 py-1.5 text-xs font-bold text-ink"
-                    placeholder="8000"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-ink-muted block mb-1">بدل السكن</label>
-                  <input
-                    type="number"
-                    value={housingAllowance}
-                    onChange={(e) => setHousingAllowance(e.target.value)}
-                    className="w-full rounded-lg border border-brand-border bg-white px-3 py-1.5 text-xs font-bold text-ink"
-                    placeholder="2000"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-ink-muted block mb-1">بدل النقل</label>
-                  <input
-                    type="number"
-                    value={transportAllowance}
-                    onChange={(e) => setTransportAllowance(e.target.value)}
-                    className="w-full rounded-lg border border-brand-border bg-white px-3 py-1.5 text-xs font-bold text-ink"
-                    placeholder="1000"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-ink-muted block mb-1">بدلات أخرى ثابتة</label>
-                  <input
-                    type="number"
-                    value={otherAllowances}
-                    onChange={(e) => setOtherAllowances(e.target.value)}
-                    className="w-full rounded-lg border border-brand-border bg-white px-3 py-1.5 text-xs font-bold text-ink"
-                    placeholder="0"
-                  />
-                </div>
+            {/* Wage breakdown */}
+            <fieldset className="a77-fs a77-box">
+              <legend className="a77-label">الأجر الفعلي المعتمد (الأساسي + البدلات)</legend>
+              <div className="a77-grid2">
+                <Field id={`${uid}-basic`} label="الراتب الأساسي" value={basicSalary} onChange={setBasicSalary} ph="8000" />
+                <Field id={`${uid}-housing`} label="بدل السكن" value={housingAllowance} onChange={setHousingAllowance} ph="2000" />
+                <Field id={`${uid}-transport`} label="بدل النقل" value={transportAllowance} onChange={setTransportAllowance} ph="1000" />
+                <Field id={`${uid}-other`} label="بدلات أخرى ثابتة" value={otherAllowances} onChange={setOtherAllowances} ph="0" />
               </div>
-              <div className="flex justify-between items-center pt-1 border-t border-brand-border/60 text-xs font-bold text-ink">
-                <span>إجمالي الأجر الفعلي الشهري:</span>
-                <span className="text-brand font-black">{fmt(calc.totalWage)} ر.س</span>
-              </div>
-            </div>
+              <p className="a77-total">
+                <span>إجمالي الأجر الفعلي الشهري</span>
+                <strong className="a77-num">{fmt(calc.totalWage)} ر.س</strong>
+              </p>
+            </fieldset>
 
-            {/* 4. Duration Inputs depending on Contract Type */}
+            {/* Duration */}
             {contractType === "indefinite" ? (
-              <div className="space-y-2">
-                <label className="block text-xs font-bold text-ink">مدة الخدمة في المنشأة:</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-[11px] text-ink-muted block mb-1">سنوات الخدمة</span>
-                    <input
-                      type="number"
-                      value={serviceYears}
-                      onChange={(e) => setServiceYears(e.target.value)}
-                      className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-xs font-bold text-ink"
-                      placeholder="4"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-[11px] text-ink-muted block mb-1">أشهر إضافية</span>
-                    <input
-                      type="number"
-                      max="11"
-                      value={serviceMonths}
-                      onChange={(e) => setServiceMonths(e.target.value)}
-                      className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-xs font-bold text-ink"
-                      placeholder="6"
-                    />
-                  </div>
+              <fieldset className="a77-fs">
+                <legend className="a77-label">مدة الخدمة في المنشأة</legend>
+                <div className="a77-grid2">
+                  <Field id={`${uid}-years`} label="سنوات الخدمة" value={serviceYears} onChange={setServiceYears} ph="4" />
+                  <Field id={`${uid}-months`} label="أشهر إضافية" value={serviceMonths} onChange={setServiceMonths} ph="6" max="11" />
                 </div>
-              </div>
+              </fieldset>
             ) : (
-              <div className="space-y-2">
-                <label className="block text-xs font-bold text-ink">
-                  المدة المتبقية حتى نهاية العقد (بالأشهر):
+              <div className="a77-field">
+                <label className="a77-label" htmlFor={`${uid}-remaining`}>
+                  المدة المتبقية حتى نهاية العقد (بالأشهر)
                 </label>
                 <input
+                  id={`${uid}-remaining`}
                   type="number"
+                  inputMode="decimal"
+                  min="0"
                   step="0.5"
                   value={remainingMonths}
                   onChange={(e) => setRemainingMonths(e.target.value)}
-                  className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-xs font-bold text-ink"
+                  className="a77-input a77-num"
                   placeholder="5"
                 />
-                <p className="text-[11px] text-ink-muted">
+                <p className="a77-hint">
                   احسب عدد الشهور والأيام المتبقية حتى تاريخ نهاية العقد المبرم بين الطرفين.
                 </p>
               </div>
             )}
 
-            {/* 5. Custom Agreed Clause */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-ink">
+            {/* Agreed clause */}
+            <div className="a77-box a77-stack-sm">
+              <div className="a77-field">
+                <label className="a77-label" htmlFor={`${uid}-clause`}>
                   هل ينص العقد على تعويض محدد متفق عليه؟
                 </label>
                 <select
+                  id={`${uid}-clause`}
                   value={hasAgreedClause}
                   onChange={(e) => setHasAgreedClause(e.target.value)}
-                  className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-bold text-ink"
+                  className="a77-input"
                 >
                   <option value="no">لا (التعويض النظامي)</option>
                   <option value="yes">نعم (شرط اتفاقي)</option>
                 </select>
               </div>
               {hasAgreedClause === "yes" && (
-                <div className="pt-2">
-                  <label className="text-[11px] text-ink-muted block mb-1">
+                <div className="a77-field">
+                  <label className="a77-label" htmlFor={`${uid}-agreed`}>
                     قيمة التعويض المنصوص عليها في العقد (ر.س)
                   </label>
                   <input
+                    id={`${uid}-agreed`}
                     type="number"
+                    inputMode="decimal"
+                    min="0"
                     value={agreedAmount}
                     onChange={(e) => setAgreedAmount(e.target.value)}
-                    className="w-full rounded-lg border border-brand-border bg-white px-3 py-1.5 text-xs font-bold text-ink"
+                    className="a77-input a77-num"
                     placeholder="مثال: 30000"
                   />
-                  <p className="text-[10px] text-ink-muted mt-1">
+                  <p className="a77-hint">
                     صدارة المادة (77): "ما لم يتضمن العقد تعويضاً محدداً..." يُقدَّم الشرط الجزائي المتفق عليه إن وُجد.
                   </p>
                 </div>
@@ -374,99 +308,73 @@ ${(process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app")}/ar
             </div>
           </div>
 
-          {/* Left: Results Card */}
-          <div className="flex flex-col justify-between rounded-2xl border-2 border-brand bg-gradient-to-b from-brand-surface to-white p-5 sm:p-6 shadow-sm">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center border-b border-brand-border/60 pb-3">
-                <span className="text-xs font-extrabold text-ink-secondary">
-                  مستحق التعويض:
+          {/* ───────── Results ───────── */}
+          <div className="a77-stack">
+            <section className="a77-result" aria-live="polite" aria-label="النتيجة">
+              <p className="a77-result-top">
+                <span>مستحق التعويض</span>
+                <span className="a77-tag">
+                  {toEmployee ? "حق للعامل (+)" : "مستحق لصاحب العمل (−)"}
                 </span>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-black ${
-                    terminatingParty === "employer"
-                      ? "bg-emerald-100 text-emerald-800"
-                      : "bg-rose-100 text-rose-800"
-                  }`}
-                >
-                  {terminatingParty === "employer" ? "حق للموظف (+)" : "مستحق لصاحب العمل (-)"}
-                </span>
-              </div>
+              </p>
+              <p className="a77-result-label">صافي قيمة التعويض المستحق بموجب المادة 77</p>
+              <p className="a77-result-value">
+                <span className="a77-num">{fmt(calc.finalCompensation)}</span>
+                <span className="a77-result-cur">ر.س</span>
+              </p>
+              <p className="a77-result-note">
+                {toEmployee
+                  ? "يُصرف للعامل بالإضافة إلى مكافأة نهاية الخدمة وبدل الإجازات."
+                  : "يحق لصاحب العمل خصمه من مستحقات العامل أو المطالبة به."}
+              </p>
+            </section>
 
-              {/* Big Result Box */}
-              <div className="rounded-xl bg-white border border-brand-border p-4 text-center shadow-xs">
-                <span className="text-xs font-bold text-ink-muted block mb-1">
-                  صافي قيمة التعويض المستحق بموجب المادة 77
-                </span>
-                <div className="text-3xl sm:text-4xl font-black text-brand tracking-tight">
-                  {fmt(calc.finalCompensation)} <span className="text-lg font-bold">ر.س</span>
+            <section className="a77-box" aria-label="تفصيل السند الحسابي والنظامي">
+              <h2 className="a77-h2">تفصيل السند الحسابي والنظامي</h2>
+              <dl className="a77-rows">
+                <div className="a77-row">
+                  <dt>الأجر الفعلي الشهري</dt>
+                  <dd><span className="a77-num">{fmt(calc.totalWage)}</span> ر.س</dd>
                 </div>
-                <p className="text-[11px] text-ink-muted mt-2">
-                  {terminatingParty === "employer"
-                    ? "يُصرف للعامل بالإضافة إلى مكافأة نهاية الخدمة وبدل الإجازات."
-                    : "يحق لصاحب العمل خصمه من مستحقات العامل أو المطالبة به."}
+                <div className="a77-row a77-row--stack">
+                  <dt>معادلة الحساب</dt>
+                  <dd className="a77-formula">{calc.calculationFormulaDesc}</dd>
+                </div>
+                <div className="a77-row">
+                  <dt>الناتج الحسابي الأولي</dt>
+                  <dd><span className="a77-num">{fmt(calc.statutoryRaw)}</span> ر.س</dd>
+                </div>
+                <div className="a77-row">
+                  <dt>الحد الأدنى الإلزامي (شهرين)</dt>
+                  <dd><span className="a77-num">{fmt(calc.statutoryFloor)}</span> ر.س</dd>
+                </div>
+              </dl>
+
+              {calc.floorApplied && hasAgreedClause !== "yes" && (
+                <p className="a77-warn" role="note">
+                  <strong>تنبيه:</strong> الناتج الحسابي ({fmt(calc.statutoryRaw)} ر.س) كان أقل من أجر شهرين، فتم رفع التعويض وجوباً إلى الحد الأدنى القانوني ({fmt(calc.statutoryFloor)} ر.س) وفق الفقرة (3) من المادة (77).
                 </p>
-              </div>
+              )}
 
-              {/* Calculation Breakdown Table */}
-              <div className="rounded-xl border border-brand-border/70 bg-white p-3.5 space-y-2 text-xs">
-                <h4 className="font-extrabold text-ink border-b border-slate-100 pb-1.5">
-                  تفصيل السند الحسابي والنظامي:
-                </h4>
-                <div className="flex justify-between text-ink-secondary">
-                  <span>الأجر الفعلي الشهري:</span>
-                  <span className="font-bold">{fmt(calc.totalWage)} ر.س</span>
-                </div>
-                <div className="flex justify-between text-ink-secondary">
-                  <span>معادلة الحساب:</span>
-                  <span className="font-medium text-[11px] text-right">{calc.calculationFormulaDesc}</span>
-                </div>
-                <div className="flex justify-between text-ink-secondary">
-                  <span>الناتج الحسابي الأولي:</span>
-                  <span className="font-bold">{fmt(calc.statutoryRaw)} ر.س</span>
-                </div>
-                <div className="flex justify-between text-ink-secondary">
-                  <span>الحد الأدنى الإلزامي (شهرين):</span>
-                  <span className="font-bold">{fmt(calc.statutoryFloor)} ر.س</span>
-                </div>
-                {calc.floorApplied && hasAgreedClause !== "yes" && (
-                  <div className="rounded-lg bg-amber-50 border border-amber-200 p-2 text-[11px] text-amber-900 leading-relaxed">
-                    ⚖️ <strong>تنبيه:</strong> الناتج الحسابي ({fmt(calc.statutoryRaw)} ر.س) كان أقل من أجر شهرين، فتم رفع التعويض وجوباً إلى الحد الأدنى القانوني ({fmt(calc.statutoryFloor)} ر.س) وفق الفقرة (3) من المادة (77).
-                  </div>
-                )}
-                <div className="border-t border-slate-100 pt-1.5 text-[11px] text-ink-muted leading-relaxed">
-                  <strong>القاعدة المطبقة:</strong> {calc.ruleApplied}
-                </div>
-              </div>
-            </div>
+              <p className="a77-rule">
+                <strong>القاعدة المطبقة:</strong> {calc.ruleApplied}
+              </p>
+            </section>
 
-            {/* Share / Copy Toolbar */}
-            <div className="mt-5 pt-4 border-t border-brand-border space-y-2">
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={handleWhatsApp}
-                  className="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 text-xs font-bold transition shadow-xs"
-                >
-                  <span>📲</span>
-                  <span>واتساب</span>
+            {/* Share */}
+            <div className="a77-actions a77-noprint">
+              <div className="a77-grid2">
+                <button type="button" onClick={handleWhatsApp} className="a77-btn a77-btn--ink">
+                  واتساب
                 </button>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-border bg-white hover:bg-brand-surface text-ink px-3 py-2 text-xs font-bold transition shadow-xs"
-                >
-                  <span>{copied ? "✓" : "📋"}</span>
-                  <span>{copied ? "تم النسخ!" : "نسخ النتيجة"}</span>
+                <button type="button" onClick={handleCopy} className="a77-btn">
+                  {copied ? "تم النسخ" : "نسخ النتيجة"}
                 </button>
               </div>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="w-full flex items-center justify-center gap-1.5 rounded-xl border border-brand-border/80 bg-white hover:bg-slate-50 text-ink-secondary px-3 py-1.5 text-xs font-semibold transition"
-              >
-                <span>🖨️</span>
-                <span>طباعة تقرير التعويض</span>
+              <button type="button" onClick={() => window.print()} className="a77-btn">
+                طباعة تقرير التعويض
               </button>
+              <span className="a77-sr" role="status">{copied ? "تم نسخ النتيجة" : ""}</span>
             </div>
           </div>
         </div>
@@ -474,3 +382,200 @@ ${(process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app")}/ar
     </div>
   );
 }
+
+function Field({ id, label, value, onChange, ph, max }) {
+  return (
+    <div className="a77-field">
+      <label className="a77-label a77-label--sm" htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        type="number"
+        inputMode="decimal"
+        min="0"
+        max={max}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="a77-input a77-num"
+        placeholder={ph}
+      />
+    </div>
+  );
+}
+
+// ─── Styles ──────────────────────────────────────────────────────────────────
+// Colours come from --c-* on .a77. If your tokens.css already defines the
+// underlying names, delete the fallback values and map them in one place.
+const CSS = `
+.a77 {
+  --c-surface: var(--surface, #FFFFFF);
+  --c-ink: var(--ink, #0D0D0D);
+  --c-ink-soft: var(--ink-soft, #4A4A46);
+  --c-line: var(--line, #D9D9D3);
+  --c-signal: var(--signal, #FF6A1A);
+  --c-on-ink: var(--on-ink, #FFFFFF);
+  --c-on-signal: var(--on-signal, #0D0D0D);
+  --c-warning: var(--warning, #8A5A00);
+
+  max-width: 64rem;
+  margin-inline: auto;
+  color: var(--c-ink);
+  font-family: inherit;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .a77 {
+    --c-surface: var(--surface, #181816);
+    --c-ink: var(--ink, #F5F5F2);
+    --c-ink-soft: var(--ink-soft, #B4B4AD);
+    --c-line: var(--line, #34342F);
+    --c-on-ink: var(--on-ink, #0D0D0D);
+    --c-warning: var(--warning, #F2B84B);
+  }
+}
+:root[data-theme="dark"] .a77 {
+  --c-surface: var(--surface, #181816);
+  --c-ink: var(--ink, #F5F5F2);
+  --c-ink-soft: var(--ink-soft, #B4B4AD);
+  --c-line: var(--line, #34342F);
+  --c-on-ink: var(--on-ink, #0D0D0D);
+  --c-warning: var(--warning, #F2B84B);
+}
+.a77 *, .a77 *::before, .a77 *::after { box-sizing: border-box; }
+
+.a77-card {
+  padding: 1.25rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  border-radius: 14px;
+}
+@media (min-width: 640px) { .a77-card { padding: 1.75rem; } }
+
+.a77-head {
+  margin-block-end: 1.5rem;
+  padding-block-end: 1.25rem;
+  border-block-end: 1px solid var(--c-line);
+}
+.a77-badge {
+  display: inline-block;
+  margin: 0 0 0.7rem;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid var(--c-ink);
+  border-radius: 999px;
+}
+.a77-title { margin: 0; font-size: 1.5rem; font-weight: 800; line-height: 1.4; }
+@media (min-width: 640px) { .a77-title { font-size: 1.75rem; } }
+.a77-sub { margin: 0.5rem 0 0; max-width: 60ch; font-size: 0.9rem; line-height: 1.8; color: var(--c-ink-soft); }
+
+.a77-cols { display: grid; gap: 1.5rem; }
+@media (min-width: 860px) { .a77-cols { grid-template-columns: 1fr 1fr; align-items: start; } }
+.a77-stack { display: grid; gap: 1.25rem; min-width: 0; }
+.a77-stack-sm { display: grid; gap: 0.9rem; }
+
+.a77-fs { border: 0; margin: 0; padding: 0; min-width: 0; }
+.a77-fs.a77-box { padding: 1rem; }
+.a77-box { padding: 1rem; border: 1px solid var(--c-line); border-radius: 12px; }
+
+.a77-label { padding: 0; margin-block-end: 0.45rem; display: block; font-size: 0.85rem; font-weight: 700; }
+.a77-label--sm { font-size: 0.8rem; font-weight: 600; color: var(--c-ink-soft); margin-block-end: 0.3rem; }
+.a77-field { display: grid; min-width: 0; }
+.a77-hint, .a77-note { margin: 0.45rem 0 0; font-size: 0.8rem; line-height: 1.7; color: var(--c-ink-soft); }
+.a77-note { padding-inline-start: 0.7rem; border-inline-start: 2px solid var(--c-line); }
+
+.a77-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+/* Selectable options */
+.a77-seg { display: grid; gap: 0.5rem; }
+.a77-seg--2 { grid-template-columns: 1fr 1fr; }
+.a77-opt {
+  display: grid;
+  gap: 0.15rem;
+  min-height: 52px;
+  padding: 0.6rem 0.75rem;
+  text-align: start;
+  font: inherit;
+  color: var(--c-ink);
+  background: var(--c-surface);
+  border: 2px solid var(--c-line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.a77-opt strong { font-size: 0.9rem; font-weight: 700; }
+.a77-opt span { font-size: 0.78rem; color: var(--c-ink-soft); }
+.a77-opt:hover { border-color: var(--c-ink); }
+.a77-opt[aria-checked="true"] { color: var(--c-on-ink); background: var(--c-ink); border-color: var(--c-ink); }
+.a77-opt[aria-checked="true"] span { color: inherit; opacity: 0.85; }
+
+/* Inputs */
+.a77-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--c-ink);
+  background: var(--c-surface);
+  border: 2px solid var(--c-line);
+  border-radius: 10px;
+}
+.a77-input:hover { border-color: var(--c-ink-soft); }
+.a77-num { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+input.a77-num { text-align: center; }
+
+.a77-total {
+  display: flex; justify-content: space-between; gap: 1rem;
+  margin: 0.9rem 0 0; padding-block-start: 0.75rem;
+  border-block-start: 1px solid var(--c-line);
+  font-size: 0.9rem; font-weight: 700;
+}
+
+/* Result: the one orange moment (background only, text stays ink) */
+.a77-result { padding: 1.25rem; background: var(--c-signal); color: var(--c-on-signal); border-radius: 12px; }
+.a77-result-top { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; margin: 0; font-size: 0.85rem; font-weight: 700; }
+.a77-tag { padding: 0.15rem 0.65rem; font-size: 0.8rem; font-weight: 800; border: 2px solid var(--c-on-signal); border-radius: 999px; }
+.a77-result-label { margin: 1rem 0 0; font-size: 0.9rem; font-weight: 700; }
+.a77-result-value { margin: 0.3rem 0 0; display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; font-size: 2.4rem; font-weight: 800; line-height: 1.2; }
+.a77-result-cur { font-size: 1.1rem; font-weight: 700; }
+.a77-result-note { margin: 0.6rem 0 0; font-size: 0.82rem; line-height: 1.7; }
+
+/* Breakdown */
+.a77-h2 { margin: 0 0 0.5rem; font-size: 0.95rem; font-weight: 800; }
+.a77-rows { margin: 0; }
+.a77-row { display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.6rem; border-block-start: 1px solid var(--c-line); font-size: 0.88rem; }
+.a77-row--stack { display: grid; gap: 0.25rem; }
+.a77-row dt { color: var(--c-ink-soft); }
+.a77-row dd { margin: 0; font-weight: 700; }
+.a77-row dd.a77-formula { font-weight: 500; font-size: 0.82rem; line-height: 1.7; }
+.a77-warn {
+  margin: 0.5rem 0 0; padding: 0.7rem 0.8rem;
+  font-size: 0.82rem; line-height: 1.8;
+  color: var(--c-warning);
+  border: 2px dashed var(--c-warning);
+  border-radius: 10px;
+}
+.a77-rule { margin: 0.75rem 0 0; font-size: 0.82rem; line-height: 1.8; color: var(--c-ink-soft); }
+
+/* Buttons */
+.a77-actions { display: grid; gap: 0.5rem; }
+.a77-btn {
+  min-height: 44px; padding: 0.5rem 0.9rem;
+  font: inherit; font-size: 0.9rem; font-weight: 700;
+  color: var(--c-ink); background: var(--c-surface);
+  border: 2px solid var(--c-ink); border-radius: 10px; cursor: pointer;
+  transition: background-color .15s, color .15s;
+}
+.a77-btn:hover { background: var(--c-ink); color: var(--c-on-ink); }
+.a77-btn--ink { color: var(--c-on-ink); background: var(--c-ink); }
+.a77-btn--ink:hover { background: var(--c-signal); color: var(--c-on-signal); border-color: var(--c-ink); }
+
+.a77-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Focus, motion, print */
+.a77 button:focus-visible, .a77 input:focus-visible, .a77 select:focus-visible {
+  outline: 3px solid var(--c-signal);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) { .a77 * { transition: none !important; } }
+@media print { .a77-noprint { display: none !important; } }
+`;

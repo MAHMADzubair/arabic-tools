@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useId } from "react";
 
 /* ─── Hijri Months Reference ──────────────────────────────────────────────── */
 const HIJRI_MONTHS = [
@@ -18,15 +18,7 @@ const HIJRI_MONTHS = [
   { id: 12, name: "ذو الحجة", days: 30 },
 ];
 
-const WEEK_DAYS = [
-  "الأحد",
-  "الإثنين",
-  "الثلاثاء",
-  "الأربعاء",
-  "الخميس",
-  "الجمعة",
-  "السبت",
-];
+const WEEK_DAYS = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
 const ZODIAC_SIGNS = [
   { name: "الجدي", start: [12, 22], end: [1, 19], symbol: "♑" },
@@ -56,7 +48,7 @@ function getZodiac(month, day) {
   return ZODIAC_SIGNS[0];
 }
 
-/* ─── Accurate Umm Al-Qura Date Conversions ───────────────────────────────── */
+/* ─── Umm Al-Qura Date Conversions (engine unchanged) ─────────────────────── */
 function gregorianToHijri(date) {
   try {
     const fmt = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura", {
@@ -71,7 +63,6 @@ function gregorianToHijri(date) {
     const hd = parseInt(parts.find((p) => p.type === "day")?.value.replace(/[^0-9]/g, "") || "1", 10);
     return { hy, hm, hd };
   } catch (e) {
-    // Fallback astronomical formula
     const jd = Math.floor(date.getTime() / 86400000) + 2440587.5;
     const l = Math.floor(jd - 1948440 + 10632);
     const n = Math.floor((l - 1) / 10631);
@@ -131,159 +122,192 @@ const PRESETS = [
   { label: "مواليد 1990 م (أكتوبر)", mode: "gregorian", date: "1990-10-15" },
 ];
 
-export default function HijriAgeCalculator() {
-  const [inputMode, setInputMode] = useState("hijri"); // "hijri" | "gregorian"
+const num = (n) => Number(n).toLocaleString("en-US");
+const monthName = (id) => HIJRI_MONTHS.find((m) => m.id === id)?.name || "";
+const localStr = (d) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-  // Hijri Inputs
+/* ─── Styles (tokens: --c-* with fallbacks) ───────────────────────────────── */
+const CSS = `
+.ha{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#0D0D0D);--er:var(--error,#B42318);color:var(--ink);font-size:15px;line-height:1.6}
+@media (prefers-color-scheme:dark){.ha{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2);--er:var(--error,#FF8A80)}}
+.ha *{box-sizing:border-box}
+.ha h1,.ha h2,.ha h3{margin:0;line-height:1.25}
+.ha-col{display:flex;flex-direction:column;gap:20px}
+.ha-grid{display:grid;gap:24px;grid-template-columns:1fr}
+@media(min-width:1024px){.ha-grid{grid-template-columns:3fr 2fr;align-items:start}.ha-sticky{position:sticky;top:96px}}
+.ha-card{background:var(--sf);border:2px solid var(--ln);padding:20px;display:flex;flex-direction:column;gap:14px}
+.ha-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--ln);padding-bottom:10px}
+.ha-head h2,.ha-head h3{font-size:17px;font-weight:800}
+.ha-g3{display:grid;gap:10px;grid-template-columns:1fr 1.4fr 1fr}
+.ha-lbl{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+.ha-in{width:100%;border:1px solid var(--ln);background:var(--bg);color:var(--ink);padding:10px 12px;font:inherit;font-size:15px;border-radius:0;min-height:44px}
+.ha-in:focus-visible,.ha-tg:focus-visible,.ha-btn:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.ha-tg{border:1px solid var(--ln);background:var(--sf);color:var(--ink);padding:6px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:40px}
+.ha-tg[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:800}
+.ha-seg{display:inline-flex;border:1px solid var(--ln)}
+.ha-seg .ha-tg{border:0}
+.ha-seg .ha-tg+.ha-tg{border-inline-start:1px solid var(--ln)}
+.ha-box{border:1px solid var(--ln);background:var(--bg);padding:12px 14px;font-size:13px}
+.ha-box p{margin:0}
+.ha-row{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.ha-note{border:1px dashed var(--ln);padding:10px 14px;font-size:12px}
+.ha-note.bad{border:3px solid var(--er);color:var(--er);font-weight:700}
+.ha-hero{background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);padding:22px;display:flex;flex-direction:column;gap:14px}
+.ha-hero p{margin:0}
+.ha-big{font-size:clamp(44px,8vw,60px);font-weight:900;line-height:1}
+.ha-btn{border:2px solid var(--ln);background:var(--sf);color:var(--ink);padding:10px 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;min-height:44px;text-align:center}
+.ha-btn:hover{background:var(--ink);color:var(--bg)}
+.ha-hero .ha-btn{background:#fff;color:#0D0D0D;border-color:#0D0D0D}
+.ha-hero .ha-btn:hover{background:#0D0D0D;color:#fff}
+.ha-tiles{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+@media(min-width:640px){.ha-t3{grid-template-columns:repeat(3,1fr)}}
+.ha-tile{border:1px solid var(--ln);background:var(--bg);padding:12px;text-align:center}
+.ha-tile span{display:block;font-size:12px;color:var(--mu)}
+.ha-tile b{display:block;font-size:20px;font-weight:900;margin-top:2px}
+.ha-ms{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:640px){.ha-ms{grid-template-columns:1fr 1fr}}
+.ha-m{border:1px dashed var(--ln);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.ha-m.on{border:3px solid var(--ln);background:var(--bg)}
+.ha-m h4{margin:0;font-size:14px;font-weight:800}
+.ha-m p{margin:0;font-size:12px;color:var(--mu)}
+.ha-tag{align-self:flex-start;border:1px solid var(--ln);padding:0 8px;font-size:11px;font-weight:800}
+.ha-m.on .ha-tag{background:var(--ink);color:var(--bg)}
+.ha-line{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln);font-size:13px}
+.ha-line:last-child{border-bottom:0}
+.ha-line b{border:1px solid var(--ln);padding:0 8px;white-space:nowrap}
+.ha-sub{margin:0;font-size:14px;font-weight:800}
+@media print{.ha-noprint{display:none!important}.ha-sticky{position:static}}
+@media (prefers-reduced-motion:reduce){.ha *{transition:none!important}}
+`;
+
+/* ─── Small components ────────────────────────────────────────────────────── */
+function Field({ label, children }) {
+  const id = useId();
+  return (
+    <div>
+      <label className="ha-lbl" htmlFor={id}>{label}</label>
+      {children(id)}
+    </div>
+  );
+}
+
+function Head({ title, children, as: Tag = "h2" }) {
+  return (
+    <div className="ha-head">
+      <Tag>{title}</Tag>
+      {children}
+    </div>
+  );
+}
+
+/* ─── Main ────────────────────────────────────────────────────────────────── */
+export default function HijriAgeCalculator() {
+  const [inputMode, setInputMode] = useState("hijri");
   const [hijriDay, setHijriDay] = useState(15);
   const [hijriMonth, setHijriMonth] = useState(8);
   const [hijriYear, setHijriYear] = useState(1415);
-
-  // Gregorian Input
   const [gregorianDate, setGregorianDate] = useState("1995-01-16");
-
   const [copied, setCopied] = useState(false);
 
-  // Resolved Birth Dates in both calendars
+  // "Now" is read on the client only: no hydration mismatch, local (not UTC) date
+  const [now, setNow] = useState(null);
+  useEffect(() => { setNow(new Date()); }, []);
+  const todayStr = now ? localStr(now) : "";
+
   const resolved = useMemo(() => {
+    if (!now) return null;
+
     let birthGDate;
     let birthH;
+    let adjusted = false;
 
     if (inputMode === "hijri") {
-      birthGDate = hijriToGregorian(Number(hijriYear), Number(hijriMonth), Number(hijriDay));
-      birthH = { hy: Number(hijriYear), hm: Number(hijriMonth), hd: Number(hijriDay) };
+      const hy = Number(hijriYear);
+      if (!Number.isFinite(hy) || hy < 1330 || hy > 1460) return { invalid: true };
+      birthGDate = hijriToGregorian(hy, Number(hijriMonth), Number(hijriDay));
+      birthH = gregorianToHijri(birthGDate);
+      // e.g. day 30 in a 29-day month: result is the nearest real date
+      adjusted = birthH.hy !== hy || birthH.hm !== Number(hijriMonth) || birthH.hd !== Number(hijriDay);
     } else {
+      if (!gregorianDate) return { invalid: true };
       const [gy, gm, gd] = gregorianDate.split("-").map(Number);
       birthGDate = new Date(Date.UTC(gy, gm - 1, gd));
       birthH = gregorianToHijri(birthGDate);
     }
 
-    const today = new Date();
-    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
     const todayH = gregorianToHijri(todayUTC);
 
-    if (birthGDate > todayUTC) {
-      return { isFuture: true };
-    }
+    if (birthGDate > todayUTC) return { isFuture: true };
 
-    // ─── Gregorian Age Calculation ───
+    // Gregorian age
     let gYears = todayUTC.getUTCFullYear() - birthGDate.getUTCFullYear();
     let gMonths = todayUTC.getUTCMonth() - birthGDate.getUTCMonth();
     let gDays = todayUTC.getUTCDate() - birthGDate.getUTCDate();
-
     if (gDays < 0) {
       gMonths -= 1;
-      const prevMonthLastDay = new Date(Date.UTC(todayUTC.getUTCFullYear(), todayUTC.getUTCMonth(), 0)).getUTCDate();
-      gDays += prevMonthLastDay;
+      gDays += new Date(Date.UTC(todayUTC.getUTCFullYear(), todayUTC.getUTCMonth(), 0)).getUTCDate();
     }
     if (gMonths < 0) {
       gYears -= 1;
       gMonths += 12;
     }
 
-    // ─── Hijri Age Calculation ───
+    // Hijri age
     let hYears = todayH.hy - birthH.hy;
     let hMonths = todayH.hm - birthH.hm;
     let hDays = todayH.hd - birthH.hd;
-
     if (hDays < 0) {
       hMonths -= 1;
-      hDays += 30; // standard Hijri lunar month approx
+      hDays += 30;
     }
     if (hMonths < 0) {
       hYears -= 1;
       hMonths += 12;
     }
 
-    // Total days lived
-    const diffMs = todayUTC.getTime() - birthGDate.getTime();
-    const totalDays = Math.floor(diffMs / 86400000);
+    const totalDays = Math.floor((todayUTC.getTime() - birthGDate.getTime()) / 86400000);
     const totalWeeks = Math.floor(totalDays / 7);
     const totalHours = totalDays * 24;
-    const totalMinutes = totalHours * 60;
-
-    // Approximate heartbeats & sleep
     const heartbeats = totalDays * 100000;
     const sleepHours = Math.round(totalDays * 8);
-
-    // Day of week born
     const dayOfWeek = WEEK_DAYS[birthGDate.getUTCDay()];
-
-    // Zodiac sign
     const zodiac = getZodiac(birthGDate.getUTCMonth() + 1, birthGDate.getUTCDate());
 
-    // Next Gregorian birthday
     const nextGBirthday = new Date(Date.UTC(todayUTC.getUTCFullYear(), birthGDate.getUTCMonth(), birthGDate.getUTCDate()));
-    if (nextGBirthday < todayUTC) {
-      nextGBirthday.setUTCFullYear(nextGBirthday.getUTCFullYear() + 1);
-    }
+    if (nextGBirthday < todayUTC) nextGBirthday.setUTCFullYear(nextGBirthday.getUTCFullYear() + 1);
     const daysToNextGBirthday = Math.ceil((nextGBirthday.getTime() - todayUTC.getTime()) / 86400000);
 
-    // Next Hijri birthday
     let nextHY = todayH.hy;
-    if (todayH.hm > birthH.hm || (todayH.hm === birthH.hm && todayH.hd > birthH.hd)) {
-      nextHY += 1;
-    }
+    if (todayH.hm > birthH.hm || (todayH.hm === birthH.hm && todayH.hd > birthH.hd)) nextHY += 1;
     const nextHDateG = hijriToGregorian(nextHY, birthH.hm, birthH.hd);
     const daysToNextHBirthday = Math.max(0, Math.ceil((nextHDateG.getTime() - todayUTC.getTime()) / 86400000));
 
-    // Difference in age
-    const diffDaysHijriGreg = Math.round((hYears + hMonths / 12) * 354.36) - totalDays;
-
-    // Islamic & Life Milestones
+    const ms = (title, desc, years) => ({
+      title, desc, reached: hYears >= years,
+      targetHDate: `${birthH.hd} ${monthName(birthH.hm)} ${birthH.hy + years} هـ`,
+    });
     const milestones = [
-      {
-        title: "سن التكليف الشرعي (15 سنة هجرية)",
-        desc: "سن البلوغ وإلزامية التكاليف الشرعية كالصلاة والصيام والحج",
-        targetYears: 15,
-        reached: hYears >= 15,
-        targetHDate: `${birthH.hd} ${HIJRI_MONTHS.find((m) => m.id === birthH.hm)?.name} ${birthH.hy + 15} هـ`,
-      },
-      {
-        title: "سن الرشد وإصدار الهوية (18 سنة)",
-        desc: "السن القانوني للأهلية المدنية واستخراج رخصة القيادة والمعاملات",
-        targetYears: 18,
-        reached: hYears >= 18,
-        targetHDate: `${birthH.hd} ${HIJRI_MONTHS.find((m) => m.id === birthH.hm)?.name} ${birthH.hy + 18} هـ`,
-      },
-      {
-        title: "سن الأربعين (بلوغ الأشد)",
-        desc: "كمال النضج العقلي والروحي المذكور في القرآن الكريم",
-        targetYears: 40,
-        reached: hYears >= 40,
-        targetHDate: `${birthH.hd} ${HIJRI_MONTHS.find((m) => m.id === birthH.hm)?.name} ${birthH.hy + 40} هـ`,
-      },
-      {
-        title: "سن التقاعد النظامي (60 سنة هجرية)",
-        desc: "سن التقاعد المعتمد في الأنظمة والوظائف الحكومية",
-        targetYears: 60,
-        reached: hYears >= 60,
-        targetHDate: `${birthH.hd} ${HIJRI_MONTHS.find((m) => m.id === birthH.hm)?.name} ${birthH.hy + 60} هـ`,
-      },
+      ms("سن التكليف الشرعي (15 سنة هجرية)", "سن البلوغ وإلزامية التكاليف الشرعية كالصلاة والصيام والحج", 15),
+      ms("سن الرشد وإصدار الهوية (18 سنة)", "السن القانوني للأهلية المدنية واستخراج رخصة القيادة والمعاملات", 18),
+      ms("سن الأربعين (بلوغ الأشد)", "كمال النضج العقلي والروحي المذكور في القرآن الكريم", 40),
+      ms("سن التقاعد النظامي (60 سنة هجرية)", "سن التقاعد المعتمد في الأنظمة والوظائف الحكومية", 60),
     ];
 
     return {
-      isFuture: false,
+      adjusted,
       birthH,
-      birthGDate,
       birthGStr: `${birthGDate.getUTCFullYear()}-${String(birthGDate.getUTCMonth() + 1).padStart(2, "0")}-${String(birthGDate.getUTCDate()).padStart(2, "0")}`,
       hAge: { years: hYears, months: hMonths, days: hDays },
       gAge: { years: gYears, months: gMonths, days: gDays },
-      todayH,
-      totalDays,
-      totalWeeks,
-      totalHours,
-      totalMinutes,
-      heartbeats,
-      sleepHours,
-      dayOfWeek,
-      zodiac,
-      daysToNextHBirthday,
-      daysToNextGBirthday,
-      nextHYear: nextHY,
-      milestones,
+      todayH, totalDays, totalWeeks, totalHours, heartbeats, sleepHours,
+      dayOfWeek, zodiac, daysToNextHBirthday, daysToNextGBirthday,
+      nextHYear: nextHY, milestones,
     };
-  }, [inputMode, hijriYear, hijriMonth, hijriDay, gregorianDate]);
+  }, [now, inputMode, hijriYear, hijriMonth, hijriDay, gregorianDate]);
+
+  const ok = resolved && !resolved.isFuture && !resolved.invalid;
 
   const handleApplyPreset = (p) => {
     if (p.mode === "hijri") {
@@ -298,13 +322,12 @@ export default function HijriAgeCalculator() {
   };
 
   const handleCopy = () => {
-    if (!resolved || resolved.isFuture) return;
-    const text = `📊 تقرير العمر بالهجري والميلادي:
+    if (!ok || !navigator.clipboard) return;
+    const text = `تقرير العمر بالهجري والميلادي:
 • العمر بالهجري: ${resolved.hAge.years} سنة و${resolved.hAge.months} شهر و${resolved.hAge.days} يوم
 • العمر بالميلادي: ${resolved.gAge.years} سنة و${resolved.gAge.months} شهر و${resolved.gAge.days} يوم
 • يوم الولادة: ${resolved.dayOfWeek}
-• البرج الشمسي: ${resolved.zodiac.name} ${resolved.zodiac.symbol}
-• إجمالي الأيام المعاشة: ${resolved.totalDays.toLocaleString("ar-EG")} يوم
+• إجمالي الأيام المعاشة: ${num(resolved.totalDays)} يوم
 • متبقي على يوم الميلاد الهجري القادم: ${resolved.daysToNextHBirthday} يوم
 
 تم الحساب عبر حاسبة العمر بالهجري | الأدوات العربية`;
@@ -313,402 +336,235 @@ export default function HijriAgeCalculator() {
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const yearDiff = ok ? resolved.hAge.years - resolved.gAge.years : 0;
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12" dir="rtl">
+    <div className="ha mx-auto max-w-5xl px-4 py-8 sm:py-12" dir="rtl">
+      <style>{CSS}</style>
+
       {/* Header */}
-      <div className="mb-8 text-center space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>🌙</span>
-          <span>تقويم أم القرى المعتمد</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">
-          حاسبة العمر بالهجري والميلادي
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm text-ink-secondary sm:text-base">
+      <header style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: "clamp(26px,5vw,38px)", fontWeight: 900 }}>حاسبة العمر بالهجري والميلادي</h1>
+        <p style={{ margin: "10px 0 0", maxWidth: 640, color: "var(--mu)" }}>
           احسب عمرك الدقيق بالسنوات والأشهر والأيام بالتقويمين الهجري والميلادي مع موعد عيد ميلادك القادم وإحصائيات حياتك.
         </p>
-      </div>
+      </header>
 
-      {/* Quick Presets */}
-      <div className="mb-6 rounded-2xl border border-brand-border bg-brand-surface/40 p-3 sm:p-4">
-        <p className="mb-2 text-xs font-bold text-ink-muted">⚡ نماذج وتواريخ شائعة للتجربة السريعة:</p>
-        <div className="flex flex-wrap gap-2">
-          {PRESETS.map((p, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleApplyPreset(p)}
-              className="rounded-xl border border-brand-border bg-white px-3 py-1.5 text-xs font-medium text-ink-secondary hover:border-brand hover:text-brand-dark transition-all"
-            >
+      {/* Presets */}
+      <div className="ha-box ha-noprint" style={{ marginBottom: 24 }}>
+        <p className="ha-sub" style={{ marginBottom: 8 }}>تواريخ شائعة للتجربة السريعة</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {PRESETS.map((p) => (
+            <button key={p.label} type="button" className="ha-btn" style={{ minHeight: 40, fontSize: 13, padding: "6px 12px" }}
+              onClick={() => handleApplyPreset(p)}>
               {p.label}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        {/* ─── Left Inputs Column (3 cols) ─── */}
-        <div className="lg:col-span-3 space-y-5">
-
-          {/* Mode Switch Card */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="flex items-center gap-2 text-base font-bold text-ink">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">📅</span>
-                تحديد تاريخ الميلاد
-              </h2>
-
-              <div className="inline-flex rounded-xl border border-brand-border bg-brand-surface/60 p-1 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setInputMode("hijri")}
-                  className={`rounded-lg px-3 py-1.5 font-bold transition-all ${
-                    inputMode === "hijri"
-                      ? "bg-white text-brand-dark shadow-sm"
-                      : "text-ink-secondary hover:text-ink"
-                  }`}
-                >
-                  🌙 إدخال بالهجري
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setInputMode("gregorian")}
-                  className={`rounded-lg px-3 py-1.5 font-bold transition-all ${
-                    inputMode === "gregorian"
-                      ? "bg-white text-brand-dark shadow-sm"
-                      : "text-ink-secondary hover:text-ink"
-                  }`}
-                >
-                  ☀️ إدخال بالميلادي
-                </button>
+      <div className="ha-grid">
+        {/* ─── Inputs ─── */}
+        <div className="ha-col">
+          <section className="ha-card">
+            <Head title="تحديد تاريخ الميلاد">
+              <div className="ha-seg" role="group" aria-label="طريقة الإدخال">
+                <button type="button" className="ha-tg" aria-pressed={inputMode === "hijri"} onClick={() => setInputMode("hijri")}>إدخال بالهجري</button>
+                <button type="button" className="ha-tg" aria-pressed={inputMode === "gregorian"} onClick={() => setInputMode("gregorian")}>إدخال بالميلادي</button>
               </div>
-            </div>
+            </Head>
 
-            {/* Inputs depending on mode */}
             {inputMode === "hijri" ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  {/* Hijri Day */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-ink-secondary">اليوم (1 - 30)</label>
-                    <select
-                      value={hijriDay}
-                      onChange={(e) => setHijriDay(Number(e.target.value))}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 p-2.5 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                    >
-                      {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (
-                        <option key={d} value={d}>
-                          {d}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Hijri Month */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-ink-secondary">الشهر الهجري</label>
-                    <select
-                      value={hijriMonth}
-                      onChange={(e) => setHijriMonth(Number(e.target.value))}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 p-2.5 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                    >
-                      {HIJRI_MONTHS.map((m) => (
-                        <option key={m.id} value={m.id}>
-                          {m.id} - {m.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Hijri Year */}
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-ink-secondary">السنة الهجرية</label>
-                    <input
-                      type="number"
-                      min="1330"
-                      max="1460"
-                      value={hijriYear}
-                      onChange={(e) => setHijriYear(e.target.value)}
-                      className="w-full rounded-xl border border-brand-border bg-brand-surface/40 p-2.5 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                      placeholder="1415"
-                    />
-                  </div>
+              <>
+                <div className="ha-g3">
+                  <Field label="اليوم (1 - 30)">
+                    {(id) => (
+                      <select id={id} className="ha-in" value={hijriDay} onChange={(e) => setHijriDay(Number(e.target.value))}>
+                        {Array.from({ length: 30 }, (_, i) => i + 1).map((d) => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                      </select>
+                    )}
+                  </Field>
+                  <Field label="الشهر الهجري">
+                    {(id) => (
+                      <select id={id} className="ha-in" value={hijriMonth} onChange={(e) => setHijriMonth(Number(e.target.value))}>
+                        {HIJRI_MONTHS.map((m) => (
+                          <option key={m.id} value={m.id}>{m.id} - {m.name}</option>
+                        ))}
+                      </select>
+                    )}
+                  </Field>
+                  <Field label="السنة الهجرية">
+                    {(id) => (
+                      <input id={id} type="number" inputMode="numeric" min="1330" max="1460" className="ha-in"
+                        value={hijriYear} placeholder="1415" onChange={(e) => setHijriYear(e.target.value)} />
+                    )}
+                  </Field>
                 </div>
 
-                {resolved && !resolved.isFuture && (
-                  <div className="rounded-xl bg-brand-light/60 p-3 text-xs text-brand-dark font-medium flex items-center justify-between">
-                    <span>🔄 المقابل بالميلادي الدقيق:</span>
-                    <span className="font-bold text-sm">{resolved.birthGStr} م ({resolved.dayOfWeek})</span>
+                {ok && (
+                  <div className="ha-box ha-row">
+                    <span>المقابل بالميلادي الدقيق</span>
+                    <b>{resolved.birthGStr} م ({resolved.dayOfWeek})</b>
                   </div>
                 )}
-              </div>
+              </>
             ) : (
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-ink-secondary">اختر تاريخ ميلادك بالميلادي</label>
-                  <input
-                    type="date"
-                    value={gregorianDate}
-                    max={new Date().toISOString().slice(0, 10)}
-                    onChange={(e) => setGregorianDate(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 p-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                  />
-                </div>
+              <>
+                <Field label="اختر تاريخ ميلادك بالميلادي">
+                  {(id) => (
+                    <input id={id} type="date" className="ha-in" value={gregorianDate} max={todayStr || undefined}
+                      onChange={(e) => setGregorianDate(e.target.value)} />
+                  )}
+                </Field>
 
-                {resolved && !resolved.isFuture && (
-                  <div className="rounded-xl bg-brand-light/60 p-3 text-xs text-brand-dark font-medium flex items-center justify-between">
-                    <span>🔄 المقابل بالهجري (أم القرى):</span>
-                    <span className="font-bold text-sm">
-                      {resolved.birthH.hd} {HIJRI_MONTHS.find((m) => m.id === resolved.birthH.hm)?.name} {resolved.birthH.hy} هـ
-                    </span>
+                {ok && (
+                  <div className="ha-box ha-row">
+                    <span>المقابل بالهجري (أم القرى)</span>
+                    <b>{resolved.birthH.hd} {monthName(resolved.birthH.hm)} {resolved.birthH.hy} هـ</b>
                   </div>
                 )}
+              </>
+            )}
+
+            {resolved?.invalid && (
+              <div className="ha-note bad" role="alert">
+                أدخل سنة هجرية بين 1330 و1460 (أو تاريخاً ميلادياً صحيحاً) لعرض النتيجة.
               </div>
             )}
-          </div>
+            {ok && resolved.adjusted && (
+              <div className="ha-note" role="status" style={{ borderStyle: "solid", borderWidth: 3 }}>
+                <b>تنبيه:</b> اليوم المختار غير موجود في هذا الشهر. النتيجة محسوبة لأقرب تاريخ حقيقي: {resolved.birthH.hd} {monthName(resolved.birthH.hm)} {resolved.birthH.hy} هـ.
+              </div>
+            )}
+          </section>
 
-          {/* Today's Reference Info */}
-          {resolved && !resolved.isFuture && (
-            <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-              <h3 className="text-sm font-bold text-ink flex items-center gap-2">
-                <span>📍</span>
-                <span>تاريخ اليوم المعتمد للحساب</span>
-              </h3>
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="rounded-xl bg-brand-surface/50 p-3 border border-brand-border/40">
-                  <span className="text-ink-secondary block">اليوم بالهجري:</span>
-                  <span className="text-sm font-bold text-brand-dark">
-                    {resolved.todayH.hd} {HIJRI_MONTHS.find((m) => m.id === resolved.todayH.hm)?.name} {resolved.todayH.hy} هـ
-                  </span>
+          {ok && (
+            <section className="ha-card">
+              <Head as="h3" title="تاريخ اليوم المعتمد للحساب" />
+              <div className="ha-tiles">
+                <div className="ha-tile">
+                  <span>اليوم بالهجري</span>
+                  <b style={{ fontSize: 16 }}>{resolved.todayH.hd} {monthName(resolved.todayH.hm)} {resolved.todayH.hy} هـ</b>
                 </div>
-                <div className="rounded-xl bg-brand-surface/50 p-3 border border-brand-border/40">
-                  <span className="text-ink-secondary block">اليوم بالميلادي:</span>
-                  <span className="text-sm font-bold text-ink">
-                    {new Date().toISOString().slice(0, 10)} م
-                  </span>
+                <div className="ha-tile">
+                  <span>اليوم بالميلادي</span>
+                  <b style={{ fontSize: 16 }}>{todayStr} م</b>
                 </div>
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Islamic & Life Milestones */}
-          {resolved && !resolved.isFuture && (
-            <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-              <h3 className="text-base font-bold text-ink flex items-center gap-2">
-                <span>🏆</span>
-                <span>محطات عمرية هامة وفق التقويم الهجري</span>
-              </h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {resolved.milestones.map((m, idx) => (
-                  <div
-                    key={idx}
-                    className={`rounded-xl border p-3.5 space-y-1.5 transition-all ${
-                      m.reached
-                        ? "border-emerald-200 bg-emerald-50/50"
-                        : "border-brand-border bg-brand-surface/30"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-ink">{m.title}</span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                          m.reached
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-amber-100 text-amber-800"
-                        }`}
-                      >
-                        {m.reached ? "✓ تم البلوغ" : "قريباً إن شاء الله"}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-ink-muted leading-relaxed">{m.desc}</p>
-                    <div className="text-[11px] font-semibold text-brand-dark pt-1">
-                      📅 التاريخ: {m.targetHDate}
-                    </div>
+          {ok && (
+            <section className="ha-card">
+              <Head title="محطات عمرية هامة وفق التقويم الهجري" />
+              <div className="ha-ms">
+                {resolved.milestones.map((m) => (
+                  <div key={m.title} className={`ha-m ${m.reached ? "on" : ""}`}>
+                    <h4>{m.title}</h4>
+                    <span className="ha-tag">{m.reached ? "✓ تم البلوغ" : "لم تُبلغ بعد"}</span>
+                    <p>{m.desc}</p>
+                    <b style={{ fontSize: 12 }}>التاريخ: {m.targetHDate}</b>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Fun Life Stats Cards */}
-          {resolved && !resolved.isFuture && (
-            <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-              <h3 className="text-base font-bold text-ink flex items-center gap-2">
-                <span>⏱️</span>
-                <span>إحصائيات رحلة حياتك حتى اللحظة</span>
-              </h3>
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 text-center">
-                <div className="rounded-xl bg-brand-surface/60 p-3 border border-brand-border/40">
-                  <span className="text-[11px] text-ink-secondary">إجمالي الأيام</span>
-                  <p className="text-lg font-black text-brand-dark mt-0.5">
-                    {resolved.totalDays.toLocaleString("ar-EG")}
-                  </p>
-                </div>
-                <div className="rounded-xl bg-brand-surface/60 p-3 border border-brand-border/40">
-                  <span className="text-[11px] text-ink-secondary">إجمالي الأسابيع</span>
-                  <p className="text-lg font-black text-ink mt-0.5">
-                    {resolved.totalWeeks.toLocaleString("ar-EG")}
-                  </p>
-                </div>
-                <div className="rounded-xl bg-brand-surface/60 p-3 border border-brand-border/40">
-                  <span className="text-[11px] text-ink-secondary">إجمالي الساعات</span>
-                  <p className="text-lg font-black text-ink mt-0.5">
-                    {resolved.totalHours.toLocaleString("ar-EG")}
-                  </p>
-                </div>
-                <div className="rounded-xl bg-brand-surface/60 p-3 border border-brand-border/40">
-                  <span className="text-[11px] text-ink-secondary">ساعات النوم التقديرية</span>
-                  <p className="text-lg font-black text-indigo-950 mt-0.5">
-                    {resolved.sleepHours.toLocaleString("ar-EG")}
-                  </p>
-                </div>
-                <div className="rounded-xl bg-brand-surface/60 p-3 border border-brand-border/40">
-                  <span className="text-[11px] text-ink-secondary">نبضات القلب التقديرية</span>
-                  <p className="text-lg font-black text-rose-950 mt-0.5">
-                    {(resolved.heartbeats / 1000000).toFixed(1)} مليون
-                  </p>
-                </div>
-                <div className="rounded-xl bg-brand-surface/60 p-3 border border-brand-border/40">
-                  <span className="text-[11px] text-ink-secondary">يوم ولادتك</span>
-                  <p className="text-lg font-black text-emerald-950 mt-0.5">
-                    {resolved.dayOfWeek}
-                  </p>
-                </div>
+          {ok && (
+            <section className="ha-card">
+              <Head title="إحصائيات رحلة حياتك حتى اللحظة" />
+              <div className="ha-tiles ha-t3">
+                <div className="ha-tile" style={{ borderWidth: 3 }}><span>إجمالي الأيام</span><b>{num(resolved.totalDays)}</b></div>
+                <div className="ha-tile"><span>إجمالي الأسابيع</span><b>{num(resolved.totalWeeks)}</b></div>
+                <div className="ha-tile"><span>إجمالي الساعات</span><b>{num(resolved.totalHours)}</b></div>
+                <div className="ha-tile"><span>ساعات النوم التقديرية</span><b>{num(resolved.sleepHours)}</b></div>
+                <div className="ha-tile"><span>نبضات القلب التقديرية</span><b>{(resolved.heartbeats / 1000000).toFixed(1)} مليون</b></div>
+                <div className="ha-tile"><span>يوم ولادتك</span><b>{resolved.dayOfWeek}</b></div>
               </div>
-            </div>
+            </section>
           )}
-
         </div>
 
-        {/* ─── Right Results Column (2 cols) ─── */}
-        <div className="lg:col-span-2">
-          <div className="sticky top-24 space-y-4">
-
-            {/* Main Hijri Age Card */}
-            <div className="rounded-2xl bg-hero-gradient p-6 text-white shadow-xl space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-200">العمر الدقيق بالهجري</span>
-                <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">
-                  🌙 تقويم أم القرى
-                </span>
-              </div>
-
-              {resolved && !resolved.isFuture ? (
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-black tracking-tight">{resolved.hAge.years}</span>
-                    <span className="text-lg font-bold">سنة هجرية</span>
-                  </div>
-                  <div className="mt-2 text-sm text-emerald-100 font-medium">
-                    و{resolved.hAge.months} شهر و{resolved.hAge.days} يوم
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm opacity-80">يرجى إدخال تاريخ ميلاد صحيح سابق لتاريخ اليوم</p>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="flex-1 rounded-xl bg-white/20 hover:bg-white/30 py-2 text-xs font-bold text-center transition-all"
-                >
-                  {copied ? "✓ تم نسخ التقرير" : "📋 نسخ النتيجة"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="rounded-xl bg-white/10 hover:bg-white/20 px-3 py-2 text-xs font-medium transition-all"
-                >
-                  🖨️ طباعة
-                </button>
-              </div>
+        {/* ─── Results ─── */}
+        <div className="ha-col ha-sticky" aria-live="polite">
+          <section className="ha-hero">
+            <div className="ha-row">
+              <p style={{ fontSize: 13, fontWeight: 700 }}>العمر الدقيق بالهجري</p>
+              <p style={{ fontSize: 12, fontWeight: 800, border: "2px solid #0D0D0D", padding: "1px 10px" }}>تقويم أم القرى</p>
             </div>
 
-            {/* Gregorian Comparison Card */}
-            {resolved && !resolved.isFuture && (
-              <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-ink">العمر المقابل بالميلادي</h3>
-                  <span className="text-xs font-bold text-brand-dark">☀️ شمسي</span>
-                </div>
-
-                <div className="rounded-xl bg-brand-surface/50 p-4 text-center border border-brand-border/40">
-                  <p className="text-3xl font-black text-ink">
-                    {resolved.gAge.years} <span className="text-sm font-normal text-ink-secondary">سنة</span>
-                  </p>
-                  <p className="text-xs text-ink-muted mt-1 font-semibold">
-                    و{resolved.gAge.months} شهر و{resolved.gAge.days} يوم
-                  </p>
-                </div>
-
-                <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900 leading-relaxed border border-amber-200/70">
-                  <span className="font-bold">💡 الفرق بين العمرين: </span>
-                  أنت أكبر بالهجري بنحو{" "}
-                  <strong>
-                    {resolved.hAge.years - resolved.gAge.years > 0
-                      ? `${resolved.hAge.years - resolved.gAge.years} سنة كاملة`
-                      : "بضعة أشهر"}
-                  </strong>
-                  ، لأن السنة الهجرية أقصر من الميلادية بنحو 11 يوماً كل عام!
-                </div>
+            {ok ? (
+              <div>
+                <p className="ha-big">{resolved.hAge.years} <span style={{ fontSize: 20, fontWeight: 800 }}>سنة هجرية</span></p>
+                <p style={{ marginTop: 6, fontSize: 15, fontWeight: 700 }}>
+                  و{resolved.hAge.months} شهر و{resolved.hAge.days} يوم
+                </p>
               </div>
+            ) : (
+              <p style={{ fontSize: 14, fontWeight: 700 }}>
+                {resolved === null ? "—" : resolved?.isFuture ? "تاريخ الميلاد يجب أن يسبق تاريخ اليوم." : "يرجى إدخال تاريخ ميلاد صحيح سابق لتاريخ اليوم."}
+              </p>
             )}
 
-            {/* Next Birthday Countdown */}
-            {resolved && !resolved.isFuture && (
-              <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-                <h3 className="text-sm font-bold text-ink flex items-center gap-1.5">
-                  <span>🎂</span>
-                  <span>موعد يوم ميلادك القادم</span>
-                </h3>
+            <div className="ha-noprint" style={{ display: "flex", gap: 8 }}>
+              <button type="button" className="ha-btn" style={{ flex: 1 }} onClick={handleCopy} disabled={!ok}>
+                {copied ? "✓ تم نسخ التقرير" : "نسخ النتيجة"}
+              </button>
+              <button type="button" className="ha-btn" onClick={() => window.print()}>طباعة</button>
+            </div>
+          </section>
 
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between items-center py-2 border-b border-brand-border/30">
-                    <span className="text-ink-secondary font-medium">ميلادك الهجري القادم ({resolved.nextHYear} هـ):</span>
-                    <span className="font-extrabold text-brand-dark text-sm bg-brand-light/70 px-2 py-0.5 rounded-lg">
-                      بعد {resolved.daysToNextHBirthday} يوم
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-ink-secondary font-medium">ميلادك الميلادي القادم:</span>
-                    <span className="font-extrabold text-ink text-sm bg-brand-surface px-2 py-0.5 rounded-lg">
-                      بعد {resolved.daysToNextGBirthday} يوم
-                    </span>
-                  </div>
+          {ok && (
+            <section className="ha-card">
+              <Head as="h3" title="العمر المقابل بالميلادي" />
+              <div className="ha-tile" style={{ padding: 16 }}>
+                <b style={{ fontSize: 32 }}>{resolved.gAge.years} <span style={{ fontSize: 14, fontWeight: 400 }}>سنة</span></b>
+                <span style={{ marginTop: 4 }}>و{resolved.gAge.months} شهر و{resolved.gAge.days} يوم</span>
+              </div>
+              <div className="ha-note">
+                <b>الفرق بين العمرين:</b> أنت أكبر بالهجري بنحو{" "}
+                <b>{yearDiff > 0 ? `${yearDiff} سنة كاملة` : "بضعة أشهر"}</b>
+                ، لأن السنة الهجرية أقصر من الميلادية بنحو 11 يوماً كل عام.
+              </div>
+            </section>
+          )}
+
+          {ok && (
+            <section className="ha-card">
+              <Head as="h3" title="موعد يوم ميلادك القادم" />
+              <div>
+                <div className="ha-line">
+                  <span>ميلادك الهجري القادم ({resolved.nextHYear} هـ)</span>
+                  <b>بعد {num(resolved.daysToNextHBirthday)} يوم</b>
+                </div>
+                <div className="ha-line">
+                  <span>ميلادك الميلادي القادم</span>
+                  <b>بعد {num(resolved.daysToNextGBirthday)} يوم</b>
                 </div>
               </div>
-            )}
+            </section>
+          )}
 
-            {/* Astrological Zodiac Sign */}
-            {resolved && !resolved.isFuture && (
-              <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-2">
-                <h3 className="text-sm font-bold text-ink flex items-center gap-1.5">
-                  <span>✨</span>
-                  <span>البرج الفلكي والشمسي</span>
-                </h3>
-                <div className="flex items-center justify-between rounded-xl bg-brand-surface/50 p-3 border border-brand-border/40">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">{resolved.zodiac.symbol}</span>
-                    <div>
-                      <p className="text-sm font-bold text-ink">برج {resolved.zodiac.name}</p>
-                      <p className="text-[10px] text-ink-muted">حسب تاريخ ميلادك الميلادي</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold text-brand-dark">
-                    وُلدت يوم {resolved.dayOfWeek}
-                  </span>
-                </div>
+          {ok && (
+            <section className="ha-card">
+              <Head as="h3" title="البرج الفلكي والشمسي" />
+              <div className="ha-box ha-row" style={{ alignItems: "center" }}>
+                <span>
+                  <b style={{ fontSize: 24, marginInlineEnd: 8 }} aria-hidden="true">{resolved.zodiac.symbol}{"\uFE0E"}</b>
+                  <b>برج {resolved.zodiac.name}</b>
+                  <span style={{ display: "block", fontSize: 11, color: "var(--mu)" }}>حسب تاريخ ميلادك الميلادي</span>
+                </span>
+                <b style={{ fontSize: 12 }}>وُلدت يوم {resolved.dayOfWeek}</b>
               </div>
-            )}
-
-          </div>
+            </section>
+          )}
         </div>
       </div>
 
-      <p className="mt-8 text-center text-xs text-ink-muted">
-        🌙 يتم احتساب التقويم الهجري وفق معايير تقويم أم القرى الرسمي في المملكة العربية السعودية.
+      <p className="ha-note" style={{ marginTop: 32 }}>
+        يتم احتساب التقويم الهجري وفق معايير تقويم أم القرى الرسمي في المملكة العربية السعودية.
       </p>
     </div>
   );

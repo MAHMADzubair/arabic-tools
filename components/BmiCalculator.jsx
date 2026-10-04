@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useId } from "react";
 
-/* ─── WHO BMI Categories ─────────────────────────────────────────────────── */
+/* ─── WHO BMI Categories (text and ranges unchanged; colour fields removed) ─ */
 const BMI_CATEGORIES = [
-  { min: 0, max: 18.5, label: "نقص في الوزن (نحافة)", color: "text-amber-500", bg: "bg-amber-500", badgeBg: "bg-amber-100 text-amber-900 border-amber-300", advice: "وزنك أقل من المعدل الطبيعي، يُنصح بزيادة السعرات الصحية وبناء الكتلة العضلية." },
-  { min: 18.5, max: 24.9, label: "وزن طبيعي ومثالي", color: "text-emerald-500", bg: "bg-emerald-500", badgeBg: "bg-emerald-100 text-emerald-900 border-emerald-300", advice: "تهانينا! وزنك في النطاق الصحي المثالي، حافظ على نمط حياتك المتوازن." },
-  { min: 25, max: 29.9, label: "وزن زائد (مرحلة ما قبل السمنة)", color: "text-orange-500", bg: "bg-orange-500", badgeBg: "bg-orange-100 text-orange-900 border-orange-300", advice: "لديك زيادة في الوزن عن المعدل الصحي، يُنصح بزيادة النشاط البدني وتقليل السكريات." },
-  { min: 30, max: 34.9, label: "سمنة من الدرجة الأولى", color: "text-rose-500", bg: "bg-rose-500", badgeBg: "bg-rose-100 text-rose-900 border-rose-300", advice: "مرحلة سمنة أولى؛ ينبغي اتباع نظام غذائي محسوب السعرات لتفادي المخاطر الصحية." },
-  { min: 35, max: 39.9, label: "سمنة من الدرجة الثانية", color: "text-red-600", bg: "bg-red-600", badgeBg: "bg-red-100 text-red-900 border-red-300", advice: "سمنة متوسطة إلى شديدة؛ يُفضل استشارة أخصائي تغذية وطبيب لتنظيم خطة نزول آمنة." },
-  { min: 40, max: 100, label: "سمنة مفرطة خطيرة (درجة ثالثة)", color: "text-purple-600", bg: "bg-purple-600", badgeBg: "bg-purple-100 text-purple-900 border-purple-300", advice: "سمنة مفرطة تتطلب تدخلاً طبياً عاجلاً لتفادي أمراض القلب والسكري وارتفاع الضغط." },
+  { min: 0, max: 18.5, label: "نقص في الوزن (نحافة)", advice: "وزنك أقل من المعدل الطبيعي، يُنصح بزيادة السعرات الصحية وبناء الكتلة العضلية." },
+  { min: 18.5, max: 24.9, label: "وزن طبيعي ومثالي", advice: "تهانينا! وزنك في النطاق الصحي المثالي، حافظ على نمط حياتك المتوازن." },
+  { min: 25, max: 29.9, label: "وزن زائد (مرحلة ما قبل السمنة)", advice: "لديك زيادة في الوزن عن المعدل الصحي، يُنصح بزيادة النشاط البدني وتقليل السكريات." },
+  { min: 30, max: 34.9, label: "سمنة من الدرجة الأولى", advice: "مرحلة سمنة أولى؛ ينبغي اتباع نظام غذائي محسوب السعرات لتفادي المخاطر الصحية." },
+  { min: 35, max: 39.9, label: "سمنة من الدرجة الثانية", advice: "سمنة متوسطة إلى شديدة؛ يُفضل استشارة أخصائي تغذية وطبيب لتنظيم خطة نزول آمنة." },
+  { min: 40, max: 100, label: "سمنة مفرطة خطيرة (درجة ثالثة)", advice: "سمنة مفرطة تتطلب تدخلاً طبياً عاجلاً لتفادي أمراض القلب والسكري وارتفاع الضغط." },
 ];
 
 const ACTIVITY_LEVELS = [
@@ -27,15 +27,24 @@ const PRESETS = [
   { label: "رجل 178 سم / 96 كجم (سمنة)", gender: "male", height: 178, weight: 96, age: 38, activity: 1.2 },
 ];
 
+/* Gauge: BMI 14 → 0%, BMI 42 → 100%. Segments are derived from the same
+   scale as the pointer so the pointer always lands in the right segment. */
+const G_MIN = 14;
+const G_MAX = 42;
+const pct = (v) => ((Math.min(G_MAX, Math.max(G_MIN, v)) - G_MIN) / (G_MAX - G_MIN)) * 100;
+const GAUGE_STOPS = [14, 18.5, 25, 30, 35, 42];
+const GAUGE_TICKS = [18.5, 25, 30, 35];
+
 export default function BmiCalculator() {
-  const [gender, setGender] = useState("male"); // "male" | "female"
-  const [height, setHeight] = useState(175); // cm
-  const [weight, setWeight] = useState(75); // kg
-  const [age, setAge] = useState(30); // years
-  const [activity, setActivity] = useState(1.375); // multiplier
+  const uid = useId();
+  const [gender, setGender] = useState("male");
+  const [height, setHeight] = useState(175);
+  const [weight, setWeight] = useState(75);
+  const [age, setAge] = useState(30);
+  const [activity, setActivity] = useState(1.375);
   const [copied, setCopied] = useState(false);
 
-  // Calculations
+  // ─── Calculations (unchanged) ──────────────────────────────────────────────
   const stats = useMemo(() => {
     const hM = Number(height) / 100;
     const wKg = Number(weight);
@@ -43,23 +52,19 @@ export default function BmiCalculator() {
 
     if (hM <= 0 || wKg <= 0) return null;
 
-    // BMI Formula
     const bmi = wKg / (hM * hM);
     const roundedBmi = Number(bmi.toFixed(1));
 
-    // Category
     const category =
       BMI_CATEGORIES.find((c) => roundedBmi >= c.min && roundedBmi <= c.max) ||
       BMI_CATEGORIES[BMI_CATEGORIES.length - 1];
 
-    // Ideal Weight Range (BMI 18.5 - 24.9)
     const minIdealWeight = Number((18.5 * hM * hM).toFixed(1));
     const maxIdealWeight = Number((24.9 * hM * hM).toFixed(1));
     const midpointIdealWeight = Number(((minIdealWeight + maxIdealWeight) / 2).toFixed(1));
 
-    // Weight Difference
     let diffWeight = 0;
-    let weightStatus = "ideal"; // "gain" | "lose" | "ideal"
+    let weightStatus = "ideal";
     if (wKg < minIdealWeight) {
       diffWeight = Number((minIdealWeight - wKg).toFixed(1));
       weightStatus = "gain";
@@ -68,7 +73,6 @@ export default function BmiCalculator() {
       weightStatus = "lose";
     }
 
-    // Basal Metabolic Rate (BMR) - Mifflin-St Jeor Formula
     let bmr;
     if (gender === "male") {
       bmr = 10 * wKg + 6.25 * Number(height) - 5 * aY + 5;
@@ -77,16 +81,13 @@ export default function BmiCalculator() {
     }
     const roundedBmr = Math.round(bmr);
 
-    // Total Daily Energy Expenditure (TDEE)
     const tdee = Math.round(roundedBmr * Number(activity));
     const loseCalories = tdee - 500;
     const gainCalories = tdee + 500;
 
-    // Daily Water Intake (approx 35 ml per kg)
     const waterLiters = (wKg * 0.035).toFixed(1);
     const waterGlasses = Math.round((wKg * 0.035 * 1000) / 250);
 
-    // Gauge percentage for visual bar (clamped 10 to 45 BMI mapped to 0-100%)
     const gaugePercent = Math.min(100, Math.max(0, ((bmi - 14) / (42 - 14)) * 100));
 
     return {
@@ -133,108 +134,78 @@ export default function BmiCalculator() {
 • احتياج الماء اليومي: ${stats.waterLiters} لتر (${stats.waterGlasses} أكواب)
 
 تم الحساب عبر حاسبة مؤشر كتلة الجسم | الأدوات العربية`;
-    navigator.clipboard.writeText(text);
+    if (navigator.clipboard) navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const activeSeg = stats
+    ? GAUGE_STOPS.slice(0, -1).findIndex((s, i) => stats.bmi >= s && stats.bmi < GAUGE_STOPS[i + 1])
+    : -1;
+  const activeIdx = stats && stats.bmi >= GAUGE_STOPS[GAUGE_STOPS.length - 2] ? 4 : activeSeg;
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12" dir="rtl">
+    <div className="bmi" dir="rtl">
+      <style>{CSS}</style>
+
       {/* Header */}
-      <div className="mb-8 text-center space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
-          <span>⚖️</span>
-          <span>معايير منظمة الصحة العالمية (WHO)</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">
-          حاسبة مؤشر كتلة الجسم (BMI) والوزن المثالي
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm text-ink-secondary sm:text-base">
+      <header className="bmi-head">
+        <p className="bmi-badge">معايير منظمة الصحة العالمية (WHO)</p>
+        <h1 className="bmi-title">حاسبة مؤشر كتلة الجسم (BMI) والوزن المثالي</h1>
+        <p className="bmi-sub">
           احسب مؤشر كتلة جسمك بدقة، وتعرف على وزنك المثالي ونطاق السعرات اليومية واحتياج الماء بأسلوب علمي وصحي متكامل.
         </p>
-      </div>
+      </header>
 
-      {/* Quick Presets */}
-      <div className="mb-6 rounded-2xl border border-brand-border bg-brand-surface/40 p-3 sm:p-4">
-        <p className="mb-2 text-xs font-bold text-ink-muted">⚡ نماذج وحالات شائعة للتجربة السريعة:</p>
-        <div className="flex flex-wrap gap-2">
+      {/* Presets */}
+      <section className="bmi-presets" aria-label="نماذج للتجربة السريعة">
+        <p className="bmi-label">نماذج وحالات شائعة للتجربة السريعة</p>
+        <div className="bmi-chips">
           {PRESETS.map((p, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleApplyPreset(p)}
-              className="rounded-xl border border-brand-border bg-white px-3 py-1.5 text-xs font-medium text-ink-secondary hover:border-brand hover:text-brand-dark transition-all"
-            >
+            <button key={idx} type="button" onClick={() => handleApplyPreset(p)} className="bmi-chip">
               {p.label}
             </button>
           ))}
         </div>
-      </div>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        {/* ─── Left Inputs Column (3 cols) ─── */}
-        <div className="lg:col-span-3 space-y-5">
-
-          {/* Gender & Age Selection */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="text-base font-bold text-ink flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">👤</span>
-              1. الجنس والعمر
-            </h2>
-
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setGender("male")}
-                className={`rounded-xl border p-3 text-center text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                  gender === "male"
-                    ? "border-brand bg-brand-light text-brand-dark shadow-sm"
-                    : "border-brand-border bg-brand-surface/40 text-ink-secondary hover:bg-white"
-                }`}
-              >
-                <span>👨</span>
-                <span>ذكر</span>
+      <div className="bmi-cols">
+        {/* ───────── Inputs ───────── */}
+        <div className="bmi-stack">
+          {/* 1 */}
+          <fieldset className="bmi-card">
+            <legend className="bmi-h2">الجنس والعمر</legend>
+            <div className="bmi-seg" role="radiogroup" aria-label="الجنس">
+              <button type="button" role="radio" aria-checked={gender === "male"} onClick={() => setGender("male")} className="bmi-opt">
+                ذكر
               </button>
-              <button
-                type="button"
-                onClick={() => setGender("female")}
-                className={`rounded-xl border p-3 text-center text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                  gender === "female"
-                    ? "border-brand bg-brand-light text-brand-dark shadow-sm"
-                    : "border-brand-border bg-brand-surface/40 text-ink-secondary hover:bg-white"
-                }`}
-              >
-                <span>👩</span>
-                <span>أنثى</span>
+              <button type="button" role="radio" aria-checked={gender === "female"} onClick={() => setGender("female")} className="bmi-opt">
+                أنثى
               </button>
             </div>
-
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-ink-secondary">العمر (بالسنوات)</label>
+            <div className="bmi-field">
+              <label className="bmi-label" htmlFor={`${uid}-age`}>العمر (بالسنوات)</label>
               <input
+                id={`${uid}-age`}
                 type="number"
+                inputMode="numeric"
                 min="10"
                 max="120"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="w-full rounded-xl border border-brand-border bg-brand-surface/40 px-4 py-2.5 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
+                className="bmi-input bmi-num"
               />
             </div>
-          </div>
+          </fieldset>
 
-          {/* Height & Weight Inputs */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
-            <h2 className="text-base font-bold text-ink flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">📏</span>
-              2. الطول والوزن الحالي
-            </h2>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {/* Height */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="font-semibold text-ink-secondary">الطول (سم)</span>
-                  <span className="font-bold text-brand-dark text-sm">{height} سم</span>
+          {/* 2 */}
+          <fieldset className="bmi-card">
+            <legend className="bmi-h2">الطول والوزن الحالي</legend>
+            <div className="bmi-grid2">
+              <div className="bmi-field">
+                <div className="bmi-line">
+                  <label className="bmi-label" htmlFor={`${uid}-height`}>الطول (سم)</label>
+                  <strong className="bmi-num">{height} سم</strong>
                 </div>
                 <input
                   type="range"
@@ -242,26 +213,25 @@ export default function BmiCalculator() {
                   max="230"
                   value={height}
                   onChange={(e) => setHeight(Number(e.target.value))}
-                  className="w-full accent-brand cursor-pointer"
+                  className="bmi-range"
+                  aria-label="الطول بالسنتيمتر (شريط التمرير)"
                 />
-                <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">سم</span>
-                  <input
-                    type="number"
-                    min="100"
-                    max="230"
-                    value={height}
-                    onChange={(e) => setHeight(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                  />
-                </div>
+                <input
+                  id={`${uid}-height`}
+                  type="number"
+                  inputMode="decimal"
+                  min="100"
+                  max="230"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                  className="bmi-input bmi-num"
+                />
               </div>
 
-              {/* Weight */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="font-semibold text-ink-secondary">الوزن (كجم)</span>
-                  <span className="font-bold text-brand-dark text-sm">{weight} كجم</span>
+              <div className="bmi-field">
+                <div className="bmi-line">
+                  <label className="bmi-label" htmlFor={`${uid}-weight`}>الوزن (كجم)</label>
+                  <strong className="bmi-num">{weight} كجم</strong>
                 </div>
                 <input
                   type="range"
@@ -269,218 +239,317 @@ export default function BmiCalculator() {
                   max="200"
                   value={weight}
                   onChange={(e) => setWeight(Number(e.target.value))}
-                  className="w-full accent-brand cursor-pointer"
+                  className="bmi-range"
+                  aria-label="الوزن بالكيلوغرام (شريط التمرير)"
                 />
-                <div className="relative">
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-muted">كجم</span>
-                  <input
-                    type="number"
-                    min="30"
-                    max="250"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    className="w-full rounded-xl border border-brand-border bg-brand-surface/40 py-2 pr-10 pl-3 text-sm font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none"
-                  />
-                </div>
+                <input
+                  id={`${uid}-weight`}
+                  type="number"
+                  inputMode="decimal"
+                  min="30"
+                  max="250"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  className="bmi-input bmi-num"
+                />
               </div>
             </div>
-          </div>
+          </fieldset>
 
-          {/* Activity Level */}
-          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-            <h2 className="text-base font-bold text-ink flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-sm">🏃</span>
-              3. مستوى النشاط البدني اليومي
-            </h2>
-            <div className="space-y-1.5">
+          {/* 3 */}
+          <fieldset className="bmi-card">
+            <legend className="bmi-h2">مستوى النشاط البدني اليومي</legend>
+            <div className="bmi-acts" role="radiogroup" aria-label="مستوى النشاط البدني">
               {ACTIVITY_LEVELS.map((act) => (
                 <button
                   key={act.id}
                   type="button"
+                  role="radio"
+                  aria-checked={activity === act.id}
                   onClick={() => setActivity(act.id)}
-                  className={`w-full rounded-xl border p-3 text-right text-xs transition-all flex items-center justify-between ${
-                    activity === act.id
-                      ? "border-brand bg-brand-light/70 text-brand-dark shadow-sm"
-                      : "border-brand-border bg-brand-surface/30 text-ink-secondary hover:bg-white"
-                  }`}
+                  className="bmi-opt bmi-opt--row"
                 >
-                  <div>
-                    <span className="font-bold text-sm block">{act.label}</span>
-                    <span className="text-[11px] text-ink-muted">{act.desc}</span>
-                  </div>
-                  {activity === act.id && <span className="text-base font-black">✓</span>}
+                  <strong>{act.label}</strong>
+                  <span>{act.desc}</span>
                 </button>
               ))}
             </div>
-          </div>
-
+          </fieldset>
         </div>
 
-        {/* ─── Right Results Column (2 cols) ─── */}
-        <div className="lg:col-span-2">
-          <div className="sticky top-24 space-y-4">
+        {/* ───────── Results ───────── */}
+        <div className="bmi-stack bmi-sticky">
+          {/* Main result: orange panel, ink text */}
+          <section className="bmi-result" aria-live="polite" aria-label="النتيجة">
+            <p className="bmi-result-top">
+              <span>مؤشر كتلة الجسم (BMI)</span>
+              <span className="bmi-tag">{gender === "male" ? "ذكر" : "أنثى"}</span>
+            </p>
 
-            {/* Main BMI Result Card */}
-            <div className="rounded-2xl bg-hero-gradient p-6 text-white shadow-xl space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-200">مؤشر كتلة الجسم (BMI)</span>
-                <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">
-                  {gender === "male" ? "👨 ذكر" : "👩 أنثى"}
-                </span>
-              </div>
-
-              {stats && (
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-black tracking-tight">{stats.bmi}</span>
-                    <span className="text-sm font-semibold opacity-90">كجم/م²</span>
-                  </div>
-                  <div className="mt-2 inline-block rounded-xl bg-white/20 px-3 py-1 text-sm font-bold backdrop-blur-sm">
-                    {stats.category.label}
-                  </div>
-                </div>
-              )}
-
-              {/* Visual Scale Indicator */}
-              {stats && (
-                <div className="space-y-1.5 pt-2">
-                  <div className="flex justify-between text-[10px] text-white/80 font-bold">
-                    <span>16 نحافة</span>
-                    <span>18.5 مثالي</span>
-                    <span>25 زيادة</span>
-                    <span>30 سمنة</span>
-                  </div>
-                  <div className="relative h-3 w-full rounded-full bg-white/30 overflow-hidden">
-                    <div className="flex h-full w-full">
-                      <div className="h-full bg-amber-400 w-[18%]" title="نحافة" />
-                      <div className="h-full bg-emerald-400 w-[25%]" title="مثالي" />
-                      <div className="h-full bg-orange-400 w-[20%]" title="وزن زائد" />
-                      <div className="h-full bg-rose-500 w-[17%]" title="سمنة 1" />
-                      <div className="h-full bg-red-600 w-[20%]" title="سمنة مفرطة" />
-                    </div>
-                  </div>
-                  {/* Gauge Pointer */}
-                  <div className="relative w-full h-2">
-                    <div
-                      className="absolute -top-1 w-2.5 h-2.5 bg-white border border-brand-dark rounded-full shadow-md transition-all duration-300"
-                      style={{ right: `${stats.gaugePercent}%`, transform: "translateX(50%)" }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {stats && (
-                <div className="rounded-xl bg-white/15 p-3 text-xs leading-relaxed backdrop-blur-sm">
-                  <span className="font-bold text-amber-300">🩺 التوجيه الطبي: </span>
-                  {stats.category.advice}
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="flex-1 rounded-xl bg-white/20 hover:bg-white/30 py-2 text-xs font-bold text-center transition-all"
-                >
-                  {copied ? "✓ تم نسخ التقرير" : "📋 نسخ النتيجة"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="rounded-xl bg-white/10 hover:bg-white/20 px-3 py-2 text-xs font-medium transition-all"
-                >
-                  🖨️ طباعة
-                </button>
-              </div>
-            </div>
-
-            {/* Ideal Weight Analysis Card */}
-            {stats && (
-              <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-                <h3 className="text-sm font-bold text-ink flex items-center gap-1.5">
-                  <span>🎯</span>
-                  <span>الوزن المثالي لطولك ({height} سم)</span>
-                </h3>
-
-                <div className="rounded-xl bg-brand-surface/50 p-3 text-center border border-brand-border/40">
-                  <p className="text-xs text-ink-secondary">نطاق الوزن الطبيعي الصحي:</p>
-                  <p className="text-xl font-black text-brand-dark mt-0.5">
-                    {stats.minIdealWeight} - {stats.maxIdealWeight} <span className="text-xs font-normal">كجم</span>
-                  </p>
-                  <p className="text-[11px] text-ink-muted mt-1">
-                    متوسط الوزن المثالي الموصى به: <strong>{stats.midpointIdealWeight} كجم</strong>
-                  </p>
-                </div>
-
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between py-1.5 border-b border-brand-border/30">
-                    <span className="text-ink-secondary">حالة وزنك الحالي:</span>
-                    <span className="font-bold text-ink">
-                      {stats.weightStatus === "ideal"
-                        ? "✅ مثالي تماماً"
-                        : stats.weightStatus === "lose"
-                        ? `تحتاج لخسارة ${stats.diffWeight} كجم`
-                        : `تحتاج لزيادة ${stats.diffWeight} كجم`}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1.5">
-                    <span className="text-ink-secondary">احتياج الماء اليومي:</span>
-                    <span className="font-bold text-brand-dark">
-                      {stats.waterLiters} لتر ({stats.waterGlasses} أكواب)
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Calories Breakdown Card */}
-            {stats && (
-              <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-3">
-                <h3 className="text-sm font-bold text-ink flex items-center gap-1.5">
-                  <span>🔥</span>
-                  <span>دليل السعرات الحرارية اليومية</span>
-                </h3>
-
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-brand-surface/60">
-                    <div>
-                      <span className="font-bold text-ink block">تثبيت الوزن الحالي</span>
-                      <span className="text-[10px] text-ink-muted">احتياج الطاقة اليومي (TDEE)</span>
-                    </div>
-                    <span className="text-sm font-black text-brand-dark">{stats.tdee} سعرة</span>
-                  </div>
-
-                  <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-emerald-50 border border-emerald-200">
-                    <div>
-                      <span className="font-bold text-emerald-950 block">خسارة الوزن (0.5 كجم/أسبوع)</span>
-                      <span className="text-[10px] text-emerald-700">عجز صحي 500 سعرة يومياً</span>
-                    </div>
-                    <span className="text-sm font-black text-emerald-800">{stats.loseCalories} سعرة</span>
-                  </div>
-
-                  <div className="flex justify-between items-center py-2 px-3 rounded-xl bg-amber-50 border border-amber-200">
-                    <div>
-                      <span className="font-bold text-amber-950 block">زيادة الوزن وبناء العضلات</span>
-                      <span className="text-[10px] text-amber-700">فائض صحي 500 سعرة يومياً</span>
-                    </div>
-                    <span className="text-sm font-black text-amber-800">{stats.gainCalories} سعرة</span>
-                  </div>
-                </div>
-
-                <p className="text-[10px] text-ink-muted leading-relaxed pt-1">
-                  * معدل الأيض الأساسي لجسمك أثناء الراحة (BMR) هو <strong>{stats.bmr} سعرة</strong>.
+            {stats ? (
+              <>
+                <p className="bmi-big">
+                  <span className="bmi-num">{stats.bmi}</span>
+                  <span className="bmi-unit">كجم/م²</span>
                 </p>
-              </div>
+                <p className="bmi-cat">{stats.category.label}</p>
+
+                {/* Gauge */}
+                <div className="bmi-gauge" aria-hidden="true">
+                  <div className="bmi-ticks">
+                    {GAUGE_TICKS.map((t) => (
+                      <span key={t} className="bmi-num" style={{ insetInlineStart: `${pct(t)}%` }}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="bmi-bar">
+                    {GAUGE_STOPS.slice(0, -1).map((s, i) => (
+                      <i
+                        key={s}
+                        className={i === activeIdx ? "is-active" : ""}
+                        style={{ width: `${pct(GAUGE_STOPS[i + 1]) - pct(s)}%` }}
+                      />
+                    ))}
+                    <b className="bmi-pointer" style={{ insetInlineStart: `${stats.gaugePercent}%` }} />
+                  </div>
+                </div>
+
+                <p className="bmi-advice">
+                  <strong>التوجيه الطبي: </strong>
+                  {stats.category.advice}
+                </p>
+              </>
+            ) : (
+              <p className="bmi-advice">أدخل الطول والوزن لعرض النتيجة.</p>
             )}
 
-          </div>
+            <div className="bmi-actions bmi-noprint">
+              <button type="button" onClick={handleCopy} className="bmi-btn bmi-btn--ink">
+                {copied ? "تم نسخ التقرير" : "نسخ النتيجة"}
+              </button>
+              <button type="button" onClick={() => window.print()} className="bmi-btn">
+                طباعة
+              </button>
+              <span className="bmi-sr" role="status">{copied ? "تم نسخ التقرير" : ""}</span>
+            </div>
+          </section>
+
+          {stats && (
+            <section className="bmi-card" aria-label="الوزن المثالي">
+              <h2 className="bmi-h2">الوزن المثالي لطولك ({height} سم)</h2>
+              <p className="bmi-range-box">
+                <span className="bmi-label">نطاق الوزن الطبيعي الصحي</span>
+                <strong className="bmi-num">{stats.minIdealWeight} – {stats.maxIdealWeight} <small>كجم</small></strong>
+                <span className="bmi-hint">
+                  متوسط الوزن المثالي الموصى به: <strong className="bmi-num">{stats.midpointIdealWeight} كجم</strong>
+                </span>
+              </p>
+              <dl className="bmi-rows">
+                <div className="bmi-row">
+                  <dt>حالة وزنك الحالي</dt>
+                  <dd>
+                    {stats.weightStatus === "ideal"
+                      ? "مثالي تماماً"
+                      : stats.weightStatus === "lose"
+                      ? `تحتاج لخسارة ${stats.diffWeight} كجم`
+                      : `تحتاج لزيادة ${stats.diffWeight} كجم`}
+                  </dd>
+                </div>
+                <div className="bmi-row">
+                  <dt>احتياج الماء اليومي</dt>
+                  <dd>{stats.waterLiters} لتر ({stats.waterGlasses} أكواب)</dd>
+                </div>
+              </dl>
+            </section>
+          )}
+
+          {stats && (
+            <section className="bmi-card" aria-label="السعرات الحرارية اليومية">
+              <h2 className="bmi-h2">دليل السعرات الحرارية اليومية</h2>
+              <dl className="bmi-cals">
+                <div className="bmi-cal">
+                  <dt>
+                    <strong>تثبيت الوزن الحالي</strong>
+                    <span>احتياج الطاقة اليومي (TDEE)</span>
+                  </dt>
+                  <dd><span className="bmi-num">{stats.tdee}</span> سعرة</dd>
+                </div>
+                <div className="bmi-cal">
+                  <dt>
+                    <strong>خسارة الوزن (0.5 كجم/أسبوع)</strong>
+                    <span>عجز صحي 500 سعرة يومياً</span>
+                  </dt>
+                  <dd><span className="bmi-num">{stats.loseCalories}</span> سعرة</dd>
+                </div>
+                <div className="bmi-cal">
+                  <dt>
+                    <strong>زيادة الوزن وبناء العضلات</strong>
+                    <span>فائض صحي 500 سعرة يومياً</span>
+                  </dt>
+                  <dd><span className="bmi-num">{stats.gainCalories}</span> سعرة</dd>
+                </div>
+              </dl>
+              <p className="bmi-hint">
+                معدل الأيض الأساسي لجسمك أثناء الراحة (BMR) هو <strong className="bmi-num">{stats.bmr} سعرة</strong>.
+              </p>
+            </section>
+          )}
         </div>
       </div>
 
-      <p className="mt-8 text-center text-xs text-ink-muted">
-        ⚠️ تنبيه طبي: مؤشر كتلة الجسم هو معيار استرشادي عام وفق منظمة الصحة العالمية (WHO)، ولا يفرّق بدقة بين كتلة الدهون والكتلة العضلية (خاصة للرياضيين والحوامل). استشر طبيباً أو أخصائي تغذية لخطة شخصية.
+      <p className="bmi-disclaimer">
+        تنبيه طبي: مؤشر كتلة الجسم هو معيار استرشادي عام وفق منظمة الصحة العالمية (WHO)، ولا يفرّق بدقة بين كتلة الدهون والكتلة العضلية (خاصة للرياضيين والحوامل). استشر طبيباً أو أخصائي تغذية لخطة شخصية.
       </p>
     </div>
   );
 }
+
+// ─── Styles ──────────────────────────────────────────────────────────────────
+// Colours come from --c-* on .bmi. If your tokens.css already defines the
+// underlying names, delete the fallback values and map them in one place.
+const CSS = `
+.bmi {
+  --c-surface: var(--surface, #FFFFFF);
+  --c-ink: var(--ink, #0D0D0D);
+  --c-ink-soft: var(--ink-soft, #4A4A46);
+  --c-line: var(--line, #D9D9D3);
+  --c-signal: var(--signal, #FF6A1A);
+  --c-on-ink: var(--on-ink, #FFFFFF);
+  --c-on-signal: var(--on-signal, #0D0D0D);
+
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: 2rem 1rem;
+  color: var(--c-ink);
+  font-family: inherit;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .bmi {
+    --c-surface: var(--surface, #181816);
+    --c-ink: var(--ink, #F5F5F2);
+    --c-ink-soft: var(--ink-soft, #B4B4AD);
+    --c-line: var(--line, #34342F);
+    --c-on-ink: var(--on-ink, #0D0D0D);
+  }
+}
+:root[data-theme="dark"] .bmi {
+  --c-surface: var(--surface, #181816);
+  --c-ink: var(--ink, #F5F5F2);
+  --c-ink-soft: var(--ink-soft, #B4B4AD);
+  --c-line: var(--line, #34342F);
+  --c-on-ink: var(--on-ink, #0D0D0D);
+}
+.bmi *, .bmi *::before, .bmi *::after { box-sizing: border-box; }
+
+.bmi-head { margin-block-end: 1.5rem; padding-inline-start: 0.9rem; border-inline-start: 4px solid var(--c-ink); }
+.bmi-badge { display: inline-block; margin: 0 0 0.6rem; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--c-ink); border-radius: 999px; }
+.bmi-title { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.4; }
+@media (min-width: 640px) { .bmi-title { font-size: 2rem; } }
+.bmi-sub { margin: 0.5rem 0 0; max-width: 60ch; font-size: 0.92rem; line-height: 1.8; color: var(--c-ink-soft); }
+
+.bmi-presets { margin-block-end: 1.5rem; padding: 0.9rem 1rem; border: 1px solid var(--c-line); border-radius: 12px; background: var(--c-surface); }
+.bmi-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 0.5rem; }
+.bmi-chip {
+  min-height: 40px; padding: 0.35rem 0.8rem; font: inherit; font-size: 0.82rem; font-weight: 600;
+  color: var(--c-ink); background: var(--c-surface); border: 2px solid var(--c-line); border-radius: 999px; cursor: pointer;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+.bmi-chip:hover { background: var(--c-ink); color: var(--c-on-ink); border-color: var(--c-ink); }
+
+.bmi-cols { display: grid; gap: 1.25rem; }
+@media (min-width: 900px) { .bmi-cols { grid-template-columns: 3fr 2fr; align-items: start; } }
+.bmi-stack { display: grid; gap: 1.25rem; min-width: 0; }
+@media (min-width: 900px) { .bmi-sticky { position: sticky; top: 1.5rem; } }
+
+.bmi-card { margin: 0; padding: 1.1rem; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 14px; display: grid; gap: 1rem; min-width: 0; }
+.bmi-h2 { margin: 0; padding: 0; font-size: 1rem; font-weight: 800; }
+fieldset.bmi-card > legend.bmi-h2 { float: inline-start; width: 100%; padding: 0; margin-block-end: 0.25rem; }
+fieldset.bmi-card > legend.bmi-h2 + * { clear: both; }
+
+.bmi-label { font-size: 0.82rem; font-weight: 700; }
+.bmi-hint { font-size: 0.8rem; line-height: 1.7; color: var(--c-ink-soft); }
+.bmi-field { display: grid; gap: 0.5rem; min-width: 0; }
+.bmi-line { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.bmi-grid2 { display: grid; gap: 1rem; }
+@media (min-width: 560px) { .bmi-grid2 { grid-template-columns: 1fr 1fr; } }
+
+.bmi-num { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+.bmi-input {
+  width: 100%; min-height: 44px; padding: 0.5rem 0.75rem; font: inherit; font-size: 0.95rem;
+  color: var(--c-ink); background: var(--c-surface); border: 2px solid var(--c-line); border-radius: 10px;
+}
+.bmi-input:hover { border-color: var(--c-ink-soft); }
+input.bmi-num { text-align: center; }
+.bmi-range { width: 100%; accent-color: var(--c-ink); cursor: pointer; }
+
+/* Selectable options */
+.bmi-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.bmi-acts { display: grid; gap: 0.5rem; }
+.bmi-opt {
+  min-height: 46px; padding: 0.6rem 0.8rem; font: inherit; font-size: 0.92rem; font-weight: 700; text-align: center;
+  color: var(--c-ink); background: var(--c-surface); border: 2px solid var(--c-line); border-radius: 10px; cursor: pointer;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+.bmi-opt--row { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; text-align: start; }
+.bmi-opt--row span { font-size: 0.78rem; font-weight: 500; color: var(--c-ink-soft); }
+.bmi-opt:hover { border-color: var(--c-ink); }
+.bmi-opt[aria-checked="true"] { color: var(--c-on-ink); background: var(--c-ink); border-color: var(--c-ink); }
+.bmi-opt[aria-checked="true"] span { color: inherit; opacity: 0.85; }
+
+/* Result: orange is a background only, text stays ink */
+.bmi-result { padding: 1.25rem; background: var(--c-signal); color: var(--c-on-signal); border-radius: 14px; display: grid; gap: 0.9rem; }
+.bmi-result-top { display: flex; justify-content: space-between; align-items: center; margin: 0; font-size: 0.85rem; font-weight: 700; }
+.bmi-tag { padding: 0.1rem 0.65rem; font-size: 0.78rem; font-weight: 800; border: 2px solid var(--c-on-signal); border-radius: 999px; }
+.bmi-big { margin: 0; display: flex; align-items: baseline; gap: 0.5rem; }
+.bmi-big .bmi-num { font-size: 3.4rem; font-weight: 800; line-height: 1; }
+.bmi-unit { font-size: 0.9rem; font-weight: 700; }
+.bmi-cat { margin: 0; font-size: 1.05rem; font-weight: 800; }
+
+.bmi-gauge { display: grid; gap: 0.35rem; }
+.bmi-ticks { position: relative; height: 1rem; font-size: 0.72rem; font-weight: 700; }
+.bmi-ticks span { position: absolute; transform: translateX(-50%); }
+[dir="rtl"] .bmi-ticks span { transform: translateX(50%); }
+.bmi-bar { position: relative; display: flex; height: 0.9rem; gap: 2px; direction: rtl; }
+.bmi-bar i { display: block; height: 100%; background: rgba(13, 13, 13, 0.25); border-radius: 3px; }
+.bmi-bar i.is-active { background: var(--c-on-signal); }
+.bmi-pointer {
+  position: absolute; top: -5px; width: 4px; height: calc(100% + 10px);
+  background: var(--c-on-signal); border: 1px solid var(--c-signal); border-radius: 2px;
+  transform: translateX(50%); transition: inset-inline-start .3s;
+}
+
+.bmi-advice { margin: 0; padding: 0.7rem 0.8rem; font-size: 0.85rem; line-height: 1.8; border: 2px solid var(--c-on-signal); border-radius: 10px; }
+
+.bmi-actions { display: flex; gap: 0.5rem; }
+.bmi-btn {
+  flex: 1; min-height: 44px; padding: 0.5rem 0.9rem; font: inherit; font-size: 0.9rem; font-weight: 700;
+  color: var(--c-on-signal); background: transparent; border: 2px solid var(--c-on-signal); border-radius: 10px; cursor: pointer;
+}
+.bmi-btn:hover { background: rgba(13, 13, 13, 0.12); }
+.bmi-btn--ink { background: var(--c-on-signal); color: var(--c-signal); }
+.bmi-btn--ink:hover { background: var(--c-on-signal); opacity: 0.88; }
+.bmi-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Ideal weight + calories */
+.bmi-range-box { margin: 0; display: grid; gap: 0.25rem; padding: 0.8rem; text-align: center; border: 2px solid var(--c-line); border-radius: 10px; }
+.bmi-range-box strong { font-size: 1.5rem; font-weight: 800; }
+.bmi-range-box small { font-size: 0.8rem; font-weight: 500; }
+.bmi-rows, .bmi-cals { margin: 0; }
+.bmi-row, .bmi-cal { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-block: 0.65rem; border-block-start: 1px solid var(--c-line); font-size: 0.88rem; }
+.bmi-row dt { color: var(--c-ink-soft); }
+.bmi-row dd, .bmi-cal dd { margin: 0; font-weight: 700; }
+.bmi-cal dt { display: grid; gap: 0.1rem; }
+.bmi-cal dt span { font-size: 0.76rem; color: var(--c-ink-soft); }
+.bmi-cal dd { font-size: 1rem; white-space: nowrap; }
+
+.bmi-disclaimer { margin: 2rem auto 0; max-width: 70ch; padding-inline-start: 0.8rem; border-inline-start: 2px solid var(--c-line); font-size: 0.8rem; line-height: 1.8; color: var(--c-ink-soft); }
+
+/* Focus, motion, print */
+.bmi button:focus-visible, .bmi input:focus-visible {
+  outline: 3px solid var(--c-signal); outline-offset: 2px;
+}
+.bmi-result button:focus-visible { outline-color: var(--c-on-signal); }
+@media (prefers-reduced-motion: reduce) { .bmi * { transition: none !important; } }
+@media print { .bmi-noprint { display: none !important; } }
+`;
