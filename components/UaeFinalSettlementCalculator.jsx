@@ -749,7 +749,7 @@ export default function UaeFinalSettlementCalculator() {
               <div>
                 <p className="fs-doc-strong">إخلاء مسؤولية رسمي</p>
                 <p>هذه الحاسبة تقديرية وتعتمد على البيانات التي يدخلها المستخدم، ولا تمثل قراراً رسمياً من وزارة الموارد البشرية والتوطين (MOHRE) أو حكماً قانونياً نهائياً. قد تختلف المستحقات بحسب نوع العقد، نمط العمل، جهة الاختصاص، نظام الادخار البديل، أو الظروف الخاصة بإنهاء العلاقة العمالية.</p>
-                <p dir="ltr" className="fs-doc-url">arabic-tools-xi.vercel.app/ar/ae/final-settlement-calculator</p>
+                <p dir="ltr" className="fs-doc-url">qemlo.com/ar/ae/final-settlement-calculator</p>
               </div>
             </div>
           </div>

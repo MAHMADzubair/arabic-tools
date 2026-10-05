@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/siteConfig";
 import {
   VAT_MANDATORY_THRESHOLD,
   VAT_VOLUNTARY_THRESHOLD,
@@ -148,7 +149,7 @@ export default function VatRegistrationChecker() {
 • النتيجة: ${evalResult.primaryReason}
 
 افحص أهليتك مجاناً عبر حاسبة ضريبة القيمة المضافة:
-${(process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app")}/ar/sa/vat-registration-checker`;
+${SITE_URL}/ar/sa/vat-registration-checker`;
   }, [evalResult]);
 
   return (

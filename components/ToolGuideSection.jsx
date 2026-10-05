@@ -9,6 +9,7 @@
  * in the DOM (via `hidden`) for SEO.
  */
 import { useState } from "react";
+import { SITE_URL } from "@/lib/siteConfig";
 
 const allTools = [
   { href: "/zakat-calculator", title: "حاسبة الزكاة", desc: "احسب زكاتك بدقة بناءً على نصاب الفضة الحالي مع دعم الأصول والالتزامات." },
@@ -67,7 +68,7 @@ export default function ToolGuideSection({
     "@type": "WebApplication",
     name: currentTool ? currentTool.title : aboutTitle,
     description: currentTool ? currentTool.desc : aboutTitle,
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app"}${currentPath}`,
+    url: `${SITE_URL}${currentPath}`,
     applicationCategory: "UtilityApplication",
     operatingSystem: "All",
     browserRequirements: "Requires JavaScript. Requires HTML5.",

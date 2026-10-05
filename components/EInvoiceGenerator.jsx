@@ -885,7 +885,7 @@ export default function EInvoiceGenerator() {
           <footer className="ei-p-foot">
             <p><b>نموذج فاتورة إلكترونية تجريبي وقابل للطباعة لأغراض المراجعة والتوثيق الداخلي</b></p>
             <p>هذا المستند لا يُعد فاتورة إلكترونية معتمدة أو مصدقة رسمياً من هيئة الزكاة والضريبة والجمارك (ZATCA). يتطلب الامتثال القانوني الربط التقني بمنظومة فاتورة عبر حلول فوترة إلكترونية معتمدة.</p>
-            <p className="ei-mono ei-p-url">arabic-tools-xi.vercel.app/ar/sa/e-invoice-generator | {seller.name || "منظومة الأدوات العربية"}</p>
+            <p className="ei-mono ei-p-url">qemlo.com/ar/sa/e-invoice-generator | {seller.name || "منظومة الأدوات العربية"}</p>
           </footer>
         </article>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useId } from "react";
+import { SITE_URL } from "@/lib/siteConfig";
 
 function toNum(v) {
   const n = parseFloat(String(v));
@@ -127,7 +128,7 @@ export default function Article77Calculator() {
 • السند: المادة (77) من نظام العمل السعودي
 
 احسب تعويضك الآن مجاناً عبر:
-${(process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app")}/ar/sa/article-77-calculator`;
+${SITE_URL}/ar/sa/article-77-calculator`;
   }, [contractType, terminatingParty, calc]);
 
   const handleCopy = () => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useId } from "react";
+import { SITE_URL } from "@/lib/siteConfig";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function toNum(v) {
@@ -451,7 +452,7 @@ export default function FinalSettlementCalculator() {
 صافي المخالصة النهائية المستحقة: ${fmt(calc.netSettlement)} ر.س
 
 احسب مخالصتك وأنشئ نموذجك التقديري مجاناً:
-${process.env.NEXT_PUBLIC_SITE_URL || "https://arabic-tools-xi.vercel.app"}/ar/sa/final-settlement-calculator`,
+${SITE_URL}/ar/sa/final-settlement-calculator`,
     [calc]
   );
 
