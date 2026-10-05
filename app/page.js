@@ -54,6 +54,18 @@ const TOKENS_CSS = `
   --tab-hover:rgba(13,13,13,.10);
   --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B;
 }
+*,*::before,*::after{box-sizing:border-box}
+html,body{
+  max-width:100%;
+  overflow-x:hidden;
+  width:100%;
+}
+.home-root{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+  contain:paint;
+}
 body{background:var(--bg);color:var(--text)}
 .tear{height:12px;background:conic-gradient(from -45deg at bottom,#0000,var(--card) 1deg 90deg,#0000 91deg) 50%/16px 100%}
 :focus-visible{outline:2px solid var(--text);outline-offset:3px}
@@ -64,11 +76,16 @@ html{scroll-behavior:smooth}
 .cat-sec{scroll-margin-top:calc(var(--hd-h) + 12px)}
 
 /* ── Category strip: NOT sticky, scrolls away with the page ── */
-.cat-strip{border-block:1px solid var(--border);background:var(--bg);padding:14px 0}
-.marquee{display:flex;gap:12px;overflow-x:auto;padding:6px 20px;
-  scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
-  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);
-  mask-image:linear-gradient(to right,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%)}
+.cat-strip{border-block:1px solid var(--border);background:var(--bg);padding:14px 0;
+  width:100%;max-width:100%;box-sizing:border-box;
+  position:relative;overflow:hidden;contain:paint}
+[data-marquee]{width:100%;max-width:100%;box-sizing:border-box;overflow:hidden;position:relative}
+.marquee{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;
+  padding:6px 16px;width:100%;box-sizing:border-box;min-width:0;
+  scrollbar-width:none;-ms-overflow-style:none;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(to right,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%);
+  mask-image:linear-gradient(to right,transparent 0,#000 20px,#000 calc(100% - 20px),transparent 100%)}
 .marquee::-webkit-scrollbar{display:none}
 
 /* Stylish pill chip */
@@ -85,7 +102,7 @@ html{scroll-behavior:smooth}
 .pill-soon .pill-plate{background:transparent;color:var(--text);border:2px dashed var(--text-3)}
 .pill-soon .pill-count{background:transparent;color:var(--text);border:2px solid var(--text-3)}
 @media(min-width:768px){
-  .marquee{gap:14px}
+  .marquee{gap:14px;padding:6px 20px}
   .pill{height:58px;gap:12px;padding-inline:8px 20px}
   .pill-plate{width:42px;height:42px;font-size:21px}
   .pill-name{font-size:15px}
@@ -205,14 +222,14 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="bg-[var(--bg)] text-[var(--text)]">
+    <div className="home-root w-full max-w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: TOKENS_CSS }} />
 
       {/* ── Hero ── */}
-      <section className="border-b border-[var(--border)] px-4 py-14 sm:py-20">
-        <div className="mx-auto grid max-w-5xl items-center gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
-          <div>
-            <h1 className="text-4xl font-black leading-[1.3] tracking-tight sm:text-5xl lg:text-6xl">
+      <section className="w-full max-w-full overflow-hidden border-b border-[var(--border)] px-4 py-10 sm:py-20">
+        <div className="mx-auto grid max-w-5xl min-w-0 items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+          <div className="min-w-0">
+            <h1 className="text-3xl font-black leading-[1.3] tracking-tight sm:text-5xl lg:text-6xl">
               كل حساباتك
               <br />
               في مكان واحد،
@@ -233,8 +250,8 @@ export default function HomePage() {
           </div>
 
           {/* Receipt: a live "statement" of what the site holds */}
-          <div className="mx-auto w-full max-w-sm lg:rotate-[-1.5deg]" aria-label="ملخص الموقع">
-            <div className="bg-[var(--card)] px-6 pt-6 text-[var(--card-text)]">
+          <div className="mx-auto w-full max-w-sm min-w-0 lg:rotate-[-1.5deg]" aria-label="ملخص الموقع">
+            <div className="overflow-hidden bg-[var(--card)] px-5 pt-6 text-[var(--card-text)] sm:px-6">
               <div className="flex items-baseline justify-between border-b border-dashed border-[var(--card-muted)] pb-3">
                 <p className="text-lg font-black">كشف الأدوات</p>
                 <p className="text-xs text-[var(--card-muted)]">أدوات عربية</p>
@@ -260,7 +277,7 @@ export default function HomePage() {
                   <span className="shrink-0 font-black">٠</span>
                 </li>
               </ul>
-              <div className="-mx-6 flex items-center justify-between bg-[var(--orange)] px-6 py-4 text-[var(--on-orange)]">
+              <div className="-mx-5 flex items-center justify-between bg-[var(--orange)] px-5 py-4 text-[var(--on-orange)] sm:-mx-6 sm:px-6">
                 <span className="font-black">{stats[0].label}</span>
                 <span className="text-3xl font-black tabular-nums">{stats[0].value}</span>
               </div>
@@ -274,9 +291,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Category strip (auto-scrolling, not sticky) ── */}
-      <nav dir="rtl" aria-label="تصنيفات الأدوات" className="cat-strip">
-        <div data-marquee className="mx-auto max-w-5xl">
-          <div data-n={navItems.length} className="marquee">
+      <nav dir="rtl" aria-label="تصنيفات الأدوات" className="cat-strip w-full max-w-full overflow-hidden">
+        <div data-marquee className="mx-auto w-full max-w-5xl overflow-hidden">
+          <div data-n={navItems.length} className="marquee w-full max-w-full">
             {[false, true].map((dup) =>
               navItems.map((item) => <Pill key={`${dup}-${item.id}`} item={item} dup={dup} />)
             )}
@@ -285,30 +302,32 @@ export default function HomePage() {
       </nav>
 
       {/* ── Categories ── */}
-      <main className="mx-auto max-w-5xl space-y-14 px-4 py-12 sm:py-16">
+      <main className="mx-auto max-w-5xl min-w-0 space-y-12 px-4 py-10 sm:space-y-14 sm:py-16">
         {/* Full Active Sections */}
         {activeCategories.map((cat) => (
-          <section key={cat.id} id={cat.id} className="cat-sec">
+          <section key={cat.id} id={cat.id} className="cat-sec min-w-0">
             {/* Section header */}
-            <div className="mb-6 flex items-end gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--card)] text-xl text-[var(--card-text)]">
-                {cat.icon}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap sm:items-end">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--card)] text-lg text-[var(--card-text)] sm:h-11 sm:w-11 sm:text-xl">
+                  {cat.icon}
+                </div>
+                <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 sm:gap-x-3">
+                  <h2 className="text-lg font-black text-[var(--text)] sm:text-2xl">
+                    {cat.nameAr}
+                  </h2>
+                  <span className="text-[11px] font-semibold text-[var(--text-3)] sm:text-xs">
+                    {cat.nameEn}
+                  </span>
+                </div>
               </div>
-              <div className="flex min-w-0 flex-wrap items-baseline gap-x-3">
-                <h2 className="text-xl font-black text-[var(--text)] sm:text-2xl">
-                  {cat.nameAr}
-                </h2>
-                <span className="text-xs font-semibold text-[var(--text-3)]">
-                  {cat.nameEn}
-                </span>
-              </div>
-              <div className="mb-2 flex-1 border-b-2 border-dotted border-[var(--border)]" aria-hidden="true" />
-              <span className="mb-1 shrink-0 rounded-md bg-[var(--orange)] px-2.5 py-0.5 text-xs font-black text-[var(--on-orange)]">
+              <div className="hidden flex-1 border-b-2 border-dotted border-[var(--border)] sm:mb-2 sm:block" aria-hidden="true" />
+              <span className="shrink-0 rounded-md bg-[var(--orange)] px-2.5 py-0.5 text-xs font-black text-[var(--on-orange)] sm:mb-1">
                 {cat.tools.length} أدوات
               </span>
             </div>
 
-            <ul className="grid list-none grid-cols-1 gap-px overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--border)] p-0 lg:grid-cols-2 lg:[&>li:last-child:nth-child(odd)]:col-span-2">
+            <ul className="grid list-none min-w-0 grid-cols-1 gap-px overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--border)] p-0 lg:grid-cols-2 lg:[&>li:last-child:nth-child(odd)]:col-span-2">
               {cat.tools.map((tool) => (
                 <ToolItem key={tool.id} tool={tool} />
               ))}
@@ -318,14 +337,14 @@ export default function HomePage() {
 
         {/* Compact Coming Soon Section */}
         {upcomingCategories.length > 0 && (
-          <section id="upcoming" className="cat-sec pt-2">
-            <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
+          <section id="upcoming" className="cat-sec min-w-0 pt-2">
+            <div className="min-w-0 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-8">
               <div className="flex flex-col justify-between gap-4 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--card)] text-2xl text-[var(--card-text)]">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--card)] text-2xl text-[var(--card-text)]">
                     🚀
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h2 className="text-xl font-black text-[var(--text)] sm:text-2xl">
                       قريباً في أدوات عربية
                     </h2>
@@ -334,32 +353,32 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-                <div className="inline-flex items-center gap-2 self-start rounded-full bg-[var(--orange)] px-3 py-1 text-xs font-bold text-[var(--on-orange)] sm:self-auto">
+                <div className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[var(--orange)] px-3 py-1 text-xs font-bold text-[var(--on-orange)] sm:self-auto">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--on-orange)]" />
                   <span>{upcomingCategories.length} أقسام قيد التطوير</span>
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {upcomingCategories.map((cat) => (
                   <div
                     key={cat.id}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg)] p-4 transition-colors hover:border-[var(--text)]"
+                    className="group relative flex min-w-0 flex-col justify-between rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg)] p-4 transition-colors hover:border-[var(--text)]"
                   >
-                    <div>
+                    <div className="min-w-0">
                       <div className="mb-2.5 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5">
-                          <span className="text-2xl">{cat.icon}</span>
-                          <div>
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <span className="shrink-0 text-2xl">{cat.icon}</span>
+                          <div className="min-w-0">
                             <h3 className="text-sm font-bold text-[var(--text)] sm:text-base">
                               {cat.nameAr}
                             </h3>
-                            <span className="text-[11px] font-semibold text-[var(--text-3)]">
+                            <span className="block text-[11px] font-semibold text-[var(--text-3)]">
                               {cat.nameEn}
                             </span>
                           </div>
                         </div>
-                        <span className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] font-bold text-[var(--text-3)]">
+                        <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] font-bold text-[var(--text-3)]">
                           قريباً
                         </span>
                       </div>
@@ -395,7 +414,7 @@ export default function HomePage() {
 // 72px+ rows, icon + name + 2-line description + chevron. Two columns on large screens.
 function ToolItem({ tool }) {
   return (
-    <li className="bg-[var(--surface)]">
+    <li className="min-w-0 bg-[var(--surface)]">
       <a
         href={tool.href}
         className="group flex min-h-[4.75rem] items-center gap-3.5 px-4 py-3.5 transition-colors hover:bg-[var(--bg)] active:bg-[var(--bg)] sm:gap-4 sm:px-5 sm:py-4"
@@ -410,7 +429,7 @@ function ToolItem({ tool }) {
               {tool.nameAr}
             </span>
             {tool.badge && (
-              <span className="rounded-md bg-[var(--orange)] px-1.5 py-0.5 text-[10px] font-black text-[var(--on-orange)] sm:text-xs">
+              <span className="shrink-0 rounded-md bg-[var(--orange)] px-1.5 py-0.5 text-[10px] font-black text-[var(--on-orange)] sm:text-xs">
                 {tool.badge}
               </span>
             )}
@@ -478,9 +497,9 @@ function FeaturesStrip() {
   return (
     <section
       aria-labelledby="features-title"
-      className="feat-strip border-t-4 border-[var(--orange)] bg-[var(--surface)] px-4 py-14 text-[var(--text)] sm:py-16"
+      className="feat-strip w-full max-w-full overflow-hidden border-t-4 border-[var(--orange)] bg-[var(--surface)] px-4 py-12 text-[var(--text)] sm:py-16"
     >
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-5xl min-w-0">
         <h2
           id="features-title"
           className="mb-10 text-center text-2xl font-black sm:text-3xl"
@@ -491,11 +510,11 @@ function FeaturesStrip() {
           </span>
         </h2>
 
-        <ul className="grid list-none gap-4 p-0 sm:grid-cols-3 sm:gap-5">
+        <ul className="grid list-none min-w-0 gap-4 p-0 sm:grid-cols-3 sm:gap-5">
           {FEATURES.map((f) => (
             <li
               key={f.title}
-              className="feat-card group relative flex flex-col gap-3 overflow-hidden rounded-2xl border-2 border-[var(--border)] bg-[var(--bg)] p-6 text-[var(--text)] hover:border-[var(--orange)]"
+              className="feat-card group relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border-2 border-[var(--border)] bg-[var(--bg)] p-5 text-[var(--text)] hover:border-[var(--orange)] sm:p-6"
             >
               {/* Orange corner bar */}
               <span
