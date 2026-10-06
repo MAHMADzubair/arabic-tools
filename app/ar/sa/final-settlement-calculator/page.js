@@ -1,7 +1,7 @@
-import FinalSettlementCalculator from "@/components/FinalSettlementCalculator";
+﻿import FinalSettlementCalculator from "@/components/FinalSettlementCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -98,6 +98,7 @@ const softwareAppJsonLd = {
   },
   description:
     "احسب مخالصتك وتصفية مستحقاتك بدقة وفق نظام العمل السعودي 2026: مكافأة نهاية الخدمة، رصيد الإجازات، آخر راتب، وبدل الإشعار مع طباعة نموذج مخالصة قابل للطباعة.",
+  publisher: { "@id": SITE_ORG_ID },
 };
 
 const breadcrumbJsonLd = {

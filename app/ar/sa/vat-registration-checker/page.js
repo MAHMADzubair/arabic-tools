@@ -1,9 +1,9 @@
-import VatRegistrationChecker from "@/components/VatRegistrationChecker";
+﻿import VatRegistrationChecker from "@/components/VatRegistrationChecker";
 import Link from "next/link";
 import { ZATCA_OFFICIAL_URL } from "@/lib/vatRegistrationConfig";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -99,6 +99,7 @@ const softwareAppJsonLd = {
   },
   description:
     "أداة فحص أهلية التسجيل في ضريبة القيمة المضافة في السعودية وفق لوائح هيئة الزكاة والضريبة والجمارك ZATCA وحدود 375,000 و 187,500 ريال.",
+  publisher: { "@id": SITE_ORG_ID },
 };
 
 const breadcrumbJsonLd = {

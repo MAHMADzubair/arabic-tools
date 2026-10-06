@@ -1,6 +1,6 @@
-import UaeVatInvoiceGenerator from "@/components/UaeVatInvoiceGenerator";
+﻿import UaeVatInvoiceGenerator from "@/components/UaeVatInvoiceGenerator";
 import Link from "next/link";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -51,6 +51,7 @@ const softwareAppJsonLd = {
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "AED" },
+  publisher: { "@id": SITE_ORG_ID },
   description:
     "أداة مجانية لإنشاء نموذج فاتورة ضريبية قابل للطباعة للأعمال في الإمارات، مع دعم الفاتورة الكاملة والمبسطة وحساب VAT 5% وفحص مبدئي لاكتمال الحقول.",
   inLanguage: "ar",

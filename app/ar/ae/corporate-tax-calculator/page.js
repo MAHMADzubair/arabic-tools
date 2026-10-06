@@ -1,7 +1,7 @@
-import UaeCorporateTaxCalculator from "@/components/UaeCorporateTaxCalculator";
+﻿import UaeCorporateTaxCalculator from "@/components/UaeCorporateTaxCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -49,6 +49,7 @@ const softwareAppJsonLd = {
   applicationCategory: "BusinessApplication",
   operatingSystem: "All",
   offers: { "@type": "Offer", price: "0", priceCurrency: "AED" },
+  publisher: { "@id": SITE_ORG_ID },
   description:
     "أداة مجانية لتقدير ضريبة الشركات الإماراتية: 0% على أول 375,000 درهم من الدخل الخاضع للضريبة، و9% على ما يزيد، مع فحص تسهيلات الأعمال الصغيرة وقواعد المناطق الحرة.",
   inLanguage: "ar",

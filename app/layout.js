@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import Image from "next/image";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 import Script from "next/script";
-import { SITE_URL, SITE_NAME } from "@/lib/siteConfig";
+import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID } from "@/lib/siteConfig";
 
 // ─── Font: IBM Plex Sans Arabic via next/font (self-hosted, no blocking request) ──
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
@@ -74,14 +74,30 @@ html{scroll-behavior:smooth}
 :root[data-theme="dark"] .foot-logo-dark{display:block}
 `;
 
-// ─── Root Structured Data (WebSite + WebApplication) ─────────────────────────
+// ─── Root Structured Data (Organization + WebSite) ────────────────────────────
+
+/** Authoritative Qemlo Organization entity — ONE place, referenced everywhere else */
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": SITE_ORG_ID,
+  name: SITE_NAME,
+  url: BASE_URL,
+  logo: {
+    "@type": "ImageObject",
+    url: `${BASE_URL}/brand/qemlo-logo.svg`,
+  },
+};
+
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Qemlo",
+  "@id": SITE_WEBSITE_ID,
+  name: SITE_NAME,
   url: BASE_URL,
   description: "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية.",
   inLanguage: "ar",
+  publisher: { "@id": SITE_ORG_ID },
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -105,9 +121,12 @@ export const metadata = {
     canonical: "/",
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/icon.svg",
+    apple: "/apple-icon.png",
   },
   title: {
     default: "أدوات عربية مجانية | حاسبات ومحولات وأدوات PDF وصور ومال",
@@ -138,6 +157,12 @@ export default function RootLayout({ children }) {
         <style dangerouslySetInnerHTML={{ __html: TOKENS_CSS }} />
       </head>
       <body suppressHydrationWarning={true} className="flex min-h-screen flex-col bg-[var(--bg)] text-[var(--text)]">
+        {/* Organization Structured Data — authoritative Qemlo entity */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+
         {/* WebSite Structured Data */}
         <script
           type="application/ld+json"
@@ -219,20 +244,13 @@ function Footer() {
         {/* Brand strip */}
         <div className="flex flex-col gap-5 pb-8 lg:flex-row lg:items-center lg:justify-between lg:pb-10">
           <div className="flex items-center gap-3">
-            <div aria-hidden="true" className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-[var(--foot-line)] bg-[var(--surface)]">
-              <Image
-                src="/logo.png"
-                alt="Qemlo"
-                width={44}
-                height={44}
-                className="foot-logo-light h-full w-full object-cover"
-              />
-              <Image
-                src="/logo-dark.png"
-                alt="Qemlo"
-                width={44}
-                height={44}
-                className="foot-logo-dark h-full w-full object-cover"
+            <div aria-hidden="true" className="relative h-11 w-11 shrink-0">
+              <img
+                src="/brand/qemlo-mark.svg"
+                alt=""
+                width="44"
+                height="44"
+                className="h-full w-full object-contain"
               />
             </div>
             <div>

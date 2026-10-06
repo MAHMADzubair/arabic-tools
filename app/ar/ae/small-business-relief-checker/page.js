@@ -1,7 +1,7 @@
-import UaeSbrChecker from "@/components/UaeSbrChecker";
+﻿import UaeSbrChecker from "@/components/UaeSbrChecker";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة تسهيلات الأعمال الصغيرة الإمارات 2026 | حد 3 ملايين درهم",
@@ -86,6 +86,7 @@ const softwareAppJsonLd = {
   operatingSystem: "All",
   applicationCategory: "BusinessApplication",
   offers: { "@type": "Offer", price: "0", priceCurrency: "AED" },
+  publisher: { "@id": SITE_ORG_ID },
   description: "أداة تقديرية للتحقق من أهلية تسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية وفق FTA — حد 3,000,000 درهم.",
 };
 

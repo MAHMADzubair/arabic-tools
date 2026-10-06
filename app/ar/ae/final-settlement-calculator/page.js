@@ -1,7 +1,7 @@
 import UaeFinalSettlementCalculator from "@/components/UaeFinalSettlementCalculator";
 import Link from "next/link";
 import GeoSummary from "@/components/business/GeoSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -98,6 +98,7 @@ const softwareAppJsonLd = {
   },
   description:
     "حاسبة شاملة لتقدير وتصفية مستحقات نهاية الخدمة في الإمارات وفق قانون العمل الاتحادي رقم 33 لسنة 2021: مكافأة نهاية الخدمة، رصيد الإجازات، آخر راتب، وبدل الإنذار مع نموذج قابل للطباعة.",
+  publisher: { "@id": SITE_ORG_ID },
 };
 
 const breadcrumbJsonLd = {

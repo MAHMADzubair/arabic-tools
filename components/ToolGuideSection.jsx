@@ -9,7 +9,7 @@
  * in the DOM (via `hidden`) for SEO.
  */
 import { useState } from "react";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 const allTools = [
   { href: "/zakat-calculator", title: "حاسبة الزكاة", desc: "احسب زكاتك بدقة بناءً على نصاب الفضة الحالي مع دعم الأصول والالتزامات." },
@@ -73,6 +73,7 @@ export default function ToolGuideSection({
     operatingSystem: "All",
     browserRequirements: "Requires JavaScript. Requires HTML5.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    publisher: { "@id": SITE_ORG_ID },
   };
 
   return (

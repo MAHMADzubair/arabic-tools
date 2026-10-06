@@ -1,8 +1,8 @@
-import UaeVatRegistrationChecker from "@/components/UaeVatRegistrationChecker";
+﻿import UaeVatRegistrationChecker from "@/components/UaeVatRegistrationChecker";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -56,6 +56,7 @@ const softwareAppJsonLd = {
   applicationCategory: "BusinessApplication",
   operatingSystem: "All",
   offers: { "@type": "Offer", price: "0", priceCurrency: "AED" },
+  publisher: { "@id": SITE_ORG_ID },
   description:
     "أداة مجانية لفحص أهلية التسجيل في ضريبة القيمة المضافة بالإمارات وفق حدود الهيئة الاتحادية للضرائب: 375,000 درهم للتسجيل الإلزامي و187,500 درهم للاختياري.",
   inLanguage: "ar",

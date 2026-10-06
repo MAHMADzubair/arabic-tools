@@ -1,7 +1,7 @@
-import SaudiQuotationGenerator from "@/components/SaudiQuotationGenerator";
+﻿import SaudiQuotationGenerator from "@/components/SaudiQuotationGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -57,6 +57,7 @@ const softwareAppJsonLd = {
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "SAR" },
+  publisher: { "@id": SITE_ORG_ID },
   description:
     "أداة مجانية لإنشاء عروض أسعار احترافية بالعربية والإنجليزية للشركات والمستقلين في المملكة العربية السعودية مع دعم ضريبة القيمة المضافة 15%.",
   inLanguage: "ar",

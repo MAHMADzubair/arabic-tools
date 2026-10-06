@@ -1,7 +1,7 @@
-import EInvoiceGenerator from "@/components/EInvoiceGenerator";
+﻿import EInvoiceGenerator from "@/components/EInvoiceGenerator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -94,6 +94,7 @@ const softwareAppJsonLd = {
   },
   description:
     "أداة لإنشاء نموذج فاتورة ضريبية سعودية قابل للطباعة: فاتورة ضريبية B2B وفاتورة مبسطة B2C مع حساب ضريبة القيمة المضافة 15% وفحص مبدئي لاكتمال الحقول. غير مرتبطة بمنصة ZATCA فاتورة.",
+  publisher: { "@id": SITE_ORG_ID },
 };
 
 const breadcrumbJsonLd = {

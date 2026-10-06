@@ -1,7 +1,7 @@
-import UaePurchaseOrderGenerator from "@/components/UaePurchaseOrderGenerator";
+﻿import UaePurchaseOrderGenerator from "@/components/UaePurchaseOrderGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
@@ -51,6 +51,7 @@ const softwareAppJsonLd = {
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "AED" },
+  publisher: { "@id": SITE_ORG_ID },
   description:
     "أداة مجانية لإنشاء نماذج أوامر شراء (Purchase Order / LPO) بالعربية والإنجليزية للشركات في الإمارات، مع دعم ضريبة القيمة المضافة 5% والطباعة وحفظ PDF.",
   inLanguage: "ar",

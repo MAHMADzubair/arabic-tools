@@ -1,7 +1,7 @@
-import Article77Calculator from "@/components/Article77Calculator";
+﻿import Article77Calculator from "@/components/Article77Calculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 const BASE_URL = SITE_URL;
 
@@ -103,6 +103,7 @@ const softwareAppJsonLd = {
   },
   description:
     "احسب تعويض إنهاء عقد العمل لسبب غير مشروع في نظام العمل السعودي (المادة 77): 15 يوماً عن كل سنة، أو أجر المدة المتبقية، مع تطبيق حد الشهرين الأدنى.",
+  publisher: { "@id": SITE_ORG_ID },
 };
 
 export default function Article77Page() {

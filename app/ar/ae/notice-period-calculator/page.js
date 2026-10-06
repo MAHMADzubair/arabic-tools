@@ -1,7 +1,7 @@
-import UaeNoticePeriodCalculator from "@/components/UaeNoticePeriodCalculator";
+﻿import UaeNoticePeriodCalculator from "@/components/UaeNoticePeriodCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -94,6 +94,7 @@ const softwareAppJsonLd = {
   },
   description:
     "احسب فترة الإنذار في الإمارات، آخر يوم عمل، الأيام غير المنفذة وبدل الإنذار التقديري للموظف أو صاحب العمل وفق بيانات عقد العمل.",
+  publisher: { "@id": SITE_ORG_ID },
 };
 
 const breadcrumbJsonLd = {

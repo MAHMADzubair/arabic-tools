@@ -1,5 +1,5 @@
-import AiSalesCloserPage from "@/components/AiSalesCloserPage";
-import { SITE_URL } from "@/lib/siteConfig";
+﻿import AiSalesCloserPage from "@/components/AiSalesCloserPage";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 const BASE_URL = SITE_URL;
 const PAGE_URL = `${BASE_URL}/ar/business/ai-sales-closer`;
@@ -51,6 +51,7 @@ const softwareAppJsonLd = {
   applicationCategory: "BusinessApplication",
   operatingSystem: "All",
   offers: { "@type": "Offer", price: "0", priceCurrency: "SAR" },
+  publisher: { "@id": SITE_ORG_ID },
   description:
     "نظام ذكاء اصطناعي لاكتشاف أسباب خسارة مبيعات واتساب واستعادة العملاء تلقائياً لمتاجر سلة وShopify وZid.",
   inLanguage: "ar",

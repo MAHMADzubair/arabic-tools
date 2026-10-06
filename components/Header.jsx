@@ -38,16 +38,9 @@ const CSS = `
   box-shadow:0 10px 30px -16px rgba(0,0,0,.45);transition:border-color .2s}
 .hd-pill:hover{border-color:var(--text-3)}
 .hd-logo{display:flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;flex:none}
-.hd-mark{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;overflow:hidden;background:var(--surface);border:1.5px solid var(--border);transition:transform .25s;flex-shrink:0}
+.hd-mark{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;transition:transform .25s;flex-shrink:0}
 .hd-logo:hover .hd-mark{transform:scale(1.08)}
-.hd-logo-img{width:100%;height:100%;object-fit:cover;display:block}
-.hd-logo-dark{display:none}
-@media(prefers-color-scheme: dark){
-  :root:not([data-theme="light"]) .hd-logo-light{display:none}
-  :root:not([data-theme="light"]) .hd-logo-dark{display:block}
-}
-:root[data-theme="dark"] .hd-logo-light{display:none}
-:root[data-theme="dark"] .hd-logo-dark{display:block}
+.hd-mark-svg{width:100%;height:100%;display:block;object-fit:contain}
 .hd-name{display:block;font-size:17px;font-weight:800;line-height:1.2}
 .hd-count{display:none;font-size:11px;color:var(--text-3)}
 @media(min-width:640px){.hd-count{display:block}}
@@ -266,21 +259,12 @@ export default function Header() {
               {/* Logo */}
               <Link href="/" className="hd-logo" aria-label="Qemlo — الصفحة الرئيسية">
                 <span className="hd-mark" aria-hidden="true">
-                  <Image
-                    src="/logo.png"
-                    alt="Qemlo"
-                    width={40}
-                    height={40}
-                    className="hd-logo-img hd-logo-light"
-                    priority
-                  />
-                  <Image
-                    src="/logo-dark.png"
-                    alt="Qemlo"
-                    width={40}
-                    height={40}
-                    className="hd-logo-img hd-logo-dark"
-                    priority
+                  <img
+                    src="/brand/qemlo-mark.svg"
+                    alt=""
+                    width="40"
+                    height="40"
+                    className="hd-mark-svg"
                   />
                 </span>
                 <span>
@@ -409,7 +393,15 @@ export default function Header() {
           <div className="hd-drawer">
             <div className="hd-dh">
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span className="hd-mark" style={{ width: 36, height: 36, fontSize: 17 }} aria-hidden="true">ع</span>
+                <span className="hd-mark" style={{ width: 36, height: 36 }} aria-hidden="true">
+                  <img
+                    src="/brand/qemlo-mark.svg"
+                    alt=""
+                    width="36"
+                    height="36"
+                    className="hd-mark-svg"
+                  />
+                </span>
                 <span>
                   <b style={{ display: "block", fontSize: 16 }}>Qemlo</b>
                   <span style={{ fontSize: 11, color: "var(--text-3)" }}>{count} أداة وحاسبة مجانية</span>

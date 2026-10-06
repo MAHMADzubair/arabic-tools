@@ -1,7 +1,7 @@
-import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
+﻿import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 const BASE_URL = SITE_URL;
 
@@ -103,6 +103,7 @@ const softwareAppJsonLd = {
   },
   description:
     "احسب رصيد إجازتك السنوية وأجر أيام الإجازة والتعويض النقدي عن رصيد الإجازات المتبقية في نظام العمل السعودي (المادتان 109 و111).",
+  publisher: { "@id": SITE_ORG_ID },
 };
 
 export default function SaudiAnnualLeavePage() {
