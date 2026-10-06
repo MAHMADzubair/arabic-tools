@@ -3,7 +3,7 @@ import ContactForm from "./ContactForm";
 export const metadata = {
   title: "تواصل معنا",
   description:
-    "تواصل مع فريق أدوات عربية لإرسال استفساراتك، اقتراحاتك، أو الإبلاغ عن أي خطأ حسابي في الأدوات والحاسبات.",
+    "تواصل مع فريق Qemlo لإرسال استفساراتك، اقتراحاتك، أو الإبلاغ عن أي خطأ حسابي في الأدوات والحاسبات.",
   alternates: {
     canonical: "/contact",
   },

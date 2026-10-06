@@ -508,7 +508,7 @@ export function generateMetadata({ params }) {
   if (!country) return {};
 
   const hub = COUNTRY_HUBS[params.country];
-  const title = hub ? hub.seoTitle : `أدوات ${country.nameAr} المالية ونظام العمل 2026 | الأدوات العربية`;
+  const title = hub ? hub.seoTitle : `أدوات ${country.nameAr} المالية ونظام العمل 2026 | Qemlo`;
   const description = hub ? hub.seoDesc : country.metaDesc;
   const canonical = `${BASE_URL}/ar/${country.code}`;
 
@@ -520,7 +520,7 @@ export function generateMetadata({ params }) {
       title,
       description,
       url: canonical,
-      siteName: "الأدوات العربية",
+      siteName: "Qemlo",
       locale: params.country === "ae" ? "ar_AE" : params.country === "sa" ? "ar_SA" : "ar_AR",
       type: "website",
     },

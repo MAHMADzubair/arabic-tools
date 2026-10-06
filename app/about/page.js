@@ -1,9 +1,9 @@
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 
 export const metadata = {
-  title: "عن أدوات عربية | حاسبات ومحولات عربية مجانية",
+  title: "عن Qemlo | حاسبات ومحولات عربية مجانية",
   description:
-    "تعرّف على «أدوات عربية»: موقع مجاني يجمع الحاسبات والمحولات المالية والإسلامية واليومية بواجهة عربية وبدون تسجيل، وما نلتزم به وما لا نقدمه.",
+    "تعرّف على «منصة Qemlo»: موقع مجاني يجمع الحاسبات والمحولات المالية والإسلامية واليومية بواجهة عربية وبدون تسجيل، وما نلتزم به وما لا نقدمه.",
 };
 
 // ⚠️ Fill this in. Until you do, the contact section is hidden.
@@ -85,7 +85,7 @@ export default function AboutPage() {
               </span>
             </h1>
             <p className="mt-6 max-w-lg text-base leading-8 text-[var(--text-2)] sm:text-lg">
-              «أدوات عربية» موقع مجاني يجمع الحاسبات والمحولات التي يحتاجها المستخدم العربي في المال والعمل والشؤون الإسلامية والحياة اليومية، بواجهة عربية وبدون تسجيل.
+              «منصة Qemlo» موقع مجاني يجمع الحاسبات والمحولات التي يحتاجها المستخدم العربي في المال والعمل والشؤون الإسلامية والحياة اليومية، بواجهة عربية وبدون تسجيل.
             </p>
             <a
               href="/"
@@ -100,7 +100,7 @@ export default function AboutPage() {
             <div className="bg-[var(--card)] px-6 pt-6 text-[var(--card-text)]">
               <div className="flex items-baseline justify-between border-b border-dashed border-[var(--card-muted)] pb-3">
                 <p className="text-lg font-black">الموقع بالأرقام</p>
-                <p className="text-xs text-[var(--card-muted)]">أدوات عربية</p>
+                <p className="text-xs text-[var(--card-muted)]">Qemlo</p>
               </div>
               <ul className="py-3">
                 {activeCategories.map((cat) => (

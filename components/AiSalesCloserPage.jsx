@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -800,7 +800,7 @@ export default function AiSalesCloserPage() {
       {/* Footer note */}
       <div className="py-6 px-4 bg-white border-t border-brand-border text-center space-y-1">
         <p className="text-xs text-ink-muted">منتج قيد التطوير — هذه صفحة تحقق من الفكرة وليست إطلاقاً رسمياً.</p>
-        <Link href="/" className="text-xs text-brand hover:underline font-bold">← العودة إلى أدوات عربية</Link>
+        <Link href="/" className="text-xs text-brand hover:underline font-bold">← العودة إلى Qemlo</Link>
       </div>
     </div>
   );

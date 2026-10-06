@@ -2,14 +2,14 @@ import Script from "next/script";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 
 export const metadata = {
-  title: "أدوات عربية مجانية | حاسبات ومحولات وأدوات PDF وصور ومال",
+  title: "Qemlo | أدوات عربية مجانية وحاسبات ومحولات يومية",
   description:
     "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية مبنية على المصادر الرسمية وبدون تسجيل وبأعلى معايير الخصوصية.",
   openGraph: {
-    title: "أدوات عربية مجانية | حاسبات ومحولات وأدوات PDF وصور ومال",
+    title: "Qemlo | أدوات عربية مجانية وحاسبات ومحولات يومية",
     description:
       "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية مبنية على المصادر الرسمية وبدون تسجيل.",
-    siteName: "أدوات عربية",
+    siteName: "Qemlo",
     locale: "ar_AR",
     type: "website",
   },
@@ -254,7 +254,7 @@ export default function HomePage() {
             <div className="overflow-hidden bg-[var(--card)] px-5 pt-6 text-[var(--card-text)] sm:px-6">
               <div className="flex items-baseline justify-between border-b border-dashed border-[var(--card-muted)] pb-3">
                 <p className="text-lg font-black">كشف الأدوات</p>
-                <p className="text-xs text-[var(--card-muted)]">أدوات عربية</p>
+                <p className="text-xs text-[var(--card-muted)]">Qemlo</p>
               </div>
               <ul className="py-3">
                 {activeCategories.map((cat) => (
@@ -346,7 +346,7 @@ export default function HomePage() {
                   </div>
                   <div className="min-w-0">
                     <h2 className="text-xl font-black text-[var(--text)] sm:text-2xl">
-                      قريباً في أدوات عربية
+                      قريباً في Qemlo
                     </h2>
                     <p className="mt-0.5 text-xs text-[var(--text-2)] sm:text-sm">
                       نعمل على تطوير باقة متكاملة من الأدوات الرقمية لتغطية كافة احتياجاتك
@@ -506,7 +506,7 @@ function FeaturesStrip() {
         >
           لماذا{" "}
           <span className="underline decoration-[var(--orange)] decoration-[5px] underline-offset-[10px]">
-            أدوات عربية؟
+            Qemlo؟
           </span>
         </h2>
 

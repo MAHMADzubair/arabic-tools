@@ -1,6 +1,7 @@
 import "./globals.css";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import Header from "../components/Header";
+import Image from "next/image";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 import Script from "next/script";
 import { SITE_URL, SITE_NAME } from "@/lib/siteConfig";
@@ -63,13 +64,21 @@ body .border-brand-border{border-color:var(--border)}
 body .bg-hero-gradient{background:var(--orange);color:var(--on-orange)}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+.foot-logo-light{display:block}
+.foot-logo-dark{display:none}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .foot-logo-light{display:none}
+  :root:not([data-theme="light"]) .foot-logo-dark{display:block}
+}
+:root[data-theme="dark"] .foot-logo-light{display:none}
+:root[data-theme="dark"] .foot-logo-dark{display:block}
 `;
 
 // ─── Root Structured Data (WebSite + WebApplication) ─────────────────────────
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "أدوات عربية",
+  name: "Qemlo",
   url: BASE_URL,
   description: "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية.",
   inLanguage: "ar",
@@ -95,9 +104,14 @@ export const metadata = {
   alternates: {
     canonical: "/",
   },
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   title: {
     default: "أدوات عربية مجانية | حاسبات ومحولات وأدوات PDF وصور ومال",
-    template: "%s | أدوات عربية",
+    template: "%s | Qemlo",
   },
   description:
     "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية مبنية على المصادر الرسمية وبدون تسجيل وبأعلى معايير الخصوصية.",
@@ -106,7 +120,7 @@ export const metadata = {
     description:
       "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية مبنية على المصادر الرسمية وبدون تسجيل.",
     url: BASE_URL,
-    siteName: "أدوات عربية",
+    siteName: "Qemlo",
     locale: "ar_AR",
     type: "website",
   },
@@ -205,9 +219,24 @@ function Footer() {
         {/* Brand strip */}
         <div className="flex flex-col gap-5 pb-8 lg:flex-row lg:items-center lg:justify-between lg:pb-10">
           <div className="flex items-center gap-3">
-            <div aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--orange)] text-xl font-black text-[var(--on-orange)]">ع</div>
+            <div aria-hidden="true" className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-[var(--foot-line)] bg-[var(--surface)]">
+              <Image
+                src="/logo.png"
+                alt="Qemlo"
+                width={44}
+                height={44}
+                className="foot-logo-light h-full w-full object-cover"
+              />
+              <Image
+                src="/logo-dark.png"
+                alt="Qemlo"
+                width={44}
+                height={44}
+                className="foot-logo-dark h-full w-full object-cover"
+              />
+            </div>
             <div>
-              <span className="block text-lg font-extrabold leading-7">أدوات عربية</span>
+              <span className="block text-lg font-extrabold leading-7">Qemlo</span>
               <span className="block text-sm text-[var(--foot-muted)]">{totalTools.toLocaleString(NUM_LOCALE)} أداة وحاسبة متخصصة</span>
             </div>
           </div>
@@ -257,7 +286,7 @@ function Footer() {
 
         {/* Bottom row */}
         <div className="flex flex-col gap-3 border-t border-[var(--foot-line)] pt-6 text-sm text-[var(--foot-muted)] sm:flex-row sm:items-center sm:justify-between lg:mt-10">
-          <span>© {new Date().getFullYear()} أدوات عربية — جميع الحقوق محفوظة</span>
+          <span>© {new Date().getFullYear()} Qemlo — جميع الحقوق محفوظة</span>
           <a href="#main" className="inline-flex min-h-11 items-center gap-2 self-start rounded-lg border border-[var(--foot-muted)] px-4 font-bold text-[var(--foot-text)] hover:border-[var(--foot-hover)] hover:text-[var(--foot-hover)] sm:self-auto">
             العودة للأعلى
             <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5-5 5 5" /></svg>
