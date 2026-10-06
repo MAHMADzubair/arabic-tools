@@ -1,5 +1,5 @@
-﻿import AiSalesCloserPage from "@/components/AiSalesCloserPage";
-import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
+import AiSalesCloserPage from "@/components/AiSalesCloserPage";
+import { SITE_URL, SITE_ORG_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 const BASE_URL = SITE_URL;
 const PAGE_URL = `${BASE_URL}/ar/business/ai-sales-closer`;
@@ -27,6 +27,7 @@ export const metadata = {
     url: PAGE_URL,
     type: "website",
     locale: "ar_SA",
+    images: [DEFAULT_OG_IMAGE],
   },
   robots: {
     index: true,

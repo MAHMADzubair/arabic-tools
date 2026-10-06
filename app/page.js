@@ -1,6 +1,8 @@
 import Script from "next/script";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 
+import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
+
 export const metadata = {
   title: "Qemlo | أدوات عربية مجانية وحاسبات ومحولات يومية",
   description:
@@ -12,6 +14,7 @@ export const metadata = {
     siteName: "Qemlo",
     locale: "ar_AR",
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

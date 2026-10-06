@@ -1,6 +1,6 @@
 import SalaryCalculator from "../../components/SalaryCalculator";
 import ToolGuideSection from "../../components/ToolGuideSection";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة الراتب الصافي 2026 | ضريبة الدخل والتأمينات لـ 6 دول",
@@ -17,6 +17,7 @@ export const metadata = {
     url: `${SITE_URL}/salary-calculator`,
     type: "website",
     locale: "ar_AR",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

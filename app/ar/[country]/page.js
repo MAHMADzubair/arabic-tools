@@ -7,7 +7,7 @@ import {
   getActiveTools,
 } from "@/lib/registry";
 import GeoSummary from "@/components/business/GeoSummary";
-import { SITE_URL } from "@/lib/siteConfig";
+import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 const BASE_URL = SITE_URL;
 
@@ -523,6 +523,7 @@ export function generateMetadata({ params }) {
       siteName: "Qemlo",
       locale: params.country === "ae" ? "ar_AE" : params.country === "sa" ? "ar_SA" : "ar_AR",
       type: "website",
+      images: [DEFAULT_OG_IMAGE],
     },
   };
 }

@@ -1,7 +1,7 @@
-﻿import FinalSettlementCalculator from "@/components/FinalSettlementCalculator";
+import FinalSettlementCalculator from "@/components/FinalSettlementCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
+import { SITE_URL, SITE_ORG_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -34,6 +34,7 @@ export const metadata = {
     url: `${SITE_URL}/ar/sa/final-settlement-calculator`,
     type: "website",
     locale: "ar_SA",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

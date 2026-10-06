@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import Image from "next/image";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 import Script from "next/script";
-import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID } from "@/lib/siteConfig";
+import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 // ─── Font: IBM Plex Sans Arabic via next/font (self-hosted, no blocking request) ──
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
@@ -142,6 +142,11 @@ export const metadata = {
     siteName: "Qemlo",
     locale: "ar_AR",
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [DEFAULT_OG_IMAGE.url],
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
