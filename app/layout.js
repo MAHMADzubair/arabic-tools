@@ -5,6 +5,7 @@ import Image from "next/image";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 import Script from "next/script";
 import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
+import { Analytics } from "@vercel/analytics/next";
 
 // ─── Font: IBM Plex Sans Arabic via next/font (self-hosted, no blocking request) ──
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
@@ -204,6 +205,7 @@ export default function RootLayout({ children }) {
         <main id="main" className="flex-1">{children}</main>
         <Footer />
         <script dangerouslySetInnerHTML={{ __html: FOOTER_SCRIPT }} />
+        <Analytics />
       </body>
     </html>
   );
