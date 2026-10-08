@@ -1,4 +1,4 @@
-﻿import UaeVatRegistrationChecker from "@/components/UaeVatRegistrationChecker";
+import UaeVatRegistrationChecker from "@/components/UaeVatRegistrationChecker";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
@@ -119,6 +119,15 @@ const faqJsonLd = {
 
 // ─── Related Tools ────────────────────────────────────────────────────────────
 const relatedTools = [
+  {
+    href: "/ar/ae/e-invoicing-readiness-checker",
+    icon: "⚡",
+    title: "حاسبة جاهزية الفوترة الإلكترونية في الإمارات",
+    desc: "تحقق من مواعيد تعيين مزود ASP وتطبيق الفوترة الإلكترونية الإلزامية في الإمارات.",
+    badge: "جديد 2026",
+    badgeColor: "bg-orange-100 text-orange-800",
+    cta: "فحص جاهزية الفوترة →",
+  },
   {
     href: "/ar/ae/vat-invoice-generator",
     icon: "🧾",

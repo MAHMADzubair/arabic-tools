@@ -1,4 +1,4 @@
-﻿import UaeVatInvoiceGenerator from "@/components/UaeVatInvoiceGenerator";
+import UaeVatInvoiceGenerator from "@/components/UaeVatInvoiceGenerator";
 import Link from "next/link";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
@@ -115,6 +115,15 @@ const faqJsonLd = {
 // ─── Related tools ────────────────────────────────────────────────────────────
 
 const relatedTools = [
+  {
+    href: "/ar/ae/e-invoicing-readiness-checker",
+    icon: "⚡",
+    title: "حاسبة جاهزية الفوترة الإلكترونية في الإمارات",
+    desc: "هل تعلم أن ملف PDF وحده لا يُعد فاتورة إلكترونية؟ تحقق من مواعيد إلزام منظومة Peppol والـ ASP.",
+    badge: "إلزام 2026-2027",
+    badgeColor: "bg-orange-100 text-orange-800",
+    cta: "فحص جاهزية الفوترة الإلكترونية →",
+  },
   {
     href: "/ar/ae/quotation-generator",
     icon: "📋",

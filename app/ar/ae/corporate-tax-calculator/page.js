@@ -1,4 +1,4 @@
-﻿import UaeCorporateTaxCalculator from "@/components/UaeCorporateTaxCalculator";
+import UaeCorporateTaxCalculator from "@/components/UaeCorporateTaxCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -137,6 +137,14 @@ const relatedTools = [
     desc: "أنشئ فاتورة ضريبية كاملة أو مبسطة مع احتساب 5% VAT وفق FTA.",
     badge: "FTA VAT",
     badgeColor: "bg-blue-100 text-blue-800",
+  },
+  {
+    href: "/ar/ae/e-invoicing-readiness-checker",
+    icon: "⚡",
+    title: "حاسبة جاهزية الفوترة الإلكترونية في الإمارات",
+    desc: "تحقق من مواعيد تعيين مزود ASP وتطبيق الفوترة الإلكترونية الإلزامية في الإمارات.",
+    badge: "جديد 2026",
+    badgeColor: "bg-orange-100 text-orange-800",
   },
   {
     href: "/ar/ae/purchase-order-generator",

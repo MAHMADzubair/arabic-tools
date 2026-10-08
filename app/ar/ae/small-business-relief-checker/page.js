@@ -1,4 +1,4 @@
-﻿import UaeSbrChecker from "@/components/UaeSbrChecker";
+import UaeSbrChecker from "@/components/UaeSbrChecker";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -212,6 +212,7 @@ export default function UaeSbrPage() {
                 { href: "/ar/ae/corporate-tax-calculator", icon: "🏛️", title: "حاسبة ضريبة الشركات في الإمارات", desc: "احسب ضريبة الشركات التقديرية 0% و9% مع QFZP والشخص الطبيعي.", badge: "FTA CT", badgeColor: "bg-indigo-100 text-indigo-800" },
                 { href: "/ar/ae/vat-registration-checker", icon: "🏢", title: "حاسبة أهلية التسجيل في ضريبة القيمة المضافة", desc: "هل تحتاج للتسجيل في ضريبة القيمة المضافة؟ حد 375,000 درهم.", badge: "FTA VAT", badgeColor: "bg-purple-100 text-purple-800" },
                 { href: "/vat-calculator/uae", icon: "🧾", title: "حاسبة ضريبة القيمة المضافة 5%", desc: "احسب ضريبة الـ 5% أو استخرج السعر الأصلي من أي فاتورة.", badge: "5% VAT", badgeColor: "bg-blue-100 text-blue-800" },
+                { href: "/ar/ae/e-invoicing-readiness-checker", icon: "⚡", title: "حاسبة جاهزية الفوترة الإلكترونية", desc: "تحقق من مواعيد تعيين مزود ASP وتطبيق منظومة الفوترة الإلكترونية.", badge: "جديد 2026", badgeColor: "bg-orange-100 text-orange-800" },
                 { href: "/ar/ae", icon: "🇦🇪", title: "مجمع أدوات وحاسبات الإمارات", desc: "الدليل الشامل لكافة الحاسبات المخصصة لدولة الإمارات.", badge: "الشامل", badgeColor: "bg-emerald-700 text-white font-black" },
               ].map((tool) => (
                 <Link key={tool.href} href={tool.href}

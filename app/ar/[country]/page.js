@@ -419,6 +419,22 @@ const COUNTRY_HUBS = {
           "تسري حتى 31 ديسمبر 2026",
         ],
       },
+      {
+        id: "uae-einvoicing-readiness-checker",
+        nameAr: "حاسبة جاهزية الفوترة الإلكترونية في الإمارات",
+        nameEn: "UAE E-Invoicing Readiness Checker",
+        icon: "⚡",
+        badge: "إلزام 2026-2027",
+        badgeColor: "bg-orange-50 text-orange-700 border-orange-200 font-bold",
+        href: "/ar/ae/e-invoicing-readiness-checker",
+        desc: "تحقق من مواعيد تعيين مزود الخدمة المعتمد ASP وتطبيق الفوترة الإلكترونية الإلزامية في الإمارات وتقييم جاهزية نظامك المحاسبي.",
+        highlights: [
+          "مواعيد تعيين مزود الخدمة المعتمد ASP (أكتوبر 2026 ومارس 2027)",
+          "مراحل الإلزام لشركات 50 مليون درهم وأقل والجهات الحكومية",
+          "فحص جاهزية الربط والبيانات المهيكلة لشبكة Peppol و PINT-AE",
+          "مبني على قرارات وزارة المالية والهيئة الاتحادية للضرائب المحدثة",
+        ],
+      },
     ],
     upcomingTool: {
       tag: "أداة مقبلة — قيد التطوير",
