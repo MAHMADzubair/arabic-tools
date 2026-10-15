@@ -6,6 +6,7 @@ export const metadata = {
   description:
     "احسب تكلفة رحلة العمرة بالكامل — تذاكر الطيران، الفندق، التأشيرة، الطعام، والمواصلات. دعم 8 دول بعملاتها المحلية ومواسم مختلفة.",
   keywords: ["تكلفة العمرة", "حاسبة العمرة", "ميزانية العمرة", "رحلة العمرة"],
+  alternates: { canonical: "/umrah-calculator" },
 };
 
 const guideData = {
@@ -71,3 +72,4 @@ export default function UmrahCalculatorPage() {
     </>
   );
 }
+

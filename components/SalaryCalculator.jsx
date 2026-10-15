@@ -7,6 +7,7 @@
  * inputs are clamped to >= 0, and the unused `showPayslip` state is removed.
  */
 import { useState, useMemo } from "react";
+import { calculateGOSI } from "@/lib/gosiEngine";
 
 /* ─── Country Tax Configs (data unchanged, flags removed) ───────────────── */
 const COUNTRIES = [
@@ -159,7 +160,15 @@ export default function SalaryCalculator({
   const [foodAllowance, setFoodAllowance] = useState(0);
   const [otherAllowances, setOtherAllowances] = useState(0);
   const [otherDeductions, setOtherDeductions] = useState(0);
+  // Saudi GOSI specific state
+  // Employee classification handling (legacy, new, expat, gcc)
+  const [employeeCategory, setEmployeeCategory] = useState("legacy"); // "legacy" | "new" | "expat" | "gcc"
+  const [contributionDate, setContributionDate] = useState(new Date());
   const [period, setPeriod] = useState("monthly"); // monthly | annual
+  // Housing valuation mode (cash, inKind, none)
+  const [housingValuationMode, setHousingValuationMode] = useState("cash");
+  // Optional age for SANED eligibility
+  const [employeeAge, setEmployeeAge] = useState("" );
 
   const country = COUNTRIES.find((c) => c.id === countryId);
 
@@ -167,6 +176,10 @@ export default function SalaryCalculator({
     const c = COUNTRIES.find((x) => x.id === id);
     if (!c) return;
     setCountryId(id);
+    // Reset Saudi‑specific fields when leaving/entering Saudi
+    if (c.id === "sa") {
+      setEmployeeCategory("legacy");
+    }
     if (c.allowances.housing < 1) {
       setHousingAllowance(Math.round(grossSalary * c.allowances.housing));
     } else {
@@ -184,16 +197,40 @@ export default function SalaryCalculator({
     if (!country || !grossSalary) return null;
     const gross = nn(grossSalary);
     const housing = nn(housingAllowance);
+    // Determine which housing amount contributes to GOSI based on valuation mode
+    const housingCash = housingValuationMode === "cash" ? housing : 0;
+    const housingInKind = housingValuationMode === "inKind" ? housing : 0; // placeholder, not added to cash gross
     const transport = nn(transportAllowance);
     const food = nn(foodAllowance);
     const other = nn(otherAllowances);
-    const totalAllowances = housing + transport + food + other;
+    const totalAllowances = (housingValuationMode === "cash" ? housingCash : 0) + transport + food + other;
     const totalGross = gross + totalAllowances;
 
     const incomeTax = calcTax(gross, country);
-    const socialInsurance = calcSocial(gross, country);
+
+    // Saudi‑specific GOSI handling
+    let gosi = {};
+    if (country.id === "sa") {
+      gosi = calculateGOSI({
+        basic: gross,
+        housing: housingValuationMode === "cash" ? nn(housingAllowance) : 0,
+        housingValuationMode,
+        employeeCategory,
+        contributionDate: contributionDate,
+        age: employeeAge ? Number(employeeAge) : null,
+      });
+    } else {
+      // fallback to previous simple logic for other countries
+      const socialInsurance = calcSocial(gross, country);
+      gosi = {
+        employeeTotal: socialInsurance,
+        employerTotal: 0,
+        breakdown: [],
+      };
+    }
+
     const extraDeductions = nn(otherDeductions);
-    const totalDeductions = incomeTax + socialInsurance + extraDeductions;
+    const totalDeductions = incomeTax + gosi.employeeTotal + extraDeductions;
     const netPay = totalGross - totalDeductions;
     const effectiveTaxRate = totalGross > 0 ? (totalDeductions / totalGross) * 100 : 0;
 
@@ -204,7 +241,8 @@ export default function SalaryCalculator({
       totalAllowances: totalAllowances * mult,
       totalGross: totalGross * mult,
       incomeTax: incomeTax * mult,
-      socialInsurance: socialInsurance * mult,
+      // Employee GOSI contribution (total of pension + SANED)
+      socialInsurance: gosi.employeeTotal * mult,
       extraDeductions: extraDeductions * mult,
       totalDeductions: totalDeductions * mult,
       netPay: netPay * mult,
@@ -213,19 +251,22 @@ export default function SalaryCalculator({
       transport: transport * mult,
       food: food * mult,
       other: other * mult,
+      // expose breakdown for UI rendering
+      gosiBreakdown: gosi.breakdown,
     };
-  }, [country, grossSalary, housingAllowance, transportAllowance, foodAllowance, otherAllowances, otherDeductions, period]);
+  }, [country, grossSalary, housingAllowance, transportAllowance, foodAllowance, otherAllowances, otherDeductions, period, employeeCategory, contributionDate, housingValuationMode, employeeAge]);
 
   const sym = country?.symbol || "";
 
   function fmt(n) {
-    return `${sym} ${Math.round(n).toLocaleString("en-US")}`;
+    return `${sym} ${Number(n).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
   }
 
   const deductionItems = result
     ? [
       { label: country?.taxName || "ضريبة الدخل", value: result.incomeTax },
-      { label: country?.socialName || "التأمين الاجتماعي", value: result.socialInsurance },
+      // Saudi GOSI breakdown items are injected below
+      ... (result.gosiBreakdown || []),
       { label: "خصومات أخرى", value: result.extraDeductions },
     ]
     : [];
@@ -240,6 +281,54 @@ export default function SalaryCalculator({
     { id: "sc-food", label: "بدل الطعام", value: foodAllowance, setter: setFoodAllowance, hint: "" },
     { id: "sc-other", label: "بدلات أخرى", value: otherAllowances, setter: setOtherAllowances, hint: "" },
   ];
+
+  // Saudi‑only extra selector
+  const employeeCategoryField = country?.id === "sa" && (
+    <Field
+      id="sc-category"
+      label="فئة الموظف"
+      hint="اختر: legacy, new, expat, gcc"
+      value={employeeCategory}
+      onChange={setEmployeeCategory}
+      sym=""
+      placeholder="legacy|new|expat|gcc"
+    />
+  );
+
+  const housingModeField = country?.id === "sa" && (
+    <Field
+      id="sc-housing-mode"
+      label="نوع السكن"
+      hint="" // could add tooltip
+      value={housingValuationMode}
+      onChange={setHousingValuationMode}
+      sym=""
+      placeholder="cash|inKind|none"
+    />
+  );
+
+  const ageField = country?.id === "sa" && (
+    <Field
+      id="sc-age"
+      label="العمر (للساند)"
+      hint="سن 21‑60 يطبق ساند"
+      value={employeeAge}
+      onChange={setEmployeeAge}
+      sym=""
+      placeholder="العمر"
+    />
+  );
+
+  const contributionDateField = country?.id === "sa" && (
+    <Field
+      id="sc-contribution-date"
+      label="تاريخ المساهمة"
+      value={contributionDate instanceof Date && !isNaN(contributionDate) ? contributionDate.toISOString().substring(0, 10) : ""}
+      onChange={(val) => setContributionDate(new Date(val))}
+      sym=""
+      placeholder="YYYY-MM-DD"
+    />
+  );
 
   const earnings = result
     ? [

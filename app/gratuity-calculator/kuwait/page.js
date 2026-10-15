@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة مكافأة نهاية الخدمة في الكويت 2026 | قانون العمل 6 لسنة 2010",
   description:
     "احسب مكافأة نهاية الخدمة للقطاع الأهلي في الكويت بدقة وفق المادتين (51 و53) من قانون العمل الكويتي مع قسمة الـ 26 يوماً وسقف الـ 18 شهراً ونسب الاستقالة.",
+  alternates: { canonical: "/gratuity-calculator/kuwait" },
 };
 
 const guideData = {
@@ -108,3 +109,4 @@ export default function KuwaitGratuityPage() {
     </div>
   );
 }
+

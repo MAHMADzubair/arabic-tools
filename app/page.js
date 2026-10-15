@@ -5,6 +5,7 @@ import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "Qemlo | أدوات عربية مجانية وحاسبات ومحولات يومية",
+  alternates: { canonical: "/" },
   description:
     "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية مبنية على المصادر الرسمية وبدون تسجيل وبأعلى معايير الخصوصية.",
   openGraph: {

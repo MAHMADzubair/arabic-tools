@@ -118,9 +118,8 @@ export const viewport = {
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
-  alternates: {
-    canonical: "/",
-  },
+
+
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },

@@ -20,3 +20,4 @@ export default function AdminLoginPage() {
 
 // Client form component inline
 import AdminLoginForm from "./AdminLoginForm";
+

@@ -2,9 +2,8 @@
  * GET /api/internal/pilot-leads
  * Internal-only endpoint: returns all pilot leads as JSON.
  *
- * Auth (either is sufficient):
- *   1. HttpOnly session cookie `pilot_admin_session` (browser / page.js server component)
- *   2. ?secret=ADMIN_SECRET  (server-to-server call from page.js on Vercel)
+ * Auth: HttpOnly session cookie `pilot_admin_session` verified against
+ * Supabase `admin_sessions` table.
  *
  * Required env vars:
  *   ADMIN_SECRET              — any random long string you generate
@@ -13,45 +12,28 @@
  */
 
 import { NextResponse } from "next/server";
-import { cookies }      from "next/headers";
-import { readFile }     from "fs/promises";
-import { join }         from "path";
+import { cookies } from "next/headers";
+import { readFile } from "fs/promises";
+import { join } from "path";
+import { COOKIE_NAME, verifySession, getSupabaseAdmin } from "@/lib/sessionAuth";
 
-const COOKIE_NAME = "pilot_admin_session";
-
-function getSupabase() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  try {
-    const { createClient } = require("@supabase/supabase-js");
-    return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-  } catch { return null; }
-}
-
-export async function GET(request) {
+export async function GET() {
   const adminSecret = process.env.ADMIN_SECRET;
   if (!adminSecret) {
     return NextResponse.json({ error: "ADMIN_SECRET not configured" }, { status: 503 });
   }
 
-  // ── Auth: cookie (browser) or ?secret= (server-to-server) ───────────────
-  const { searchParams } = new URL(request.url);
-  const querySecret = searchParams.get("secret");
-
+  // ── Auth: verify session token against database ──────────────────────────
   const cookieStore = await cookies();
-  const cookieSession = cookieStore.get(COOKIE_NAME)?.value;
+  const sessionToken = cookieStore.get(COOKIE_NAME)?.value;
 
-  const authed =
-    (cookieSession && cookieSession === adminSecret) ||
-    (querySecret   && querySecret   === adminSecret);
-
-  if (!authed) {
+  const isValid = await verifySession(sessionToken);
+  if (!isValid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // ── Fetch from Supabase ──────────────────────────────────────────────────
-  const sb = getSupabase();
+  const sb = await getSupabaseAdmin();
   if (sb) {
     const { data, error } = await sb
       .from("pilot_leads")
@@ -66,8 +48,8 @@ export async function GET(request) {
 
   // ── /tmp fallback (dev only) ─────────────────────────────────────────────
   try {
-    const raw   = await readFile(join("/tmp", "pilot-leads.json"), "utf8");
-    const arr   = JSON.parse(raw);
+    const raw = await readFile(join("/tmp", "pilot-leads.json"), "utf8");
+    const arr = JSON.parse(raw);
     const leads = arr
       .map(l => ({
         id:                          l.id,

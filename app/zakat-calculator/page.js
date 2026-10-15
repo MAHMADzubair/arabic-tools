@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة الزكاة الشرعية 2026 | احسب زكاة مالك بنصاب الذهب أو الفضة",
   description:
     "احسب زكاة المال وعروض التجارة والذهب والفضة والأسهم بدقة وفقاً لأحكام الشريعة الإسلامية مع خيار التبديل بين نصاب الفضة (595g) والذهب (85g) وتوضيح أقوال العلماء.",
+  alternates: { canonical: "/zakat-calculator" },
 };
 
 const guideData = {
@@ -152,3 +153,4 @@ export default function ZakatCalculatorPage() {
     </div>
   );
 }
+

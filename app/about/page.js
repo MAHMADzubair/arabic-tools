@@ -4,6 +4,7 @@ export const metadata = {
   title: "عن Qemlo | حاسبات ومحولات عربية مجانية",
   description:
     "تعرّف على «منصة Qemlo»: موقع مجاني يجمع الحاسبات والمحولات المالية والإسلامية واليومية بواجهة عربية وبدون تسجيل، وما نلتزم به وما لا نقدمه.",
+  alternates: { canonical: "/about" },
 };
 
 // ⚠️ Fill this in. Until you do, the contact section is hidden.

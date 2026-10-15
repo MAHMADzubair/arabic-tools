@@ -5,6 +5,7 @@ export const metadata = {
   title: "محول الوحدات الشامل | الطول والوزن والحرارة والمساحة",
   description:
     "محول وحدات القياس الفوري: تحويل الطول (متر، كم، ميل، قدم، إنش)، الوزن والكتلة (كجم، باوند، جرام، أونصة)، درجة الحرارة (مئوية، فهرنهايت)، والمساحة والحجم.",
+  alternates: { canonical: "/unit-converter" },
   keywords: [
     "محول الوحدات",
     "تحويل الطول",
@@ -94,3 +95,4 @@ export default function UnitConverterPage() {
     </>
   );
 }
+

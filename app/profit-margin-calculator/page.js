@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة هامش الربح والتسعير (Margin vs Markup) | للتجارة والمتاجر",
   description:
     "احسب هامش الربح وصافي الأرباح ونسبة المارك اب وسعر البيع المستهدف لمتجرك ومنتجاتك مع احتساب تكاليف الشحن وعمولات بوابات الدفع والإعلانات.",
+  alternates: { canonical: "/profit-margin-calculator" },
   keywords: [
     "حاسبة هامش الربح",
     "حساب نسبة الربح",
@@ -97,3 +98,4 @@ export default function ProfitMarginCalculatorPage() {
     </>
   );
 }
+

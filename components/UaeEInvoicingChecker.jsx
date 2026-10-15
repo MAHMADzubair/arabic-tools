@@ -1380,6 +1380,7 @@ export default function UaeEInvoicingChecker() {
                     </p>
                   )}
                   {result.timeline.notesAr && (
+
                     <p className="mt-3 text-sm leading-6 text-[var(--qm-text-2)]">{result.timeline.notesAr}</p>
                   )}
                 </div>

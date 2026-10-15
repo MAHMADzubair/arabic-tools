@@ -1,7 +1,8 @@
 export const metadata = {
-  title: "سياسة الخصوصية | Qemlo",
+  title: "سياسة الخصوصية",
   description:
     "تعرف على سياسة الخصوصية لمنصة Qemlo، وكيفية تعاملنا مع البيانات، واستخدام ملفات تعريف الارتباط (Cookies)، والتزامنا بأمان معلوماتك.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
@@ -81,3 +82,4 @@ export default function PrivacyPage() {
     </div>
   );
 }
+

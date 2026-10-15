@@ -1,7 +1,8 @@
 export const metadata = {
-  title: "إخلاء المسؤولية | Qemlo",
+  title: "إخلاء المسؤولية",
   description:
     "إخلاء المسؤولية القانونية، المالية، الشرعية، والصحية لحاسبات وأدوات منصة Qemlo.",
+  alternates: { canonical: "/disclaimer" },
 };
 
 // Edit this by hand whenever the disclaimer actually changes.

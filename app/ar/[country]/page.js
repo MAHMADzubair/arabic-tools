@@ -519,12 +519,13 @@ const COUNTRY_HUBS = {
 };
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
-export function generateMetadata({ params }) {
-  const country = getCountryById(params.country);
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  const country = getCountryById(resolvedParams?.country);
   if (!country) return {};
 
-  const hub = COUNTRY_HUBS[params.country];
-  const title = hub ? hub.seoTitle : `أدوات ${country.nameAr} المالية ونظام العمل 2026 | Qemlo`;
+  const hub = COUNTRY_HUBS[resolvedParams.country];
+  const title = hub ? hub.seoTitle : `أدوات ${country.nameAr} المالية ونظام العمل 2026`;
   const description = hub ? hub.seoDesc : country.metaDesc;
   const canonical = `${BASE_URL}/ar/${country.code}`;
 
@@ -537,7 +538,7 @@ export function generateMetadata({ params }) {
       description,
       url: canonical,
       siteName: "Qemlo",
-      locale: params.country === "ae" ? "ar_AE" : params.country === "sa" ? "ar_SA" : "ar_AR",
+      locale: resolvedParams.country === "ae" ? "ar_AE" : resolvedParams.country === "sa" ? "ar_SA" : "ar_AR",
       type: "website",
       images: [DEFAULT_OG_IMAGE],
     },
@@ -545,11 +546,12 @@ export function generateMetadata({ params }) {
 }
 
 // ─── Page Component ───────────────────────────────────────────────────────────
-export default function CountryPage({ params }) {
-  const country = getCountryById(params.country);
+export default async function CountryPage({ params }) {
+  const resolvedParams = await params;
+  const country = getCountryById(resolvedParams?.country);
   if (!country) notFound();
 
-  const hub = COUNTRY_HUBS[params.country] || null;
+  const hub = COUNTRY_HUBS[resolvedParams.country] || null;
   const allActiveTools = getActiveTools();
   const secondaryTools = allActiveTools.filter(
     (t) =>
@@ -656,7 +658,7 @@ export default function CountryPage({ params }) {
             <span className="text-xs font-bold text-ink-muted shrink-0 pl-1">اختر الدولة:</span>
             {COUNTRY_CODES.map((code) => {
               const c = getCountryById(code);
-              const isActive = code === params.country;
+              const isActive = code === resolvedParams.country;
               return (
                 <a
                   key={code}

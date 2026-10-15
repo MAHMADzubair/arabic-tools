@@ -1,7 +1,8 @@
 export const metadata = {
-  title: "شروط الاستخدام | Qemlo",
+  title: "شروط الاستخدام",
   description:
     "شروط وأحكام استخدام منصة Qemlo، حدود المسؤولية القانونية والاسترشادية، وحقوق الملكية الفكرية.",
+  alternates: { canonical: "/terms" },
 };
 
 // Edit this by hand whenever the terms actually change.

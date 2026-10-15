@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة الراتب الصافي في مصر 2026 | ضريبة كسب العمل والتأمينات",
   description:
     "احسب صافي مرتبك في مصر بدقة بعد خصم ضريبة كسب العمل والشرائح التصاعدية وفق تعديلات القانون رقم 7 لسنة 2024 وتأمينات القانون 148 لسنة 2019.",
+  alternates: { canonical: "/salary-calculator/egypt" },
 };
 
 const guideData = {
@@ -84,3 +85,4 @@ export default function EgyptSalaryPage() {
     </div>
   );
 }
+

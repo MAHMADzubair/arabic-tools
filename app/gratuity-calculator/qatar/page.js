@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة مكافأة نهاية الخدمة في قطر 2026 | قانون العمل 14 لسنة 2004",
   description:
     "احسب مكافأة نهاية الخدمة للقطاع الخاص في قطر بدقة وفق المادة (54) من قانون العمل القطري مع شرط أجر الـ 3 أسابيع سنوياً والحد الأدنى للخدمة.",
+  alternates: { canonical: "/gratuity-calculator/qatar" },
 };
 
 const guideData = {
@@ -84,3 +85,4 @@ export default function QatarGratuityPage() {
     </div>
   );
 }
+
