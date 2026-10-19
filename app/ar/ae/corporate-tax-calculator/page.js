@@ -168,7 +168,7 @@ const relatedTools = [
     title: "مجمع أدوات وحاسبات الإمارات",
     desc: "جميع الأدوات الضريبية والعمالية والمالية المخصصة للسوق الإماراتي.",
     badge: "الشامل",
-    badgeColor: "bg-emerald-700 text-white font-black",
+    badgeColor: "bg-emerald-700 text-white font-bold",
   },
 ];
 
@@ -200,7 +200,7 @@ export default function UaeCorporateTaxPage() {
             <div className="flex items-start gap-3">
               <span className="text-4xl shrink-0 mt-0.5">🏛️</span>
               <div>
-                <h1 className="text-2xl font-black leading-snug sm:text-3xl">
+                <h1 className="text-2xl font-bold leading-snug sm:text-3xl">
                   حاسبة ضريبة الشركات في الإمارات 2026
                 </h1>
                 <p className="mt-2 text-sm leading-relaxed text-slate-200 max-w-xl">
@@ -240,7 +240,7 @@ export default function UaeCorporateTaxPage() {
 
           {/* ── Section 1: How CT is calculated ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">📐</span>
               كيف تُحسب ضريبة الشركات في الإمارات؟
             </h2>
@@ -255,7 +255,7 @@ export default function UaeCorporateTaxPage() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4 space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-black text-emerald-700">0%</span>
+                  <span className="text-2xl font-bold text-emerald-700">0%</span>
                   <span className="text-xs font-bold text-emerald-800">على أول 375,000 درهم</span>
                 </div>
                 <p className="text-xs text-emerald-700 leading-relaxed">
@@ -264,7 +264,7 @@ export default function UaeCorporateTaxPage() {
               </div>
               <div className="rounded-xl border-2 border-rose-300 bg-rose-50 p-4 space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-black text-rose-700">9%</span>
+                  <span className="text-2xl font-bold text-rose-700">9%</span>
                   <span className="text-xs font-bold text-rose-800">على الزيادة فوق 375,000 درهم</span>
                 </div>
                 <p className="text-xs text-rose-700 leading-relaxed">
@@ -275,11 +275,11 @@ export default function UaeCorporateTaxPage() {
 
             {/* Worked calculation */}
             <div className="mt-5 rounded-xl border border-indigo-200 bg-indigo-50/40 p-4">
-              <p className="text-xs font-extrabold text-indigo-900 mb-3">مثال توضيحي: دخل خاضع للضريبة = 1,000,000 درهم</p>
+              <p className="text-xs font-bold text-indigo-900 mb-3">مثال توضيحي: دخل خاضع للضريبة = 1,000,000 درهم</p>
               <div className="space-y-1.5 text-xs font-mono">
                 <div className="flex justify-between"><span className="font-sans text-ink-secondary">أول 375,000 درهم × 0%</span><span className="font-bold text-emerald-700">= 0 درهم</span></div>
                 <div className="flex justify-between"><span className="font-sans text-ink-secondary">(1,000,000 − 375,000) = 625,000 درهم × 9%</span><span className="font-bold text-rose-700">= 56,250 درهم</span></div>
-                <div className="flex justify-between border-t border-indigo-200 pt-1.5 mt-1.5"><span className="font-sans font-bold text-ink">ضريبة الشركات التقديرية الإجمالية</span><span className="font-black text-indigo-800">= 56,250 درهم</span></div>
+                <div className="flex justify-between border-t border-indigo-200 pt-1.5 mt-1.5"><span className="font-sans font-bold text-ink">ضريبة الشركات التقديرية الإجمالية</span><span className="font-bold text-indigo-800">= 56,250 درهم</span></div>
                 <div className="flex justify-between"><span className="font-sans text-ink-muted">المعدل الفعلي</span><span className="text-ink-secondary">5.625% (أقل من 9% لأن نطاق 0% يُخفّض المعدل الكلي)</span></div>
               </div>
             </div>
@@ -290,7 +290,7 @@ export default function UaeCorporateTaxPage() {
 
           {/* ── Section 2: Revenue ≠ Taxable Income — PROMINENT ── */}
           <section className="rounded-2xl border-2 border-amber-400 bg-amber-50 p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-amber-950 mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-amber-950 mb-4 flex items-center gap-2">
               <span className="text-2xl">⚠️</span>
               الإيرادات ≠ الدخل الخاضع للضريبة — فرق جوهري
             </h2>
@@ -302,9 +302,9 @@ export default function UaeCorporateTaxPage() {
               <table className="w-full text-xs border-collapse min-w-[420px]">
                 <thead>
                   <tr className="bg-amber-100 text-amber-950">
-                    <th className="border border-amber-300 px-3 py-2.5 text-right font-extrabold">المصطلح</th>
-                    <th className="border border-amber-300 px-3 py-2.5 text-center font-extrabold">ما يعنيه</th>
-                    <th className="border border-amber-300 px-3 py-2.5 text-center font-extrabold">الحد المرتبط به</th>
+                    <th className="border border-amber-300 px-3 py-2.5 text-right font-bold">المصطلح</th>
+                    <th className="border border-amber-300 px-3 py-2.5 text-center font-bold">ما يعنيه</th>
+                    <th className="border border-amber-300 px-3 py-2.5 text-center font-bold">الحد المرتبط به</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -334,7 +334,7 @@ export default function UaeCorporateTaxPage() {
           {/* ── Section 3: Small Business Relief — Updated 2029 ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
-              <h2 className="text-xl font-extrabold text-ink flex items-center gap-2">
+              <h2 className="text-xl font-bold text-ink flex items-center gap-2">
                 <span className="text-2xl">🏷️</span>
                 تسهيلات الأعمال الصغيرة (Small Business Relief) — تحديث 2026
               </h2>
@@ -357,9 +357,9 @@ export default function UaeCorporateTaxPage() {
               <table className="w-full text-xs border-collapse min-w-[500px]">
                 <thead>
                   <tr className="bg-slate-100 text-ink">
-                    <th className="border border-slate-200 px-3 py-2.5 text-right font-extrabold w-1/4">المعيار</th>
-                    <th className="border border-slate-200 px-3 py-2.5 text-center font-extrabold">⚖️ القواعد العامة لضريبة الشركات</th>
-                    <th className="border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-center font-extrabold text-emerald-900">🏷️ مع تسهيلات الأعمال الصغيرة</th>
+                    <th className="border border-slate-200 px-3 py-2.5 text-right font-bold w-1/4">المعيار</th>
+                    <th className="border border-slate-200 px-3 py-2.5 text-center font-bold">⚖️ القواعد العامة لضريبة الشركات</th>
+                    <th className="border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-center font-bold text-emerald-900">🏷️ مع تسهيلات الأعمال الصغيرة</th>
                   </tr>
                 </thead>
                 <tbody className="text-ink-secondary">
@@ -398,7 +398,7 @@ export default function UaeCorporateTaxPage() {
 
           {/* ── Section 4: What is taxable income ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">📊</span>
               ما هو الدخل الخاضع للضريبة؟
             </h2>
@@ -441,7 +441,7 @@ export default function UaeCorporateTaxPage() {
 
           {/* ── Section 5: Free Zone treatment ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🏙️</span>
               معاملة شركات المناطق الحرة (QFZP)
             </h2>
@@ -454,13 +454,13 @@ export default function UaeCorporateTaxPage() {
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-emerald-900">الدخل المؤهل (Qualifying Income)</h3>
+                <h3 className="text-sm font-bold text-emerald-900">الدخل المؤهل (Qualifying Income)</h3>
                 <p className="text-xs text-emerald-800 leading-relaxed">
                   يخضع لنسبة <strong>0%</strong> — من الأنشطة المؤهلة المحددة (معاملات بين المناطق الحرة، بعض الأنشطة الدولية، إدارة الممتلكات الفكرية المؤهلة...).
                 </p>
               </div>
               <div className="rounded-xl border border-rose-200 bg-rose-50/40 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-rose-900">الدخل غير المؤهل</h3>
+                <h3 className="text-sm font-bold text-rose-900">الدخل غير المؤهل</h3>
                 <p className="text-xs text-rose-800 leading-relaxed">
                   يخضع لنسبة <strong>9% كاملة</strong> — بدون تطبيق نطاق الإعفاء 375,000 درهم على هذا الجزء.
                 </p>
@@ -481,13 +481,13 @@ export default function UaeCorporateTaxPage() {
 
           {/* ── Section 6: Who is this calculator for ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🎯</span>
               لمن تُفيد هذه الحاسبة؟
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-emerald-900 flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-emerald-900 flex items-center gap-1.5">
                   <span>✅</span>الحالات المناسبة للحاسبة
                 </h3>
                 <ul className="text-xs text-emerald-800 space-y-1.5 leading-relaxed">
@@ -498,7 +498,7 @@ export default function UaeCorporateTaxPage() {
                 </ul>
               </div>
               <div className="rounded-xl border border-amber-200 bg-amber-50/40 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-amber-900 flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-amber-900 flex items-center gap-1.5">
                   <span>⚠️</span>الحالات التي تحتاج خبرة متخصصة
                 </h3>
                 <ul className="text-xs text-amber-800 space-y-1.5 leading-relaxed">
@@ -514,7 +514,7 @@ export default function UaeCorporateTaxPage() {
 
           {/* ── Section 7: Filing deadline ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">📅</span>
               متى يجب تقديم إقرار ضريبة الشركات؟
             </h2>
@@ -525,7 +525,7 @@ export default function UaeCorporateTaxPage() {
               </p>
             </div>
             <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/40 p-4 space-y-2">
-              <p className="text-xs font-extrabold text-indigo-900">مثال توضيحي:</p>
+              <p className="text-xs font-bold text-indigo-900">مثال توضيحي:</p>
               <div className="text-xs text-indigo-800 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="font-bold">الفترة الضريبية تنتهي:</span>
@@ -548,7 +548,7 @@ export default function UaeCorporateTaxPage() {
 
           {/* ── Section 8: Worked examples ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-1 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-1 flex items-center gap-2">
               <span className="text-2xl">🔢</span>
               أمثلة عملية
             </h2>
@@ -558,12 +558,12 @@ export default function UaeCorporateTaxPage() {
               {/* Example A */}
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/30 p-4 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">مثال أ — ضمن نطاق 0%</span>
+                  <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">مثال أ — ضمن نطاق 0%</span>
                 </div>
                 <p className="text-xs text-ink-secondary">شركة استشارات: دخل خاضع للضريبة = 300,000 درهم.</p>
                 <div className="rounded-lg bg-white border border-emerald-100 p-3 text-xs font-mono space-y-1">
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">300,000 × 0%</span><span className="font-bold text-emerald-700">= 0 درهم</span></div>
-                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-ink">ضريبة الشركات التقديرية</span><span className="font-black text-emerald-700">0 درهم</span></div>
+                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-ink">ضريبة الشركات التقديرية</span><span className="font-bold text-emerald-700">0 درهم</span></div>
                 </div>
                 <p className="text-[11px] text-emerald-800 bg-emerald-50 rounded p-1.5 font-bold">
                   → الدخل الخاضع أقل من 375,000 درهم — نسبة 0% تُطبَّق على كامل الدخل.
@@ -572,19 +572,19 @@ export default function UaeCorporateTaxPage() {
 
               {/* Example B */}
               <div className="rounded-xl border border-rose-200 bg-rose-50/30 p-4 space-y-2">
-                <span className="text-xs font-black bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">مثال ب — فوق 375,000 درهم</span>
+                <span className="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">مثال ب — فوق 375,000 درهم</span>
                 <p className="text-xs text-ink-secondary">مورّد تجاري: دخل خاضع للضريبة = 1,000,000 درهم.</p>
                 <div className="rounded-lg bg-white border border-rose-100 p-3 text-xs font-mono space-y-1">
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">375,000 × 0%</span><span className="font-bold text-emerald-700">= 0 درهم</span></div>
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">625,000 × 9%</span><span className="font-bold text-rose-700">= 56,250 درهم</span></div>
-                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-ink">ضريبة الشركات التقديرية</span><span className="font-black text-rose-700">56,250 درهم</span></div>
+                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-ink">ضريبة الشركات التقديرية</span><span className="font-bold text-rose-700">56,250 درهم</span></div>
                   <div className="flex justify-between"><span className="font-sans text-ink-muted">المعدل الفعلي</span><span className="text-ink-secondary">5.625%</span></div>
                 </div>
               </div>
 
               {/* Example C */}
               <div className="rounded-xl border border-amber-200 bg-amber-50/30 p-4 space-y-2">
-                <span className="text-xs font-black bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">مثال ج — شركة صغيرة وتسهيلات الأعمال الصغيرة</span>
+                <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">مثال ج — شركة صغيرة وتسهيلات الأعمال الصغيرة</span>
                 <p className="text-xs text-ink-secondary">
                   شركة مقيمة في البر الرئيسي: إيرادات 2,400,000 درهم (أقل من 3M) — دخل خاضع 500,000 درهم.
                 </p>
@@ -607,7 +607,7 @@ export default function UaeCorporateTaxPage() {
 
           {/* ── Section 9: Official Sources ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🏛️</span>
               المصادر الرسمية
             </h2>
@@ -660,7 +660,7 @@ export default function UaeCorporateTaxPage() {
         <section className="mx-auto max-w-3xl px-4 py-2">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-5">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">❓ الأسئلة الشائعة</h2>
+              <h2 className="text-xl font-bold text-ink">❓ الأسئلة الشائعة</h2>
               <p className="text-xs text-ink-muted mt-1">أكثر الأسئلة تكراراً حول ضريبة الشركات الإماراتية</p>
             </div>
             <div className="space-y-0">
@@ -670,7 +670,7 @@ export default function UaeCorporateTaxPage() {
                   open={i === 0}>
                   <summary className="flex items-center justify-between gap-3 font-bold text-ink text-sm list-none select-none">
                     <span>{item.q}</span>
-                    <span className="text-brand font-black text-lg transition-transform group-open:rotate-45 shrink-0">+</span>
+                    <span className="text-brand font-bold text-lg transition-transform group-open:rotate-45 shrink-0">+</span>
                   </summary>
                   <p className="mt-3 text-sm text-ink-secondary leading-relaxed pr-4">{item.a}</p>
                 </details>
@@ -683,7 +683,7 @@ export default function UaeCorporateTaxPage() {
         <section className="mx-auto max-w-3xl px-4 py-6 pb-12">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-5">
-              <h2 className="text-lg font-extrabold text-ink">🔗 أدوات ضريبية وتجارية ذات صلة — الإمارات</h2>
+              <h2 className="text-lg font-bold text-ink">🔗 أدوات ضريبية وتجارية ذات صلة — الإمارات</h2>
               <p className="text-xs text-ink-muted mt-1">منظومة متكاملة من الأدوات لإدارة الالتزامات الضريبية والتجارية</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

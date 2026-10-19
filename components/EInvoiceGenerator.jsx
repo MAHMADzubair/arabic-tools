@@ -192,10 +192,10 @@ function validateInvoice({ invoiceType, seller, buyer, invoiceDetails, lines }) 
   } else {
     const isValidVat = isValidSaudiVatNumber(seller.vatNumber.trim());
     checks.push({
-      label: "صحة تنسيق الرقم الضريبي للبائع (15 رقماً يبدأ بـ 3)",
+      label: "صحة تنسيق الرقم الضريبي للبائع (15 رقماً يبدأ وينتهي بـ 3)",
       status: isValidVat ? "ok" : "warning",
       hint: isValidVat
-        ? "تنسيق صحيح (15 رقماً يبدأ بـ 3)"
+        ? "تنسيق شكلي مطابق (15 رقماً يبدأ وينتهي بـ 3) — التحقق الرسمي يتطلب بوابة ZATCA"
         : "تنبيه: الرقم الضريبي في المملكة يتكون من 15 رقماً ويبدأ وينتهي بالرقم 3",
     });
   }
@@ -218,7 +218,9 @@ function validateInvoice({ invoiceType, seller, buyer, invoiceDetails, lines }) 
       checks.push({
         label: "الرقم الضريبي للمشتري (B2B)",
         status: isValidBuyerVat ? "ok" : "warning",
-        hint: isValidBuyerVat ? "تنسيق صحيح (15 رقماً)" : "تنبيه: تأكد من تنسيق الـ 15 رقماً للمشتري",
+        hint: isValidBuyerVat
+          ? "تنسيق شكلي مطابق (15 رقماً يبدأ وينتهي بـ 3) — التحقق الرسمي يتطلب بوابة ZATCA"
+          : "تنبيه: تأكد من تنسيق الـ 15 رقماً للمشتري (يبدأ وينتهي بالرقم 3)",
       });
     }
   }
@@ -543,9 +545,9 @@ export default function EInvoiceGenerator() {
                     value={seller.name} onChange={(e) => setSeller({ ...seller, name: e.target.value })} />
                 </Field>
                 <Field id={`${uid}-svat`} label="الرقم الضريبي للبائع (15 رقماً)" required
-                  hint={sellerVatBad ? "الرقم الضريبي السعودي يتكون من 15 رقماً ويبدأ بـ 3" : null}>
+                  hint={sellerVatBad ? "الرقم الضريبي السعودي يتكون من 15 رقماً ويبدأ وينتهي بالرقم 3" : null}>
                   <input id={`${uid}-svat`} type="text" inputMode="numeric" aria-required="true" className="ei-input ei-num"
-                    placeholder="3XXXXXXXXXXXXXX (15 رقماً تبدأ بـ 3)" maxLength={15}
+                    placeholder="3XXXXXXXXXXXXX3 (15 رقماً تبدأ وتنتهي بـ 3)" maxLength={15}
                     value={seller.vatNumber} onChange={(e) => setSeller({ ...seller, vatNumber: e.target.value.replace(/\D/g, "") })} />
                 </Field>
               </div>
@@ -588,7 +590,7 @@ export default function EInvoiceGenerator() {
                     )}
                   </label>
                   <input id={`${uid}-bvat`} type="text" inputMode="numeric" className="ei-input ei-num" maxLength={15}
-                    placeholder={invoiceType === "tax" ? "3XXXXXXXXXXXXXX" : "اختياري للمستهلك النهائي"}
+                    placeholder={invoiceType === "tax" ? "3XXXXXXXXXXXXX3" : "اختياري للمستهلك النهائي"}
                     value={buyer.vatNumber} onChange={(e) => setBuyer({ ...buyer, vatNumber: e.target.value.replace(/\D/g, "") })} />
                 </div>
               </div>
@@ -725,7 +727,7 @@ export default function EInvoiceGenerator() {
               {totals.exemptOrZero > 0 && (
                 <div className="ei-r"><dt>مبالغ صفرية / معفاة / خارج النطاق:</dt><dd className="ei-num">{fmt(totals.exemptOrZero)} {cur}</dd></div>
               )}
-              <div className="ei-r ei-r--b"><dt>إجمالي ضريبة القيمة المضافة (15%):</dt><dd className="ei-num">+{fmt(totals.totalVat)} {cur}</dd></div>
+              <div className="ei-r ei-r--b"><dt>إجمالي ضريبة القيمة المضافة:</dt><dd className="ei-num">+{fmt(totals.totalVat)} {cur}</dd></div>
             </dl>
             <div className="ei-grand" aria-live="polite">
               <span>الإجمالي النهائي المستحق للدفع:</span>
@@ -866,11 +868,12 @@ export default function EInvoiceGenerator() {
             </div>
 
             <dl className="ei-p-totals">
-              <div><dt>إجمالي المبلغ الخاضع للضريبة (قبل الضريبة):</dt><dd className="ei-mono">{fmt(totals.netSubtotal)} {cur}</dd></div>
+              <div><dt>الإجمالي قبل الخصم:</dt><dd className="ei-mono">{fmt(totals.grossTotal)} {cur}</dd></div>
               {totals.totalDiscount > 0 && (
                 <div><dt>إجمالي الخصم التجاري:</dt><dd className="ei-mono">- {fmt(totals.totalDiscount)} {cur}</dd></div>
               )}
-              <div><dt>إجمالي ضريبة القيمة المضافة 15%:</dt><dd className="ei-mono">{fmt(totals.totalVat)} {cur}</dd></div>
+              <div><dt>الوعاء الخاضع للضريبة:</dt><dd className="ei-mono">{fmt(totals.netSubtotal)} {cur}</dd></div>
+              <div><dt>إجمالي ضريبة القيمة المضافة:</dt><dd className="ei-mono">{fmt(totals.totalVat)} {cur}</dd></div>
               <div className="ei-p-grand"><dt>المبلغ الإجمالي المستحق:</dt><dd className="ei-mono">{fmt(totals.grandTotal)} {cur}</dd></div>
             </dl>
           </div>
@@ -939,7 +942,7 @@ const CSS = `
 .ei-num { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
 input.ei-num { text-align: start; }
 .ei-soft { color: var(--c-ink-soft); font-size: 0.8rem; }
-.ei-strong { font-weight: 800; }
+.ei-strong { font-weight:700; }
 .ei-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .ei-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .ei-stack { display: grid; gap: 0.9rem; }
@@ -952,8 +955,8 @@ input.ei-num { text-align: start; }
 /* Header */
 .ei-head { padding: 1.25rem 1.1rem 0; border-block-end: 1px solid var(--c-line); }
 .ei-head-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-.ei-badge { display: inline-block; margin: 0 0 0.5rem; padding: 0.15rem 0.7rem; font-size: 0.75rem; font-weight: 800; color: var(--c-on-signal); background: var(--c-signal); border-radius: 999px; }
-.ei-title { margin: 0; font-size: 1.45rem; font-weight: 800; line-height: 1.4; }
+.ei-badge { display: inline-block; margin: 0 0 0.5rem; padding: 0.15rem 0.7rem; font-size: 0.75rem; font-weight:700; color: var(--c-on-signal); background: var(--c-signal); border-radius: 999px; }
+.ei-title { margin: 0; font-size: 1.45rem; font-weight:700; line-height: 1.4; }
 .ei-sub { margin: 0.35rem 0 0; max-width: 60ch; font-size: 0.88rem; line-height: 1.8; color: var(--c-ink-soft); }
 .ei-presets { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .ei-tabs { display: flex; gap: 0.25rem; margin-block-start: 1rem; }
@@ -974,7 +977,7 @@ input.ei-num { text-align: start; }
 @media (min-width: 720px) { .ei-checks { grid-template-columns: 1fr 1fr; } }
 .ei-check { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.6rem 0.7rem; font-size: 0.82rem; line-height: 1.6; border: 1px solid var(--c-line); border-radius: 10px; }
 .ei-check p { margin: 0.15rem 0 0; color: var(--c-ink-soft); font-size: 0.78rem; }
-.ei-check-st { flex: none; font-weight: 800; font-size: 0.78rem; white-space: nowrap; }
+.ei-check-st { flex: none; font-weight:700; font-size: 0.78rem; white-space: nowrap; }
 .ei-check.is-warning { border: 1px dashed var(--c-warning); }
 .ei-check.is-warning .ei-check-st { color: var(--c-warning); }
 .ei-check.is-missing { border: 2px solid var(--c-error); }
@@ -984,8 +987,8 @@ input.ei-num { text-align: start; }
 .ei-body { display: grid; gap: 1.6rem; padding: 1.25rem 1.1rem; }
 @media (min-width: 720px) { .ei-body { padding: 1.5rem; } }
 .ei-sec { display: grid; gap: 0.8rem; }
-.ei-h2 { display: flex; align-items: center; gap: 0.6rem; margin: 0; font-size: 1rem; font-weight: 800; }
-.ei-step { display: inline-grid; place-items: center; width: 1.7rem; height: 1.7rem; font-size: 0.82rem; font-weight: 800; color: var(--c-on-ink); background: var(--c-ink); border-radius: 6px; }
+.ei-h2 { display: flex; align-items: center; gap: 0.6rem; margin: 0; font-size: 1rem; font-weight:700; }
+.ei-step { display: inline-grid; place-items: center; width: 1.7rem; height: 1.7rem; font-size: 0.82rem; font-weight:700; color: var(--c-on-ink); background: var(--c-ink); border-radius: 6px; }
 .ei-box { display: grid; gap: 0.9rem; padding: 1rem; border: 1px solid var(--c-line); border-radius: 12px; }
 .ei-grid2 { display: grid; gap: 0.8rem; }
 .ei-grid3 { display: grid; gap: 0.8rem; }
@@ -1000,7 +1003,7 @@ input.ei-num { text-align: start; }
 .ei-field { display: grid; gap: 0.35rem; min-width: 0; align-content: start; }
 .ei-label { font-size: 0.82rem; font-weight: 700; }
 .ei-opt { font-weight: 500; color: var(--c-ink-soft); font-size: 0.76rem; }
-.ei-req { font-weight: 800; }
+.ei-req { font-weight:700; }
 .ei-warn-inline { margin: 0; font-size: 0.78rem; color: var(--c-warning); }
 .ei-input {
   width: 100%; min-height: 44px; padding: 0.5rem 0.75rem; font: inherit; font-size: 0.92rem;
@@ -1017,7 +1020,7 @@ button.ei-opt {
   background: var(--c-surface); border: 2px solid var(--c-line); border-radius: 12px; cursor: pointer;
   transition: background-color .15s, color .15s, border-color .15s;
 }
-button.ei-opt strong { font-size: 0.98rem; font-weight: 800; }
+button.ei-opt strong { font-size: 0.98rem; font-weight:700; }
 button.ei-opt .ei-opt-en { font-size: 0.78rem; font-weight: 700; direction: ltr; text-align: start; unicode-bidi: isolate; color: inherit; opacity: 0.8; }
 button.ei-opt .ei-opt-d { font-size: 0.8rem; line-height: 1.7; color: var(--c-ink-soft); }
 button.ei-opt:hover { border-color: var(--c-ink); }
@@ -1026,7 +1029,7 @@ button.ei-opt[aria-checked="true"] .ei-opt-d { color: inherit; opacity: 0.85; }
 
 /* Line cards */
 .ei-lcard { display: grid; gap: 0.9rem; padding: 1rem; border: 1px solid var(--c-line); border-radius: 12px; }
-.ei-tag { padding: 0.1rem 0.7rem; font-size: 0.78rem; font-weight: 800; border: 2px solid var(--c-ink); border-radius: 999px; }
+.ei-tag { padding: 0.1rem 0.7rem; font-size: 0.78rem; font-weight:700; border: 2px solid var(--c-ink); border-radius: 999px; }
 .ei-calc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 0; padding: 0.7rem; text-align: center; border: 1px solid var(--c-line); border-radius: 10px; }
 .ei-calc dt { font-size: 0.7rem; color: var(--c-ink-soft); }
 .ei-calc dd { margin: 0.15rem 0 0; font-size: 0.82rem; font-weight: 700; }
@@ -1042,8 +1045,8 @@ button.ei-opt[aria-checked="true"] .ei-opt-d { color: inherit; opacity: 0.85; }
 .ei-r dd { margin: 0; font-weight: 700; }
 .ei-r--b dt { color: var(--c-ink); font-weight: 700; }
 .ei-grand { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem; padding: 1rem 1.1rem; color: var(--c-on-signal); background: var(--c-signal); border-radius: 12px; }
-.ei-grand span { font-size: 0.95rem; font-weight: 800; }
-.ei-grand strong { font-size: 1.6rem; font-weight: 800; }
+.ei-grand span { font-size: 0.95rem; font-weight:700; }
+.ei-grand strong { font-size: 1.6rem; font-weight:700; }
 
 .ei-note { display: grid; gap: 0.4rem; padding: 0.9rem 1rem; border-inline-start: 6px solid var(--c-ink); border-radius: 4px 12px 12px 4px; background: color-mix(in srgb, var(--c-line) 30%, transparent); font-size: 0.85rem; line-height: 1.8; }
 .ei-note p { margin: 0; }
@@ -1083,9 +1086,9 @@ button.ei-opt[aria-checked="true"] .ei-opt-d { color: inherit; opacity: 0.85; }
 .ei-p-soft { color: var(--p-soft); }
 .ei-p-head { padding-block-end: 1.1rem; margin-block-end: 1.1rem; border-block-end: 3px solid var(--p-ink); }
 .ei-p-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
-.ei-p-title { margin: 0; font-size: 1.6rem; font-weight: 800; }
+.ei-p-title { margin: 0; font-size: 1.6rem; font-weight:700; }
 .ei-p-en { font-weight: 700; color: var(--p-soft); direction: ltr; text-align: start; }
-.ei-p-no-v { font-family: ui-monospace, monospace; font-size: 1.15rem; font-weight: 800; direction: ltr; }
+.ei-p-no-v { font-family: ui-monospace, monospace; font-size: 1.15rem; font-weight:700; direction: ltr; }
 .ei-p-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.7rem; margin: 1rem 0 0; padding: 0.7rem; border: 1px solid var(--p-line); }
 @media (min-width: 720px) { .ei-p-meta { grid-template-columns: repeat(4, 1fr); } }
 .ei-p-meta dt { color: var(--p-soft); font-size: 0.74rem; }
@@ -1093,7 +1096,7 @@ button.ei-opt[aria-checked="true"] .ei-opt-d { color: inherit; opacity: 0.85; }
 .ei-p-parties { display: grid; gap: 0.9rem; margin-block-end: 1.1rem; }
 @media (min-width: 720px) { .ei-p-parties { grid-template-columns: 1fr 1fr; } }
 .ei-p-box { padding: 0.8rem; border: 1px solid var(--p-line); }
-.ei-p-box h3 { margin: 0 0 0.4rem; padding-block-end: 0.3rem; font-size: 0.92rem; font-weight: 800; border-block-end: 1px solid var(--p-line); }
+.ei-p-box h3 { margin: 0 0 0.4rem; padding-block-end: 0.3rem; font-size: 0.92rem; font-weight:700; border-block-end: 1px solid var(--p-line); }
 .ei-p-tablewrap { overflow-x: auto; margin-block-end: 1.1rem; }
 .ei-p-table { width: 100%; min-width: 640px; border-collapse: collapse; }
 .ei-p-table th { padding: 0.5rem; text-align: start; font-size: 0.74rem; color: #FFF; background: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1107,7 +1110,7 @@ button.ei-opt[aria-checked="true"] .ei-opt-d { color: inherit; opacity: 0.85; }
 .ei-p-totals { margin: 0; padding: 0.8rem; border: 1px solid var(--p-line); }
 .ei-p-totals > div { display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.35rem; }
 .ei-p-totals dd { margin: 0; font-weight: 700; }
-.ei-p-grand { margin-block-start: 0.4rem; padding-block-start: 0.6rem !important; border-block-start: 3px solid var(--p-ink); font-size: 0.95rem; font-weight: 800; }
+.ei-p-grand { margin-block-start: 0.4rem; padding-block-start: 0.6rem !important; border-block-start: 3px solid var(--p-ink); font-size: 0.95rem; font-weight:700; }
 .ei-p-notes { margin-block-end: 0.9rem; }
 .ei-p-foot { padding-block-start: 0.7rem; text-align: center; font-size: 0.7rem; color: var(--p-soft); border-block-start: 1px solid var(--p-line); }
 .ei-p-foot p + p { margin-block-start: 0.2rem; }

@@ -111,7 +111,7 @@ export default function SaudiVatPage() {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">🏢</span>
               <div>
-                <p className="text-xs font-black text-purple-950">
+                <p className="text-xs font-bold text-purple-950">
                   هل تحتاج إلى معرفة ما إذا كان التسجيل في ضريبة القيمة المضافة مطلوباً؟
                 </p>
                 <p className="text-[11px] text-purple-800 mt-0.5">
@@ -135,7 +135,7 @@ export default function SaudiVatPage() {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">🧾</span>
               <div>
-                <p className="text-xs font-black text-indigo-950">
+                <p className="text-xs font-bold text-indigo-950">
                   ترغب في إنشاء فاتورة ضريبية كاملة لبنودك؟
                 </p>
                 <p className="text-[11px] text-indigo-800 mt-0.5">

@@ -221,7 +221,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
         {/* ── Hero Section ──────────────────────────────────────────────────── */}
         <header className="space-y-4">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--card)] px-3 py-1 text-xs font-black text-[var(--card-text)]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--card)] px-3 py-1 text-xs font-bold text-[var(--card-text)]">
               <span>⚡</span>
               <span>أدوات الامتثال الضريبي والأعمال</span>
             </span>
@@ -231,7 +231,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-black text-[var(--text)] leading-tight">
+          <h1 className="text-2xl sm:text-4xl font-bold text-[var(--text)] leading-tight">
             حاسبة جاهزية الفوترة الإلكترونية في الإمارات
           </h1>
 
@@ -245,25 +245,25 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               <span className="text-[11px] font-bold text-[var(--text-3)] block mb-0.5">
                 المنظومة التقنية
               </span>
-              <span className="text-sm font-black text-[var(--text)]">Peppol / PINT-AE</span>
+              <span className="text-sm font-bold text-[var(--text)]">Peppol / PINT-AE</span>
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3.5 text-center">
               <span className="text-[11px] font-bold text-[var(--text-3)] block mb-0.5">
                 موعد تعيين ASP (50M+)
               </span>
-              <span className="text-sm font-black text-[var(--orange)]">30 أكتوبر 2026</span>
+              <span className="text-sm font-bold text-[var(--orange)]">30 أكتوبر 2026</span>
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3.5 text-center">
               <span className="text-[11px] font-bold text-[var(--text-3)] block mb-0.5">
                 بدء الإلزام (المرحلة 1)
               </span>
-              <span className="text-sm font-black text-[var(--text)]">1 يناير 2027</span>
+              <span className="text-sm font-bold text-[var(--text)]">1 يناير 2027</span>
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3.5 text-center">
               <span className="text-[11px] font-bold text-[var(--text-3)] block mb-0.5">
                 نطاق المستهلكين B2C
               </span>
-              <span className="text-sm font-black text-[var(--text-2)]">مؤجل حالياً</span>
+              <span className="text-sm font-bold text-[var(--text-2)]">مؤجل حالياً</span>
             </div>
           </div>
         </header>
@@ -282,7 +282,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
         <section className="space-y-12 pt-6 border-t border-[var(--border)]">
           {/* 1. ما هي الفوترة الإلكترونية */}
           <article className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-black text-[var(--text)]">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text)]">
               ما هي الفوترة الإلكترونية في دولة الإمارات؟
             </h2>
             <div className="text-sm leading-relaxed text-[var(--text-2)] space-y-3">
@@ -297,11 +297,11 @@ export default function UaeEInvoicingReadinessCheckerPage() {
 
           {/* 2. هل ملف PDF يعتبر فاتورة إلكترونية؟ */}
           <article className="rounded-3xl border border-rose-200 bg-rose-50/50 p-6 sm:p-8 space-y-3">
-            <div className="inline-flex items-center gap-2 text-rose-700 font-extrabold text-xs">
+            <div className="inline-flex items-center gap-2 text-rose-700 font-bold text-xs">
               <span>⚠️</span>
               <span>مفهوم تنظيمي جوهري</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-rose-950">
+            <h2 className="text-xl sm:text-2xl font-bold text-rose-950">
               هل ملف PDF يعتبر فاتورة إلكترونية في الإمارات؟
             </h2>
             <div className="text-sm leading-relaxed text-rose-900 space-y-3">
@@ -316,7 +316,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
 
           {/* 3. الجدول الزمني الرسمي للإلزام */}
           <article className="space-y-4">
-            <h2 className="text-xl sm:text-2xl font-black text-[var(--text)]">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text)]">
               متى تصبح الفوترة الإلكترونية إلزامية في الإمارات؟
             </h2>
             <p className="text-sm leading-relaxed text-[var(--text-2)]">
@@ -327,7 +327,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
             <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
               <table className="w-full text-right text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-[var(--border)] bg-[var(--bg)] text-[var(--text)] font-extrabold">
+                  <tr className="border-b border-[var(--border)] bg-[var(--bg)] text-[var(--text)] font-bold">
                     <th className="p-3.5 sm:p-4">فئة المنشأة / الكيان</th>
                     <th className="p-3.5 sm:p-4">معيار الإيرادات السنوية</th>
                     <th className="p-3.5 sm:p-4 text-[var(--orange)]">الموعد النهائي لاختيار مزود ASP</th>
@@ -378,7 +378,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
 
           {/* 4. ما هو مزود الخدمة المعتمد ASP؟ */}
           <article className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-black text-[var(--text)]">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text)]">
               ما هو مزود الخدمة المعتمد (ASP) وما هي أدواره؟
             </h2>
             <div className="text-sm leading-relaxed text-[var(--text-2)] space-y-3">
@@ -387,7 +387,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                  <span className="font-extrabold text-sm text-[var(--text)] block mb-1">
+                  <span className="font-bold text-sm text-[var(--text)] block mb-1">
                     1. التحقق من الهيكلية
                   </span>
                   <p className="text-xs text-[var(--text-3)]">
@@ -395,7 +395,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                  <span className="font-extrabold text-sm text-[var(--text)] block mb-1">
+                  <span className="font-bold text-sm text-[var(--text)] block mb-1">
                     2. التشفير والتبادل الآمن
                   </span>
                   <p className="text-xs text-[var(--text-3)]">
@@ -403,7 +403,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                  <span className="font-extrabold text-sm text-[var(--text)] block mb-1">
+                  <span className="font-bold text-sm text-[var(--text)] block mb-1">
                     3. الإبلاغ الضريبي المباشر
                   </span>
                   <p className="text-xs text-[var(--text-3)]">
@@ -427,12 +427,12 @@ export default function UaeEInvoicingReadinessCheckerPage() {
 
           {/* 5. Peppol & PINT-AE */}
           <article className="space-y-4">
-            <h2 className="text-xl sm:text-2xl font-black text-[var(--text)]">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text)]">
               ما هو إطار Peppol وما هي مواصفة PINT-AE؟
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm leading-relaxed text-[var(--text-2)]">
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 space-y-2">
-                <h3 className="text-base font-extrabold text-[var(--text)] flex items-center gap-2">
+                <h3 className="text-base font-bold text-[var(--text)] flex items-center gap-2">
                   <span>🌐</span>
                   <span>إطار وشبكة Peppol العالمية</span>
                 </h3>
@@ -442,7 +442,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </div>
 
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 space-y-2">
-                <h3 className="text-base font-extrabold text-[var(--text)] flex items-center gap-2">
+                <h3 className="text-base font-bold text-[var(--text)] flex items-center gap-2">
                   <span>📄</span>
                   <span>مواصفة PINT-AE المخصصة للإمارات</span>
                 </h3>
@@ -455,14 +455,14 @@ export default function UaeEInvoicingReadinessCheckerPage() {
 
           {/* 6. الفرق بين الفاتورة الورقية/PDF والفوترة الإلكترونية المنظمة */}
           <article className="space-y-4">
-            <h2 className="text-xl sm:text-2xl font-black text-[var(--text)]">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text)]">
               الفرق بين الفاتورة الورقية / PDF والفاتورة الإلكترونية المنظمة
             </h2>
 
             <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
               <table className="w-full text-right text-xs sm:text-sm">
                 <thead>
-                  <tr className="border-b border-[var(--border)] bg-[var(--bg)] text-[var(--text)] font-extrabold">
+                  <tr className="border-b border-[var(--border)] bg-[var(--bg)] text-[var(--text)] font-bold">
                     <th className="p-3.5 sm:p-4">وجه المقارنة</th>
                     <th className="p-3.5 sm:p-4 text-rose-700">الفاتورة الورقية / ملف PDF</th>
                     <th className="p-3.5 sm:p-4 text-emerald-700">الفاتورة الإلكترونية المنظمة (UAE eInvoice)</th>
@@ -501,12 +501,12 @@ export default function UaeEInvoicingReadinessCheckerPage() {
 
           {/* 7. كيف تستعد شركتك للفوترة الإلكترونية */}
           <article className="space-y-4">
-            <h2 className="text-xl sm:text-2xl font-black text-[var(--text)]">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text)]">
               كيف تستعد شركتك للفوترة الإلكترونية في الإمارات؟
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-[var(--text-2)]">
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--orange)] text-[var(--on-orange)] font-extrabold text-xs mb-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--orange)] text-[var(--on-orange)] font-bold text-xs mb-2">
                   1
                 </span>
                 <h3 className="font-bold text-[var(--text)] text-sm mb-1">
@@ -518,7 +518,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </div>
 
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--orange)] text-[var(--on-orange)] font-extrabold text-xs mb-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--orange)] text-[var(--on-orange)] font-bold text-xs mb-2">
                   2
                 </span>
                 <h3 className="font-bold text-[var(--text)] text-sm mb-1">
@@ -530,7 +530,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </div>
 
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--orange)] text-[var(--on-orange)] font-extrabold text-xs mb-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--orange)] text-[var(--on-orange)] font-bold text-xs mb-2">
                   3
                 </span>
                 <h3 className="font-bold text-[var(--text)] text-sm mb-1">
@@ -542,7 +542,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </div>
 
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--orange)] text-[var(--on-orange)] font-extrabold text-xs mb-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--orange)] text-[var(--on-orange)] font-bold text-xs mb-2">
                   4
                 </span>
                 <h3 className="font-bold text-[var(--text)] text-sm mb-1">
@@ -559,7 +559,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
           <article className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 space-y-4">
             <div className="flex items-center gap-2">
               <span className="text-xl">🏛️</span>
-              <h2 className="text-lg sm:text-xl font-black text-[var(--text)]">
+              <h2 className="text-lg sm:text-xl font-bold text-[var(--text)]">
                 المصادر الرسمية والتشريعات المعتمدة
               </h2>
             </div>
@@ -637,7 +637,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
           <article className="space-y-4">
             <div className="flex items-center gap-2">
               <span className="text-xl">❓</span>
-              <h2 className="text-xl sm:text-2xl font-black text-[var(--text)]">
+              <h2 className="text-xl sm:text-2xl font-bold text-[var(--text)]">
                 الأسئلة الشائعة حول الفوترة الإلكترونية في الإمارات
               </h2>
             </div>
@@ -648,7 +648,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   key={index}
                   className="group rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4.5 transition-colors open:border-[var(--orange)]/60"
                 >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs sm:text-sm font-extrabold text-[var(--text)] marker:hidden [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs sm:text-sm font-bold text-[var(--text)] marker:hidden [&::-webkit-details-marker]:hidden">
                     <span>{faq.q}</span>
                     <span className="shrink-0 text-base text-[var(--text-3)] group-open:rotate-180 transition-transform">
                       ↓
@@ -665,7 +665,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
           {/* 10. أدوات إماراتية ذات صلة */}
           <article className="space-y-4 pt-4">
             <div className="flex items-center justify-between border-b border-[var(--border)] pb-2.5">
-              <h2 className="text-lg font-black text-[var(--text)]">
+              <h2 className="text-lg font-bold text-[var(--text)]">
                 أدوات إماراتية ذات صلة في Qemlo
               </h2>
               <Link href="/ar/ae" className="text-xs font-bold text-[var(--orange)] hover:underline">

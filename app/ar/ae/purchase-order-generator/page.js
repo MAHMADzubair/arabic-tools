@@ -147,7 +147,7 @@ const relatedTools = [
     title: "مجمع أدوات وحاسبات الإمارات",
     desc: "جميع الأدوات الضريبية والعمالية والمالية المخصصة للسوق الإماراتي في مكان واحد.",
     badge: "الشامل",
-    badgeColor: "bg-emerald-700 text-white font-black",
+    badgeColor: "bg-emerald-700 text-white font-bold",
   },
 ];
 
@@ -179,7 +179,7 @@ export default function UaePurchaseOrderGeneratorPage() {
             <div className="flex items-start gap-3">
               <span className="text-4xl shrink-0 mt-0.5">📦</span>
               <div>
-                <h1 className="text-2xl font-black leading-snug sm:text-3xl">
+                <h1 className="text-2xl font-bold leading-snug sm:text-3xl">
                   مولد نموذج أمر شراء في الإمارات — LPO جاهز للطباعة
                 </h1>
                 <p className="mt-2 text-sm leading-relaxed text-indigo-100 max-w-xl">
@@ -199,33 +199,33 @@ export default function UaePurchaseOrderGeneratorPage() {
         {/* ── GEO Answer Block ───────────────────────────────────────────── */}
         <div className="mx-auto max-w-3xl px-4 pb-2">
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 text-xs leading-relaxed shadow-sm" dir="rtl">
-            <p className="text-[11px] font-extrabold text-indigo-600 uppercase tracking-wider mb-2">ملخص الأداة</p>
+            <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-wider mb-2">ملخص الأداة</p>
             <div className="grid gap-2 sm:grid-cols-2">
               <div className="flex gap-2">
-                <span className="shrink-0 font-extrabold text-indigo-700 w-36">ماذا تقدم هذه الأداة؟</span>
+                <span className="shrink-0 font-bold text-indigo-700 w-36">ماذا تقدم هذه الأداة؟</span>
                 <span className="text-ink-secondary">تنشئ نموذج أمر شراء (Purchase Order / LPO) مخصصاً للأعمال في الإمارات.</span>
               </div>
               <div className="flex gap-2">
-                <span className="shrink-0 font-extrabold text-indigo-700 w-36">العملة:</span>
+                <span className="shrink-0 font-bold text-indigo-700 w-36">العملة:</span>
                 <span className="text-ink-secondary">الدرهم الإماراتي AED (مع دعم USD وEUR وSAR).</span>
               </div>
               <div className="flex gap-2">
-                <span className="shrink-0 font-extrabold text-indigo-700 w-36">الضريبة:</span>
+                <span className="shrink-0 font-bold text-indigo-700 w-36">الضريبة:</span>
                 <span className="text-ink-secondary">يمكن إضافة ضريبة القيمة المضافة 5% على البنود عند الحاجة.</span>
               </div>
               <div className="flex gap-2">
-                <span className="shrink-0 font-extrabold text-indigo-700 w-36">تنبيه مهم:</span>
+                <span className="shrink-0 font-bold text-indigo-700 w-36">تنبيه مهم:</span>
                 <span className="text-ink-secondary font-semibold">أمر الشراء ليس فاتورة ضريبية ولا يحل محل Tax Invoice الرسمية.</span>
               </div>
               <div className="flex gap-2">
-                <span className="shrink-0 font-extrabold text-indigo-700 w-36">الجهة المرجعية:</span>
+                <span className="shrink-0 font-bold text-indigo-700 w-36">الجهة المرجعية:</span>
                 <a href="https://tax.gov.ae" target="_blank" rel="noopener noreferrer"
                   className="text-indigo-700 hover:underline">
                   الهيئة الاتحادية للضرائب — UAE Federal Tax Authority (FTA)
                 </a>
               </div>
               <div className="flex gap-2">
-                <span className="shrink-0 font-extrabold text-indigo-700 w-36">آخر مراجعة:</span>
+                <span className="shrink-0 font-bold text-indigo-700 w-36">آخر مراجعة:</span>
                 <span className="text-ink-secondary">أكتوبر 2026</span>
               </div>
             </div>
@@ -245,7 +245,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
           {/* ── Section 1: ما هو أمر الشراء في الإمارات ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">📋</span>
               ما هو أمر الشراء في الإمارات؟
             </h2>
@@ -269,7 +269,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
           {/* ── Section 2: PO vs Quotation vs Invoice comparison ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">⚖️</span>
               ما الفرق بين أمر الشراء وعرض السعر والفاتورة؟
             </h2>
@@ -283,10 +283,10 @@ export default function UaePurchaseOrderGeneratorPage() {
               <table className="w-full text-xs border-collapse min-w-[580px]">
                 <thead>
                   <tr className="bg-indigo-50 text-indigo-900">
-                    <th className="border border-indigo-200 px-3 py-2.5 text-right font-extrabold w-1/4">المعيار</th>
-                    <th className="border border-amber-200 bg-amber-50 px-3 py-2.5 text-center font-extrabold text-amber-900">📋 عرض السعر</th>
-                    <th className="border border-indigo-200 px-3 py-2.5 text-center font-extrabold">📦 أمر الشراء (PO/LPO)</th>
-                    <th className="border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-center font-extrabold text-emerald-900">🧾 الفاتورة الضريبية</th>
+                    <th className="border border-indigo-200 px-3 py-2.5 text-right font-bold w-1/4">المعيار</th>
+                    <th className="border border-amber-200 bg-amber-50 px-3 py-2.5 text-center font-bold text-amber-900">📋 عرض السعر</th>
+                    <th className="border border-indigo-200 px-3 py-2.5 text-center font-bold">📦 أمر الشراء (PO/LPO)</th>
+                    <th className="border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-center font-bold text-emerald-900">🧾 الفاتورة الضريبية</th>
                   </tr>
                 </thead>
                 <tbody className="text-ink-secondary">
@@ -319,11 +319,11 @@ export default function UaePurchaseOrderGeneratorPage() {
                 { icon: "🧾", title: "الفاتورة الضريبية", desc: "المورد يطالب بالدفع",  color: "border-emerald-200 bg-emerald-50/60", tc: "text-emerald-900" },
               ].map((step, i) =>
                 step.arrow ? (
-                  <div key={i} className="hidden sm:flex items-center text-ink-muted text-xl font-black">→</div>
+                  <div key={i} className="hidden sm:flex items-center text-ink-muted text-xl font-bold">→</div>
                 ) : (
                   <div key={i} className={`flex-1 rounded-xl border ${step.color} p-3 text-center`}>
                     <p className="text-xl mb-1">{step.icon}</p>
-                    <p className={`font-extrabold ${step.tc}`}>{step.title}</p>
+                    <p className={`font-bold ${step.tc}`}>{step.title}</p>
                     <p className="text-ink-muted mt-0.5">{step.desc}</p>
                   </div>
                 )
@@ -348,7 +348,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
           {/* ── Section 3: ما معنى LPO ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🏷️</span>
               ما معنى LPO في الإمارات؟
             </h2>
@@ -377,7 +377,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
           {/* ── Section 4: محتويات نموذج أمر الشراء ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">📝</span>
               ماذا يجب أن يحتوي نموذج أمر الشراء؟
             </h2>
@@ -415,7 +415,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
           {/* ── Section 5: VAT على أمر الشراء ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🧾</span>
               هل تضاف ضريبة القيمة المضافة على أمر الشراء؟
             </h2>
@@ -429,7 +429,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
               {/* Key distinction box */}
               <div className="rounded-xl border-2 border-amber-300 bg-amber-50 p-4">
-                <p className="text-xs font-extrabold text-amber-900 mb-2 flex items-center gap-1.5">
+                <p className="text-xs font-bold text-amber-900 mb-2 flex items-center gap-1.5">
                   <span>⚠️</span>
                   <span>تمييز ضريبي مهم — يجب معرفته</span>
                 </p>
@@ -473,7 +473,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
           {/* ── Section 6: Realistic Example ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-1 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-1 flex items-center gap-2">
               <span className="text-2xl">🔢</span>
               مثال عملي على أمر شراء في الإمارات
             </h2>
@@ -516,11 +516,11 @@ export default function UaePurchaseOrderGeneratorPage() {
               <table className="w-full text-xs border-collapse min-w-[520px]">
                 <thead>
                   <tr className="bg-slate-100 text-ink">
-                    <th className="border border-slate-200 px-3 py-2 text-right font-extrabold">البند / الوصف</th>
-                    <th className="border border-slate-200 px-3 py-2 text-center font-extrabold">الكمية</th>
-                    <th className="border border-slate-200 px-3 py-2 text-center font-extrabold">سعر الوحدة</th>
-                    <th className="border border-slate-200 px-3 py-2 text-center font-extrabold">الإجمالي</th>
-                    <th className="border border-slate-200 px-3 py-2 text-center font-extrabold">VAT</th>
+                    <th className="border border-slate-200 px-3 py-2 text-right font-bold">البند / الوصف</th>
+                    <th className="border border-slate-200 px-3 py-2 text-center font-bold">الكمية</th>
+                    <th className="border border-slate-200 px-3 py-2 text-center font-bold">سعر الوحدة</th>
+                    <th className="border border-slate-200 px-3 py-2 text-center font-bold">الإجمالي</th>
+                    <th className="border border-slate-200 px-3 py-2 text-center font-bold">VAT</th>
                   </tr>
                 </thead>
                 <tbody className="text-ink-secondary">
@@ -553,7 +553,7 @@ export default function UaePurchaseOrderGeneratorPage() {
                 <span>ضريبة القيمة المضافة 5%</span>
                 <span dir="ltr">455.00 AED</span>
               </div>
-              <div className="flex justify-between text-indigo-800 font-black text-sm border-t border-slate-200 pt-2 mt-2">
+              <div className="flex justify-between text-indigo-800 font-bold text-sm border-t border-slate-200 pt-2 mt-2">
                 <span>الإجمالي الكلي شامل VAT</span>
                 <span dir="ltr">9,555.00 AED</span>
               </div>
@@ -569,7 +569,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
           {/* ── Section 7: PO vs Purchase Requisition ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🔄</span>
               الفرق بين أمر الشراء وطلب الشراء الداخلي (Purchase Requisition)
             </h2>
@@ -579,7 +579,7 @@ export default function UaePurchaseOrderGeneratorPage() {
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
-                  <p className="text-sm font-extrabold text-ink flex items-center gap-2">
+                  <p className="text-sm font-bold text-ink flex items-center gap-2">
                     <span>📩</span>
                     طلب الشراء الداخلي — Purchase Requisition (PR)
                   </p>
@@ -591,7 +591,7 @@ export default function UaePurchaseOrderGeneratorPage() {
                   </ul>
                 </div>
                 <div className="rounded-xl border border-indigo-200 bg-indigo-50/40 p-4 space-y-2">
-                  <p className="text-sm font-extrabold text-ink flex items-center gap-2">
+                  <p className="text-sm font-bold text-ink flex items-center gap-2">
                     <span>📦</span>
                     أمر الشراء — Purchase Order / LPO
                   </p>
@@ -611,7 +611,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
           {/* ── Section 8: PO في تسجيل VAT ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🏛️</span>
               هل يمكن استخدام أمر الشراء لإثبات النشاط التجاري؟
             </h2>
@@ -647,7 +647,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
               {/* Official sources */}
               <div className="mt-2 space-y-2">
-                <p className="text-xs font-extrabold text-ink">المصادر الرسمية المرجعية:</p>
+                <p className="text-xs font-bold text-ink">المصادر الرسمية المرجعية:</p>
                 <div className="space-y-2">
                   {[
                     {
@@ -694,7 +694,7 @@ export default function UaePurchaseOrderGeneratorPage() {
         <section className="mx-auto max-w-3xl px-4 py-2">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-5">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">❓ الأسئلة الشائعة</h2>
+              <h2 className="text-xl font-bold text-ink">❓ الأسئلة الشائعة</h2>
               <p className="text-xs text-ink-muted mt-1">أكثر الأسئلة تكراراً حول أوامر الشراء في الإمارات</p>
             </div>
             <div className="space-y-0">
@@ -704,7 +704,7 @@ export default function UaePurchaseOrderGeneratorPage() {
                   open={i === 0}>
                   <summary className="flex items-center justify-between gap-3 font-bold text-ink text-sm list-none select-none">
                     <span>{item.q}</span>
-                    <span className="text-brand font-black text-lg transition-transform group-open:rotate-45 shrink-0">+</span>
+                    <span className="text-brand font-bold text-lg transition-transform group-open:rotate-45 shrink-0">+</span>
                   </summary>
                   <p className="mt-3 text-sm text-ink-secondary leading-relaxed pr-4">
                     {item.a}

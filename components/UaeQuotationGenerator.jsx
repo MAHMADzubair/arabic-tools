@@ -97,7 +97,7 @@ const selectCls =
 const labelCls =
   "mb-1.5 block text-xs font-bold text-[var(--text-2)]";
 const stepBadgeCls =
-  "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--ink)] text-xs font-black text-[var(--ink-text)]";
+  "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--ink)] text-xs font-bold text-[var(--ink-text)]";
 
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
@@ -385,7 +385,7 @@ export default function UaeQuotationGenerator() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h1 className="text-xl font-extrabold text-[var(--text)]">مولد عرض السعر في الإمارات</h1>
+              <h1 className="text-xl font-bold text-[var(--text)]">مولد عرض السعر في الإمارات</h1>
             </div>
             <p className="text-xs text-[var(--text-2)]">
               أنشئ عرض سعر احترافي بالعربية والإنجليزية — للمستقلين والشركات والمتاجر والمقاولين
@@ -456,7 +456,7 @@ export default function UaeQuotationGenerator() {
 
           {/* Step 1 — Quote details */}
           <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
-            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>١</span>
               بيانات عرض السعر
             </h2>
@@ -521,7 +521,7 @@ export default function UaeQuotationGenerator() {
 
           {/* Step 2 — Seller */}
           <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
-            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٢</span>
               بيانات منشأتك (المُعِد)
             </h2>
@@ -581,7 +581,7 @@ export default function UaeQuotationGenerator() {
 
           {/* Step 3 — Customer */}
           <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
-            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٣</span>
               بيانات العميل
             </h2>
@@ -631,7 +631,7 @@ export default function UaeQuotationGenerator() {
 
           {/* Step 4 — Line items */}
           <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
-            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٤</span>
               البنود والخدمات
             </h2>
@@ -644,7 +644,7 @@ export default function UaeQuotationGenerator() {
                 return (
                   <div key={line.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-[var(--text-2)]">بند {idx + 1}</span>
+                      <span className="text-xs font-bold text-[var(--text-2)]">بند {idx + 1}</span>
                       <div className="flex gap-2">
                         <button onClick={() => duplicateLine(line.id)}
                           className="text-[var(--text-2)] hover:text-[var(--orange)] text-xs font-bold transition-colors">
@@ -712,7 +712,7 @@ export default function UaeQuotationGenerator() {
                               {fmt(calc?.vatAmount)}
                             </span>
                           )}
-                          <span className="rounded-full text-[11px] font-black bg-[var(--surface-2)] text-[var(--orange)] px-2.5 py-0.5">
+                          <span className="rounded-full text-[11px] font-bold bg-[var(--surface-2)] text-[var(--orange)] px-2.5 py-0.5">
                             {fmt(calc?.lineTotal)}
                           </span>
                         </div>
@@ -731,7 +731,7 @@ export default function UaeQuotationGenerator() {
 
           {/* Step 5 — Optional fees */}
           <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
-            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٥</span>
               رسوم إضافية (اختياري)
             </h2>
@@ -772,7 +772,7 @@ export default function UaeQuotationGenerator() {
 
           {/* Totals card */}
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-5 shadow-[var(--shadow)]">
-            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className="text-base">ملخص</span> ملخص الإجماليات
             </h2>
             <div className="space-y-2 text-sm">
@@ -787,15 +787,15 @@ export default function UaeQuotationGenerator() {
                 totals.totalFees > 0 && { label: "إجمالي الرسوم الإضافية", val: totals.totalFees, show: true },
               ].filter(Boolean).filter(r => r && r.show).map((row, i) => (
                 <div key={i} className={`flex justify-between items-center py-1 ${row.bold ? "border-t border-[var(--border)] pt-2" : ""}`}>
-                  <span className={`text-xs ${row.bold ? "font-extrabold" : "font-medium"} text-[var(--text-2)]`}>{row.label}</span>
-                  <span className={`text-sm font-black ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--orange)]" : "text-[var(--text)]"}`} dir="ltr">
+                  <span className={`text-xs ${row.bold ? "font-bold" : "font-medium"} text-[var(--text-2)]`}>{row.label}</span>
+                  <span className={`text-sm font-bold ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--orange)]" : "text-[var(--text)]"}`} dir="ltr">
                     {row.neg ? "-" : ""}{fmt(Math.abs(row.val))} {details.currency}
                   </span>
                 </div>
               ))}
               <div className="flex justify-between items-center border-t-2 border-[var(--border)] pt-3 mt-2">
-                <span className="text-base font-extrabold text-[var(--text)]">الإجمالي النهائي</span>
-                <span className="text-xl font-black text-[var(--orange)]" dir="ltr">
+                <span className="text-base font-bold text-[var(--text)]">الإجمالي النهائي</span>
+                <span className="text-xl font-bold text-[var(--orange)]" dir="ltr">
                   {fmt(totals.grandTotal)} {details.currency}
                 </span>
               </div>
@@ -804,7 +804,7 @@ export default function UaeQuotationGenerator() {
 
           {/* Step 6 — Terms */}
           <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow)]">
-            <h2 className="text-sm font-extrabold text-[var(--text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--text)] mb-3 flex items-center gap-2">
               <span className={stepBadgeCls}>٦</span>
               الشروط والأحكام
             </h2>
@@ -850,11 +850,11 @@ export default function UaeQuotationGenerator() {
           {/* Action buttons */}
           <div className="flex flex-col sm:flex-row gap-3 no-print">
             <button onClick={() => setActiveTab("preview")}
-              className="flex-1 rounded-xl bg-[var(--orange)] hover:bg-[var(--ink)] text-[var(--ink-text)] font-extrabold text-sm py-3 transition-all">
+              className="flex-1 rounded-xl bg-[var(--orange)] hover:bg-[var(--ink)] text-[var(--ink-text)] font-bold text-sm py-3 transition-all">
               معاينة عرض السعر
             </button>
             <button onClick={handlePrint}
-              className="flex-1 rounded-xl border border-[var(--border)] text-[var(--orange)] hover:bg-[var(--surface-2)] font-extrabold text-sm py-3 transition-all">
+              className="flex-1 rounded-xl border border-[var(--border)] text-[var(--orange)] hover:bg-[var(--surface-2)] font-bold text-sm py-3 transition-all">
               طباعة / PDF
             </button>
             <button onClick={handleConvertToInvoice}
@@ -897,17 +897,17 @@ export default function UaeQuotationGenerator() {
             <div className="bg-[var(--ink)] px-8 py-6 print:bg-[var(--ink)]" style={{ WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}>
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-[var(--ink-text)] text-2xl font-black">عرض سعر</p>
+                  <p className="text-[var(--ink-text)] text-2xl font-bold">عرض سعر</p>
                   <p className="text-[var(--text-3)] text-sm font-semibold">QUOTATION</p>
                   {details.status && (
-                    <span className={`mt-2 inline-block rounded-full text-[10px] font-black px-3 py-0.5 border ${STATUS_OPTIONS.find(s => s.id === details.status)?.style || ""}`}>
+                    <span className={`mt-2 inline-block rounded-full text-[10px] font-bold px-3 py-0.5 border ${STATUS_OPTIONS.find(s => s.id === details.status)?.style || ""}`}>
                       {STATUS_OPTIONS.find(s => s.id === details.status)?.label}
                     </span>
                   )}
                 </div>
                 <div className="text-right" dir="ltr">
                   <p className="text-[var(--text-3)] text-xs">رقم عرض السعر / Quotation No.</p>
-                  <p className="text-[var(--ink-text)] font-black text-lg">{details.quoteNumber || "—"}</p>
+                  <p className="text-[var(--ink-text)] font-bold text-lg">{details.quoteNumber || "—"}</p>
                   {details.projectRef && <p className="text-[var(--text-3)] text-xs mt-0.5">Ref: {details.projectRef}</p>}
                   <p className="text-[var(--text-3)] text-xs mt-1">{details.currency}</p>
                 </div>
@@ -932,8 +932,8 @@ export default function UaeQuotationGenerator() {
               {/* Seller + Customer */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
-                  <p className="text-[10px] font-black text-[var(--orange)] uppercase tracking-wide mb-2">إعداد · Prepared By</p>
-                  <p className="font-extrabold text-[var(--text)] text-sm">{seller.name || "—"}</p>
+                  <p className="text-[10px] font-bold text-[var(--orange)] uppercase tracking-wide mb-2">إعداد · Prepared By</p>
+                  <p className="font-bold text-[var(--text)] text-sm">{seller.name || "—"}</p>
                   {seller.contactPerson && <p className="text-xs text-[var(--text-2)] mt-0.5">{seller.contactPerson}</p>}
                   {seller.address && <p className="text-xs text-[var(--text-2)]">{seller.address}</p>}
                   {seller.emirate && <p className="text-xs text-[var(--text-2)]">{seller.emirate}، الإمارات</p>}
@@ -943,8 +943,8 @@ export default function UaeQuotationGenerator() {
                   {seller.trn && <p className="text-[10px] text-[var(--text-3)] mt-1">TRN: <span dir="ltr">{seller.trn}</span></p>}
                 </div>
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
-                  <p className="text-[10px] font-black text-[var(--text-2)] uppercase tracking-wide mb-2">مُقدَّم إلى · Prepared For</p>
-                  <p className="font-extrabold text-[var(--text)] text-sm">{customer.name || "—"}</p>
+                  <p className="text-[10px] font-bold text-[var(--text-2)] uppercase tracking-wide mb-2">مُقدَّم إلى · Prepared For</p>
+                  <p className="font-bold text-[var(--text)] text-sm">{customer.name || "—"}</p>
                   {customer.contactPerson && <p className="text-xs text-[var(--text-2)] mt-0.5">{customer.contactPerson}</p>}
                   {customer.address && <p className="text-xs text-[var(--text-2)]">{customer.address}</p>}
                   {customer.emirate && <p className="text-xs text-[var(--text-2)]">{customer.emirate}، الإمارات</p>}
@@ -959,15 +959,15 @@ export default function UaeQuotationGenerator() {
                 <table className="w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-[var(--surface-2)] text-[var(--text-2)]">
-                      <th className="text-right p-2 font-extrabold">#</th>
-                      <th className="text-right p-2 font-extrabold">الوصف / Description</th>
-                      <th className="text-right p-2 font-extrabold">الكمية / Qty</th>
-                      <th className="text-right p-2 font-extrabold">الوحدة</th>
-                      <th className="text-right p-2 font-extrabold">السعر / Price</th>
-                      <th className="text-right p-2 font-extrabold">الخصم</th>
-                      {details.showVat && <th className="text-right p-2 font-extrabold">الضريبة</th>}
-                      {details.showVat && <th className="text-right p-2 font-extrabold">VAT</th>}
-                      <th className="text-right p-2 font-extrabold">الإجمالي / Total</th>
+                      <th className="text-right p-2 font-bold">#</th>
+                      <th className="text-right p-2 font-bold">الوصف / Description</th>
+                      <th className="text-right p-2 font-bold">الكمية / Qty</th>
+                      <th className="text-right p-2 font-bold">الوحدة</th>
+                      <th className="text-right p-2 font-bold">السعر / Price</th>
+                      <th className="text-right p-2 font-bold">الخصم</th>
+                      {details.showVat && <th className="text-right p-2 font-bold">الضريبة</th>}
+                      {details.showVat && <th className="text-right p-2 font-bold">VAT</th>}
+                      <th className="text-right p-2 font-bold">الإجمالي / Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -990,7 +990,7 @@ export default function UaeQuotationGenerator() {
                           {details.showVat && (
                             <td className="p-2 text-[var(--text-2)] font-medium" dir="ltr">{fmt(calc?.vatAmount)}</td>
                           )}
-                          <td className="p-2 font-black text-[var(--text)]" dir="ltr">{fmt(calc?.lineTotal)}</td>
+                          <td className="p-2 font-bold text-[var(--text)]" dir="ltr">{fmt(calc?.lineTotal)}</td>
                         </tr>
                       );
                     })}
@@ -1020,15 +1020,15 @@ export default function UaeQuotationGenerator() {
                     totals.totalFees > 0 && { label: "رسوم إضافية / Fees", val: totals.totalFees },
                   ].filter(Boolean).map((row, i) => (
                     <div key={i} className={`flex justify-between px-4 py-2 text-xs ${row.bold ? "bg-[var(--surface-2)] border-t border-[var(--border)]" : "border-t border-[var(--border)] first:border-t-0"}`}>
-                      <span className={row.bold ? "font-extrabold text-[var(--orange)]" : "text-[var(--text-2)]"}>{row.label}</span>
-                      <span className={`font-black ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--orange)]" : "text-[var(--text)]"}`} dir="ltr">
+                      <span className={row.bold ? "font-bold text-[var(--orange)]" : "text-[var(--text-2)]"}>{row.label}</span>
+                      <span className={`font-bold ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--orange)]" : "text-[var(--text)]"}`} dir="ltr">
                         {row.neg ? "-" : ""}{fmt(Math.abs(row.val))} {details.currency}
                       </span>
                     </div>
                   ))}
                   <div className="flex justify-between px-4 py-3 bg-[var(--ink)] text-[var(--ink-text)]">
-                    <span className="text-sm font-extrabold">الإجمالي / Grand Total</span>
-                    <span className="text-sm font-black" dir="ltr">{fmt(totals.grandTotal)} {details.currency}</span>
+                    <span className="text-sm font-bold">الإجمالي / Grand Total</span>
+                    <span className="text-sm font-bold" dir="ltr">{fmt(totals.grandTotal)} {details.currency}</span>
                   </div>
                 </div>
               </div>
@@ -1036,7 +1036,7 @@ export default function UaeQuotationGenerator() {
               {/* Terms */}
               {(terms.validity || terms.payment || terms.delivery || terms.warranty || terms.exclusions || terms.cancellation) && (
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4 space-y-2">
-                  <p className="text-xs font-extrabold text-[var(--text)] border-b border-[var(--border)] pb-2">الشروط والأحكام / Terms & Conditions</p>
+                  <p className="text-xs font-bold text-[var(--text)] border-b border-[var(--border)] pb-2">الشروط والأحكام / Terms & Conditions</p>
                   <div className="grid gap-1.5 sm:grid-cols-2 text-xs text-[var(--text-2)]">
                     {terms.validity    && <p><span className="font-bold text-[var(--text)]">الصلاحية: </span>{terms.validity}</p>}
                     {terms.payment     && <p><span className="font-bold text-[var(--text)]">الدفع: </span>{terms.payment}</p>}

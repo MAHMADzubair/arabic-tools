@@ -238,7 +238,7 @@ function SbrStyles() {
         background:var(--orange);
         color:var(--on-orange);
         font-size:.72rem;
-        font-weight:900;
+        font-weight:700;
         letter-spacing:.08em;
       }
       .sbr-kicker-mark{
@@ -250,7 +250,7 @@ function SbrStyles() {
         border:1px solid var(--border);
         border-radius:7px;
         color:var(--orange);
-        font-weight:900;
+        font-weight:700;
       }
       .sbr-preset{
         border-color:var(--border)!important;
@@ -470,7 +470,7 @@ export default function UaeSbrChecker() {
 
             <div>
 
-              <h1 className="text-xl sm:text-2xl font-black leading-tight">حاسبة أهلية تسهيلات الأعمال الصغيرة في الإمارات</h1>
+              <h1 className="text-xl sm:text-2xl font-bold leading-tight">حاسبة أهلية تسهيلات الأعمال الصغيرة في الإمارات</h1>
 
               <p className="mt-1 text-sm text-[var(--card-muted)]">تقدير الأهلية لاختيار تسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية — حد 3,000,000 درهم</p>
 
@@ -506,7 +506,7 @@ export default function UaeSbrChecker() {
 
       <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 ">
 
-        <div className="flex items-center gap-2 mb-3"><span className="sbr-kicker-mark" aria-hidden="true">+</span><span className="text-xs font-extrabold text-[var(--text)]">نماذج سريعة:</span></div>
+        <div className="flex items-center gap-2 mb-3"><span className="sbr-kicker-mark" aria-hidden="true">+</span><span className="text-xs font-bold text-[var(--text)]">نماذج سريعة:</span></div>
 
         <div className="flex flex-wrap gap-2">
 
@@ -542,9 +542,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center gap-2.5 border-b border-[var(--border)]/60 pb-3">
 
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-[var(--card-text)]">١</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-bold text-[var(--card-text)]">١</span>
 
-          <h2 className="text-sm sm:text-base font-extrabold text-[var(--text)]">ما نوع الشخص؟</h2>
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text)]">ما نوع الشخص؟</h2>
 
         </div>
 
@@ -584,9 +584,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center gap-2.5 border-b border-[var(--border)]/60 pb-3">
 
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-[var(--card-text)]">٢</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-bold text-[var(--card-text)]">٢</span>
 
-          <h2 className="text-sm sm:text-base font-extrabold text-[var(--text)]">الإقامة لأغراض ضريبة الشركات</h2>
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text)]">الإقامة لأغراض ضريبة الشركات</h2>
 
         </div>
 
@@ -612,9 +612,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center gap-2.5 border-b border-[var(--border)]/60 pb-3">
 
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-[var(--card-text)]">٣</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-bold text-[var(--card-text)]">٣</span>
 
-          <h2 className="text-sm sm:text-base font-extrabold text-[var(--text)]">الفترة الضريبية</h2>
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text)]">الفترة الضريبية</h2>
 
         </div>
 
@@ -670,9 +670,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center gap-2.5 border-b border-[var(--border)]/60 pb-3">
 
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-[var(--card-text)]">٤</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-bold text-[var(--card-text)]">٤</span>
 
-          <h2 className="text-sm sm:text-base font-extrabold text-[var(--text)]">إيرادات الفترة الضريبية الحالية</h2>
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text)]">إيرادات الفترة الضريبية الحالية</h2>
 
         </div>
 
@@ -710,9 +710,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center gap-2.5 border-b border-[var(--border)]/60 pb-3">
 
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-[var(--card-text)]">٥</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-bold text-[var(--card-text)]">٥</span>
 
-          <h2 className="text-sm sm:text-base font-extrabold text-[var(--text)]">الفترات الضريبية السابقة</h2>
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text)]">الفترات الضريبية السابقة</h2>
 
         </div>
 
@@ -796,9 +796,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center gap-2.5 border-b border-[var(--border)]/60 pb-3">
 
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-[var(--card-text)]">٦</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-bold text-[var(--card-text)]">٦</span>
 
-          <h2 className="text-sm sm:text-base font-extrabold text-[var(--text)]">وضع المنطقة الحرة (QFZP)</h2>
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text)]">وضع المنطقة الحرة (QFZP)</h2>
 
         </div>
 
@@ -834,9 +834,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center gap-2.5 border-b border-[var(--border)]/60 pb-3">
 
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-[var(--card-text)]">٧</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-bold text-[var(--card-text)]">٧</span>
 
-          <h2 className="text-sm sm:text-base font-extrabold text-[var(--text)]">المجموعات متعددة الجنسيات</h2>
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text)]">المجموعات متعددة الجنسيات</h2>
 
         </div>
 
@@ -886,9 +886,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center gap-2.5 border-b border-[var(--border)]/60 pb-3">
 
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-black text-[var(--card-text)]">٨</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--orange)] text-xs font-bold text-[var(--card-text)]">٨</span>
 
-          <h2 className="text-sm sm:text-base font-extrabold text-[var(--text)]">الكيانات والأعمال المرتبطة</h2>
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text)]">الكيانات والأعمال المرتبطة</h2>
 
         </div>
 
@@ -914,7 +914,7 @@ export default function UaeSbrChecker() {
 
       <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5  space-y-3">
 
-        <h3 className="text-sm font-extrabold text-[var(--text)] flex items-center gap-2"><span className="sbr-kicker-mark" aria-hidden="true">✓</span><span>قائمة شروط الأهلية:</span></h3>
+        <h3 className="text-sm font-bold text-[var(--text)] flex items-center gap-2"><span className="sbr-kicker-mark" aria-hidden="true">✓</span><span>قائمة شروط الأهلية:</span></h3>
 
         <div className="divide-y divide-brand-border/40">
 
@@ -944,7 +944,7 @@ export default function UaeSbrChecker() {
 
               <span className="inline-block rounded-full bg-[var(--surface)]/20 px-2.5 py-0.5 text-xs font-bold mb-1">{rc.badge}</span>
 
-              <h2 className="text-xl sm:text-2xl font-black">{rc.title}</h2>
+              <h2 className="text-xl sm:text-2xl font-bold">{rc.title}</h2>
 
             </div>
 
@@ -964,7 +964,7 @@ export default function UaeSbrChecker() {
 
               <p className="text-[11px] font-bold text-[var(--text-3)]">حد الإيرادات</p>
 
-              <p className="text-base font-black sbr-error-text mt-0.5">3,000,000.00 د.إ</p>
+              <p className="text-base font-bold sbr-error-text mt-0.5">3,000,000.00 د.إ</p>
 
               <p className="text-[10px] text-[var(--text-3)]">للفترة الحالية وكل فترة سابقة</p>
 
@@ -974,7 +974,7 @@ export default function UaeSbrChecker() {
 
               <p className="text-[11px] font-bold text-[var(--text-3)]">إيرادات الفترة الحالية</p>
 
-              <p className={`text-base font-black mt-0.5 ${evaluation.curRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-text" : "sbr-error-text"}`}>{formatAED(evaluation.curRev)} د.إ</p>
+              <p className={`text-base font-bold mt-0.5 ${evaluation.curRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-text" : "sbr-error-text"}`}>{formatAED(evaluation.curRev)} د.إ</p>
 
               <p className="text-[10px] text-[var(--text-3)]">{evaluation.curRev <= SBR_REVENUE_THRESHOLD ? "✓ ضمن الحد" : "✗ يتجاوز الحد"}</p>
 
@@ -984,7 +984,7 @@ export default function UaeSbrChecker() {
 
               <p className="text-[11px] font-bold text-[var(--text-3)]">أعلى إيرادات سابقة</p>
 
-              <p className={`text-base font-black mt-0.5 ${evaluation.priorRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-text" : "sbr-error-text"}`}>{hasPrior === TRI.YES ? formatAED(evaluation.priorRev) + " د.إ" : "لا توجد فترات سابقة"}</p>
+              <p className={`text-base font-bold mt-0.5 ${evaluation.priorRev <= SBR_REVENUE_THRESHOLD ? "sbr-success-text" : "sbr-error-text"}`}>{hasPrior === TRI.YES ? formatAED(evaluation.priorRev) + " د.إ" : "لا توجد فترات سابقة"}</p>
 
               <p className="text-[10px] text-[var(--text-3)]">{hasPrior !== TRI.YES ? "—" : evaluation.priorRev <= SBR_REVENUE_THRESHOLD ? "✓ ضمن الحد" : "✗ يتجاوز الحد"}</p>
 
@@ -1000,7 +1000,7 @@ export default function UaeSbrChecker() {
 
             <div className="rounded-xl border border-[var(--border)]/80 bg-[var(--surface-2)] p-4 space-y-2">
 
-              <p className="text-xs font-extrabold text-[var(--text)]">📌 الأسباب:</p>
+              <p className="text-xs font-bold text-[var(--text)]">📌 الأسباب:</p>
 
               <ul className="space-y-1.5">
 
@@ -1008,7 +1008,7 @@ export default function UaeSbrChecker() {
 
                   <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-2)]">
 
-                    <span className="shrink-0 font-black sbr-error-text">•</span><span>{r}</span>
+                    <span className="shrink-0 font-bold sbr-error-text">•</span><span>{r}</span>
 
                   </li>
 
@@ -1028,7 +1028,7 @@ export default function UaeSbrChecker() {
 
             <div className="rounded-xl border sbr-warning-soft p-4 space-y-1">
 
-              <p className="text-xs font-extrabold sbr-warning-text">تنبيهات:</p>
+              <p className="text-xs font-bold sbr-warning-text">تنبيهات:</p>
 
               {evaluation.warnings.map((w, i) => (
 
@@ -1050,7 +1050,7 @@ export default function UaeSbrChecker() {
 
               <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4 space-y-2">
 
-                <p className="text-xs font-extrabold sbr-success-text">ماذا يعني ذلك؟</p>
+                <p className="text-xs font-bold sbr-success-text">ماذا يعني ذلك؟</p>
 
                 <p className="text-xs sbr-success-text leading-relaxed">يمكن للشخص المؤهل <strong>اختيار</strong> تسهيلات الأعمال الصغيرة عند تقديم الإقرار الضريبي وفق بقية الشروط النظامية. التسهيل اختيار (election) وليس إعفاءً تلقائياً.</p>
 
@@ -1078,7 +1078,7 @@ export default function UaeSbrChecker() {
 
                 <div className="rounded-xl border sbr-warning-soft p-4 text-xs sbr-warning-text leading-relaxed space-y-2">
 
-                  <p className="font-extrabold">قد يؤثر اختيار التسهيل على:</p>
+                  <p className="font-bold">قد يؤثر اختيار التسهيل على:</p>
 
                   <ul className="space-y-1 list-disc list-inside">
 
@@ -1124,7 +1124,7 @@ export default function UaeSbrChecker() {
 
             <Link href="/ar/ae/corporate-tax-calculator"
 
-              className="shrink-0 rounded-xl bg-[var(--card)] hover:bg-[var(--card)] text-[var(--card-text)] text-xs font-black px-4 py-2.5 transition ">
+              className="shrink-0 rounded-xl bg-[var(--card)] hover:bg-[var(--card)] text-[var(--card-text)] text-xs font-bold px-4 py-2.5 transition ">
 
               حاسبة ضريبة الشركات ←
 
@@ -1160,7 +1160,7 @@ export default function UaeSbrChecker() {
 
         <div className="flex items-center justify-between">
 
-          <h3 className="text-sm font-extrabold text-[var(--text)] flex items-center gap-2"><span className="sbr-kicker-mark" aria-hidden="true">↧</span><span>ملخص أهلية التسهيلات قابل للطباعة</span></h3>
+          <h3 className="text-sm font-bold text-[var(--text)] flex items-center gap-2"><span className="sbr-kicker-mark" aria-hidden="true">↧</span><span>ملخص أهلية التسهيلات قابل للطباعة</span></h3>
 
           <button type="button" onClick={() => setShowPrint(!showPrint)} className="text-xs font-bold text-[var(--orange)] hover:underline">{showPrint ? "إخفاء" : "إنشاء الملخص"}</button>
 
@@ -1172,7 +1172,7 @@ export default function UaeSbrChecker() {
 
             <div className="border-b border-[var(--border)] pb-3">
 
-              <h4 className="text-base font-black text-[var(--text)]">ملخص تقديري لأهلية تسهيلات الأعمال الصغيرة</h4>
+              <h4 className="text-base font-bold text-[var(--text)]">ملخص تقديري لأهلية تسهيلات الأعمال الصغيرة</h4>
 
               <p className="text-[11px] text-[var(--text-3)] mt-0.5">هذا الملخص تقديري استرشادي وليس قراراً رسمياً أو اعتماداً من FTA.</p>
 
@@ -1220,7 +1220,7 @@ export default function UaeSbrChecker() {
 
             <p className="text-[10px] text-[var(--text-3)] border-t border-[var(--border)] pt-3 leading-relaxed">هذه الأداة تقديرية وتعتمد على البيانات التي يدخلها المستخدم ولا تمثل قراراً رسمياً من الهيئة الاتحادية للضرائب.</p>
 
-            <button type="button" onClick={() => window.print()} className="rounded-xl bg-[var(--orange)] hover:bg-[var(--orange-press)] text-[var(--card-text)] text-xs font-black px-4 py-2.5 transition">طباعة / حفظ PDF 🖨️</button>
+            <button type="button" onClick={() => window.print()} className="rounded-xl bg-[var(--orange)] hover:bg-[var(--orange-press)] text-[var(--card-text)] text-xs font-bold px-4 py-2.5 transition">طباعة / حفظ PDF 🖨️</button>
 
           </div>
 
@@ -1234,7 +1234,7 @@ export default function UaeSbrChecker() {
 
       <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-5 space-y-2">
 
-        <h3 className="text-xs font-extrabold text-[var(--text)] flex items-center gap-2"><span className="sbr-kicker-mark" aria-hidden="true">!</span><span>إخلاء المسؤولية</span></h3>
+        <h3 className="text-xs font-bold text-[var(--text)] flex items-center gap-2"><span className="sbr-kicker-mark" aria-hidden="true">!</span><span>إخلاء المسؤولية</span></h3>
 
         <p className="text-[11px] text-[var(--text-2)] leading-relaxed">هذه الأداة تقديرية وتعتمد على البيانات التي يدخلها المستخدم، ولا تمثل قراراً رسمياً من الهيئة الاتحادية للضرائب أو تأكيداً نهائياً للأهلية.</p>
 

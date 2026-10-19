@@ -170,7 +170,7 @@ export default function VatRegistrationCheckerPage() {
         <section className="mx-auto max-w-3xl px-4 py-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">
+              <h2 className="text-xl font-bold text-ink">
                 📖 ما هي أداة فحص أهلية التسجيل في ضريبة القيمة المضافة وما أهميتها؟
               </h2>
             </div>
@@ -186,7 +186,7 @@ export default function VatRegistrationCheckerPage() {
 
             {/* When is registration mandatory? */}
             <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-5 space-y-2">
-              <h3 className="text-base font-extrabold text-rose-950 flex items-center gap-2">
+              <h3 className="text-base font-bold text-rose-950 flex items-center gap-2">
                 <span>🚨</span>
                 <span>متى يصبح التسجيل في ضريبة القيمة المضافة إلزامياً؟</span>
               </h3>
@@ -205,7 +205,7 @@ export default function VatRegistrationCheckerPage() {
 
             {/* When is registration voluntary? */}
             <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5 space-y-2">
-              <h3 className="text-base font-extrabold text-amber-950 flex items-center gap-2">
+              <h3 className="text-base font-bold text-amber-950 flex items-center gap-2">
                 <span>⭐</span>
                 <span>متى يمكن التسجيل اختيارياً في الضريبة؟</span>
               </h3>
@@ -225,7 +225,7 @@ export default function VatRegistrationCheckerPage() {
             {/* What is included vs excluded? */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-2">
-                <h4 className="text-xs font-black text-emerald-900 flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
                   <span>✅</span>
                   <span>ما يدخل في احتساب حد التسجيل:</span>
                 </h4>
@@ -237,7 +237,7 @@ export default function VatRegistrationCheckerPage() {
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
-                <h4 className="text-xs font-black text-ink flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-ink flex items-center gap-1.5">
                   <span>❌</span>
                   <span>ما يُستبعد ولا يدخل في حساب الحد:</span>
                 </h4>
@@ -251,7 +251,7 @@ export default function VatRegistrationCheckerPage() {
 
             {/* Non-resident registration */}
             <div className="rounded-xl border border-purple-200 bg-purple-50/60 p-5 space-y-2">
-              <h3 className="text-base font-extrabold text-purple-950 flex items-center gap-2">
+              <h3 className="text-base font-bold text-purple-950 flex items-center gap-2">
                 <span>🌐</span>
                 <span>التسجيل في ضريبة القيمة المضافة لغير المقيمين</span>
               </h3>
@@ -262,7 +262,7 @@ export default function VatRegistrationCheckerPage() {
 
             {/* Step-by-step Guide */}
             <div>
-              <h3 className="text-base font-extrabold text-ink mb-3">🔢 كيفية استخدام الحاسبة — خطوة بخطوة</h3>
+              <h3 className="text-base font-bold text-ink mb-3">🔢 كيفية استخدام الحاسبة — خطوة بخطوة</h3>
               <ol className="space-y-2 text-sm text-ink-secondary list-none">
                 {[
                   ["١", "حدد صفة الإقامة: مقيم في المملكة أو غير مقيم."],
@@ -273,7 +273,7 @@ export default function VatRegistrationCheckerPage() {
                   ["٦", "اقرأ النتيجة الفورية والمؤشر البصري والفرق المتبقي مع رابط التوجيه لـ ZATCA."],
                 ].map(([num, text]) => (
                   <li key={num} className="flex gap-2.5 items-start">
-                    <span className="shrink-0 h-5 w-5 rounded-full bg-brand text-white text-[11px] font-extrabold flex items-center justify-center mt-0.5">
+                    <span className="shrink-0 h-5 w-5 rounded-full bg-brand text-white text-[11px] font-bold flex items-center justify-center mt-0.5">
                       {num}
                     </span>
                     <span>{text}</span>
@@ -284,10 +284,10 @@ export default function VatRegistrationCheckerPage() {
 
             {/* Worked Numerical Examples */}
             <div>
-              <h3 className="text-base font-extrabold text-ink mb-3">📊 4 أمثلة عملية بالأرقام لحالات التسجيل</h3>
+              <h3 className="text-base font-bold text-ink mb-3">📊 4 أمثلة عملية بالأرقام لحالات التسجيل</h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-4 space-y-1.5">
-                  <span className="text-[11px] font-black text-rose-800 bg-rose-100 border border-rose-300 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold text-rose-800 bg-rose-100 border border-rose-300 px-2 py-0.5 rounded-full">
                     مثال 1: تسجيل إلزامي
                   </span>
                   <p className="text-xs font-bold text-ink mt-1">توريدات خاضعة: 420,000 ريال</p>
@@ -297,7 +297,7 @@ export default function VatRegistrationCheckerPage() {
                 </div>
 
                 <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 space-y-1.5">
-                  <span className="text-[11px] font-black text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
                     مثال 2: تسجيل اختياري
                   </span>
                   <p className="text-xs font-bold text-ink mt-1">توريدات خاضعة: 250,000 ريال</p>
@@ -307,7 +307,7 @@ export default function VatRegistrationCheckerPage() {
                 </div>
 
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-1.5">
-                  <span className="text-[11px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
                     مثال 3: دون حد التسجيل
                   </span>
                   <p className="text-xs font-bold text-ink mt-1">توريدات خاضعة: 150,000 ريال ومصروفات 40 ألف</p>
@@ -317,7 +317,7 @@ export default function VatRegistrationCheckerPage() {
                 </div>
 
                 <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4 space-y-1.5">
-                  <span className="text-[11px] font-black text-purple-800 bg-purple-100 border border-purple-300 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold text-purple-800 bg-purple-100 border border-purple-300 px-2 py-0.5 rounded-full">
                     مثال 4: استبعاد التوريدات المعفاة
                   </span>
                   <p className="text-xs font-bold text-ink mt-1">إجمالي 450 ألف منها 100 ألف إيجار سكني معفى</p>
@@ -356,14 +356,14 @@ export default function VatRegistrationCheckerPage() {
         {/* ── PART 3: FAQ Section (People Also Ask) ─────────────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 pb-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-6 border-b border-brand-border pb-4">
+            <h2 className="text-xl font-bold text-ink mb-6 border-b border-brand-border pb-4">
               ❓ الأسئلة الشائعة حول التسجيل في ضريبة القيمة المضافة بالسعودية
             </h2>
 
             <div className="space-y-5">
               {faqJsonLd.mainEntity.map((faq, i) => (
                 <div key={i} className="border-b border-brand-border/60 last:border-0 pb-5 last:pb-0">
-                  <h3 className="text-sm font-extrabold text-ink mb-2">{faq.name}</h3>
+                  <h3 className="text-sm font-bold text-ink mb-2">{faq.name}</h3>
                   <p className="text-sm text-ink-secondary leading-relaxed">{faq.acceptedAnswer.text}</p>
                 </div>
               ))}
@@ -383,7 +383,7 @@ export default function VatRegistrationCheckerPage() {
               { href: "/ar/sa/article-77-calculator", icon: "⚖️", title: "حاسبة تعويض المادة 77", desc: "حساب تعويض إنهاء العقد لسبب غير مشروع مع تطبيق حد الشهرين الأدنى للموظف أو المنشأة.", badge: "المادة 77", badgeColor: "bg-rose-100 text-rose-700" },
               { href: "/salary-calculator/saudi", icon: "💼", title: "حاسبة الراتب الصافي والتأمينات GOSI", desc: "احسب صافي الراتب بعد استقطاعات التأمينات وساند ومسيرات حماية الأجور.", badge: "GOSI", badgeColor: "bg-blue-100 text-blue-700" },
               { href: "/profit-margin-calculator", icon: "📈", title: "حاسبة هامش الربح والتسعير", desc: "احسب هامش الربح الإجمالي والصافي ومعدل الزيادة على التكلفة لمنتجاتك وخدماتك.", badge: "أعمال", badgeColor: "bg-amber-100 text-amber-700" },
-              { href: "/ar/sa", icon: "🇸🇦", title: "مجمع أدوات وحاسبات السعودية", desc: "دليل الحاسبات العمالية، والضريبية، والمالية المخصصة للمملكة في مكان واحد.", badge: "المجمع الشامل", badgeColor: "bg-emerald-600 text-white font-black" },
+              { href: "/ar/sa", icon: "🇸🇦", title: "مجمع أدوات وحاسبات السعودية", desc: "دليل الحاسبات العمالية، والضريبية، والمالية المخصصة للمملكة في مكان واحد.", badge: "المجمع الشامل", badgeColor: "bg-emerald-600 text-white font-bold" },
             ]}
           />
         </section>

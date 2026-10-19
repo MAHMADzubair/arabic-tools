@@ -176,7 +176,7 @@ const relatedTools = [
     title: "مجمع أدوات وحاسبات الإمارات",
     desc: "جميع الأدوات الضريبية والعمالية والمالية المخصصة للسوق الإماراتي.",
     badge: "الشامل",
-    badgeColor: "bg-emerald-700 text-white font-black",
+    badgeColor: "bg-emerald-700 text-white font-bold",
   },
 ];
 
@@ -207,7 +207,7 @@ export default function UaeVatRegistrationCheckerPage() {
             <div className="flex items-start gap-3">
               <span className="text-4xl shrink-0 mt-0.5">🏢</span>
               <div>
-                <h1 className="text-2xl font-black leading-snug sm:text-3xl">
+                <h1 className="text-2xl font-bold leading-snug sm:text-3xl">
                   حاسبة التسجيل في ضريبة القيمة المضافة في الإمارات
                 </h1>
                 <p className="mt-2 text-sm leading-relaxed text-indigo-100 max-w-xl">
@@ -247,7 +247,7 @@ export default function UaeVatRegistrationCheckerPage() {
 
           {/* ── Section 1: Threshold explanation ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">📏</span>
               ما هو حد التسجيل في ضريبة القيمة المضافة في الإمارات؟
             </h2>
@@ -268,10 +268,10 @@ export default function UaeVatRegistrationCheckerPage() {
               <table className="w-full text-xs border-collapse min-w-[500px]">
                 <thead>
                   <tr className="bg-indigo-50 text-indigo-900">
-                    <th className="border border-indigo-200 px-3 py-2.5 text-right font-extrabold w-1/4">الحالة</th>
-                    <th className="border border-rose-200 bg-rose-50 px-3 py-2.5 text-center font-extrabold text-rose-900">🚨 إلزامي</th>
-                    <th className="border border-amber-200 bg-amber-50 px-3 py-2.5 text-center font-extrabold text-amber-900">⭐ اختياري</th>
-                    <th className="border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-center font-extrabold text-emerald-900">✅ دون الحد</th>
+                    <th className="border border-indigo-200 px-3 py-2.5 text-right font-bold w-1/4">الحالة</th>
+                    <th className="border border-rose-200 bg-rose-50 px-3 py-2.5 text-center font-bold text-rose-900">🚨 إلزامي</th>
+                    <th className="border border-amber-200 bg-amber-50 px-3 py-2.5 text-center font-bold text-amber-900">⭐ اختياري</th>
+                    <th className="border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-center font-bold text-emerald-900">✅ دون الحد</th>
                   </tr>
                 </thead>
                 <tbody className="text-ink-secondary">
@@ -300,7 +300,7 @@ export default function UaeVatRegistrationCheckerPage() {
 
           {/* ── Section 2: What counts toward threshold ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🔢</span>
               ما الذي يدخل في حساب حد التسجيل؟
             </h2>
@@ -310,7 +310,7 @@ export default function UaeVatRegistrationCheckerPage() {
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-emerald-900 flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-emerald-900 flex items-center gap-1.5">
                   <span>✅</span><span>يُدرج في الحساب:</span>
                 </h3>
                 <ul className="text-xs text-emerald-800 space-y-1.5 leading-relaxed">
@@ -321,7 +321,7 @@ export default function UaeVatRegistrationCheckerPage() {
                 </ul>
               </div>
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-ink flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-ink flex items-center gap-1.5">
                   <span>❌</span><span>لا يُدرج في الحساب:</span>
                 </h3>
                 <ul className="text-xs text-ink-secondary space-y-1.5 leading-relaxed">
@@ -342,13 +342,13 @@ export default function UaeVatRegistrationCheckerPage() {
 
           {/* ── Section 3: Resident vs Non-resident ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🌐</span>
               ما الفرق بين المقيم وغير المقيم في التسجيل لـ VAT؟
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-indigo-200 bg-indigo-50/40 p-4 space-y-3">
-                <h3 className="text-sm font-extrabold text-indigo-900 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-indigo-900 flex items-center gap-2">
                   <span>🇦🇪</span>المنشأة المقيمة في الإمارات
                 </h3>
                 <ul className="text-xs text-indigo-800 space-y-1.5 leading-relaxed">
@@ -358,7 +358,7 @@ export default function UaeVatRegistrationCheckerPage() {
                 </ul>
               </div>
               <div className="rounded-xl border border-purple-200 bg-purple-50/40 p-4 space-y-3">
-                <h3 className="text-sm font-extrabold text-purple-900 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-purple-900 flex items-center gap-2">
                   <span>🌍</span>المنشأة غير المقيمة
                 </h3>
                 <ul className="text-xs text-purple-800 space-y-1.5 leading-relaxed">
@@ -379,7 +379,7 @@ export default function UaeVatRegistrationCheckerPage() {
 
           {/* ── Section 4: Worked Examples ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-1 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-1 flex items-center gap-2">
               <span className="text-2xl">🔢</span>
               أمثلة عملية
             </h2>
@@ -389,7 +389,7 @@ export default function UaeVatRegistrationCheckerPage() {
               {/* Example A */}
               <div className="rounded-xl border border-rose-200 bg-rose-50/30 p-4 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-black bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">مثال أ — التسجيل الإلزامي (تاريخي)</span>
+                  <span className="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">مثال أ — التسجيل الإلزامي (تاريخي)</span>
                 </div>
                 <p className="text-xs text-ink-secondary leading-relaxed">
                   مورّد معدات مكتبية في دبي: توريدات خاضعة خلال الأشهر الـ 12 الماضية = 35,000 درهم/شهر.
@@ -397,7 +397,7 @@ export default function UaeVatRegistrationCheckerPage() {
                 <div className="rounded-lg bg-white border border-rose-100 p-3 text-xs font-mono space-y-1">
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">35,000 × 12 شهراً</span><span className="font-bold">= 420,000 درهم</span></div>
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">الحد الإلزامي</span><span className="font-bold">375,000 درهم</span></div>
-                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-rose-800">الزيادة عن الحد</span><span className="font-black text-rose-700">+ 45,000 درهم</span></div>
+                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-rose-800">الزيادة عن الحد</span><span className="font-bold text-rose-700">+ 45,000 درهم</span></div>
                 </div>
                 <p className="text-[11px] text-rose-800 bg-rose-50 rounded p-1.5 font-bold">
                   → تجاوزت التوريدات حد 375,000 درهم خلال الـ 12 شهراً الماضية — التسجيل الإلزامي واجب.
@@ -406,14 +406,14 @@ export default function UaeVatRegistrationCheckerPage() {
 
               {/* Example B */}
               <div className="rounded-xl border border-amber-200 bg-amber-50/30 p-4 space-y-2">
-                <span className="text-xs font-black bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">مثال ب — التسجيل الاختياري</span>
+                <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">مثال ب — التسجيل الاختياري</span>
                 <p className="text-xs text-ink-secondary leading-relaxed">
                   مستشار تسويق: مبيعات سنوية 240,000 درهم، مصروفات خاضعة (إيجار مكتب + خدمات) = 50,000 درهم.
                 </p>
                 <div className="rounded-lg bg-white border border-amber-100 p-3 text-xs font-mono space-y-1">
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">التوريدات</span><span className="font-bold">240,000 درهم</span></div>
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">الحد الإلزامي 375,000</span><span className="font-bold text-ink-muted">لم يُتجاوز</span></div>
-                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-amber-800">الحد الاختياري 187,500</span><span className="font-black text-amber-700">تجاوزت بـ 52,500 ↑</span></div>
+                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-amber-800">الحد الاختياري 187,500</span><span className="font-bold text-amber-700">تجاوزت بـ 52,500 ↑</span></div>
                 </div>
                 <p className="text-[11px] text-amber-800 bg-amber-50 rounded p-1.5 font-bold">
                   → فوق الاختياري لكن دون الإلزامي — يحق التقدم للتسجيل الاختياري للاستفادة من استرداد ضريبة المدخلات.
@@ -422,14 +422,14 @@ export default function UaeVatRegistrationCheckerPage() {
 
               {/* Example C */}
               <div className="rounded-xl border border-rose-200 bg-rose-50/30 p-4 space-y-2">
-                <span className="text-xs font-black bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">مثال ج — اختبار الـ 30 يوماً القادمة</span>
+                <span className="text-xs font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">مثال ج — اختبار الـ 30 يوماً القادمة</span>
                 <p className="text-xs text-ink-secondary leading-relaxed">
                   شركة مقاولات وقّعت عقداً بقيمة 420,000 درهم يبدأ تنفيذه خلال أسبوعين ويُنجز كاملاً خلال 30 يوماً.
                 </p>
                 <div className="rounded-lg bg-white border border-rose-100 p-3 text-xs font-mono space-y-1">
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">قيمة العقد الموقع</span><span className="font-bold">420,000 درهم</span></div>
                   <div className="flex justify-between"><span className="font-sans text-ink-secondary">نافذة التوقع</span><span className="font-bold">30 يوماً</span></div>
-                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-rose-800">الحد الإلزامي</span><span className="font-black text-rose-700">375,000 — مُتجاوَز</span></div>
+                  <div className="flex justify-between border-t pt-1"><span className="font-sans font-bold text-rose-800">الحد الإلزامي</span><span className="font-bold text-rose-700">375,000 — مُتجاوَز</span></div>
                 </div>
                 <p className="text-[11px] text-rose-800 bg-rose-50 rounded p-1.5 font-bold">
                   → اختبار الـ 30 يوماً يُفعَّل — يجب التسجيل قبل بدء التوريد. الدليل: العقد الموقع أو أمر الشراء (LPO).
@@ -440,7 +440,7 @@ export default function UaeVatRegistrationCheckerPage() {
 
           {/* ── Section 5: Supporting Documents ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">📁</span>
               ما المستندات التي قد تحتاجها للتسجيل في VAT؟
             </h2>
@@ -480,7 +480,7 @@ export default function UaeVatRegistrationCheckerPage() {
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl shrink-0">📦</span>
                 <div>
-                  <p className="text-xs font-extrabold text-indigo-900">
+                  <p className="text-xs font-bold text-indigo-900">
                     هل تحتاج إلى أمر شراء (LPO) لإثبات إيراداتك المتوقعة؟
                   </p>
                   <p className="text-[11px] text-indigo-700 mt-0.5">
@@ -497,7 +497,7 @@ export default function UaeVatRegistrationCheckerPage() {
 
           {/* ── Section 6: EmaraTax Registration Process ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">💻</span>
               كيف يتم التسجيل في VAT عبر بوابة EmaraTax؟
             </h2>
@@ -516,7 +516,7 @@ export default function UaeVatRegistrationCheckerPage() {
                 { n: "٧", title: "تقديم الطلب ومتابعته",              desc: "قدّم الطلب وراقب حالته عبر البوابة. تتولى FTA مراجعة الطلب وقد تطلب معلومات إضافية." },
               ].map((step) => (
                 <li key={step.n} className="flex items-start gap-3">
-                  <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {step.n}
                   </span>
                   <div>
@@ -541,7 +541,7 @@ export default function UaeVatRegistrationCheckerPage() {
           {/* ── Section 7: Sole establishments + deregistration note ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-5">
             <div>
-              <h2 className="text-xl font-extrabold text-ink mb-3 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-ink mb-3 flex items-center gap-2">
                 <span className="text-2xl">👤</span>
                 تنبيهات خاصة — المؤسسات الفردية والإلغاء
               </h2>
@@ -549,7 +549,7 @@ export default function UaeVatRegistrationCheckerPage() {
 
             {/* Sole establishments */}
             <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 space-y-2">
-              <h3 className="text-sm font-extrabold text-amber-900 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-amber-900 flex items-center gap-2">
                 <span>🏪</span>أصحاب المؤسسات الفردية المتعددة
               </h3>
               <p className="text-xs text-amber-800 leading-relaxed">
@@ -562,7 +562,7 @@ export default function UaeVatRegistrationCheckerPage() {
 
             {/* Deregistration note */}
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2">
-              <h3 className="text-sm font-extrabold text-ink flex items-center gap-2">
+              <h3 className="text-sm font-bold text-ink flex items-center gap-2">
                 <span>🔄</span>إلغاء التسجيل في VAT
               </h3>
               <p className="text-xs text-ink-secondary leading-relaxed">
@@ -585,7 +585,7 @@ export default function UaeVatRegistrationCheckerPage() {
 
           {/* ── Section 8: Official Sources ── */}
           <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
-            <h2 className="text-xl font-extrabold text-ink mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
               <span className="text-2xl">🏛️</span>
               المصادر الرسمية
             </h2>
@@ -638,7 +638,7 @@ export default function UaeVatRegistrationCheckerPage() {
         <section className="mx-auto max-w-3xl px-4 py-2">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-5">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">❓ الأسئلة الشائعة</h2>
+              <h2 className="text-xl font-bold text-ink">❓ الأسئلة الشائعة</h2>
               <p className="text-xs text-ink-muted mt-1">أكثر الأسئلة تكراراً حول التسجيل في ضريبة القيمة المضافة الإماراتية</p>
             </div>
             <div className="space-y-0">
@@ -648,7 +648,7 @@ export default function UaeVatRegistrationCheckerPage() {
                   open={i === 0}>
                   <summary className="flex items-center justify-between gap-3 font-bold text-ink text-sm list-none select-none">
                     <span>{item.q}</span>
-                    <span className="text-brand font-black text-lg transition-transform group-open:rotate-45 shrink-0">+</span>
+                    <span className="text-brand font-bold text-lg transition-transform group-open:rotate-45 shrink-0">+</span>
                   </summary>
                   <p className="mt-3 text-sm text-ink-secondary leading-relaxed pr-4">{item.a}</p>
                 </details>

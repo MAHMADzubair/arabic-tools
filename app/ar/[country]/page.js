@@ -27,7 +27,7 @@ const COUNTRY_HUBS = {
     stats: [
       { label: "العملة الرسمية", value: "ريال سعودي (SAR)", icon: "🇸🇦" },
       { label: "ضريبة القيمة المضافة", value: "15% (ZATCA)", icon: "🧾" },
-      { label: "التأمينات الاجتماعية", value: "GOSI 10% (معاشات وساند)", icon: "🛡️" },
+      { label: "التأمينات الاجتماعية", value: "GOSI (9.75% إلى 10.75%)", icon: "🛡️" },
       { label: "نظام العمل والعمال", value: "المرسوم الملكي م/51", icon: "⚖️" },
       { label: "معدل العمل الإضافي", value: "150% (المادة 107)", icon: "⏱️" },
       { label: "منصة توثيق العقود", value: "قوى (Qiwa)", icon: "💼" },
@@ -38,12 +38,12 @@ const COUNTRY_HUBS = {
         nameAr: "حاسبة الراتب الصافي في السعودية",
         nameEn: "Saudi Net Salary Calculator",
         icon: "💰",
-        badge: "GOSI وساند 10%",
+        badge: "GOSI وساند",
         badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
         href: "/salary-calculator/saudi",
-        desc: "احسب صافي راتبك المحول للبنك بعد خصم 10% للتأمينات وساند للمواطنين، مع تفصيل بدلات السكن والنقل ومنصة قوى.",
+        desc: "احسب صافي راتبك المحول للبنك بعد استقطاع التأمينات وساند للمواطنين (أو إعفاء الوافدين)، مع تفصيل بدلات السكن والنقل ومنصة قوى.",
         highlights: [
-          "خصم 10% تأمينات وساند للمواطن",
+          "استقطاع التأمينات وساند للمواطنين",
           "حصة المنشأة 11.75% مسددة عنك",
           "سقف أجر الاشتراك 45,000 ريال",
           "0% ضريبة دخل شخصية",
@@ -103,7 +103,7 @@ const COUNTRY_HUBS = {
         nameEn: "Saudi Final Settlement Calculator",
         icon: "📋",
         badge: "تصفية كاملة 2026",
-        badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200 font-black",
+        badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200 font-bold",
         href: "/ar/sa/final-settlement-calculator",
         desc: "تصفية شاملة لجميع مستحقات العامل: مكافأة نهاية الخدمة، كسر آخر راتب، رصيد الإجازات (م/111)، وبدل الإشعار مع نموذج تقديري قابل للطباعة.",
         highlights: [
@@ -135,7 +135,7 @@ const COUNTRY_HUBS = {
         nameEn: "Article 77 Termination Calculator",
         icon: "⚖️",
         badge: "الفصل لسبب غير مشروع",
-        badgeColor: "bg-rose-50 text-rose-800 border-rose-200 font-black",
+        badgeColor: "bg-rose-50 text-rose-800 border-rose-200 font-bold",
         href: "/ar/sa/article-77-calculator",
         desc: "احسب تعويض إنهاء العقد لسبب غير مشروع بموجب المادة (77): 15 يوماً عن كل سنة، أو أجر المدة المتبقية مع تطبيق حد الشهرين الأدنى.",
         highlights: [
@@ -205,7 +205,7 @@ const COUNTRY_HUBS = {
     guidePoints: [
       {
         title: "1. نظام الرواتب والاستقطاعات والتأمينات (GOSI):",
-        body: "لا تفرض المملكة أي ضريبة دخل على رواتب الأفراد المواطنين أو المقيمين. الاستقطاع المالي الوحيد من راتب الموظف السعودي هو اشتراك التأمينات الاجتماعية (GOSI) بنسبة 10% (9% للمعاشات التقاعدية + 1% لنظام التأمين ضد التعطل ساند) محسوبة على الراتب الأساسي وبدل السكن بحد أقصى 45 ألف ريال. بينما يتحمل صاحب العمل 11.75% عن السعودي، و2% أخطار مهنية عن المقيم دون أي استقطاع من راتب المقيم.",
+        body: "لا تفرض المملكة أي ضريبة دخل على رواتب الأفراد المواطنين أو المقيمين. الاستقطاع المالي الوحيد من راتب الموظف السعودي هو اشتراك التأمينات الاجتماعية (GOSI) بنسبة 9.75% في النظام السابق (9% للمعاشات التقاعدية + 0.75% لنظام ساند) وتتدرج للملتحقين الجدد حتى 11% للمعاشات، محسوبة على الراتب الأساسي وبدل السكن بحد أقصى 45 ألف ريال. بينما يتحمل صاحب العمل 11.75% عن السعودي في النظام السابق، و2% أخطار مهنية عن المقيم دون أي استقطاع من راتب المقيم.",
       },
       {
         title: "2. مكافأة نهاية الخدمة والأجر الفعلي (المادتان 84 و 85):",
@@ -225,11 +225,11 @@ const COUNTRY_HUBS = {
       scenario: "موظف سعودي براتب أساسي 10,000 ريال، وبدل سكن 2,500 ريال، وبدل نقل 1,000 ريال (إجمالي الراتب 13,500 ريال). أنجز 10 ساعات عمل إضافية عادية في الشهر، ويستعد بعد 4 سنوات لتسوية استقالته:",
       items: [
         { label: "الأجر الخاضع للتأمينات (أساسي + سكن)", value: "12,500.00 ر.س" },
-        { label: "خصم التأمينات الاجتماعية (10% GOSI وساند)", value: "- 1,250.00 ر.س" },
-        { label: "صافي الراتب الشهري الاعتيادي", value: "12,250.00 ر.س" },
+        { label: "خصم التأمينات الاجتماعية (9.75% GOSI وساند)", value: "- 1,218.75 ر.س" },
+        { label: "صافي الراتب الشهري الاعتيادي", value: "12,281.25 ر.س" },
         { label: "أجر الساعة الأساسي (10,000 ÷ 240 ساعة)", value: "41.67 ر.س / ساعة" },
         { label: "بدل العمل الإضافي لـ 10 ساعات (41.67 × 1.5 × 10)", value: "+ 625.00 ر.س" },
-        { label: "إجمالي المحول لحسابه البنكي للشهر", value: "12,875.00 ر.س" },
+        { label: "إجمالي المحول لحسابه البنكي للشهر", value: "12,906.25 ر.س" },
         { label: "الأجر الفعلي لحساب نهاية الخدمة (الراتب كاملاً)", value: "13,500.00 ر.س" },
         { label: "أصل المكافأة عن 4 سنوات (4 × 0.5 × 13,500)", value: "27,000.00 ر.س" },
         { label: "المستحق عند الاستقالة بعد 4 سنوات (الثلث م/85)", value: "9,000.00 ر.س" },
@@ -238,7 +238,7 @@ const COUNTRY_HUBS = {
     faqs: [
       {
         q: "ما هي الاستقطاعات الإلزامية من راتب الموظف في السعودية؟",
-        a: "الاستقطاع الإلزامي الوحيد هو اشتراك التأمينات الاجتماعية ونظام ساند بنسبة 10% من (الراتب الأساسي + بدل السكن) للمواطنين السعوديين فقط بحد أقصى 45 ألف ريال لوعاء الاشتراك. لا توجد أي ضريبة دخل على رواتب المواطنين أو المقيمين بالمملكة.",
+        a: "الاستقطاع الإلزامي الوحيد هو اشتراك التأمينات الاجتماعية ونظام ساند بنسبة 9.75% للنظام السابق (أو النسبة المتدرجة للنظام الجديد) من (الراتب الأساسي + بدل السكن) للمواطنين السعوديين فقط بحد أقصى 45 ألف ريال لوعاء الاشتراك، بينما لا يُستقطع أي قسط من المقيم. لا توجد أي ضريبة دخل على رواتب المواطنين أو المقيمين بالمملكة.",
       },
       {
         q: "كيف تحسب مكافأة نهاية الخدمة إذا استقال الموظف في السعودية؟",
@@ -345,7 +345,7 @@ const COUNTRY_HUBS = {
         nameEn: "UAE Final Settlement Calculator",
         icon: "📋",
         badge: "تصفية كاملة 2026",
-        badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200 font-black",
+        badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200 font-bold",
         href: "/ar/ae/final-settlement-calculator",
         desc: "تصفية شاملة لجميع مستحقات العامل في الإمارات: مكافأة نهاية الخدمة (قانون 33 م 51)، آخر راتب، رصيد الإجازات، وبدل الإنذار مع نموذج قابل للطباعة.",
         highlights: [
@@ -361,7 +361,7 @@ const COUNTRY_HUBS = {
         nameEn: "UAE Notice Period Calculator",
         icon: "⏳",
         badge: "المادة 43 قانون العمل",
-        badgeColor: "bg-blue-50 text-blue-800 border-blue-200 font-black",
+        badgeColor: "bg-blue-50 text-blue-800 border-blue-200 font-bold",
         href: "/ar/ae/notice-period-calculator",
         desc: "احسب مدة الإنذار وتاريخ آخر يوم عمل والأيام غير المنفذة وبدل الإنذار التقديري للموظف أو صاحب العمل وفق المادة 43.",
         highlights: [
@@ -623,7 +623,7 @@ export default async function CountryPage({ params }) {
             </span>
           </div>
 
-          <h1 className="mb-4 text-3xl font-black leading-tight sm:text-5xl">
+          <h1 className="mb-4 text-3xl font-bold leading-tight sm:text-5xl">
             {hub ? hub.heroTitle : `الأدوات المالية ونظام العمل لـ ${country.nameAr}`}
           </h1>
 
@@ -707,11 +707,11 @@ export default async function CountryPage({ params }) {
           <section id="core-cluster" className="scroll-mt-20">
             <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 border-b border-brand-border pb-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 text-xs font-extrabold text-brand uppercase tracking-wider mb-1">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand uppercase tracking-wider mb-1">
                   <span>💎</span>
                   <span>الحزمة الأساسية الأكثر طلباً</span>
                 </div>
-                <h2 className="text-2xl font-black text-ink">
+                <h2 className="text-2xl font-bold text-ink">
                   أهم {hub.primaryTools.length} حاسبات مالية وعمالية لـ {country.nameAr}
                 </h2>
               </div>
@@ -735,7 +735,7 @@ export default async function CountryPage({ params }) {
                           {tool.icon}
                         </div>
                         <div>
-                          <h3 className="text-lg font-black text-ink group-hover:text-brand transition-colors">
+                          <h3 className="text-lg font-bold text-ink group-hover:text-brand transition-colors">
                             {tool.nameAr}
                           </h3>
                           <span className="text-[11px] text-ink-muted font-medium block">
@@ -743,7 +743,7 @@ export default async function CountryPage({ params }) {
                           </span>
                         </div>
                       </div>
-                      <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-extrabold ${tool.badgeColor}`}>
+                      <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-bold ${tool.badgeColor}`}>
                         {tool.badge}
                       </span>
                     </div>
@@ -783,7 +783,7 @@ export default async function CountryPage({ params }) {
                   <span>🚀</span>
                   <span>{hub.upcomingTool.tag}</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-ink">
+                <h3 className="text-xl sm:text-2xl font-bold text-ink">
                   {hub.upcomingTool.title}
                 </h3>
                 <p className="text-xs sm:text-sm leading-relaxed text-ink-secondary">
@@ -803,7 +803,7 @@ export default async function CountryPage({ params }) {
 
               <div className="shrink-0 flex flex-col items-center justify-center rounded-2xl bg-white border border-brand-border p-5 text-center shadow-sm">
                 <span className="text-3xl mb-1">📋</span>
-                <span className="text-xs font-extrabold text-brand-dark">جاهزية الإطلاق</span>
+                <span className="text-xs font-bold text-brand-dark">جاهزية الإطلاق</span>
                 <span className="mt-1 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold text-amber-800">
                   {hub.upcomingTool.status}
                 </span>
@@ -817,7 +817,7 @@ export default async function CountryPage({ params }) {
         <section id="additional-tools">
           <div className="mb-6 flex items-center justify-between border-b border-brand-border pb-3">
             <div>
-              <h3 className="text-xl font-black text-ink">
+              <h3 className="text-xl font-bold text-ink">
                 أدوات مالية وعملية مساندة لمستخدمي {country.nameAr}
               </h3>
               <p className="text-xs text-ink-muted">
@@ -856,11 +856,11 @@ export default async function CountryPage({ params }) {
         {hub && (
           <section className="rounded-3xl border border-brand-border bg-white p-6 sm:p-10 shadow-sm space-y-8">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-3 py-1 text-xs font-extrabold text-brand mb-2">
+              <div className="inline-flex items-center gap-2 rounded-full bg-brand-light px-3 py-1 text-xs font-bold text-brand mb-2">
                 <span>📚</span>
                 <span>الدليل المالي والتنفيذي</span>
               </div>
-              <h2 className="text-2xl font-black text-ink sm:text-3xl">
+              <h2 className="text-2xl font-bold text-ink sm:text-3xl">
                 {hub.guideTitle}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-ink-secondary">
@@ -871,7 +871,7 @@ export default async function CountryPage({ params }) {
             <div className="grid gap-6 md:grid-cols-2">
               {hub.guidePoints.map((point, index) => (
                 <div key={index} className="rounded-2xl border border-brand-border/70 bg-brand-surface/40 p-5 space-y-2">
-                  <h4 className="text-sm font-extrabold text-brand-dark">
+                  <h4 className="text-sm font-bold text-brand-dark">
                     {point.title}
                   </h4>
                   <p className="text-xs leading-relaxed text-ink-secondary">
@@ -885,10 +885,10 @@ export default async function CountryPage({ params }) {
             {hub.example && (
               <div className="rounded-2xl border-2 border-brand/20 bg-gradient-to-br from-white to-brand-surface p-6 shadow-xs">
                 <div className="mb-4">
-                  <span className="rounded-md bg-brand px-2.5 py-1 text-[10px] font-extrabold text-white">
+                  <span className="rounded-md bg-brand px-2.5 py-1 text-[10px] font-bold text-white">
                     حالة تطبيقية واقعية بالأرقام
                   </span>
-                  <h3 className="mt-2 text-lg font-black text-ink">
+                  <h3 className="mt-2 text-lg font-bold text-ink">
                     {hub.example.title}
                   </h3>
                   <p className="mt-1 text-xs text-ink-secondary">
@@ -905,7 +905,7 @@ export default async function CountryPage({ params }) {
                       <span className="text-[11px] font-semibold text-ink-muted">
                         {item.label}
                       </span>
-                      <span className="text-sm font-extrabold text-brand-dark mt-1">
+                      <span className="text-sm font-bold text-brand-dark mt-1">
                         {item.value}
                       </span>
                     </div>
@@ -920,11 +920,11 @@ export default async function CountryPage({ params }) {
         {hub && (
           <section id="faqs" className="space-y-6">
             <div className="border-b border-brand-border pb-3">
-              <div className="inline-flex items-center gap-1.5 text-xs font-extrabold text-brand uppercase tracking-wider mb-1">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand uppercase tracking-wider mb-1">
                 <span>❓</span>
                 <span>الأسئلة الشائعة والإيضاحات</span>
               </div>
-              <h2 className="text-2xl font-black text-ink">
+              <h2 className="text-2xl font-bold text-ink">
                 أهم الأسئلة الشائعة حول أنظمة العمل والضرائب في {country.nameAr}
               </h2>
             </div>
@@ -937,7 +937,7 @@ export default async function CountryPage({ params }) {
                 >
                   <summary className="flex items-center justify-between font-bold text-ink text-sm sm:text-base list-none">
                     <span>{faq.q}</span>
-                    <span className="text-brand font-black text-lg transition-transform group-open:rotate-45 shrink-0 pr-2">
+                    <span className="text-brand font-bold text-lg transition-transform group-open:rotate-45 shrink-0 pr-2">
                       +
                     </span>
                   </summary>
@@ -960,7 +960,7 @@ export default async function CountryPage({ params }) {
                 <div key={cat.id} id={cat.id} className="scroll-mt-20">
                   <div className="mb-4 flex items-center gap-3">
                     <span className="text-2xl">{cat.icon}</span>
-                    <h3 className="text-xl font-extrabold text-ink">{cat.nameAr}</h3>
+                    <h3 className="text-xl font-bold text-ink">{cat.nameAr}</h3>
                     <div className="h-px flex-1 bg-brand-border" />
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
