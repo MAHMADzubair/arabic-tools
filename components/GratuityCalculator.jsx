@@ -27,15 +27,15 @@ const COUNTRIES = [
         if (years < 2) {
           percentage = 0;
           note = "لا يستحق العامل مكافأة إذا استقال قبل إتمام سنتين (المادة 85)";
-        } else if (years < 5) {
+        } else if (years <= 5) {
           percentage = 1 / 3;
-          note = "يستحق ثلث المكافأة (33.3٪) للاستقالة بين سنتين و5 سنوات";
+          note = "يستحق ثلث المكافأة (33.3٪) للاستقالة بما لا يزيد على 5 سنوات (المادة 85)";
         } else if (years < 10) {
           percentage = 2 / 3;
-          note = "يستحق ثلثي المكافأة (66.7٪) للاستقالة بين 5 و10 سنوات";
+          note = "يستحق ثلثي المكافأة (66.7٪) للاستقالة لأكثر من 5 وأقل من 10 سنوات (المادة 85)";
         } else {
           percentage = 1.0;
-          note = "يستحق المكافأة كاملة (100٪) للاستقالة بعد 10 سنوات خدمة";
+          note = "يستحق المكافأة كاملة (100٪) للاستقالة بعد 10 سنوات خدمة (المادة 85)";
         }
       } else if (reason === "female_special") {
         percentage = 1.0;
@@ -57,8 +57,8 @@ const COUNTRIES = [
       { label: "السنوات التالية (بعد الـ 5)", rate: "أجر شهر كامل عن كل سنة" },
       { label: "حالة الاستقالة (أقل من سنتين)", rate: "لا يستحق شيئاً" },
       { label: "حالة الاستقالة (2 إلى 5 سنوات)", rate: "ثلث المكافأة (33.3٪)" },
-      { label: "حالة الاستقالة (5 إلى 10 سنوات)", rate: "ثلثا المكافأة (66.7٪)" },
-      { label: "حالة الاستقالة (أكثر من 10 سنوات)", rate: "المكافأة كاملة (100٪)" },
+      { label: "حالة الاستقالة (أكثر من 5 إلى أقل من 10 سنوات)", rate: "ثلثا المكافأة (66.7٪)" },
+      { label: "حالة الاستقالة (10 سنوات فأكثر)", rate: "المكافأة كاملة (100٪)" },
     ],
   },
   {
@@ -341,7 +341,7 @@ const CSS = `
 @media(min-width:1024px){.gr-grid{grid-template-columns:minmax(0,3fr) minmax(0,2fr);align-items:start}.gr-sticky{position:sticky;top:96px}}
 .gr-card{background:var(--g-sf);border:1px solid var(--g-ln);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px}
 .gr-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--g-ln);padding-bottom:12px}
-.gr-head h2{font-size:18px;font-weight:800}
+.gr-head h2{font-size:18px;font-weight:700}
 .gr-g2{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
 @media(min-width:640px){.gr-g2{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .gr-c4{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -351,13 +351,13 @@ const CSS = `
 .gr-in:hover{border-color:var(--g-ink)}
 .gr-pre{position:relative}
 .gr-pre .gr-in{padding-inline-start:52px}
-.gr-pre span{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:800;color:var(--g-mu);pointer-events:none}
+.gr-pre span{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--g-mu);pointer-events:none}
 .gr :focus-visible{outline:3px solid var(--g-ink);outline-offset:2px}
 .gr-in:focus-visible{outline:none;border-color:var(--g-ac);box-shadow:0 0 0 3px var(--g-ac)}
 .gr-tg{border:1.5px solid var(--g-mu3);border-radius:12px;background:var(--g-sf);color:var(--g-ink);padding:10px 12px;text-align:start;font:inherit;font-size:15px;font-weight:600;cursor:pointer;min-height:48px;transition:border-color .15s,background-color .15s}
 .gr-tg:hover{border-color:var(--g-ac)}
 .gr-tg small{display:block;font-weight:400;font-size:13px;color:var(--g-mu);margin-top:2px;line-height:1.6}
-.gr-tg[aria-pressed="true"]{background:var(--g-ac);color:var(--g-on);border-color:var(--g-ac);font-weight:800}
+.gr-tg[aria-pressed="true"]{background:var(--g-ac);color:var(--g-on);border-color:var(--g-ac);font-weight:700}
 .gr-tg[aria-pressed="true"]:hover{background:var(--g-ac-h);border-color:var(--g-ac-h)}
 .gr-tg[aria-pressed="true"] small{color:var(--g-on)}
 .gr-tg.c{text-align:center}
@@ -377,7 +377,7 @@ const CSS = `
 .gr-note p{margin:4px 0 0}
 .gr-hero{background:var(--g-ac);color:var(--g-on);border-radius:16px;padding:24px 22px;display:flex;flex-direction:column;gap:14px}
 .gr-hero p{margin:0}
-.gr-big{font-size:clamp(32px,6vw,44px);font-weight:900;line-height:1.2;overflow-wrap:anywhere}
+.gr-big{font-size:clamp(2rem,5vw,2.5rem);font-weight:700;line-height:1.1;overflow-wrap:anywhere}
 .gr-law{border:1.5px solid var(--g-on);border-radius:12px;background:rgba(255,255,255,.55);padding:10px 12px;font-size:15px}
 .gr-btn{border:1.5px solid var(--g-ink);border-radius:12px;background:var(--g-sf);color:var(--g-ink);padding:10px 14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;min-height:48px;text-align:center;text-decoration:none;display:inline-flex;justify-content:center;align-items:center;transition:background-color .15s,color .15s}
 .gr-btn:hover{background:var(--g-ink);color:var(--g-bg)}
@@ -387,14 +387,14 @@ const CSS = `
 .gr-line{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--g-ln);font-size:15px}
 .gr-line span{color:var(--g-mu)}
 .gr-line b{white-space:nowrap}
-.gr-final{display:flex;justify-content:space-between;gap:12px;padding:14px;border-radius:12px;background:var(--g-ac);color:var(--g-on);font-weight:900;font-size:16px}
+.gr-final{display:flex;justify-content:space-between;gap:12px;padding:14px;border-radius:12px;background:var(--g-ac);color:var(--g-on);font-weight:700;font-size:16px}
 .gr-tier{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--g-ln);font-size:14px}
 .gr-tier:last-child{border-bottom:0}
 .gr-tier b{background:var(--g-bg);border-radius:6px;padding:2px 8px;font-size:13px;text-align:start}
-.gr-sub{margin:0 0 6px;font-size:16px;font-weight:800}
+.gr-sub{margin:0 0 6px;font-size:16px;font-weight:700}
 .gr-link{border:1.5px solid var(--g-ink);border-radius:16px;background:var(--g-sf);padding:16px;display:flex;flex-direction:column;gap:10px;font-size:15px}
 .gr-link p{margin:0}
-.gr-link a{background:var(--g-ac);color:var(--g-on);border-radius:12px;padding:10px 14px;font-weight:800;text-align:center;text-decoration:none;min-height:48px;display:flex;align-items:center;justify-content:center;transition:background-color .15s,color .15s}
+.gr-link a{background:var(--g-ac);color:var(--g-on);border-radius:12px;padding:10px 14px;font-weight:700;text-align:center;text-decoration:none;min-height:48px;display:flex;align-items:center;justify-content:center;transition:background-color .15s,color .15s}
 .gr-link a:hover{background:var(--g-ink);color:var(--g-bg)}
 @media print{.gr-noprint{display:none!important}.gr-sticky{position:static}.gr-hero,.gr-final{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 @media (prefers-reduced-motion:reduce){.gr *{transition:none!important}}
@@ -500,21 +500,55 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
       };
     }
 
-    if (!startDate || !endDate) return { totalMonths: 0, years: 0, months: 0, decimalYears: 0, label: "" };
+    if (!startDate || !endDate) return { totalMonths: 0, years: 0, months: 0, days: 0, decimalYears: 0, label: "" };
     const s = parseLocal(startDate);
     const e = parseLocal(endDate);
-    if (e <= s) return { totalMonths: 0, years: 0, months: 0, decimalYears: 0, label: "تاريخ النهاية يجب أن يكون بعد البداية" };
+    if (isNaN(s.getTime()) || isNaN(e.getTime()) || e <= s) {
+      return { totalMonths: 0, years: 0, months: 0, days: 0, decimalYears: 0, label: "تاريخ النهاية يجب أن يكون بعد البداية" };
+    }
 
-    let diffMonths = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
-    if (e.getDate() < s.getDate()) diffMonths -= 1;
-    const safeMonths = Math.max(0, diffMonths);
-    const y = Math.floor(safeMonths / 12);
-    const m = safeMonths % 12;
+    const sy = s.getFullYear(), sm = s.getMonth() + 1, sd = s.getDate();
+    const ey = e.getFullYear(), em = e.getMonth() + 1, ed = e.getDate();
+
+    let y = ey - sy;
+    let m = em - sm;
+    let d = ed - sd;
+
+    // Handle month-end boundaries (e.g. Jan 31 to Feb 28/29)
+    const isStartMonthEnd = sd === new Date(sy, sm, 0).getDate();
+    const isEndMonthEnd = ed === new Date(ey, em, 0).getDate();
+
+    if (isStartMonthEnd && isEndMonthEnd) {
+      d = 0;
+    } else if (d < 0) {
+      m -= 1;
+      const prevMonthDays = new Date(ey, em - 1, 0).getDate();
+      d += prevMonthDays;
+    }
+
+    if (m < 0) {
+      y -= 1;
+      m += 12;
+    }
+
+    // Days in relevant month for exact fractional proration of residual d days
+    const daysInMonthForProration = ed >= sd ? new Date(ey, em, 0).getDate() : new Date(ey, em - 1, 0).getDate();
+    const fractionalMonth = d > 0 ? d / daysInMonthForProration : 0;
+    const totalMonths = y * 12 + m + fractionalMonth;
+
+    const parts = [];
+    if (y > 0) parts.push(`${y} سنة`);
+    if (m > 0) parts.push(`${m} شهر`);
+    if (d > 0) parts.push(`${d} يوم`);
+    const label = parts.length ? parts.join(" و") : "أقل من يوم";
 
     return {
-      totalMonths: safeMonths, years: y, months: m,
-      decimalYears: Number((safeMonths / 12).toFixed(2)),
-      label: `${y} سنة ${m > 0 ? `و${m} شهر` : ""}`,
+      totalMonths,
+      years: y,
+      months: m,
+      days: d,
+      decimalYears: Number((totalMonths / 12).toFixed(2)),
+      label,
     };
   }, [durationMode, manualYears, manualMonths, startDate, endDate]);
 
@@ -569,7 +603,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
 
       {/* Header */}
       <header style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: "clamp(26px,5vw,38px)", fontWeight: 900 }}>حاسبة مكافأة نهاية الخدمة</h1>
+        <h1 style={{ fontSize: "clamp(1.5rem,5vw,2.25rem)", fontWeight: 700, lineHeight: 1.3 }}>حاسبة مكافأة نهاية الخدمة</h1>
         <p style={{ margin: "10px 0 0", maxWidth: 640, color: "var(--g-mu)" }}>
           احسب مستحقاتك القانونية وفق أنظمة العمل في 7 دول عربية وخليجية، مع حالات الاستقالة والفصل والتقاعد.
         </p>
@@ -603,7 +637,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
               ))}
             </div>
             <div className="gr-box">
-              <p style={{ fontWeight: 800 }}>{country.law}</p>
+              <p style={{ fontWeight: 700 }}>{country.law}</p>
               <p className="m">{country.minYearsNote}</p>
             </div>
           </section>
@@ -681,7 +715,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
           <section className="gr-hero">
             <div className="gr-row">
               <p style={{ fontSize: 15, fontWeight: 700 }}>صافي مكافأة نهاية الخدمة المستحقة</p>
-              <p style={{ fontSize: 14, fontWeight: 800, border: "1.5px solid #0D0D0D", borderRadius: 999, padding: "1px 12px" }}>{country.name}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, border: "1.5px solid #0D0D0D", borderRadius: 999, padding: "1px 12px" }}>{country.name}</p>
             </div>
 
             <div>
@@ -747,7 +781,7 @@ export default function GratuityCalculator({ initialCountry = "sa" }) {
 
           {countryId === "sa" && (
             <section className="gr-link gr-noprint">
-              <p style={{ fontWeight: 800, fontSize: 16 }}>هل تحتاج إلى تصفية شاملة؟ (Complete Settlement)</p>
+              <p style={{ fontWeight: 700, fontSize: 16 }}>هل تحتاج إلى تصفية شاملة؟ (Complete Settlement)</p>
               <p style={{ color: "var(--g-mu)", fontSize: 14 }}>
                 احسب كامل مستحقاتك: مكافأة نهاية الخدمة + راتب آخر شهر + بدل الإجازات (م/111) + مهلة الإشعار (م/75) + الخصومات، مع إنشاء نموذج مخالصة نهائية قابل للطباعة.
               </p>

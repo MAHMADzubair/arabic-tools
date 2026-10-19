@@ -158,7 +158,7 @@ export default function Article77Page() {
         <section className="mx-auto max-w-3xl px-4 py-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">
+              <h2 className="text-xl font-bold text-ink">
                 📖 ما هي المادة 77 من نظام العمل السعودي وما أحكامها؟
               </h2>
             </div>
@@ -185,7 +185,7 @@ export default function Article77Page() {
 
             {/* How to use */}
             <div className="rounded-xl border border-brand-border bg-brand-surface/40 p-4 space-y-2">
-              <h3 className="text-sm font-extrabold text-ink">
+              <h3 className="text-sm font-bold text-ink">
                 📋 كيفية استخدام الحاسبة خطوة بخطوة:
               </h3>
               <ol className="list-decimal list-inside text-xs leading-relaxed text-ink-secondary space-y-1.5">
@@ -209,7 +209,7 @@ export default function Article77Page() {
 
             {/* Numeric Example */}
             <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 space-y-2">
-              <h3 className="text-sm font-extrabold text-emerald-900">
+              <h3 className="text-sm font-bold text-emerald-900">
                 🔢 مثال عملي بالأرقام وفق المادة (77):
               </h3>
               <div className="text-xs leading-relaxed text-emerald-800 space-y-1">
@@ -217,7 +217,7 @@ export default function Article77Page() {
                 <p>• أنهت الشركة خدماته دون سبب مشروع بعد <strong>سنة ونصف (1.5 سنة)</strong> خدمة.</p>
                 <p>• الحساب الأولي: 1.5 سنة × أجر 15 يوماً (5,000 ر.س) = <strong>7,500 ر.س</strong>.</p>
                 <p>• فحص الحد الأدنى: أجر شهرين = 2 × 10,000 = <strong>20,000 ر.س</strong>.</p>
-                <p>• <strong className="text-emerald-950 font-black">التعويض التقديري وفق النص النظامي: 20,000 ر.س</strong> بحكم تطبيق الحد الأدنى الإلزامي الوارد في الفقرة (3) من المادة 77، بالإضافة إلى استحقاقه الكامل لمكافأة نهاية الخدمة وبدل الإجازات.</p>
+                <p>• <strong className="text-emerald-950 font-bold">التعويض التقديري وفق النص النظامي: 20,000 ر.س</strong> بحكم تطبيق الحد الأدنى الإلزامي الوارد في الفقرة (3) من المادة 77، بالإضافة إلى استحقاقه الكامل لمكافأة نهاية الخدمة وبدل الإجازات.</p>
               </div>
             </div>
           </div>
@@ -226,7 +226,7 @@ export default function Article77Page() {
         {/* ── PART 3: FAQ Section (الأسئلة الشائعة) ────────────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 pb-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
-            <h2 className="text-xl font-extrabold text-ink border-b border-brand-border pb-4">
+            <h2 className="text-xl font-bold text-ink border-b border-brand-border pb-4">
               ❓ الأسئلة الأكثر شيوعاً حول تعويض الفصل التعسفي (المادة 77)
             </h2>
             <div className="space-y-4">
@@ -248,7 +248,7 @@ export default function Article77Page() {
         {/* ── PART 4: Related Saudi Tools (أدوات ذات صلة) ──────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 pb-12">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-4">
-            <h2 className="text-base font-extrabold text-ink">
+            <h2 className="text-base font-bold text-ink">
               🔗 أدوات وحاسبات منظومة العمل السعودية المتكاملة
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">

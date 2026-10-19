@@ -133,7 +133,7 @@ export default function UaeGratuityPage() {
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">📋</span>
               <div>
-                <p className="text-xs font-black text-indigo-950">
+                <p className="text-xs font-bold text-indigo-950">
                   هل تريد حساب جميع مستحقات نهاية العمل في الإمارات؟
                 </p>
                 <p className="text-[11px] text-indigo-800 mt-0.5">
