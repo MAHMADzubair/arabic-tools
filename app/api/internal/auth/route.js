@@ -91,9 +91,12 @@ export async function POST(request) {
   // ── Action: LOGIN (Default) ────────────────────────────────────────────────
   // 1. Cross-instance database rate limiting check
   const rl = await checkAndRecordLoginAttempt(ip);
-  if (!rl.allowed) {
-    const status = rl.reason === "Database unavailable" ? 503 : 429;
-    return NextResponse.json({ error: rl.reason || "too_many_attempts" }, { status });
+  if (!rl || !rl.allowed) {
+    const status = rl?.reason === "Too many attempts" ? 429 : 503;
+    return NextResponse.json(
+      { error: rl?.reason || "Rate limit unavailable" },
+      { status }
+    );
   }
 
   // 2. Validate password using constant-time string comparison
