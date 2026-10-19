@@ -428,16 +428,16 @@ function RoiStyles() {
       .ro-header{ text-align:center; margin-bottom:2rem; display:grid; gap:.75rem; justify-items:center; }
       .ro-kicker-tag{
         margin:0; padding:.125rem .75rem; border:2px solid var(--ro-ink);
-        font-size:.75rem; font-weight:800; letter-spacing:.06em;
+        font-size:.75rem; font-weight:700; letter-spacing:.06em;
       }
-      .ro-h1{ margin:0; font-size:1.875rem; font-weight:800; line-height:1.4; }
+      .ro-h1{ margin:0; font-size:1.875rem; font-weight:700; line-height:1.4; }
       @media (min-width:640px){ .ro-h1{ font-size:2.25rem; } }
       .ro-lead{ margin:0; max-width:42rem; font-size:.9375rem; line-height:1.9; color:var(--ro-text2); }
 
       /* Boxes & cards */
       .ro-box{ border:2px solid var(--ro-ink); padding:1rem; margin-bottom:1.5rem; display:grid; gap:.75rem; }
       .ro-bar-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.75rem; }
-      .ro-small-title{ margin:0; font-size:.75rem; font-weight:800; }
+      .ro-small-title{ margin:0; font-size:.75rem; font-weight:700; }
       .ro-cur{ display:flex; align-items:center; gap:.5rem; }
       .ro-presets{ display:flex; flex-wrap:wrap; gap:.5rem; }
 
@@ -454,24 +454,24 @@ function RoiStyles() {
 
       .ro-card{ border:2px solid var(--ro-ink); padding:1.25rem; display:grid; gap:1rem; }
       .ro-card-flush{ padding:0; gap:0; }
-      .ro-h2{ margin:0; display:flex; align-items:center; gap:.625rem; font-size:1rem; font-weight:800; }
+      .ro-h2{ margin:0; display:flex; align-items:center; gap:.625rem; font-size:1rem; font-weight:700; }
       .ro-num{
         flex:none; width:1.75rem; height:1.75rem; display:inline-flex;
         align-items:center; justify-content:center;
-        border:2px solid var(--ro-ink); font-size:.8125rem; font-weight:800;
+        border:2px solid var(--ro-ink); font-size:.8125rem; font-weight:700;
       }
       .ro-two{ display:grid; gap:1rem; grid-template-columns:1fr; }
       @media (min-width:640px){ .ro-two{ grid-template-columns:1fr 1fr; } }
 
       /* Fields */
       .ro-field{ display:grid; gap:.375rem; align-content:start; }
-      .ro-label{ font-size:.75rem; font-weight:800; line-height:1.6; }
+      .ro-label{ font-size:.75rem; font-weight:700; line-height:1.6; }
       .ro-input-wrap{ display:flex; border:2px solid var(--ro-ink); background:var(--ro-paper); }
       .ro-input-wrap:focus-within{ outline:3px solid var(--ro-orange); outline-offset:2px; }
       .ro-sym{
         flex:none; padding:0 .75rem; display:inline-flex; align-items:center;
         background:var(--ro-muted); border-inline-end:2px solid var(--ro-ink);
-        font-size:.75rem; font-weight:800;
+        font-size:.75rem; font-weight:700;
       }
       .ro-input{
         flex:1; min-width:0; border:0; background:transparent; color:var(--ro-ink);
@@ -485,8 +485,8 @@ function RoiStyles() {
         padding:1rem; font-size:.75rem; line-height:1.9; color:var(--ro-text2); display:grid; gap:.5rem;
       }
       .ro-note p{ margin:0; }
-      .ro-note strong{ color:var(--ro-ink); font-weight:800; }
-      .ro-note-title{ font-size:.8125rem; font-weight:800; color:var(--ro-ink); }
+      .ro-note strong{ color:var(--ro-ink); font-weight:700; }
+      .ro-note-title{ font-size:.8125rem; font-weight:700; color:var(--ro-ink); }
 
       /* Result panel (orange, black text) */
       .ro-result{
@@ -494,11 +494,11 @@ function RoiStyles() {
         padding:1.25rem; display:grid; gap:1rem;
       }
       .ro-result-top{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
-      .ro-result-label{ margin:0; font-size:.75rem; font-weight:800; }
-      .ro-mult{ border:2px solid #0a0a0a; padding:0 .5rem; font-size:.75rem; font-weight:800; }
-      .ro-big{ margin:0; font-size:2.5rem; font-weight:900; line-height:1.2; }
+      .ro-result-label{ margin:0; font-size:.75rem; font-weight:700; }
+      .ro-mult{ border:2px solid #0a0a0a; padding:0 .5rem; font-size:.75rem; font-weight:700; }
+      .ro-big{ margin:0; font-size:2.5rem; font-weight:700; line-height:1.2; }
       .ro-chips{ display:flex; flex-wrap:wrap; gap:.5rem; }
-      .ro-chip{ border:2px solid #0a0a0a; padding:.25rem .625rem; font-size:.75rem; font-weight:800; }
+      .ro-chip{ border:2px solid #0a0a0a; padding:.25rem .625rem; font-size:.75rem; font-weight:700; }
 
       .ro-barbox{ background:#ffffff; border:2px solid #0a0a0a; padding:.75rem; display:grid; gap:.5rem; }
       .ro-track{ display:flex; height:1rem; border:2px solid #0a0a0a; background:#ffffff; overflow:hidden; }
@@ -517,21 +517,21 @@ function RoiStyles() {
       .ro-rating-loss{ border-style:dashed; }
       .ro-tag{
         flex:none; width:1.25rem; height:1.25rem; display:inline-flex;
-        align-items:center; justify-content:center; font-weight:800;
+        align-items:center; justify-content:center; font-weight:700;
         border:2px solid currentColor;
       }
 
       .ro-actions{ display:flex; gap:.5rem; }
       .ro-btn{
         flex:1; padding:.5rem .75rem; background:#0a0a0a; color:#ffffff;
-        border:2px solid #0a0a0a; font-size:.75rem; font-weight:800; font-family:inherit; cursor:pointer;
+        border:2px solid #0a0a0a; font-size:.75rem; font-weight:700; font-family:inherit; cursor:pointer;
       }
       .ro-btn:hover{ background:#ffffff; color:#0a0a0a; }
       .ro-btn-ghost{ flex:none; background:transparent; color:#0a0a0a; }
       .ro-result .ro-btn:focus-visible{ outline:3px solid #0a0a0a; outline-offset:3px; }
 
       /* KPI list */
-      .ro-kpi-title{ margin:0; padding:.875rem 1.25rem; border-bottom:2px solid var(--ro-ink); font-size:.875rem; font-weight:800; }
+      .ro-kpi-title{ margin:0; padding:.875rem 1.25rem; border-bottom:2px solid var(--ro-ink); font-size:.875rem; font-weight:700; }
       .ro-dl{ margin:0; display:grid; }
       .ro-dl-row{
         display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;
@@ -539,9 +539,9 @@ function RoiStyles() {
       }
       .ro-dl-row:last-child{ border-bottom:0; }
       .ro-dl-row dt{ margin:0; color:var(--ro-text2); }
-      .ro-dl-row dd{ margin:0; font-weight:800; display:flex; align-items:center; gap:.5rem; }
+      .ro-dl-row dd{ margin:0; font-weight:700; display:flex; align-items:center; gap:.5rem; }
       .ro-strong{ font-size:.875rem; }
-      .ro-loss-tag{ border:2px dashed var(--ro-ink); padding:0 .375rem; font-size:.625rem; font-weight:800; }
+      .ro-loss-tag{ border:2px dashed var(--ro-ink); padding:0 .375rem; font-size:.625rem; font-weight:700; }
 
       /* Disclaimer */
       .ro-disclaimer{

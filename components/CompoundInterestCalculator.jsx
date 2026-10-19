@@ -38,20 +38,32 @@ function Money({ v, sym }) {
   );
 }
 
-// ─── Calculation helper (unchanged) ──────────────────────────────────────────
+// ─── Calculation helper ──────────────────────────────────────────
 function buildYearlyTable(principal, rate, freqN, years, monthlyContrib) {
-  const r = rate / 100 / freqN;
-  const contribPerPeriod = monthlyContrib * (12 / freqN);
+  const p = Number(principal);
+  const r = Number(rate) / 100;
+  const k = Number(freqN);
+  const rm = r === 0 ? 0 : Math.pow(1 + r / k, k / 12) - 1;
+  const mc = Number(monthlyContrib);
+  const totalMonths = Number(years) * 12;
+
   const rows = [];
-  let balance = principal;
-  let totalContribs = principal;
-  for (let y = 1; y <= years; y++) {
-    for (let p = 0; p < freqN; p++) {
-      balance = balance * (1 + r) + contribPerPeriod;
-      totalContribs += contribPerPeriod;
+  let balance = p;
+  let totalInvested = p;
+
+  for (let m = 1; m <= totalMonths; m++) {
+    balance = balance * (1 + rm) + mc;
+    totalInvested += mc;
+    if (m % 12 === 0) {
+      const y = m / 12;
+      const interest = balance - totalInvested;
+      rows.push({
+        year: y,
+        balance,
+        totalContribs: totalInvested,
+        totalInterest: interest,
+      });
     }
-    const interest = balance - totalContribs;
-    rows.push({ year: y, balance, totalContribs, totalInterest: interest });
   }
   return rows;
 }
@@ -80,26 +92,35 @@ export default function CompoundInterestCalculator() {
     setFreqId(p.freq);
   };
 
-  // ─── Calculation (unchanged) ───────────────────────────────────────────────
+  // ─── Calculation with true monthly contributions & independent compounding ───
   const result = useMemo(() => {
     if (!freq) return null;
     const p = Number(principal);
-    const r = Number(rate) / 100 / freq.n;
-    const n = Number(years) * freq.n;
-    const mc = Number(monthlyContrib) * (12 / freq.n);
+    const r = Number(rate) / 100;
+    const k = freq.n;
+    const totalMonths = Number(years) * 12;
+    const mc = Number(monthlyContrib);
 
-    const fvPrincipal = p * Math.pow(1 + r, n);
-    const fvContribs = mc > 0 && r > 0 ? mc * ((Math.pow(1 + r, n) - 1) / r) : mc * n;
+    // Effective monthly rate derived from annual nominal rate and compounding frequency k
+    const rm = r === 0 ? 0 : Math.pow(1 + r / k, k / 12) - 1;
+    const fvPrincipal = r === 0 ? p : p * Math.pow(1 + r / k, k * Number(years));
+    const fvContribs = mc > 0
+      ? (rm > 0 ? mc * ((Math.pow(1 + rm, totalMonths) - 1) / rm) : mc * totalMonths)
+      : 0;
+
     const finalAmount = fvPrincipal + fvContribs;
-    const totalInvested = p + mc * n;
+    const totalInvested = p + mc * totalMonths;
     const totalInterest = finalAmount - totalInvested;
-    const table = buildYearlyTable(p, Number(rate), freq.n, Number(years), Number(monthlyContrib));
+    const table = buildYearlyTable(p, Number(rate), freq.n, Number(years), mc);
 
     let result2 = null;
     if (compareMode) {
-      const r2 = Number(rate2) / 100 / freq.n;
-      const fvP2 = p * Math.pow(1 + r2, n);
-      const fvC2 = mc > 0 && r2 > 0 ? mc * ((Math.pow(1 + r2, n) - 1) / r2) : mc * n;
+      const r2 = Number(rate2) / 100;
+      const rm2 = r2 === 0 ? 0 : Math.pow(1 + r2 / k, k / 12) - 1;
+      const fvP2 = r2 === 0 ? p : p * Math.pow(1 + r2 / k, k * Number(years));
+      const fvC2 = mc > 0
+        ? (rm2 > 0 ? mc * ((Math.pow(1 + rm2, totalMonths) - 1) / rm2) : mc * totalMonths)
+        : 0;
       const final2 = fvP2 + fvC2;
       result2 = { finalAmount: final2, totalInterest: final2 - totalInvested };
     }
@@ -456,7 +477,7 @@ export default function CompoundInterestCalculator() {
       )}
 
       <p className="ci-disclaimer">
-        تنبيه: هذه حسابات نظرية افتراضية بمعدل ثابت. العوائد الفعلية تتفاوت مع السوق والضرائب والتضخم. تذكر أن الفائدة المركبة محرمة شرعياً في المعاملات الإسلامية — استخدم هذه الأداة لتقدير عوائد الاستثمارات الحلال كالأسهم والصناديق الشرعية.
+        <strong>قاعدة التدفقات النقدية والتراكب:</strong> تفترض الحاسبة إيداع المساهمات الشهرية في نهاية كل شهر (Ordinary Annuity). يُحتسب العائد التراكمي وفق دورية الفائدة المختارة (يومياً، شهرياً، ربع سنوي، سنوياً) بناءً على المعدل السنوي الاسمي، مع احتساب العائد الفعلي للمساهمات خلال السنة بشكل متسق ومطابق لجدول السداد السنوي. العوائد الفعلية تتفاوت مع ظروف السوق والتضخم. تذكر أن الفائدة الربوية محرمة شرعياً — صُممت الأداة لتقدير نمو العوائد الاستثمارية الحلال كالأسهم والصناديق الاستثمارية.
       </p>
     </div>
   );
@@ -504,7 +525,7 @@ const CSS = `
 
 .ci-head { margin-block-end: 1.25rem; padding-inline-start: 0.9rem; border-inline-start: 4px solid var(--c-ink); }
 .ci-badge { display: inline-block; margin: 0 0 0.6rem; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--c-ink); border-radius: 999px; }
-.ci-title { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.4; }
+.ci-title { margin: 0; font-size: 1.6rem; font-weight:700; line-height: 1.4; }
 @media (min-width: 640px) { .ci-title { font-size: 2rem; } }
 .ci-sub { margin: 0.5rem 0 0; max-width: 60ch; font-size: 0.92rem; line-height: 1.8; color: var(--c-ink-soft); }
 
@@ -523,7 +544,7 @@ const CSS = `
 
 .ci-card { margin: 0; padding: 1.1rem; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 14px; display: grid; gap: 1rem; min-width: 0; }
 .ci-center { text-align: center; }
-.ci-h2 { margin: 0; padding: 0; font-size: 1rem; font-weight: 800; }
+.ci-h2 { margin: 0; padding: 0; font-size: 1rem; font-weight:700; }
 fieldset.ci-card > legend.ci-h2 { float: inline-start; width: 100%; margin-block-end: 0.25rem; }
 fieldset.ci-card > legend.ci-h2 + * { clear: both; }
 
@@ -531,7 +552,7 @@ fieldset.ci-card > legend.ci-h2 + * { clear: both; }
 .ci-hint { margin: 0; font-size: 0.8rem; line-height: 1.7; color: var(--c-ink-soft); }
 .ci-field { display: grid; gap: 0.5rem; min-width: 0; }
 .ci-line { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; }
-.ci-val { font-size: 0.95rem; font-weight: 800; }
+.ci-val { font-size: 0.95rem; font-weight:700; }
 .ci-scale { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--c-ink-soft); }
 .ci-num { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
 input.ci-num { text-align: center; }
@@ -540,7 +561,7 @@ input.ci-num { text-align: center; }
   width: 100%; min-height: 44px; padding: 0.5rem 0.75rem; font: inherit; font-size: 0.95rem;
   color: var(--c-ink); background: var(--c-surface); border: 2px solid var(--c-line); border-radius: 10px;
 }
-.ci-input--lg { min-height: 52px; font-size: 1.15rem; font-weight: 800; }
+.ci-input--lg { min-height: 52px; font-size: 1.15rem; font-weight:700; }
 .ci-input:hover { border-color: var(--c-ink-soft); }
 .ci-range { width: 100%; accent-color: var(--c-ink); cursor: pointer; }
 
@@ -565,21 +586,21 @@ input.ci-num { text-align: center; }
 /* Result: orange is a background only, text stays ink */
 .ci-result { padding: 1.25rem; background: var(--c-signal); color: var(--c-on-signal); border-radius: 14px; display: grid; gap: 0.9rem; }
 .ci-result-label { margin: 0; font-size: 0.9rem; font-weight: 700; }
-.ci-big { margin: 0; font-size: 2.2rem; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+.ci-big { margin: 0; font-size: 2.2rem; font-weight:700; line-height: 1.25; overflow-wrap: anywhere; }
 .ci-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
 .ci-mini { padding: 0.7rem; border: 2px solid var(--c-on-signal); border-radius: 10px; }
 .ci-mini p { margin: 0; font-size: 0.75rem; font-weight: 600; }
-.ci-mini strong { font-size: 0.95rem; font-weight: 800; }
+.ci-mini strong { font-size: 0.95rem; font-weight:700; }
 .ci-split-labels { font-size: 0.78rem; font-weight: 600; margin-block-end: 0.35rem; }
 .ci-track { display: flex; height: 0.7rem; background: rgba(13, 13, 13, 0.2); border-radius: 999px; overflow: hidden; }
 .ci-track i { display: block; height: 100%; background: var(--c-on-signal); }
 .ci-compare { padding: 0.8rem; border: 2px dashed var(--c-on-signal); border-radius: 10px; }
 .ci-compare p { margin: 0; }
 .ci-compare-h { font-size: 0.8rem; font-weight: 700; }
-.ci-compare-v { font-size: 1.4rem; font-weight: 800; }
+.ci-compare-v { font-size: 1.4rem; font-weight:700; }
 .ci-compare-d { font-size: 0.8rem; }
 
-.ci-mult { margin: 0; font-size: 2.4rem; font-weight: 800; line-height: 1.2; }
+.ci-mult { margin: 0; font-size: 2.4rem; font-weight:700; line-height: 1.2; }
 .ci-note { margin: 0; padding: 0.65rem 0.8rem; font-size: 0.82rem; line-height: 1.8; text-align: start; border: 2px solid var(--c-line); border-radius: 10px; }
 
 /* Breakdown + chart colours: ink, mid-grey, orange (fills only) */
@@ -619,11 +640,11 @@ input.ci-num { text-align: center; }
 .ci-tablewrap { overflow-x: auto; border: 1px solid var(--c-line); border-radius: 10px; }
 .ci-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 0.82rem; }
 .ci-table th, .ci-table td { padding: 0.65rem 0.8rem; text-align: start; }
-.ci-table thead th { font-weight: 800; border-block-end: 2px solid var(--c-ink); }
+.ci-table thead th { font-weight:700; border-block-end: 2px solid var(--c-ink); }
 .ci-table tbody tr { border-block-start: 1px solid var(--c-line); }
 .ci-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--c-line) 35%, transparent); }
-.ci-table tbody th { font-weight: 800; }
-.ci-strong { font-weight: 800; }
+.ci-table tbody th { font-weight:700; }
+.ci-strong { font-weight:700; }
 
 .ci-disclaimer { margin: 2rem auto 0; max-width: 70ch; padding-inline-start: 0.8rem; border-inline-start: 2px solid var(--c-line); font-size: 0.8rem; line-height: 1.8; color: var(--c-ink-soft); }
 

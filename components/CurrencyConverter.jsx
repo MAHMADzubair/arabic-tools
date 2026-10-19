@@ -83,7 +83,7 @@ export default function CurrencyConverter() {
       {/* Header */}
       <header className="cc-head">
         <h1 className="cc-title">محول العملات</h1>
-        <p className="cc-sub">حوّل بين العملات العربية والعالمية فوراً — أسعار تقديرية</p>
+        <p className="cc-sub">حوّل بين العملات العربية والعالمية — أسعار ثابتة استرشادية (ليست أسعاراً حية)</p>
       </header>
 
       <div className="cc-card">
@@ -189,9 +189,14 @@ export default function CurrencyConverter() {
           </section>
         )}
 
-        <p className="cc-note">
-          الأسعار المعروضة تقديرية وثابتة. للمعاملات المالية يُرجى مراجعة مزود الخدمة المالية.
-        </p>
+        <div className="cc-note" style={{ display: "grid", gap: "0.35rem" }}>
+          <p>
+            <strong>إخلاء مسؤولية وتنويه الشفافية:</strong> الأسعار المعروضة أعلاه هي أسعار استرشادية مأخوذة من لقطة مرجعية ثابتة غير مربوطة بموجز أسعار حي. العملات المربوطة بالدولار رسمياً (كالريال السعودي 3.75 والدرهم الإماراتي 3.6725) مستقرة وفق الربط الرسمي، أما العملات المعومة فتمثل لقطة تاريخية غير مثبتة لحظياً (تاريخ التحقق الفعلي للقطة غير محدد).
+          </p>
+          <p>
+            تنويه: تختلف أسعار التحويل الفعلية وهوامش الصرف ورسوم المعاملات لدى البنوك والمصارف وشركات الصرافة وبطاقات الدفع. يُرجى مراجعة مزود الخدمة المالية المعتمد قبل إجراء أي معاملات نقدية أو تجارية.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -234,7 +239,7 @@ const CSS = `
 .cc *, .cc *::before, .cc *::after { box-sizing: border-box; }
 
 .cc-head { margin-block-end: 1.25rem; padding-inline-start: 0.9rem; border-inline-start: 4px solid var(--c-ink); }
-.cc-title { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.3; }
+.cc-title { margin: 0; font-size: 1.6rem; font-weight:700; line-height: 1.3; }
 .cc-sub { margin: 0.4rem 0 0; font-size: 0.9rem; line-height: 1.7; color: var(--c-ink-soft); }
 
 .cc-card { display: grid; gap: 1.1rem; padding: 1.25rem; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 14px; }
@@ -261,7 +266,7 @@ input.cc-num { text-align: center; }
   width: 100%; min-height: 46px; padding: 0.5rem 0.75rem; font: inherit; font-size: 0.95rem; font-weight: 600;
   color: var(--c-ink); background: var(--c-surface); border: 2px solid var(--c-line); border-radius: 10px;
 }
-.cc-input--lg { min-height: 54px; font-size: 1.4rem; font-weight: 800; }
+.cc-input--lg { min-height: 54px; font-size: 1.4rem; font-weight:700; }
 .cc-input:hover { border-color: var(--c-ink-soft); }
 
 .cc-pair { display: grid; gap: 0.75rem; align-items: end; }
@@ -277,7 +282,7 @@ input.cc-num { text-align: center; }
 /* Result: orange is a background only, text stays ink */
 .cc-result { padding: 1.25rem; text-align: center; background: var(--c-signal); color: var(--c-on-signal); border-radius: 14px; }
 .cc-result-top { margin: 0; font-size: 0.9rem; font-weight: 700; }
-.cc-big { margin: 0.2rem 0; font-size: 2.4rem; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+.cc-big { margin: 0.2rem 0; font-size: 2.4rem; font-weight:700; line-height: 1.25; overflow-wrap: anywhere; }
 .cc-result-bot { margin: 0; font-size: 0.9rem; font-weight: 700; }
 
 .cc-rates { display: flex; flex-direction: column; gap: 0.25rem; margin: 0; padding: 0.7rem 1rem; font-size: 0.82rem; font-weight: 600; border: 2px solid var(--c-line); border-radius: 10px; }
@@ -285,11 +290,11 @@ input.cc-num { text-align: center; }
 
 /* List */
 .cc-list { border: 1px solid var(--c-line); border-radius: 12px; overflow: hidden; }
-.cc-list-head { margin: 0; padding: 0.7rem 1rem; font-size: 0.9rem; font-weight: 800; color: var(--c-on-ink); background: var(--c-ink); }
+.cc-list-head { margin: 0; padding: 0.7rem 1rem; font-size: 0.9rem; font-weight:700; color: var(--c-on-ink); background: var(--c-ink); }
 .cc-rows { margin: 0; padding: 0; list-style: none; }
 .cc-row { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; padding: 0.65rem 1rem; font-size: 0.88rem; border-block-start: 1px solid var(--c-line); }
 .cc-row:first-child { border-block-start: 0; }
-.cc-row.is-active { background: var(--c-signal); color: var(--c-on-signal); font-weight: 800; border-block-start-color: var(--c-ink); }
+.cc-row.is-active { background: var(--c-signal); color: var(--c-on-signal); font-weight:700; border-block-start-color: var(--c-ink); }
 .cc-name { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
 .cc-code { font-size: 0.75rem; color: var(--c-ink-soft); }
 .cc-row.is-active .cc-code { color: inherit; }

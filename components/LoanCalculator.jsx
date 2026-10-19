@@ -459,7 +459,7 @@ const css = `
 
 .ln-head{margin-bottom:1.75rem}
 .ln-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
-.ln-h1{font-size:clamp(1.9rem,5vw,2.6rem);font-weight:900;line-height:1.15;margin-bottom:.6rem}
+.ln-h1{font-size:clamp(1.9rem,5vw,2.6rem);font-weight:700;line-height:1.15;margin-bottom:.6rem}
 .ln-lead{color:var(--i-mute)}
 
 .ln-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem;display:grid;gap:1.5rem}
@@ -481,7 +481,7 @@ const css = `
 .ln-type{display:grid;gap:.3rem;align-content:start;text-align:start;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.8rem;cursor:pointer}
 .ln-type:hover{background:var(--i-soft)}
 .ln-type[aria-pressed="true"]{background:var(--i-ink);color:var(--i-bg)}
-.ln-type-title{font-size:.9rem;font-weight:800}
+.ln-type-title{font-size:.9rem;font-weight:700}
 .ln-type-desc{font-size:.75rem;line-height:1.5}
 
 .ln-btn{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.45rem .85rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:2.5rem}
@@ -492,12 +492,12 @@ const css = `
 .ln-out{display:grid;gap:1.25rem;border-top:2px solid var(--i-ink);padding-top:1.5rem}
 .ln-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem}
 .ln-result-label{font-size:.9rem;font-weight:700}
-.ln-result-big{font-size:clamp(2rem,7vw,3rem);font-weight:900;line-height:1.15;margin:.2rem 0 1rem}
+.ln-result-big{font-size:clamp(2rem,7vw,3rem);font-weight:700;line-height:1.15;margin:.2rem 0 1rem}
 .ln-result-rows{border-top:2px solid var(--i-on-accent)}
 .ln-result-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.5rem 0;border-bottom:1px solid var(--i-on-accent);font-size:.9rem}
 .ln-result-rows>div:last-child{border-bottom:0;padding-bottom:0}
 .ln-result-rows dt{font-weight:600}
-.ln-result-rows dd{font-weight:800}
+.ln-result-rows dd{font-weight:700}
 
 .ln-ratio-labels{display:flex;justify-content:space-between;gap:1rem;font-size:.8rem;font-weight:700;margin-bottom:.4rem}
 .ln-bar{display:flex;height:1.5rem;border:2px solid var(--i-ink);border-radius:4px;overflow:hidden}
@@ -506,23 +506,23 @@ const css = `
 
 .ln-early{border:2px dashed var(--i-ink);border-radius:4px;padding:1rem}
 .ln-row{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:center}
-.ln-h2{font-size:.95rem;font-weight:800}
+.ln-h2{font-size:.95rem;font-weight:700}
 .ln-early-body{display:grid;gap:1rem;margin-top:1rem;padding-top:1rem;border-top:2px solid var(--i-ink)}
 .ln-early-input{display:grid;gap:.5rem;grid-template-columns:minmax(0,1fr) 6rem;align-items:center}
 .ln-rows{border:2px solid var(--i-ink);border-radius:4px}
 .ln-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.2rem 1rem;padding:.65rem .8rem;border-bottom:2px solid var(--i-ink);font-size:.85rem}
 .ln-rows>div:last-child{border-bottom:0}
 .ln-rows dt{font-weight:600;color:var(--i-mute)}
-.ln-rows dd{font-weight:800}
+.ln-rows dd{font-weight:700}
 .ln-rows-total{background:var(--i-soft)}
-.ln-rows-total dt{color:var(--i-ink);font-weight:800}
-.ln-saving{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.7rem .9rem;font-size:.9rem;font-weight:800}
+.ln-rows-total dt{color:var(--i-ink);font-weight:700}
+.ln-saving{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.7rem .9rem;font-size:.9rem;font-weight:700}
 
 .ln-table-wrap{margin-top:1rem;max-height:20rem;overflow:auto;border:2px solid var(--i-ink);border-radius:4px}
 .ln-table{width:100%;border-collapse:collapse;font-size:.8rem;text-align:start;font-variant-numeric:tabular-nums;min-width:30rem}
 .ln-table th,.ln-table td{padding:.5rem .6rem;text-align:start;border-bottom:1px solid var(--i-ink)}
-.ln-table thead th{position:sticky;top:0;background:var(--i-ink);color:var(--i-bg);font-weight:800}
-.ln-table tbody th{font-weight:800}
+.ln-table thead th{position:sticky;top:0;background:var(--i-ink);color:var(--i-bg);font-weight:700}
+.ln-table tbody th{font-weight:700}
 .ln-table tbody tr:nth-child(even){background:var(--i-soft)}
 
 .ln-disclaimer{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.8rem 1rem;font-size:.8rem;color:var(--i-mute)}

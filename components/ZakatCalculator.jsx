@@ -182,7 +182,7 @@ export default function ZakatCalculator() {
         <div className="mb-1 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🕌</span>
-            <h1 className="text-2xl font-extrabold">حاسبة الزكاة الشرعية</h1>
+            <h1 className="text-2xl font-bold">حاسبة الزكاة الشرعية</h1>
           </div>
           <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">
             1447هـ / 2026م
@@ -207,7 +207,7 @@ export default function ZakatCalculator() {
             }`}
           >
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-extrabold">🥈 نصاب الفضة</span>
+              <span className="font-bold">🥈 نصاب الفضة</span>
               <span className="text-[10px] text-ink-muted">595 جرام</span>
             </div>
             <p className="text-[11px] leading-tight text-ink-secondary">
@@ -225,7 +225,7 @@ export default function ZakatCalculator() {
             }`}
           >
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-extrabold">🥇 نصاب الذهب</span>
+              <span className="font-bold">🥇 نصاب الذهب</span>
               <span className="text-[10px] text-ink-muted">85 جرام (24K)</span>
             </div>
             <p className="text-[11px] leading-tight text-ink-secondary">
@@ -359,7 +359,7 @@ export default function ZakatCalculator() {
             {totals.meetsNisab ? (
               <>
                 <p className="mb-1 text-sm opacity-80">✓ بلغ مالك النصاب الشرعي وحال عليه الحول — الزكاة واجبة</p>
-                <p className="text-3xl font-extrabold">
+                <p className="text-3xl font-bold">
                   {fmt(totals.zakatDue)} {currency}
                 </p>
                 <p className="mt-1 text-sm opacity-80">مقدار الزكاة الواجب إخراجها (2.5%)</p>
@@ -372,9 +372,12 @@ export default function ZakatCalculator() {
           </div>
         )}
 
-        <div className="mt-5 rounded-xl border border-brand-border/60 bg-slate-50 p-3 text-[11px] leading-relaxed text-ink-muted space-y-1">
+        <div className="mt-5 rounded-xl border border-brand-border/60 bg-slate-50 p-3 text-[11px] leading-relaxed text-ink-muted space-y-1.5">
           <p>
-            <strong>تنويه شرعي معتمد:</strong> الخلاف بين اعتبار نصاب الذهب أو الفضة خلاف فقهي معتبر بين كبار العلماء المعاصرين. اختيارك للفضة أحوط للفقراء، واختيارك للذهب أعدل لواقع التضخم المعاصر.
+            <strong>تنويه شرعي معتمد (النصاب):</strong> الخلاف بين اعتبار نصاب الذهب أو الفضة خلاف فقهي معتبر بين كبار العلماء المعاصرين. اختيارك للفضة أحوط للفقراء، واختيارك للذهب أعدل لواقع التضخم المعاصر.
+          </p>
+          <p>
+            <strong>أساس الحول (القمري vs الشمسي):</strong> يُحسب هذا المقدار بنسبة 2.5٪ الافتراضية وفق الحول القمري (الهجري 354 يوماً) وهو الأصل الشرعي للزكاة. أما إذا كانت حساباتك الزكوية أو ميزانيات شركتك مبنية على السنة المالية الشمسية (الميلادية 365 يوماً)، فإن النسبة المعتمدة وفق معيار أيوفي الشرعي رقم (9) ومجمع الفقه الإسلامي الدولي هي <strong>2.577٪</strong> (أو 2.5٪ × 365 / 354) لجبر فارق الـ 11 يوماً بين السنتين.
           </p>
         </div>
       </div>

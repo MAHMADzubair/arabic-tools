@@ -373,7 +373,7 @@ function UnitConverterStyles() {
         background:var(--uv-orange);
         color:var(--uv-on-orange);
         font-size:.75rem;
-        font-weight:900;
+        font-weight:700;
         flex:none;
       }
     `}</style>
@@ -579,7 +579,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
       <div className="mb-8 text-center space-y-3">
 
-        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--uv-orange)] bg-[var(--uv-orange)] px-4 py-1.5 text-sm font-black text-[#0D0D0D]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--uv-orange)] bg-[var(--uv-orange)] px-4 py-1.5 text-sm font-bold text-[#0D0D0D]">
 
           <span className="uv-mark" aria-hidden="true">↔</span>
 
@@ -587,7 +587,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
         </div>
 
-        <h1 className="text-3xl font-extrabold text-[var(--uv-text)] sm:text-4xl">
+        <h1 className="text-3xl font-bold text-[var(--uv-text)] sm:text-4xl">
 
           محول الوحدات الشامل (الطول، الوزن، الحرارة، المساحة)
 
@@ -841,7 +841,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
                     item.isCurrent
 
-                      ? "border-brand bg-[color-mix(in_srgb,var(--uv-orange)_10%,var(--uv-surface))] text-[var(--uv-text)] font-black "
+                      ? "border-brand bg-[color-mix(in_srgb,var(--uv-orange)_10%,var(--uv-surface))] text-[var(--uv-text)] font-bold "
 
                       : toUnit === item.unit.id
 
@@ -855,7 +855,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
                   <span className="text-[11px] text-[var(--uv-muted)] block">{item.unit.name} ({item.unit.symbol})</span>
 
-                  <span className="text-sm sm:text-base font-extrabold block truncate mt-0.5">
+                  <span className="text-sm sm:text-base font-bold block truncate mt-0.5">
 
                     {item.value}
 
@@ -909,7 +909,7 @@ ${inputValue} ${uFrom} = ${Number(conversionResult.toFixed(4)).toLocaleString("a
 
                 </p>
 
-                <p className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
+                <p className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
 
                   {Number(conversionResult.toFixed(4)).toLocaleString("ar-EG")}{" "}
 

@@ -166,7 +166,7 @@ export default function ZakatFitrCalculator() {
           <span>🌾</span>
           <span>طهور للصائم وطعمة للمساكين</span>
         </div>
-        <h1 className="mb-3 text-3xl font-extrabold text-ink sm:text-5xl">
+        <h1 className="mb-3 text-3xl font-bold text-ink sm:text-5xl">
           حاسبة زكاة الفطر المباركة
         </h1>
         <p className="mx-auto max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
@@ -301,7 +301,7 @@ export default function ZakatFitrCalculator() {
                         />
                         <span>{food.name}</span>
                       </div>
-                      <span className="rounded-lg bg-white px-2 py-0.5 text-xs text-brand font-black shadow-sm">
+                      <span className="rounded-lg bg-white px-2 py-0.5 text-xs text-brand font-bold shadow-sm">
                         الصاع ≈ {food.saWeightKg} كجم
                       </span>
                     </label>
@@ -402,7 +402,7 @@ export default function ZakatFitrCalculator() {
                 <span className="inline-block rounded-full bg-brand-light px-3 py-1 text-xs font-bold text-brand-dark">
                   النتيجة الشرعية
                 </span>
-                <h2 className="mt-1 text-2xl font-black text-ink">
+                <h2 className="mt-1 text-2xl font-bold text-ink">
                   إجمالي زكاة الفطر الواجبة
                 </h2>
               </div>
@@ -421,7 +421,7 @@ export default function ZakatFitrCalculator() {
                 {outputMode === "cash" ? "المبلغ الإجمالي الواجب إخراجه نقداً" : `إجمالي وزن الحبوب المطلوبة (${activeFood.name})`}
               </p>
 
-              <p className="mt-2 text-3xl font-black text-brand-dark sm:text-4xl">
+              <p className="mt-2 text-3xl font-bold text-brand-dark sm:text-4xl">
                 {outputMode === "cash"
                   ? `${formatNumber(calculation.totalCashObligatory, 2)} ${currency}`
                   : `${formatNumber(calculation.totalKgObligatory)} كيلوجرام`}
@@ -476,10 +476,10 @@ export default function ZakatFitrCalculator() {
               )}
 
               <div className="flex items-center justify-between pt-1">
-                <span className="font-sans font-extrabold text-ink">
+                <span className="font-sans font-bold text-ink">
                   إجمالي الأصوع النبوية الواجبة:
                 </span>
-                <span className="font-black text-brand text-base">
+                <span className="font-bold text-brand text-base">
                   {calculation.totalSaObligatory} صاع
                 </span>
               </div>
@@ -487,7 +487,7 @@ export default function ZakatFitrCalculator() {
 
             {/* Quick Jurisprudence Tip Banner */}
             <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-xs leading-relaxed text-emerald-900">
-              <h4 className="font-extrabold mb-1 flex items-center gap-1.5 text-emerald-950">
+              <h4 className="font-bold mb-1 flex items-center gap-1.5 text-emerald-950">
                 <span>⏰</span>
                 <span>توقيت إخراج زكاة الفطر المشروع:</span>
               </h4>

@@ -13,10 +13,10 @@ const CURRENCIES = [
 ];
 
 const PRESETS = [
-  { label: "متجر إلكتروني (سلة/زد)", cost: 60, price: 140, shipping: 25, gatewayFee: 2.5, adSpend: 15, vat: 15 },
-  { label: "تجارة تجزئة وسوبرماركت", cost: 80, price: 105, shipping: 0, gatewayFee: 1.0, adSpend: 0, vat: 15 },
-  { label: "دروب شيبينغ (Dropshipping)", cost: 45, price: 120, shipping: 15, gatewayFee: 3.0, adSpend: 30, vat: 0 },
-  { label: "خدمات واستشارات", cost: 200, price: 650, shipping: 0, gatewayFee: 2.0, adSpend: 50, vat: 15 },
+  { label: "متجر إلكتروني (سلة/زد)", cost: 60, price: 140, shipping: 25, gatewayFee: 2.5, adSpend: 15 },
+  { label: "تجارة تجزئة وسوبرماركت", cost: 80, price: 105, shipping: 0, gatewayFee: 1.0, adSpend: 0 },
+  { label: "دروب شيبينغ (Dropshipping)", cost: 45, price: 120, shipping: 15, gatewayFee: 3.0, adSpend: 30 },
+  { label: "خدمات واستشارات", cost: 200, price: 650, shipping: 0, gatewayFee: 2.0, adSpend: 50 },
 ];
 
 function fmt(n, sym) {
@@ -64,13 +64,12 @@ export default function ProfitMarginCalculator() {
   const [shippingCost, setShippingCost] = useState(20);
   const [paymentGatewayPct, setPaymentGatewayPct] = useState(2.5); // %
   const [adSpendPerUnit, setAdSpendPerUnit] = useState(15);
-  const [vatRate, setVatRate] = useState(15); // %
 
   const [copied, setCopied] = useState(false);
 
   const sym = CURRENCIES.find((c) => c.id === currency)?.symbol || "ر.س";
 
-  // Calculations (unchanged)
+  // Calculations
   const stats = useMemo(() => {
     const cost = Math.max(0, Number(costPrice) || 0);
     let rev = 0;
@@ -94,19 +93,15 @@ export default function ProfitMarginCalculator() {
     let totalShipping = 0;
     let totalGateway = 0;
     let totalAds = 0;
-    let totalVat = 0;
 
     if (showAdvanced) {
       totalShipping = Math.max(0, Number(shippingCost) || 0);
       totalGateway = (rev * Math.max(0, Number(paymentGatewayPct) || 0)) / 100;
       totalAds = Math.max(0, Number(adSpendPerUnit) || 0);
-      // VAT on sale price (if applicable) or on fee
-      totalVat = (rev * Math.max(0, Number(vatRate) || 0)) / (100 + Math.max(0, Number(vatRate) || 0));
     }
 
     const totalAdditionalFees = totalShipping + totalGateway + totalAds;
     const totalExpenses = cost + totalAdditionalFees;
-    const netProfitBeforeVat = rev - totalExpenses;
     const netProfit = rev - totalExpenses;
     const netMarginPct = rev > 0 ? (netProfit / rev) * 100 : 0;
 
@@ -142,7 +137,6 @@ export default function ProfitMarginCalculator() {
     shippingCost,
     paymentGatewayPct,
     adSpendPerUnit,
-    vatRate,
   ]);
 
   const handleApplyPreset = (p) => {
@@ -153,7 +147,6 @@ export default function ProfitMarginCalculator() {
     setShippingCost(p.shipping);
     setPaymentGatewayPct(p.gatewayFee);
     setAdSpendPerUnit(p.adSpend);
-    setVatRate(p.vat);
   };
 
   const handleCopy = () => {
@@ -415,7 +408,7 @@ ${
       </div>
 
       <p className="pm-foot">
-        صُممت الحاسبة لمساعدة أصحاب المتاجر الإلكترونية والشركات ورواد الأعمال على اتخاذ قرارات تسعيرية مدروسة.
+        صُممت الحاسبة لمساعدة أصحاب المتاجر الإلكترونية والشركات ورواد الأعمال على اتخاذ قرارات تسعيرية مدروسة مبنية على التكاليف وهوامش الربح التشغيلية المباشرة (قبل احتساب ضريبة القيمة المضافة أو ضرائب الدخل، حيث تختلف المعاملة الضريبية واسترداد ضريبة المدخلات بحسب التسجيل والولاية القضائية).
       </p>
     </div>
   );
@@ -454,7 +447,7 @@ const css = `
 
 .pm-head{margin-bottom:1.75rem;max-width:44rem}
 .pm-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
-.pm-h1{font-size:clamp(1.9rem,5vw,2.8rem);font-weight:900;line-height:1.2;margin-bottom:.75rem}
+.pm-h1{font-size:clamp(1.9rem,5vw,2.8rem);font-weight:700;line-height:1.2;margin-bottom:.75rem}
 .pm-lead{color:var(--i-mute);max-width:38rem}
 
 .pm-bar-top{display:grid;gap:1rem;margin-bottom:1.5rem;border:2px solid var(--i-ink);border-radius:4px;padding:1rem}
@@ -470,10 +463,10 @@ const css = `
 @media (min-width:1024px){.pm-sticky{position:sticky;top:1rem}}
 
 .pm-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem}
-.pm-h2{display:flex;align-items:center;gap:.65rem;font-size:1.05rem;font-weight:800;margin-bottom:1rem}
+.pm-h2{display:flex;align-items:center;gap:.65rem;font-size:1.05rem;font-weight:700;margin-bottom:1rem}
 .pm-h2-sm{font-size:.95rem;margin-bottom:.75rem}
 .pm-h2-flush{margin-bottom:0}
-.pm-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:800;border-radius:2px}
+.pm-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:700;border-radius:2px}
 .pm-stack{display:grid;gap:1.1rem}
 .pm-two{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:560px){.pm-two{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -501,17 +494,17 @@ const css = `
 @media (min-width:640px){.pm-seg{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 .pm-edu{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:1rem 1.25rem;display:grid;gap:.5rem;font-size:.85rem}
-.pm-edu-title{font-size:.95rem;font-weight:800}
+.pm-edu-title{font-size:.95rem;font-weight:700}
 
 .pm-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .pm-result-label{font-size:.9rem;font-weight:700}
-.pm-result-big{font-size:clamp(2rem,6vw,2.75rem);font-weight:900;line-height:1.15;margin:.2rem 0 .25rem}
+.pm-result-big{font-size:clamp(2rem,6vw,2.75rem);font-weight:700;line-height:1.15;margin:.2rem 0 .25rem}
 .pm-result-sub{font-size:.85rem;font-weight:600;margin-bottom:1rem}
 .pm-result-cells{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
 .pm-result-cells>div{border:2px solid var(--i-on-accent);border-radius:4px;padding:.55rem .7rem}
 .pm-result-sm{font-size:.75rem;font-weight:600}
-.pm-result-val{font-size:1.05rem;font-weight:800}
-.pm-warn{margin-top:.9rem;border:2px dashed var(--i-on-accent);border-radius:4px;padding:.5rem .7rem;font-size:.85rem;font-weight:800}
+.pm-result-val{font-size:1.05rem;font-weight:700}
+.pm-warn{margin-top:.9rem;border:2px dashed var(--i-on-accent);border-radius:4px;padding:.5rem .7rem;font-size:.85rem;font-weight:700}
 
 .pm-bar{display:flex;height:1.6rem;border:2px solid var(--i-ink);border-radius:4px;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .pm-bar-seg{min-width:0;border-inline-start:2px solid var(--i-bg)}
@@ -527,9 +520,9 @@ const css = `
 .pm-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.55rem .8rem;border-bottom:1px solid var(--i-ink);font-size:.85rem}
 .pm-rows>div:last-child{border-bottom:0}
 .pm-rows dt{font-weight:600;color:var(--i-mute)}
-.pm-rows dd{font-weight:800}
+.pm-rows dd{font-weight:700}
 .pm-rows-total{background:var(--i-soft)}
-.pm-rows-total dt{color:var(--i-ink);font-weight:800}
+.pm-rows-total dt{color:var(--i-ink);font-weight:700}
 
 .pm-foot{margin-top:2rem;border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.8rem 1rem;font-size:.8rem;color:var(--i-mute)}
 

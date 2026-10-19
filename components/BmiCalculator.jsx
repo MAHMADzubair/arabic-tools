@@ -444,7 +444,7 @@ const CSS = `
 
 .bmi-head { margin-block-end: 1.5rem; padding-inline-start: 0.9rem; border-inline-start: 4px solid var(--c-ink); }
 .bmi-badge { display: inline-block; margin: 0 0 0.6rem; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--c-ink); border-radius: 999px; }
-.bmi-title { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.4; }
+.bmi-title { margin: 0; font-size: 1.6rem; font-weight:700; line-height: 1.4; }
 @media (min-width: 640px) { .bmi-title { font-size: 2rem; } }
 .bmi-sub { margin: 0.5rem 0 0; max-width: 60ch; font-size: 0.92rem; line-height: 1.8; color: var(--c-ink-soft); }
 
@@ -463,7 +463,7 @@ const CSS = `
 @media (min-width: 900px) { .bmi-sticky { position: sticky; top: 1.5rem; } }
 
 .bmi-card { margin: 0; padding: 1.1rem; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 14px; display: grid; gap: 1rem; min-width: 0; }
-.bmi-h2 { margin: 0; padding: 0; font-size: 1rem; font-weight: 800; }
+.bmi-h2 { margin: 0; padding: 0; font-size: 1rem; font-weight:700; }
 fieldset.bmi-card > legend.bmi-h2 { float: inline-start; width: 100%; padding: 0; margin-block-end: 0.25rem; }
 fieldset.bmi-card > legend.bmi-h2 + * { clear: both; }
 
@@ -500,11 +500,11 @@ input.bmi-num { text-align: center; }
 /* Result: orange is a background only, text stays ink */
 .bmi-result { padding: 1.25rem; background: var(--c-signal); color: var(--c-on-signal); border-radius: 14px; display: grid; gap: 0.9rem; }
 .bmi-result-top { display: flex; justify-content: space-between; align-items: center; margin: 0; font-size: 0.85rem; font-weight: 700; }
-.bmi-tag { padding: 0.1rem 0.65rem; font-size: 0.78rem; font-weight: 800; border: 2px solid var(--c-on-signal); border-radius: 999px; }
+.bmi-tag { padding: 0.1rem 0.65rem; font-size: 0.78rem; font-weight:700; border: 2px solid var(--c-on-signal); border-radius: 999px; }
 .bmi-big { margin: 0; display: flex; align-items: baseline; gap: 0.5rem; }
-.bmi-big .bmi-num { font-size: 3.4rem; font-weight: 800; line-height: 1; }
+.bmi-big .bmi-num { font-size: 3.4rem; font-weight:700; line-height: 1; }
 .bmi-unit { font-size: 0.9rem; font-weight: 700; }
-.bmi-cat { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.bmi-cat { margin: 0; font-size: 1.05rem; font-weight:700; }
 
 .bmi-gauge { display: grid; gap: 0.35rem; }
 .bmi-ticks { position: relative; height: 1rem; font-size: 0.72rem; font-weight: 700; }
@@ -533,7 +533,7 @@ input.bmi-num { text-align: center; }
 
 /* Ideal weight + calories */
 .bmi-range-box { margin: 0; display: grid; gap: 0.25rem; padding: 0.8rem; text-align: center; border: 2px solid var(--c-line); border-radius: 10px; }
-.bmi-range-box strong { font-size: 1.5rem; font-weight: 800; }
+.bmi-range-box strong { font-size: 1.5rem; font-weight:700; }
 .bmi-range-box small { font-size: 0.8rem; font-weight: 500; }
 .bmi-rows, .bmi-cals { margin: 0; }
 .bmi-row, .bmi-cal { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-block: 0.65rem; border-block-start: 1px solid var(--c-line); font-size: 0.88rem; }

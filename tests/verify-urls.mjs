@@ -1,12 +1,22 @@
 // tests/verify-urls.mjs
-// Verifies all indexable public URLs generated in sitemap.xml against the running Next.js production server.
+// Verifies all indexable public URLs generated in sitemap.xml against the Next.js production or local server.
 import assert from "node:assert/strict";
 
-const BASE_URL = "http://localhost:3005";
+const rawBase = process.env.BASE_URL || "http://localhost:3000";
+const BASE_URL = rawBase.replace(/\/$/, "");
 const PRODUCTION_ORIGIN = "https://qemlo.com";
 
+const isLocalhost = BASE_URL.includes("localhost") || BASE_URL.includes("127.0.0.1");
+const executionTargetType = isLocalhost ? "LOCAL SERVER (localhost)" : "REMOTE / PRODUCTION DOMAIN";
+
 async function main() {
-  console.log("Fetching sitemap.xml from running server...");
+  console.log(`================================================================`);
+  console.log(`QEMLO SEO & URL VERIFICATION SUITE`);
+  console.log(`Target: ${BASE_URL} [${executionTargetType}]`);
+  console.log(`Production Canonical Baseline: ${PRODUCTION_ORIGIN}`);
+  console.log(`================================================================\n`);
+
+  console.log("Fetching sitemap.xml from target server...");
   const sitemapRes = await fetch(`${BASE_URL}/sitemap.xml`);
   assert.equal(sitemapRes.status, 200, "sitemap.xml must return HTTP 200");
   const sitemapXml = await sitemapRes.text();
@@ -23,34 +33,39 @@ async function main() {
 
   for (const prodUrl of urls) {
     const urlObj = new URL(prodUrl);
-    const localUrl = `${BASE_URL}${urlObj.pathname}`;
+    const targetUrl = `${BASE_URL}${urlObj.pathname}`;
 
     try {
-      const res = await fetch(localUrl, { redirect: "manual" });
+      const res = await fetch(targetUrl, { redirect: "manual" });
       const status = res.status;
       const html = await res.text();
 
       const errors = [];
 
-      // 1. HTTP 200
+      // 1. HTTP 200 and page content validity
       if (status !== 200) {
         errors.push(`Expected HTTP 200, got ${status}`);
       }
+      if (html.length < 200) {
+        errors.push(`Page payload unexpectedly small (${html.length} bytes)`);
+      }
+      if (html.includes("Application error: a client-side exception has occurred")) {
+        errors.push("React runtime crash detected in HTML");
+      }
 
-      // 2. Canonical tag checks
-      const canonicalMatches = [
-        ...html.matchAll(/<link\s+[^>]*rel=["']canonical["'][^>]*href=["']([^"']*)["'][^>]*>/gi),
-        ...html.matchAll(/<link\s+[^>]*href=["']([^"']*)["'][^>]*rel=["']canonical["'][^>]*>/gi),
+      // 2. Canonical tag checks: verify ACTUAL tag count, not only distinct URLs
+      // Matches <link rel="canonical" href="..."> and <link href="..." rel="canonical">
+      const canonicalTagMatches = [
+        ...html.matchAll(/<link(?=[^>]*\srel=["']canonical["'])(?=[^>]*\shref=["']([^"']*)["'])[^>]*>/gi),
       ];
-      // Deduplicate exact regex overlap if any
-      const uniqueCanonicals = Array.from(new Set(canonicalMatches.map((m) => m[1])));
+      const actualCanonicalCount = canonicalTagMatches.length;
 
-      if (uniqueCanonicals.length === 0) {
+      if (actualCanonicalCount === 0) {
         errors.push("Missing <link rel=\"canonical\"> tag");
-      } else if (uniqueCanonicals.length > 1) {
-        errors.push(`Multiple canonical tags found (${uniqueCanonicals.length}): ${uniqueCanonicals.join(", ")}`);
+      } else if (actualCanonicalCount > 1) {
+        errors.push(`Multiple canonical tags found in HTML (${actualCanonicalCount} tags)`);
       } else {
-        const canonicalHref = uniqueCanonicals[0];
+        const canonicalHref = canonicalTagMatches[0][1];
         const expectedCanonical = `${PRODUCTION_ORIGIN}${urlObj.pathname === "/" ? "" : urlObj.pathname}`;
         // Normalize trailing slashes
         const normActual = canonicalHref.replace(/\/$/, "");
@@ -72,16 +87,29 @@ async function main() {
         }
       }
 
-      // 4. Meta description check
-      const descMatch = html.match(/<meta\s+[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i);
-      if (!descMatch || !descMatch[1].trim()) {
-        errors.push("Missing or empty <meta name=\"description\">");
+      // 4. Meta description check: verify presence and uniqueness
+      const descMatches = [
+        ...html.matchAll(/<meta(?=[^>]*\sname=["']description["'])(?=[^>]*\scontent=["']([^"']*)["'])[^>]*>/gi),
+      ];
+      if (descMatches.length === 0) {
+        errors.push("Missing <meta name=\"description\"> tag");
+      } else if (descMatches.length > 1) {
+        errors.push(`Duplicate meta description tags found in HTML (${descMatches.length} tags)`);
+      } else {
+        const descContent = descMatches[0][1].trim();
+        if (!descContent) {
+          errors.push("Empty meta description content");
+        }
       }
 
-      // 5. No unintended noindex check
-      const robotsMatch = html.match(/<meta\s+[^>]*name=["']robots["'][^>]*content=["']([^"']*)["'][^>]*>/i);
-      if (robotsMatch && robotsMatch[1].toLowerCase().includes("noindex")) {
-        errors.push(`Unintended noindex directive found: ${robotsMatch[1]}`);
+      // 5. No unintended noindex check on organic pages
+      const robotsMatches = [
+        ...html.matchAll(/<meta\s+[^>]*name=["']robots["'][^>]*content=["']([^"']*)["'][^>]*>/gi),
+      ];
+      for (const rMatch of robotsMatches) {
+        if (rMatch[1].toLowerCase().includes("noindex")) {
+          errors.push(`Unintended noindex directive found on public page: ${rMatch[1]}`);
+        }
       }
 
       if (errors.length === 0) {
@@ -102,15 +130,15 @@ async function main() {
     }
   }
 
-  // Also verify robots.txt
+  // 6. Verify robots.txt
   console.log("\nVerifying /robots.txt...");
   const robotsRes = await fetch(`${BASE_URL}/robots.txt`);
   assert.equal(robotsRes.status, 200, "robots.txt must return HTTP 200");
   const robotsTxt = await robotsRes.text();
   assert.match(robotsTxt, /sitemap:\s*https:\/\/qemlo\.com\/sitemap\.xml/i, "robots.txt must link to production sitemap");
-  console.log("[PASS] /robots.txt correctly serves sitemap link");
+  console.log("[PASS] /robots.txt correctly serves production sitemap link");
 
-  // Also verify redirect from old final-settlement-calculator
+  // 7. Verify legacy redirect from old final-settlement-calculator
   console.log("\nVerifying legacy redirect /final-settlement-calculator...");
   const redirRes = await fetch(`${BASE_URL}/final-settlement-calculator`, { redirect: "manual" });
   assert.equal(redirRes.status, 308, "Redirect must return 308 permanent redirect");
@@ -118,12 +146,13 @@ async function main() {
   assert.equal(location, "/ar/sa/final-settlement-calculator", "Redirect destination must be /ar/sa/final-settlement-calculator");
   console.log("[PASS] /final-settlement-calculator -> /ar/sa/final-settlement-calculator (308 Permanent)");
 
-  console.log(`\n========================================`);
+  console.log(`\n================================================================`);
   console.log(`SEO URL VERIFICATION SUMMARY`);
+  console.log(`Execution Environment: ${executionTargetType} (${BASE_URL})`);
   console.log(`Total URLs Tested: ${urls.length}`);
   console.log(`Passed: ${passedCount}`);
   console.log(`Failed: ${failedCount}`);
-  console.log(`========================================`);
+  console.log(`================================================================`);
 
   if (failedCount > 0) {
     process.exit(1);

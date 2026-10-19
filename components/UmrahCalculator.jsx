@@ -68,7 +68,7 @@ const MEAL_PLANS = [
 
 
 
-const SAR_TO = { pk: 75, eg: 13, sa: 1, ae: 1.02, gb: 0.21, us: 0.27, my: 1.26, bd: 32 };
+const SAR_TO = { pk: 75, eg: 13, sa: 1, ae: 3.6725 / 3.75, gb: 0.21, us: 0.27, my: 1.26, bd: 32 };
 
 
 
@@ -157,7 +157,7 @@ function UmrahStyles() {
         background:var(--uc-orange);
         color:var(--uc-on-orange);
         font-size:.75rem;
-        font-weight:900;
+        font-weight:700;
         flex:none;
       }
       .uc-selected{
@@ -314,7 +314,7 @@ export default function UmrahCalculator() {
 
       <button type="button" onClick={() => setValue(Math.max(min, value - 1))} className="uc-counter flex h-8 w-8 items-center justify-center rounded-lg font-bold transition-colors">-</button>
 
-      <span className="w-8 text-center text-base font-extrabold text-[var(--uc-text)]">{value}</span>
+      <span className="w-8 text-center text-base font-bold text-[var(--uc-text)]">{value}</span>
 
       <button type="button" onClick={() => setValue(value + 1)} className="uc-counter flex h-8 w-8 items-center justify-center rounded-lg font-bold transition-colors">+</button>
 
@@ -361,11 +361,11 @@ export default function UmrahCalculator() {
 
       <div className="mb-8 text-center space-y-3">
 
-        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--uc-orange)] bg-[var(--uc-orange)] px-4 py-1.5 text-sm font-black text-[var(--uc-on-orange)]"><span>????? ????? ??????</span>
+        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--uc-orange)] bg-[var(--uc-orange)] px-4 py-1.5 text-sm font-bold text-[var(--uc-on-orange)]"><span>????? ????? ??????</span>
 
         </div>
 
-        <h1 className="text-3xl font-extrabold text-[var(--uc-text)] sm:text-4xl">????? ????? ?????? ???????</h1>
+        <h1 className="text-3xl font-bold text-[var(--uc-text)] sm:text-4xl">????? ????? ?????? ???????</h1>
 
         <p className="mx-auto max-w-xl text-sm text-[var(--uc-text-2)] sm:text-base">
 
@@ -541,7 +541,7 @@ export default function UmrahCalculator() {
 
               <p className="text-sm font-medium opacity-80">??????? ????????? ???????</p>
 
-              <p className="text-4xl font-extrabold tracking-tight">{result ? fmt(result.total, sym) : "—"}</p>
+              <p className="text-4xl font-bold tracking-tight">{result ? fmt(result.total, sym) : "—"}</p>
 
               <p className="text-xs opacity-70">?????? ????? ({travelers} ????? · {days} ???)</p>
 
