@@ -33,20 +33,20 @@ function useInViewTrack(eventName, params = {}) {
 // ─── Small UI helpers ────────────────────────────────────────────────────────
 function SectionBadge({ children }) {
   return (
-    <span className="inline-block rounded-full bg-brand/10 border border-brand/20 px-3 py-1 text-xs font-black text-brand mb-3">
+    <span className="inline-block rounded-full bg-brand/10 border border-brand/20 px-3 py-1 text-xs font-bold text-brand mb-3">
       {children}
     </span>
   );
 }
 
 function SectionTitle({ children, className = "" }) {
-  return <h2 className={`text-2xl sm:text-3xl font-black text-ink leading-tight ${className}`}>{children}</h2>;
+  return <h2 className={`text-2xl sm:text-3xl font-bold text-ink leading-tight ${className}`}>{children}</h2>;
 }
 
 function PrimaryBtn({ children, onClick, className = "", type = "button" }) {
   return (
     <button type={type} onClick={onClick}
-      className={`rounded-2xl bg-brand hover:bg-brand-dark text-white font-black px-7 py-3.5 text-sm shadow-result transition-all hover:scale-[1.02] active:scale-[0.98] ${className}`}>
+      className={`rounded-2xl bg-brand hover:bg-brand-dark text-white font-bold px-7 py-3.5 text-sm shadow-result transition-all hover:scale-[1.02] active:scale-[0.98] ${className}`}>
       {children}
     </button>
   );
@@ -70,7 +70,7 @@ function HeroSection({ onCTAClick }) {
         </div>
 
         {/* Headline */}
-        <h1 className="text-3xl sm:text-5xl font-black leading-tight text-white">
+        <h1 className="text-3xl sm:text-5xl font-bold leading-tight text-white">
           اكتشف أين تضيع<br />
           <span className="text-amber-300">مبيعاتك على واتساب</span>
         </h1>
@@ -88,7 +88,7 @@ function HeroSection({ onCTAClick }) {
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <button onClick={() => { track("pilot_cta_click", { location: "hero" }); onCTAClick(); }}
-            className="rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-black px-8 py-4 text-base shadow-result transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto">
+            className="rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-8 py-4 text-base shadow-result transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto">
             انضم إلى البرنامج التجريبي ←
           </button>
           <a href="#how-it-works"
@@ -134,7 +134,7 @@ function ProblemSection() {
           {PROBLEMS.map(({ icon, title, desc }) => (
             <div key={title} className="rounded-2xl border border-brand-border bg-slate-50/70 p-5 space-y-2 hover:shadow-card-hover hover:border-brand/40 transition-all">
               <span className="text-3xl">{icon}</span>
-              <p className="text-sm font-extrabold text-ink">{title}</p>
+              <p className="text-sm font-bold text-ink">{title}</p>
               <p className="text-xs text-ink-secondary leading-relaxed">{desc}</p>
             </div>
           ))}
@@ -187,11 +187,11 @@ function HowItWorksSection() {
         <div className="space-y-4">
           {STEPS.map((s) => (
             <div key={s.num} className="rounded-2xl border border-brand-border bg-white p-5 sm:p-6 flex gap-4 hover:shadow-card transition-all">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-white font-black text-base">{s.num}</div>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-white font-bold text-base">{s.num}</div>
               <div className="space-y-2 flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xl">{s.icon}</span>
-                  <p className="text-sm sm:text-base font-extrabold text-ink">{s.title}</p>
+                  <p className="text-sm sm:text-base font-bold text-ink">{s.title}</p>
                   {s.tag && <span className="rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-bold px-2 py-0.5">{s.tag}</span>}
                 </div>
                 {s.desc && <p className="text-xs text-ink-secondary leading-relaxed">{s.desc}</p>}
@@ -212,13 +212,13 @@ function HowItWorksSection() {
                 {s.labels && (
                   <div className="flex flex-wrap gap-2 pt-1">
                     {s.labels.map(l => (
-                      <span key={l.txt} className={`rounded-full border text-xs font-black px-3 py-1 ${l.bg}`}>{l.txt}</span>
+                      <span key={l.txt} className={`rounded-full border text-xs font-bold px-3 py-1 ${l.bg}`}>{l.txt}</span>
                     ))}
                   </div>
                 )}
                 {s.flows && (
                   <ul className="space-y-1 pt-1">
-                    {s.flows.map(f => <li key={f} className="text-xs text-ink-secondary flex items-center gap-1.5"><span className="text-brand font-black">→</span>{f}</li>)}
+                    {s.flows.map(f => <li key={f} className="text-xs text-ink-secondary flex items-center gap-1.5"><span className="text-brand font-bold">→</span>{f}</li>)}
                   </ul>
                 )}
               </div>
@@ -255,12 +255,12 @@ function DemoDashboard() {
 
         {/* Funnel */}
         <div className="rounded-2xl border border-brand-border bg-slate-50 p-5 sm:p-6 space-y-3">
-          <p className="text-xs font-extrabold text-ink-secondary mb-4">مسار المحادثات (نموذج بيانات تجريبية):</p>
+          <p className="text-xs font-bold text-ink-secondary mb-4">مسار المحادثات (نموذج بيانات تجريبية):</p>
           {FUNNEL.map(({ label, val, pct, color }) => (
             <div key={label} className="space-y-1">
               <div className="flex justify-between items-center">
                 <span className="text-xs text-ink-secondary font-bold">{label}</span>
-                <span className="text-sm font-black text-ink">{val}</span>
+                <span className="text-sm font-bold text-ink">{val}</span>
               </div>
               <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
                 <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
@@ -272,20 +272,20 @@ function DemoDashboard() {
         {/* Insight cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="rounded-2xl border-2 border-rose-300 bg-rose-50 p-5 space-y-2 text-center">
-            <p className="text-3xl font-black text-rose-700">31%</p>
-            <p className="text-xs font-extrabold text-rose-900">أكثر سبب لخسارة المبيعات</p>
+            <p className="text-3xl font-bold text-rose-700">31%</p>
+            <p className="text-xs font-bold text-rose-900">أكثر سبب لخسارة المبيعات</p>
             <p className="text-xs text-rose-700">اعتراض السعر</p>
             <p className="text-[10px] text-rose-500/70 mt-1">بيانات نموذجية</p>
           </div>
           <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 space-y-2 text-center">
-            <p className="text-3xl font-black text-amber-700">37</p>
-            <p className="text-xs font-extrabold text-amber-900">عميل جاهز للشراء</p>
+            <p className="text-3xl font-bold text-amber-700">37</p>
+            <p className="text-xs font-bold text-amber-900">عميل جاهز للشراء</p>
             <p className="text-xs text-amber-700">لم يحصل على متابعة</p>
             <p className="text-[10px] text-amber-500/70 mt-1">بيانات نموذجية</p>
           </div>
           <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5 space-y-2 text-center">
-            <p className="text-3xl font-black text-emerald-700">54</p>
-            <p className="text-xs font-extrabold text-emerald-900">فرصة قابلة للاستعادة</p>
+            <p className="text-3xl font-bold text-emerald-700">54</p>
+            <p className="text-xs font-bold text-emerald-900">فرصة قابلة للاستعادة</p>
             <p className="text-xs text-emerald-700">مثال تقديري فقط</p>
             <p className="text-[10px] text-emerald-500/70 mt-1">بيانات نموذجية</p>
           </div>
@@ -293,7 +293,7 @@ function DemoDashboard() {
 
         {/* Objection categories */}
         <div className="rounded-2xl border border-brand-border bg-white p-5 sm:p-6 space-y-4">
-          <p className="text-sm font-extrabold text-ink">ما الذي يمنع العميل من الشراء؟</p>
+          <p className="text-sm font-bold text-ink">ما الذي يمنع العميل من الشراء؟</p>
           <p className="text-[10px] text-ink-muted">بيانات نموذجية توضيحية</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
@@ -309,7 +309,7 @@ function DemoDashboard() {
               <div key={label} className="space-y-1.5">
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] font-bold text-ink-secondary">{label}</span>
-                  <span className="text-[11px] font-black text-ink">{pct}%</span>
+                  <span className="text-[11px] font-bold text-ink">{pct}%</span>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
                   <div className={`h-full rounded-full ${color}`} style={{ width: `${pct * 3.2}%` }} />
@@ -348,7 +348,7 @@ function RecoverySection() {
               <div className="flex-1 grid sm:grid-cols-2 gap-1 sm:gap-4 items-center">
                 <div>
                   <p className="text-[10px] font-bold text-ink-muted mb-0.5">الحالة</p>
-                  <p className="text-sm font-extrabold text-ink">{trigger}</p>
+                  <p className="text-sm font-bold text-ink">{trigger}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-ink-muted mb-0.5">الإجراء التلقائي</p>
@@ -395,10 +395,10 @@ function MerchantControlSection() {
           ))}
         </div>
         <div className="rounded-2xl border border-brand/30 bg-brand/5 p-5 space-y-2">
-          <p className="text-sm font-extrabold text-ink flex items-center gap-2"><span>🤝</span><span>متى يتدخل فريق المبيعات؟</span></p>
+          <p className="text-sm font-bold text-ink flex items-center gap-2"><span>🤝</span><span>متى يتدخل فريق المبيعات؟</span></p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
             {["عميل عالي القيمة", "عميل غاضب", "طلب تسعير مخصص", "مشكلة دفع", "توصيل عاجل", "اعتراض متكرر"].map(s => (
-              <div key={s} className="flex items-center gap-1.5 text-xs text-ink-secondary"><span className="text-brand font-black">→</span>{s}</div>
+              <div key={s} className="flex items-center gap-1.5 text-xs text-ink-secondary"><span className="text-brand font-bold">→</span>{s}</div>
             ))}
           </div>
           <p className="text-xs font-bold text-brand mt-2">⚡ تنبيه فوري لمندوب المبيعات</p>
@@ -430,14 +430,14 @@ function DashboardPreview() {
         </div>
         <div className="rounded-3xl border-2 border-brand/20 bg-white shadow-result overflow-hidden">
           <div className="bg-brand px-5 py-3 flex items-center gap-2">
-            <span className="text-white font-black text-sm">AI Sales Closer</span>
+            <span className="text-white font-bold text-sm">AI Sales Closer</span>
             <span className="mr-auto rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] text-white/80 font-bold">واجهة تجريبية</span>
           </div>
           <div className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
             {WIDGETS.map(({ label, val, icon, color }) => (
               <div key={label} className={`rounded-2xl border p-4 space-y-1 ${color}`}>
                 <p className="text-xl">{icon}</p>
-                <p className="text-2xl font-black">{val}</p>
+                <p className="text-2xl font-bold">{val}</p>
                 <p className="text-[11px] font-bold leading-snug opacity-80">{label}</p>
               </div>
             ))}
@@ -474,7 +474,7 @@ function IdealCustomerSection() {
           {WHO.map(({ icon, label, desc }) => (
             <div key={label} className="rounded-2xl border border-brand-border bg-slate-50 p-5 space-y-2 hover:border-brand/40 hover:shadow-card transition-all">
               <span className="text-3xl">{icon}</span>
-              <p className="text-sm font-extrabold text-ink">{label}</p>
+              <p className="text-sm font-bold text-ink">{label}</p>
               <p className="text-xs text-ink-secondary leading-relaxed">{desc}</p>
             </div>
           ))}
@@ -502,7 +502,7 @@ function IntegrationsSection() {
             <div key={name} className="rounded-2xl border border-brand-border bg-white px-6 py-4 flex items-center gap-3 shadow-card">
               <span className="text-2xl">{icon}</span>
               <div className="text-right">
-                <p className="text-sm font-extrabold text-ink">{name}</p>
+                <p className="text-sm font-bold text-ink">{name}</p>
                 <p className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5 mt-0.5 inline-block">{status}</p>
               </div>
             </div>
@@ -536,12 +536,12 @@ function PilotOfferSection({ onCTAClick }) {
             "أماكن محدودة جداً",
           ].map(b => (
             <div key={b} className="flex items-start gap-2 text-xs text-white/85">
-              <span className="text-emerald-400 font-black mt-0.5 shrink-0">✓</span>{b}
+              <span className="text-emerald-400 font-bold mt-0.5 shrink-0">✓</span>{b}
             </div>
           ))}
         </div>
         <button onClick={() => { track("pilot_cta_click", { location: "pilot_section" }); onCTAClick(); }}
-          className="rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-black px-8 py-4 text-base shadow-result transition-all hover:scale-[1.02] inline-block">
+          className="rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-8 py-4 text-base shadow-result transition-all hover:scale-[1.02] inline-block">
           اطلب الوصول المبكر ←
         </button>
       </div>
@@ -618,7 +618,7 @@ function WaitlistForm({ formRef }) {
     return (
       <div ref={formRef} className="rounded-3xl border-2 border-emerald-400 bg-emerald-50 p-10 text-center space-y-4">
         <p className="text-5xl">✅</p>
-        <h3 className="text-xl font-black text-emerald-900">تم استلام طلبك</h3>
+        <h3 className="text-xl font-bold text-emerald-900">تم استلام طلبك</h3>
         <p className="text-sm text-emerald-800 leading-relaxed max-w-sm mx-auto">سنراجع بيانات متجرك ونتواصل معك عند بدء البرنامج التجريبي. نقدّر مشاركتك معنا.</p>
         <p className="text-xs text-emerald-600">تم تسجيل طلبك بنجاح — لا توجد التزامات.</p>
       </div>
@@ -628,7 +628,7 @@ function WaitlistForm({ formRef }) {
   return (
     <div ref={formRef} className="rounded-3xl border-2 border-brand/30 bg-white shadow-result p-6 sm:p-8 space-y-6">
       <div className="space-y-1">
-        <h3 className="text-xl font-black text-ink">اطلب الوصول المبكر</h3>
+        <h3 className="text-xl font-bold text-ink">اطلب الوصول المبكر</h3>
         <p className="text-xs text-ink-secondary">أماكن محدودة — نتواصل معك شخصياً عند البدء</p>
       </div>
       {errors._global && (
@@ -707,7 +707,7 @@ function WaitlistForm({ formRef }) {
         </div>
 
         <button type="submit" disabled={status === "loading"}
-          className="w-full rounded-2xl bg-brand hover:bg-brand-dark text-white font-black px-7 py-3.5 text-sm shadow-result transition-all hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed">
+          className="w-full rounded-2xl bg-brand hover:bg-brand-dark text-white font-bold px-7 py-3.5 text-sm shadow-result transition-all hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed">
           {status === "loading" ? "⏳ جارٍ الإرسال..." : "اطلب الوصول المبكر ←"}
         </button>
 
@@ -744,8 +744,8 @@ function FaqSection() {
             <div key={i} className="rounded-2xl border border-brand-border overflow-hidden">
               <button type="button" onClick={() => setOpen(open === i ? null : i)}
                 className="w-full flex items-center justify-between p-4 sm:p-5 text-right hover:bg-slate-50 transition-colors">
-                <span className="text-sm font-extrabold text-ink">{q}</span>
-                <span className="text-brand font-black shrink-0 mr-3">{open === i ? "▲" : "▼"}</span>
+                <span className="text-sm font-bold text-ink">{q}</span>
+                <span className="text-brand font-bold shrink-0 mr-3">{open === i ? "▲" : "▼"}</span>
               </button>
               {open === i && (
                 <div className="px-4 sm:px-5 pb-4 text-xs text-ink-secondary leading-relaxed border-t border-brand-border bg-slate-50/50 pt-3">

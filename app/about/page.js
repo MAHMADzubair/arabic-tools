@@ -78,7 +78,7 @@ export default function AboutPage() {
             <p className="mb-4 inline-block rounded-full border border-[var(--text)] px-3 py-1 text-xs font-bold">
               من نحن
             </p>
-            <h1 className="text-4xl font-black leading-[1.3] tracking-tight sm:text-5xl">
+            <h1 className="text-4xl font-bold leading-[1.3] tracking-tight sm:text-5xl">
               حاسبات عربية
               <br />
               <span className="underline decoration-[var(--orange)] decoration-[6px] underline-offset-[14px]">
@@ -90,7 +90,7 @@ export default function AboutPage() {
             </p>
             <a
               href="/"
-              className="mt-8 inline-block rounded-xl bg-[var(--orange)] px-7 py-3.5 text-base font-black text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
+              className="mt-8 inline-block rounded-xl bg-[var(--orange)] px-7 py-3.5 text-base font-bold text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
             >
               تصفح الأدوات
             </a>
@@ -100,7 +100,7 @@ export default function AboutPage() {
           <div className="mx-auto w-full max-w-sm" aria-label="ملخص الموقع">
             <div className="bg-[var(--card)] px-6 pt-6 text-[var(--card-text)]">
               <div className="flex items-baseline justify-between border-b border-dashed border-[var(--card-muted)] pb-3">
-                <p className="text-lg font-black">الموقع بالأرقام</p>
+                <p className="text-lg font-bold">الموقع بالأرقام</p>
                 <p className="text-xs text-[var(--card-muted)]">Qemlo</p>
               </div>
               <ul className="py-3">
@@ -108,23 +108,23 @@ export default function AboutPage() {
                   <li key={cat.id} className="flex items-baseline gap-2 py-1.5 text-sm">
                     <span className="shrink-0 font-semibold">{cat.nameAr}</span>
                     <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                    <span className="shrink-0 font-black tabular-nums">{n(cat.tools.length)}</span>
+                    <span className="shrink-0 font-bold tabular-nums">{n(cat.tools.length)}</span>
                   </li>
                 ))}
                 <li className="flex items-baseline gap-2 py-1.5 text-sm">
                   <span className="shrink-0 font-semibold">تسجيل مطلوب</span>
                   <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                  <span className="shrink-0 font-black">0</span>
+                  <span className="shrink-0 font-bold">0</span>
                 </li>
                 <li className="flex items-baseline gap-2 py-1.5 text-sm">
                   <span className="shrink-0 font-semibold">رسوم الاستخدام</span>
                   <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                  <span className="shrink-0 font-black">0</span>
+                  <span className="shrink-0 font-bold">0</span>
                 </li>
               </ul>
               <div className="-mx-6 flex items-center justify-between bg-[var(--orange)] px-6 py-4 text-[var(--on-orange)]">
-                <span className="font-black">أداة وحاسبة</span>
-                <span className="text-3xl font-black tabular-nums">{n(totalTools)}</span>
+                <span className="font-bold">أداة وحاسبة</span>
+                <span className="text-3xl font-bold tabular-nums">{n(totalTools)}</span>
               </div>
               <p className="py-4 text-center text-xs text-[var(--card-muted)]">
                 تُحدَّث الأرقام تلقائياً مع كل أداة جديدة
@@ -137,7 +137,7 @@ export default function AboutPage() {
       <main className="mx-auto max-w-3xl space-y-14 px-4 py-12 sm:py-16">
         {/* ── Why ── */}
         <section aria-labelledby="why">
-          <h2 id="why" className="mb-4 border-s-4 border-[var(--text)] ps-3 text-2xl font-black">
+          <h2 id="why" className="mb-4 border-s-4 border-[var(--text)] ps-3 text-2xl font-bold">
             لماذا بنينا هذا الموقع؟
           </h2>
           <p className="text-base leading-9 text-[var(--text-2)]">
@@ -147,7 +147,7 @@ export default function AboutPage() {
 
         {/* ── Principles ── */}
         <section aria-labelledby="principles">
-          <h2 id="principles" className="mb-6 border-s-4 border-[var(--text)] ps-3 text-2xl font-black">
+          <h2 id="principles" className="mb-6 border-s-4 border-[var(--text)] ps-3 text-2xl font-bold">
             ما نلتزم به
           </h2>
           <ol className="grid gap-4 sm:grid-cols-2">
@@ -157,13 +157,13 @@ export default function AboutPage() {
                 className="flex gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5"
               >
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--card)] text-sm font-black text-[var(--card-text)]"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--card)] text-sm font-bold text-[var(--card-text)]"
                   aria-hidden="true"
                 >
                   {i + 1}
                 </span>
                 <div>
-                  <h3 className="text-lg font-extrabold">{p.title}</h3>
+                  <h3 className="text-lg font-bold">{p.title}</h3>
                   <p className="mt-1 text-sm leading-7 text-[var(--text-2)]">{p.desc}</p>
                 </div>
               </li>
@@ -176,7 +176,7 @@ export default function AboutPage() {
           aria-labelledby="limits"
           className="rounded-xl border-2 border-[var(--text)] border-s-[10px] border-s-[var(--orange)] p-6"
         >
-          <h2 id="limits" className="mb-3 text-2xl font-black">
+          <h2 id="limits" className="mb-3 text-2xl font-bold">
             حدود ما نقدمه
           </h2>
           <p className="text-base leading-9 text-[var(--text-2)]">
@@ -198,7 +198,7 @@ export default function AboutPage() {
         {/* ── Contact (hidden until CONTACT_EMAIL is set) ── */}
         {CONTACT_EMAIL && (
           <section aria-labelledby="contact">
-            <h2 id="contact" className="mb-4 border-s-4 border-[var(--text)] ps-3 text-2xl font-black">
+            <h2 id="contact" className="mb-4 border-s-4 border-[var(--text)] ps-3 text-2xl font-bold">
               وجدت خطأ؟ أخبرنا
             </h2>
             <p className="text-base leading-9 text-[var(--text-2)]">
@@ -206,7 +206,7 @@ export default function AboutPage() {
             </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="mt-4 inline-block rounded-xl border-2 border-[var(--text)] px-6 py-3 text-base font-black transition-colors hover:bg-[var(--text)] hover:text-[var(--bg)]"
+              className="mt-4 inline-block rounded-xl border-2 border-[var(--text)] px-6 py-3 text-base font-bold transition-colors hover:bg-[var(--text)] hover:text-[var(--bg)]"
               dir="ltr"
             >
               {CONTACT_EMAIL}

@@ -33,7 +33,7 @@ const CSS = `
 .geo-row{display:grid;grid-template-columns:7.5rem 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--ln)}
 .geo-row:first-child{padding-top:0}
 .geo-row:last-child{border-bottom:0;padding-bottom:0}
-.geo-dl dt{margin:0;font-weight:800}
+.geo-dl dt{margin:0;font-weight:700}
 .geo-dl dd{margin:0;color:var(--ink);overflow-wrap:anywhere}
 .geo-dl a{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
 .geo-dl a:hover{background:var(--ac);color:#0D0D0D}

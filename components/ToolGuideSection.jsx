@@ -279,22 +279,21 @@ function GuideStyles() {
       .tg-section{ display:grid; gap:1.5rem; }
       .tg-last{ padding-bottom:2rem; }
       .tg-head{ display:grid; gap:.5rem; justify-items:center; text-align:center; }
-      .tg-h2{ margin:0; font-size:1.5rem; font-weight:800; line-height:1.5; }
-      @media (min-width:640px){ .tg-h2{ font-size:1.875rem; } }
-      .tg-h2-sm{ font-size:1.25rem; }
-      .tg-h3{ margin:0; font-size:1rem; font-weight:800; }
-      .tg-h4{ margin:0; font-size:.875rem; font-weight:800; line-height:1.6; }
-      .tg-text{ margin:0; font-size:.75rem; line-height:1.9; color:var(--tg-text2); }
-      .tg-small{ font-size:.6875rem; color:var(--tg-text2); }
-      .tg-strong{ font-size:.8125rem; font-weight:800; }
+      .tg-h2{ margin:0; font-size:clamp(1.25rem,4vw,1.75rem); font-weight:700; line-height:1.35; }
+      .tg-h2-sm{ font-size:1.125rem; }
+      .tg-h3{ margin:0; font-size:1rem; font-weight:700; }
+      .tg-h4{ margin:0; font-size:.875rem; font-weight:700; line-height:1.6; }
+      .tg-text{ margin:0; font-size:.875rem; line-height:1.8; color:var(--tg-text2); }
+      .tg-small{ font-size:.75rem; color:var(--tg-text2); }
+      .tg-strong{ font-size:.8125rem; font-weight:700; }
 
       .tg-tag{
         display:inline-block; margin:0; padding:.125rem .75rem;
-        border:2px solid var(--tg-ink); font-size:.75rem; font-weight:800;
+        border:2px solid var(--tg-ink); font-size:.75rem; font-weight:600;
       }
       .tg-mark{
         flex:none; width:1.25rem; height:1.25rem; display:inline-flex;
-        align-items:center; justify-content:center; border:2px solid currentColor; font-weight:800;
+        align-items:center; justify-content:center; border:2px solid currentColor; font-weight:700;
       }
 
       /* Cards */
@@ -318,13 +317,13 @@ function GuideStyles() {
         border:2px solid var(--tg-ink); border-inline-start:6px solid var(--tg-orange);
         padding:.875rem 1rem; display:grid; gap:.375rem;
       }
-      .tg-notice-title{ margin:0; display:flex; align-items:center; gap:.5rem; font-size:.8125rem; font-weight:800; }
+      .tg-notice-title{ margin:0; display:flex; align-items:center; gap:.5rem; font-size:.875rem; font-weight:700; }
 
       /* Steps */
       .tg-step{ grid-template-columns:auto 1fr; gap:.75rem; align-items:start; }
       .tg-num{
         width:1.75rem; height:1.75rem; display:inline-flex; align-items:center; justify-content:center;
-        border:2px solid var(--tg-ink); font-size:.8125rem; font-weight:800;
+        border:2px solid var(--tg-ink); font-size:.8125rem; font-weight:700;
       }
 
       /* Example + calc rows */
@@ -332,14 +331,14 @@ function GuideStyles() {
       .tg-calc{ margin:0; border:2px solid var(--tg-ink); }
       .tg-calc-row{
         display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
-        padding:.375rem .75rem; border-top:1px solid var(--tg-ink); font-size:.75rem;
+        padding:.375rem .75rem; border-top:1px solid var(--tg-ink); font-size:.8125rem;
       }
       .tg-calc-row:first-child{ border-top:0; }
       .tg-calc-row dt{ margin:0; color:var(--tg-text2); }
-      .tg-calc-row dd{ margin:0; font-weight:800; direction:ltr; unicode-bidi:isolate; }
+      .tg-calc-row dd{ margin:0; font-weight:700; direction:ltr; unicode-bidi:isolate; }
       .tg-result{
         margin:0; padding:.625rem .75rem; background:var(--tg-orange); color:#0a0a0a;
-        border:2px solid var(--tg-ink); font-size:.8125rem; font-weight:800; line-height:1.8;
+        border:2px solid var(--tg-ink); font-size:.875rem; font-weight:700; line-height:1.8;
         print-color-adjust:exact; -webkit-print-color-adjust:exact;
       }
 
@@ -350,14 +349,14 @@ function GuideStyles() {
       .tg-faq-q button{
         width:100%; display:flex; justify-content:space-between; align-items:center; gap:1rem;
         padding:1rem 1.25rem; border:0; background:var(--tg-paper); color:var(--tg-ink);
-        font-family:inherit; font-size:.9375rem; font-weight:800; text-align:start; cursor:pointer;
+        font-family:inherit; font-size:.9375rem; font-weight:700; text-align:start; cursor:pointer;
       }
       .tg-faq-q button:hover{ background:var(--tg-muted); }
       .tg-faq-q button[aria-expanded="true"]{ background:var(--tg-ink); color:var(--tg-paper); }
-      .tg-sign{ flex:none; font-size:1.125rem; font-weight:900; line-height:1; }
+      .tg-sign{ flex:none; font-size:1.125rem; font-weight:700; line-height:1; }
       .tg-faq-a{ padding:1rem 1.25rem; border-top:2px solid var(--tg-ink); }
       .tg-faq-a[hidden]{ display:none; }
-      .tg-faq-a .tg-text{ font-size:.8125rem; max-width:70ch; }
+      .tg-faq-a .tg-text{ font-size:.875rem; max-width:70ch; }
 
       /* Related tools */
       .tg-tool{
@@ -367,10 +366,10 @@ function GuideStyles() {
       }
       .tg-tool:hover{ background:var(--tg-muted); }
       .tg-tool:hover .tg-tool-title{ text-decoration:underline; text-underline-offset:4px; }
-      .tg-tool-title{ font-size:.9375rem; font-weight:800; line-height:1.6; }
+      .tg-tool-title{ font-size:.9375rem; font-weight:700; line-height:1.6; }
       .tg-tool-cta{
         margin-top:.25rem; padding-top:.5rem; border-top:2px solid var(--tg-orange);
-        font-size:.75rem; font-weight:800;
+        font-size:.75rem; font-weight:700;
       }
     `}</style>
   );

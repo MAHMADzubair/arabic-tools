@@ -14,7 +14,7 @@ export default function PrivacyPage() {
           <span className="inline-block rounded-full bg-brand-light px-4 py-1 text-xs font-bold text-brand-dark mb-3">
             حماية بياناتك
           </span>
-          <h1 className="text-3xl font-black text-ink sm:text-4xl">
+          <h1 className="text-3xl font-bold text-ink sm:text-4xl">
             سياسة الخصوصية
           </h1>
           <p className="mt-2 text-xs text-ink-muted">

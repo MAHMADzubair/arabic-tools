@@ -18,7 +18,7 @@ export default function ContactPage() {
           <span className="inline-block rounded-full bg-brand-light px-4 py-1 text-xs font-bold text-brand-dark mb-3">
             خدمة المستخدمين
           </span>
-          <h1 className="text-3xl font-black text-ink sm:text-4xl">
+          <h1 className="text-3xl font-bold text-ink sm:text-4xl">
             تواصل معنا
           </h1>
           <p className="mt-3 text-sm sm:text-base text-ink-secondary max-w-xl mx-auto">

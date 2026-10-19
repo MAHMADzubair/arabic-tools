@@ -110,7 +110,7 @@ function GeoSummaryStyles() {
       }
       .gs-row:last-child{ border-bottom:0; }
       .gs-row dt{
-        font-weight:800; font-size:.6875rem; letter-spacing:.02em;
+        font-weight:700; font-size:.6875rem; letter-spacing:.02em;
         color:var(--gs-ink); margin:0;
       }
       .gs-row dd{ margin:0; color:var(--gs-text2); }
@@ -133,7 +133,7 @@ function GeoSummaryStyles() {
       }
       .gs-tag{
         flex:none; width:1.25rem; height:1.25rem; display:inline-flex;
-        align-items:center; justify-content:center; font-weight:800;
+        align-items:center; justify-content:center; font-weight:700;
         border:2px solid var(--gs-ink); color:var(--gs-ink);
       }
 

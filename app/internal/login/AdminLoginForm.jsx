@@ -46,7 +46,7 @@ export default function AdminLoginForm() {
       </div>
       {err && <p className="text-rose-400 text-xs font-bold">{err}</p>}
       <button type="submit" disabled={busy || !pw}
-        className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-900 font-black py-2.5 text-sm transition-all">
+        className="w-full rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-900 font-bold py-2.5 text-sm transition-all">
         {busy ? "جارٍ التحقق..." : "دخول →"}
       </button>
     </form>

@@ -61,7 +61,7 @@ export default function PilotLeadsClient({ leads }) {
 
   const SortBtn = ({ field, label }) => (
     <button onClick={() => toggleSort(field)}
-      className={`text-left hover:text-white transition-colors ${sortField === field ? "text-amber-400 font-black" : "text-slate-400 font-bold"}`}>
+      className={`text-left hover:text-white transition-colors ${sortField === field ? "text-amber-400 font-bold" : "text-slate-400 font-bold"}`}>
       {label} {sortField === field ? (sortDir === "asc" ? "↑" : "↓") : ""}
     </button>
   );
@@ -100,7 +100,7 @@ export default function PilotLeadsClient({ leads }) {
 
         {/* CSV export */}
         <button onClick={() => downloadCSV(filtered)}
-          className="mr-auto rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black px-4 py-2 transition-all">
+          className="mr-auto rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 transition-all">
           ⬇️ تصدير CSV ({filtered.length})
         </button>
       </div>

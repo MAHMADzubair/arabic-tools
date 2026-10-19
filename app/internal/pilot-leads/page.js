@@ -75,7 +75,7 @@ export default async function PilotLeadsPage() {
         <div className="flex items-center gap-3">
           <span className="text-2xl">🏷️</span>
           <div>
-            <h1 className="text-lg font-black">Pilot Leads — Internal</h1>
+            <h1 className="text-lg font-bold">Pilot Leads — Internal</h1>
             <p className="text-slate-400 text-xs">AI Sales Closer · {enriched.length} lead{enriched.length !== 1 ? "s" : ""} · source: {source || "—"}</p>
           </div>
         </div>
@@ -100,7 +100,7 @@ export default async function PilotLeadsPage() {
             { label: "يريد التجربة",        val: enriched.filter(l=>l.trial_interest==="yes").length,        color: "text-emerald-400" },
           ].map(s => (
             <div key={s.label} className="rounded-xl bg-slate-800 border border-slate-700 p-3 text-center">
-              <p className={`text-2xl font-black ${s.color}`}>{s.val}</p>
+              <p className={`text-2xl font-bold ${s.color}`}>{s.val}</p>
               <p className="text-slate-400 text-xs mt-0.5">{s.label}</p>
             </div>
           ))}
