@@ -8,8 +8,8 @@ const labelCls = "mb-1.5 block text-sm font-bold text-[var(--text)]";
 const reqCls = "text-[var(--error)]";
 
 export default function ContactForm() {
-  // Feature toggle: temporarily disable contact form submissions
-  if (process.env.NEXT_PUBLIC_DISABLE_CONTACT === "true") {
+  // Feature toggle: disabled by default, enable with NEXT_PUBLIC_ENABLE_CONTACT=true
+  if (process.env.NEXT_PUBLIC_ENABLE_CONTACT !== "true") {
     return (
       <div className="rounded-3xl border-2 border-amber-400 bg-amber-50 p-10 text-center">
         <p className="text-lg font-bold text-amber-900">نظام التواصل غير متاح حالياً. يرجى المتابعة لاحقاً.</p>
