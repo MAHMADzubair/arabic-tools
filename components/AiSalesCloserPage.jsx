@@ -572,6 +572,14 @@ const PROBLEM_OPTIONS = [
 ];
 
 function WaitlistForm({ formRef }) {
+  // Feature toggle: temporarily disable pilot lead submissions
+  if (process.env.NEXT_PUBLIC_DISABLE_PILOT === "true") {
+    return (
+      <div className="rounded-3xl border-2 border-amber-400 bg-amber-50 p-10 text-center">
+        <p className="text-lg font-bold text-amber-900">نظام التقديم غير متاح حالياً. يرجى المتابعة لاحقاً.</p>
+      </div>
+    );
+  }
   const [form, setForm] = useState({ name:"", storeName:"", email:"", whatsapp:"", platform:"", volume:"", problem:"", trialInterest:"", _honey:"" });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
