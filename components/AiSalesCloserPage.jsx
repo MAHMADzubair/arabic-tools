@@ -573,7 +573,7 @@ const PROBLEM_OPTIONS = [
 
 function WaitlistForm({ formRef }) {
   // Feature toggle: temporarily disable pilot lead submissions
-  if (process.env.NEXT_PUBLIC_DISABLE_PILOT === "true") {
+  if (process.env.NEXT_PUBLIC_ENABLE_PILOT !== "true") {
     return (
       <div className="rounded-3xl border-2 border-amber-400 bg-amber-50 p-10 text-center">
         <p className="text-lg font-bold text-amber-900">نظام التقديم غير متاح حالياً. يرجى المتابعة لاحقاً.</p>
