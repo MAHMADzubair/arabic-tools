@@ -29,6 +29,19 @@ const TOKENS_CSS = `
   --orange:#FF5B04; --orange-hover:#FF7A33; --orange-press:#E64F00; --on-orange:#0D0D0D;
   --success:#137A47; --warning:#8A5A00; --error:#C8321F;
   --foot-bg:#FFFFFF; --foot-text:var(--text); --foot-muted:var(--text-2); --foot-line:var(--border); --foot-hover:var(--orange-press);
+
+  /* ── Typography & Hierarchy Tokens (Sprint 5A) ── */
+  --font-arabic: var(--font-ibm-plex-arabic), "IBM Plex Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --lh-tight: 1.25;
+  --lh-snug: 1.35;
+  --lh-normal: 1.6;
+  --lh-relaxed: 1.75;
+  --lh-loose: 1.9;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -50,7 +63,16 @@ const TOKENS_CSS = `
   --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B;
   --foot-bg:#0D0D0D; --foot-hover:var(--orange-hover);
 }
-body{background:var(--bg);color:var(--text)}
+html,body{
+  font-family:var(--font-arabic);
+  font-synthesis:none;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  background:var(--bg);
+  color:var(--text);
+}
+[dir="rtl"]{letter-spacing:normal}
 .tear{height:12px;background:conic-gradient(from -45deg at bottom,#0000,var(--card) 1deg 90deg,#0000 91deg) 50%/16px 100%}
 :focus-visible{outline:2px solid var(--text);outline-offset:3px}
 /* Legacy bridge: old pages still use the previous class names.
@@ -118,9 +140,8 @@ export const viewport = {
 
 export const metadata = {
   metadataBase: new URL(BASE_URL),
-  alternates: {
-    canonical: "/",
-  },
+
+
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
@@ -230,7 +251,7 @@ const FOOTER_SCRIPT = `(function(){var m=window.matchMedia("(min-width:1024px)")
 const NUM_LOCALE = "ar-EG"; // change to "en" for Western digits (35)
 
 const linkCls =
-  "inline-block rounded py-1.5 text-[15px] leading-6 text-[var(--foot-muted)] underline-offset-4 transition-colors hover:text-[var(--foot-hover)] hover:underline hover:decoration-2 focus-visible:text-[var(--foot-hover)]";
+  "inline-block rounded py-1.5 text-[14px] leading-6 font-normal text-[var(--foot-muted)] underline-offset-4 transition-colors hover:text-[var(--foot-hover)] hover:underline hover:decoration-2 focus-visible:text-[var(--foot-hover)]";
 
 const LEGAL = [
   ["/about", "عن الموقع والرسالة"],
@@ -261,11 +282,11 @@ function Footer() {
               />
             </div>
             <div>
-              <span className="block text-lg font-extrabold leading-7">Qemlo</span>
-              <span className="block text-sm text-[var(--foot-muted)]">{totalTools.toLocaleString(NUM_LOCALE)} أداة وحاسبة متخصصة</span>
+              <span className="block text-lg font-bold leading-7">Qemlo</span>
+              <span className="block text-sm font-normal tabular-nums text-[var(--foot-muted)]">{totalTools.toLocaleString(NUM_LOCALE)} أداة وحاسبة متخصصة</span>
             </div>
           </div>
-          <p className="max-w-xl text-[15px] leading-7 text-[var(--foot-muted)]">
+          <p className="max-w-xl text-[14.5px] font-normal leading-relaxed text-[var(--foot-muted)]">
             الأدوات الأساسية مجانية 100% وبدون تسجيل، مع خدمات متقدمة قادمة للأعمال.
           </p>
         </div>

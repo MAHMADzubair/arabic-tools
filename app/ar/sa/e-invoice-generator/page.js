@@ -146,7 +146,7 @@ export default function EInvoiceGeneratorPage() {
           <div className="rounded-xl border border-amber-300 bg-amber-50 p-3.5 flex items-start gap-3 shadow-sm">
             <span className="text-xl shrink-0 mt-0.5">⚠️</span>
             <div className="text-xs leading-relaxed text-amber-900">
-              <strong className="font-extrabold">تنبيه مهم: </strong>
+              <strong className="font-bold">تنبيه مهم: </strong>
               هذه الأداة تُنشئ نموذج فاتورة ضريبية قابل للطباعة لأغراض التخطيط والمراجعة الداخلية فقط.
               <strong className="font-bold"> لا تُصدر فاتورة إلكترونية مبلّغاً عنها عبر منصة فاتورة (ZATCA).</strong>
               {" "}الامتثال الرسمي يستلزم الربط المباشر بمنصة ZATCA فاتورة عبر حلول فوترة إلكترونية معتمدة.
@@ -174,7 +174,7 @@ export default function EInvoiceGeneratorPage() {
         <section className="mx-auto max-w-3xl px-4 py-8 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">
+              <h2 className="text-xl font-bold text-ink">
                 📖 ما هي الفاتورة الإلكترونية في السعودية وما أهميتها؟
               </h2>
             </div>
@@ -192,7 +192,7 @@ export default function EInvoiceGeneratorPage() {
             {/* Phase 1 & 2 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
-                <h3 className="text-sm font-extrabold text-emerald-900 flex items-center gap-2 mb-2">
+                <h3 className="text-sm font-bold text-emerald-900 flex items-center gap-2 mb-2">
                   <span>🟢</span> المرحلة الأولى: التوليد
                 </h3>
                 <p className="text-xs text-emerald-800 leading-relaxed">
@@ -200,7 +200,7 @@ export default function EInvoiceGeneratorPage() {
                 </p>
               </div>
               <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-4">
-                <h3 className="text-sm font-extrabold text-blue-900 flex items-center gap-2 mb-2">
+                <h3 className="text-sm font-bold text-blue-900 flex items-center gap-2 mb-2">
                   <span>🔵</span> المرحلة الثانية: التكامل
                 </h3>
                 <p className="text-xs text-blue-800 leading-relaxed">
@@ -211,7 +211,7 @@ export default function EInvoiceGeneratorPage() {
 
             {/* Invoice types */}
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
-              <h3 className="text-sm font-extrabold text-ink">الفرق بين الفاتورة الضريبية والفاتورة الضريبية المبسطة</h3>
+              <h3 className="text-sm font-bold text-ink">الفرق بين الفاتورة الضريبية والفاتورة الضريبية المبسطة</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs border-collapse">
                   <thead>
@@ -241,7 +241,7 @@ export default function EInvoiceGeneratorPage() {
 
             {/* Step by step */}
             <div>
-              <h3 className="text-sm font-extrabold text-ink mb-3">🎯 كيفية استخدام مولد الفاتورة — خطوة بخطوة</h3>
+              <h3 className="text-sm font-bold text-ink mb-3">🎯 كيفية استخدام مولد الفاتورة — خطوة بخطوة</h3>
               <ol className="space-y-2 text-sm text-ink-secondary list-decimal list-inside">
                 <li><strong className="text-ink">اختر نوع الفاتورة:</strong> فاتورة ضريبية B2B أو فاتورة مبسطة B2C.</li>
                 <li><strong className="text-ink">أدخل بيانات البائع:</strong> الاسم القانوني للمنشأة، الرقم الضريبي (15 رقماً يبدأ بـ 3)، العنوان.</li>
@@ -254,7 +254,7 @@ export default function EInvoiceGeneratorPage() {
 
             {/* Practical example */}
             <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-5">
-              <h3 className="text-sm font-extrabold text-indigo-900 mb-3">📊 مثال عملي بالأرقام</h3>
+              <h3 className="text-sm font-bold text-indigo-900 mb-3">📊 مثال عملي بالأرقام</h3>
               <p className="text-xs text-indigo-800 mb-3">
                 منشأة تبيع خدمات استشارية بقيمة 10,000 ريال مع خصم 500 ريال وضريبة 15%:
               </p>
@@ -276,7 +276,7 @@ export default function EInvoiceGeneratorPage() {
 
             {/* Official sources */}
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-              <h3 className="text-sm font-extrabold text-ink mb-2">📚 المصادر الرسمية</h3>
+              <h3 className="text-sm font-bold text-ink mb-2">📚 المصادر الرسمية</h3>
               <p className="text-xs text-ink-muted mb-2">
                 المصدر: هيئة الزكاة والضريبة والجمارك (ZATCA) — لا نعبّر عن أي انتماء رسمي لهذه الجهة.
               </p>
@@ -316,7 +316,7 @@ export default function EInvoiceGeneratorPage() {
         <section className="mx-auto max-w-3xl px-4 py-4 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-6">
-              <h2 className="text-xl font-extrabold text-ink">❓ الأسئلة الشائعة</h2>
+              <h2 className="text-xl font-bold text-ink">❓ الأسئلة الشائعة</h2>
             </div>
             <div className="space-y-5">
               {[
@@ -342,7 +342,7 @@ export default function EInvoiceGeneratorPage() {
                 },
               ].map((item, i) => (
                 <div key={i} className="border-b border-brand-border pb-5 last:border-b-0 last:pb-0">
-                  <h3 className="text-sm font-extrabold text-ink mb-2">س: {item.q}</h3>
+                  <h3 className="text-sm font-bold text-ink mb-2">س: {item.q}</h3>
                   <p className="text-sm text-ink-secondary leading-relaxed">ج: {item.a}</p>
                 </div>
               ))}
@@ -354,7 +354,7 @@ export default function EInvoiceGeneratorPage() {
         <section className="mx-auto max-w-3xl px-4 py-4 pb-12 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-5">
-              <h2 className="text-lg font-extrabold text-ink">🔗 أدوات ذات صلة</h2>
+              <h2 className="text-lg font-bold text-ink">🔗 أدوات ذات صلة</h2>
               <p className="text-xs text-ink-muted mt-1">أدوات ضريبية ومالية سعودية مكملة لهذه الأداة</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -405,7 +405,7 @@ export default function EInvoiceGeneratorPage() {
                   title: "مجمع أدوات وحاسبات السعودية",
                   desc: "دليل الحاسبات العمالية والضريبية والمالية المخصصة للمملكة في مكان واحد.",
                   badge: "المجمع الشامل",
-                  badgeColor: "bg-emerald-600 text-white font-black",
+                  badgeColor: "bg-emerald-600 text-white font-bold",
                 },
               ].map((tool) => (
                 <Link

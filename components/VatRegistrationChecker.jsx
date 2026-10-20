@@ -160,7 +160,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
           <div className="flex items-center gap-3">
             <span className="text-4xl">🏢</span>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black leading-tight">
+              <h1 className="text-xl sm:text-2xl font-bold leading-tight">
                 حاسبة أهلية التسجيل في ضريبة القيمة المضافة
               </h1>
               <p className="mt-1 text-sm text-white/85">
@@ -177,7 +177,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
       {/* ── Presets Bar ────────────────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-brand-border bg-white p-4 shadow-card">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          <span className="text-xs font-extrabold text-ink flex items-center gap-1.5">
+          <span className="text-xs font-bold text-ink flex items-center gap-1.5">
             <span>💡</span>
             <span>نماذج سريعة للتجربة:</span>
           </span>
@@ -226,11 +226,11 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
         {/* STEP 1: Residency */}
         <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
           <div className="flex items-center gap-2.5 border-b border-brand-border/60 pb-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-black text-white">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
               ١
             </span>
             <span className="text-lg">🇸🇦</span>
-            <h2 className="text-sm sm:text-base font-extrabold text-ink">
+            <h2 className="text-sm sm:text-base font-bold text-ink">
               الإقامة والنشاط الاقتصادي في المملكة
             </h2>
           </div>
@@ -243,7 +243,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
               <button
                 type="button"
                 onClick={() => setIsResident(true)}
-                className={`rounded-xl border p-3 text-center text-xs font-extrabold transition-all ${
+                className={`rounded-xl border p-3 text-center text-xs font-bold transition-all ${
                   isResident
                     ? "border-brand bg-brand-light text-brand-dark shadow-sm"
                     : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
@@ -254,7 +254,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
               <button
                 type="button"
                 onClick={() => setIsResident(false)}
-                className={`rounded-xl border p-3 text-center text-xs font-extrabold transition-all ${
+                className={`rounded-xl border p-3 text-center text-xs font-bold transition-all ${
                   !isResident
                     ? "border-brand bg-brand-light text-brand-dark shadow-sm"
                     : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
@@ -271,7 +271,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
               <div className="flex items-start gap-2">
                 <span className="text-xl">⚠️</span>
                 <div>
-                  <h3 className="text-xs font-extrabold text-purple-900">
+                  <h3 className="text-xs font-bold text-purple-900">
                     ضوابط تسجيل غير المقيمين لدى هيئة الزكاة والضريبة والجمارك (ZATCA)
                   </h3>
                   <p className="text-[11px] text-purple-800 leading-relaxed mt-0.5">
@@ -317,11 +317,11 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
         <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
           <div className="flex items-center justify-between border-b border-brand-border/60 pb-3">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-black text-white">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
                 ٢
               </span>
               <span className="text-lg">📊</span>
-              <h2 className="text-sm sm:text-base font-extrabold text-ink">
+              <h2 className="text-sm sm:text-base font-bold text-ink">
                 إجمالي التوريدات خلال آخر 12 شهراً
               </h2>
             </div>
@@ -357,7 +357,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
           {showExclusionInputs && (
             <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black text-amber-900 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
                   <span>🛡️</span>
                   <span>الاستبعادات النظامية (لا تُحتسب ضمن حد الـ 375,000 ريال):</span>
                 </span>
@@ -417,7 +417,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
                     className="w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-ink focus:border-brand focus:outline-none"
                   />
                   <p className="mt-1 text-[10px] text-amber-800">
-                    بيع سيارات أو أجهزة المنشأة المستعملة.
+                    بيع أصول المنشأة الإنتاجية أو المستعملة (مستبعدة بنص المادة 52 من الاتفاقية الموحدة لضريبة القيمة المضافة لدول مجلس التعاون).
                   </p>
                 </div>
               </div>
@@ -427,7 +427,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
           {/* Calculated Net Supplies Card */}
           <div className="rounded-xl border border-brand-border bg-brand-surface p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <p className="text-xs font-extrabold text-brand-dark">
+              <p className="text-xs font-bold text-brand-dark">
                 التوريدات الخاضعة المحتسبة لأغراض التسجيل (الصافية):
               </p>
               <p className="text-[11px] text-ink-muted">
@@ -435,7 +435,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
               </p>
             </div>
             <div className="text-left sm:text-right">
-              <span className="text-lg font-black text-brand-dark">
+              <span className="text-lg font-bold text-brand-dark">
                 {formatSAR(evalResult.taxablePreviousSupplies)} ر.س
               </span>
             </div>
@@ -445,11 +445,11 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
         {/* STEP 3: Expected Next 12 Months */}
         <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
           <div className="flex items-center gap-2.5 border-b border-brand-border/60 pb-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-black text-white">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
               ٣
             </span>
             <span className="text-lg">🔮</span>
-            <h2 className="text-sm sm:text-base font-extrabold text-ink">
+            <h2 className="text-sm sm:text-base font-bold text-ink">
               التوريدات الخاضعة المتوقعة خلال الـ 12 شهراً القادمة
             </h2>
           </div>
@@ -477,12 +477,12 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
         <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
           <div className="flex items-center justify-between border-b border-brand-border/60 pb-3">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-black text-white">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
                 ٤
               </span>
               <span className="text-lg">🧾</span>
               <div>
-                <h2 className="text-sm sm:text-base font-extrabold text-ink">
+                <h2 className="text-sm sm:text-base font-bold text-ink">
                   المصروفات الخاضعة للضريبة (لتقييم التسجيل الاختياري)
                 </h2>
                 <p className="text-[11px] text-ink-muted mt-0.5">
@@ -544,7 +544,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
       {/* ── Visual Threshold Indicator ─────────────────────────────────────────── */}
       <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs sm:text-sm font-extrabold text-ink flex items-center gap-1.5">
+          <h3 className="text-xs sm:text-sm font-bold text-ink flex items-center gap-1.5">
             <span>📈</span>
             <span>مؤشر حدود التسجيل الضريبي في السعودية:</span>
           </h3>
@@ -605,15 +605,15 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
           <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center">
-            <span className="font-extrabold text-emerald-800 block">دون الحد (أقل من 187.5 ألف)</span>
+            <span className="font-bold text-emerald-800 block">دون الحد (أقل من 187.5 ألف)</span>
             <span className="text-emerald-700 text-[10px]">غير ملزم بالتسجيل حالياً</span>
           </div>
           <div className="rounded-lg bg-amber-50 border border-amber-200 p-2.5 text-center">
-            <span className="font-extrabold text-amber-800 block">التسجيل الاختياري (187.5 - 375 ألف)</span>
+            <span className="font-bold text-amber-800 block">التسجيل الاختياري (187.5 - 375 ألف)</span>
             <span className="text-amber-700 text-[10px]">مؤهل اختياري لاسترداد المدخلات</span>
           </div>
           <div className="rounded-lg bg-rose-50 border border-rose-200 p-2.5 text-center">
-            <span className="font-extrabold text-rose-800 block">التسجيل الإلزامي (أكثر من 375 ألف)</span>
+            <span className="font-bold text-rose-800 block">التسجيل الإلزامي (أكثر من 375 ألف)</span>
             <span className="text-rose-700 text-[10px]">مطلوب نظاماً تجنباً للغرامات</span>
           </div>
         </div>
@@ -648,7 +648,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
                 <span className="inline-block rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-bold mb-1">
                   {evalResult.badgeAr}
                 </span>
-                <h2 className="text-xl sm:text-2xl font-black">{evalResult.titleAr}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold">{evalResult.titleAr}</h2>
                 <p className="text-xs sm:text-sm text-white/90 mt-1 leading-relaxed">
                   {evalResult.primaryReason}
                 </p>
@@ -662,7 +662,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl border border-brand-border bg-slate-50/70 p-3.5">
               <p className="text-[11px] font-bold text-ink-muted">حد التسجيل الإلزامي</p>
-              <p className="text-base font-black text-rose-700 mt-0.5">
+              <p className="text-base font-bold text-rose-700 mt-0.5">
                 {formatSAR(VAT_MANDATORY_THRESHOLD)} ر.س
               </p>
               <p className="text-[10px] text-ink-muted">وفق المادة (50) من اللائحة</p>
@@ -670,15 +670,15 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
 
             <div className="rounded-xl border border-brand-border bg-slate-50/70 p-3.5">
               <p className="text-[11px] font-bold text-ink-muted">حد التسجيل الاختياري</p>
-              <p className="text-base font-black text-amber-700 mt-0.5">
+              <p className="text-base font-bold text-amber-700 mt-0.5">
                 {formatSAR(VAT_VOLUNTARY_THRESHOLD)} ر.س
               </p>
               <p className="text-[10px] text-ink-muted">وفق المادة (51) من اللائحة</p>
             </div>
 
             <div className="rounded-xl border-2 border-brand bg-brand-surface p-3.5">
-              <p className="text-[11px] font-extrabold text-brand-dark">القيمة الخاضعة المحتسبة</p>
-              <p className="text-base font-black text-brand-dark mt-0.5">
+              <p className="text-[11px] font-bold text-brand-dark">القيمة الخاضعة المحتسبة</p>
+              <p className="text-base font-bold text-brand-dark mt-0.5">
                 {formatSAR(evalResult.primaryTriggerValue || 0)} ر.س
               </p>
               <p className="text-[10px] text-ink-muted">
@@ -693,7 +693,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
 
           {/* Detailed Legal Advice Card */}
           <div className="rounded-xl border border-brand-border/80 bg-slate-50 p-4 space-y-2">
-            <h4 className="text-xs font-extrabold text-ink flex items-center gap-1.5">
+            <h4 className="text-xs font-bold text-ink flex items-center gap-1.5">
               <span>📋</span>
               <span>التوجيه والالتزام الإجرائي المطلوب:</span>
             </h4>
@@ -720,7 +720,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
             <button
               type="button"
               onClick={() => setShowCalculationDetails(!showCalculationDetails)}
-              className="w-full flex items-center justify-between text-xs font-extrabold text-brand hover:text-brand-dark py-1"
+              className="w-full flex items-center justify-between text-xs font-bold text-brand hover:text-brand-dark py-1"
             >
               <span className="flex items-center gap-1.5">
                 <span>🔍</span>
@@ -740,7 +740,7 @@ ${SITE_URL}/ar/sa/vat-registration-checker`;
                     <br />
                     − خارج نطاق الضريبة ({formatSAR(evalResult.outOfScope)} ر.س)
                     <br />
-                    − مبيعات الأصول الرأسمالية ({formatSAR(evalResult.capital)} ر.س)
+                    − مبيعات الأصول الرأسمالية ({formatSAR(evalResult.capital)} ر.س — مستبعدة بنص المادة 52 من الاتفاقية الموحدة)
                     <br />
                     = <strong>التوريدات المحتسبة للتسجيل: {formatSAR(evalResult.taxablePreviousSupplies)} ر.س</strong>
                   </p>

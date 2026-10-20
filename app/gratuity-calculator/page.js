@@ -170,7 +170,7 @@ export default function GratuityCalculatorPage() {
               <span className="text-3xl">📋</span>
               <div>
                 <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">تصفية شاملة لجميع المستحقات والخصومات</p>
-                <h3 className="text-base font-extrabold text-ink mt-0.5">
+                <h3 className="text-base font-bold text-ink mt-0.5">
                   هل تحتاج إلى تصفية شاملة؟ (Need Complete Settlement?)
                 </h3>
                 <p className="text-xs text-ink-muted mt-1 leading-relaxed">

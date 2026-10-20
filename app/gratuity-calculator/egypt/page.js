@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة مكافأة نهاية الخدمة في مصر 2026 | قانون العمل 12 لسنة 2003",
   description:
     "احسب مكافأة نهاية الخدمة للقطاع الخاص في مصر بدقة وفق المادة (126) من قانون العمل المصري مع شروط سن التقاعد والسنوات غير المغطاة بالتأمين.",
+  alternates: { canonical: "/gratuity-calculator/egypt" },
 };
 
 const guideData = {
@@ -83,3 +84,4 @@ export default function EgyptGratuityPage() {
     </div>
   );
 }
+

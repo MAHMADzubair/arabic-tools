@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة العمر بالهجري والميلادي الدقيقة | تقويم أم القرى 1448",
   description:
     "احسب عمرك بالهجري والميلادي بالسنوات والأشهر والأيام وفق تقويم أم القرى مع معرفة موعد يوم ميلادك القادم وإحصائيات حياتك ومحطات التكليف الشرعي.",
+  alternates: { canonical: "/hijri-age-calculator" },
   keywords: [
     "حاسبة العمر بالهجري",
     "حساب العمر بالهجري والميلادي",
@@ -95,3 +96,4 @@ export default function HijriAgeCalculatorPage() {
     </>
   );
 }
+

@@ -7,7 +7,25 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        arabic: ["var(--font-ibm-plex-arabic)", "'IBM Plex Sans Arabic'", "Tahoma", "sans-serif"],
+        arabic: [
+          "var(--font-ibm-plex-arabic)",
+          "'IBM Plex Sans Arabic'",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "'Segoe UI'",
+          "Roboto",
+          "Arial",
+          "sans-serif",
+        ],
+      },
+      fontWeight: {
+        light: "300",
+        normal: "400",
+        medium: "500",
+        semibold: "600",
+        bold: "700",
+        extrabold: "700",
+        black: "700",
       },
       colors: {
         brand: {

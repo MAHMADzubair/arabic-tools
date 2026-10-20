@@ -1,5 +1,7 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { cookies }   from "next/headers";
+import { redirect }   from "next/navigation";
+import { COOKIE_NAME, verifySession } from "@/lib/sessionAuth";
+import { fetchLeadsDirect } from "@/lib/leadsData";
 import PilotLeadsClient from "./PilotLeadsClient";
 
 export const metadata = {
@@ -7,7 +9,8 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-const COOKIE_NAME = "pilot_admin_session";
+export const dynamic = "force-dynamic";
+
 
 const PLATFORM_LABEL = { salla:"سلة", shopify:"Shopify", zid:"Zid", other:"أخرى" };
 const VOLUME_LABEL   = { lt_100:"< 100", "100_500":"100–500", "500_2000":"500–2000", gt_2000:"> 2000" };
@@ -26,20 +29,7 @@ function priorityColor(p) {
   return "bg-slate-100 text-slate-600 border-slate-300";
 }
 
-async function fetchLeads() {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const secret = process.env.ADMIN_SECRET;
-  try {
-    const res = await fetch(
-      `${base}/api/internal/pilot-leads?secret=${encodeURIComponent(secret)}`,
-      { cache: "no-store" }
-    );
-    if (!res.ok) return { leads: [], error: `HTTP ${res.status}` };
-    return res.json();
-  } catch (err) {
-    return { leads: [], error: err.message };
-  }
-}
+
 
 export default async function PilotLeadsPage() {
   const adminSecret = process.env.ADMIN_SECRET;
@@ -58,13 +48,14 @@ export default async function PilotLeadsPage() {
   }
 
   // Cookie auth — redirect unauthenticated users to login
-  const cookieStore = await cookies();
-  const session = cookieStore.get(COOKIE_NAME)?.value;
-  if (!session || session !== adminSecret) {
-    redirect("/internal/login");
-  }
+  const cookieStore  = await cookies();
+  const sessionToken = cookieStore.get(COOKIE_NAME)?.value;
+  const isValid      = await verifySession(sessionToken);
 
-  const { leads = [], error, source } = await fetchLeads();
+  if (!isValid) redirect("/internal/login");
+
+  // Direct DB fetch — no HTTP round-trip, no URL dependency
+  const { leads = [], error, source } = await fetchLeadsDirect();
 
   const enriched = leads.map(l => ({
     ...l,
@@ -84,15 +75,18 @@ export default async function PilotLeadsPage() {
         <div className="flex items-center gap-3">
           <span className="text-2xl">🏷️</span>
           <div>
-            <h1 className="text-lg font-black">Pilot Leads — Internal</h1>
+            <h1 className="text-lg font-bold">Pilot Leads — Internal</h1>
             <p className="text-slate-400 text-xs">AI Sales Closer · {enriched.length} lead{enriched.length !== 1 ? "s" : ""} · source: {source || "—"}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {error && <span className="rounded-lg bg-red-900 text-red-200 text-xs px-3 py-1">⚠️ {error}</span>}
-          <a href="/api/internal/auth" className="rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold px-3 py-1.5 transition-colors">
-            تسجيل خروج →
-          </a>
+          <form action="/api/internal/auth" method="POST" className="inline m-0">
+            <input type="hidden" name="action" value="logout" />
+            <button type="submit" className="rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold px-3 py-1.5 transition-colors cursor-pointer">
+              تسجيل خروج →
+            </button>
+          </form>
         </div>
       </div>
 
@@ -106,7 +100,7 @@ export default async function PilotLeadsPage() {
             { label: "يريد التجربة",        val: enriched.filter(l=>l.trial_interest==="yes").length,        color: "text-emerald-400" },
           ].map(s => (
             <div key={s.label} className="rounded-xl bg-slate-800 border border-slate-700 p-3 text-center">
-              <p className={`text-2xl font-black ${s.color}`}>{s.val}</p>
+              <p className={`text-2xl font-bold ${s.color}`}>{s.val}</p>
               <p className="text-slate-400 text-xs mt-0.5">{s.label}</p>
             </div>
           ))}
@@ -118,3 +112,4 @@ export default async function PilotLeadsPage() {
     </div>
   );
 }
+

@@ -4,7 +4,7 @@ import { useState, useMemo, useId } from "react";
 
 /* ─── Country presets ────────────────────────────────────────────────────── */
 const COUNTRIES = [
-  { id: "sa", name: "السعودية",  currency: "SAR", symbol: "ر.س", rate: 4.5,  years: 25, downPct: 10, stamp: 0,   insurance: 0.5, note: "لا توجد رسوم تسجيل عقاري للمسكن الأول" },
+  { id: "sa", name: "السعودية",  currency: "SAR", symbol: "ر.س", rate: 4.5,  years: 25, downPct: 10, stamp: 5,   insurance: 0.5, note: "ضريبة التصرفات العقارية 5٪ نظاماً على البائع، مع دعم الدولة حتى 1,000,000 ر.س للمسكن الأول" },
   { id: "ae", name: "الإمارات",  currency: "AED", symbol: "د.إ", rate: 4.75, years: 25, downPct: 20, stamp: 4,   insurance: 0.4, note: "رسوم DLD 4٪ على قيمة العقار" },
   { id: "eg", name: "مصر",        currency: "EGP", symbol: "ج.م", rate: 27.5, years: 20, downPct: 20, stamp: 3,   insurance: 0.5, note: "معدلات متغيرة — راجع البنك" },
   { id: "pk", name: "باكستان",   currency: "PKR", symbol: "₨",  rate: 19.5, years: 20, downPct: 30, stamp: 3,   insurance: 0.5, note: "معدلات البنك الحكومي الحالية" },
@@ -18,23 +18,46 @@ const RATE_TYPES = [
 ];
 
 /* ─── Amortisation schedule ──────────────────────────────────────────────── */
-function buildSchedule(principal, annualRate, years) {
+function buildSchedule(principal, annualRate, years, rateType = "fixed", variableRate = annualRate) {
   const n = years * 12;
-  const r = annualRate / 100 / 12;
-  if (r === 0) {
+  const r1 = annualRate / 100 / 12;
+  const r2 = variableRate / 100 / 12;
+  const isVar = rateType === "variable" && years > 5;
+  const n1 = isVar ? 60 : n;
+
+  if (r1 === 0 && (!isVar || r2 === 0)) {
     const pmt = principal / n;
     return Array.from({ length: n }, (_, i) => ({
-      month: i + 1, payment: pmt, principal: pmt, interest: 0, balance: principal - pmt * (i + 1),
+      month: i + 1, payment: pmt, principal: pmt, interest: 0, balance: Math.max(0, principal - pmt * (i + 1)),
     }));
   }
-  const pmt = (principal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+
+  const pmt1 = r1 === 0 ? principal / n : (principal * r1 * Math.pow(1 + r1, n)) / (Math.pow(1 + r1, n) - 1);
+  const schedule = [];
   let balance = principal;
-  return Array.from({ length: n }, (_, i) => {
-    const interest = balance * r;
-    const princ = pmt - interest;
-    balance -= princ;
-    return { month: i + 1, payment: pmt, principal: princ, interest, balance: Math.max(0, balance) };
-  });
+
+  // First period (1-60 months if variable, or full term if fixed)
+  for (let i = 0; i < n1; i++) {
+    const interest = balance * r1;
+    const princ = pmt1 - interest;
+    balance = Math.max(0, balance - princ);
+    schedule.push({ month: i + 1, payment: pmt1, principal: princ, interest, balance });
+  }
+
+  // Second period (months 61 to n for variable rate)
+  if (isVar && n > 60) {
+    const n2 = n - 60;
+    const balAt60 = balance;
+    const pmt2 = r2 === 0 ? balAt60 / n2 : (balAt60 * r2 * Math.pow(1 + r2, n2)) / (Math.pow(1 + r2, n2) - 1);
+    for (let i = 0; i < n2; i++) {
+      const interest = balance * r2;
+      const princ = pmt2 - interest;
+      balance = Math.max(0, balance - princ);
+      schedule.push({ month: 60 + i + 1, payment: pmt2, principal: princ, interest, balance });
+    }
+  }
+
+  return schedule;
 }
 
 /* ─── Small UI pieces ────────────────────────────────────────────────────── */
@@ -97,6 +120,9 @@ export default function MortgageCalculator() {
   const [interestRate,setInterestRate]= useState(4.5);
   const [loanYears,   setLoanYears]   = useState(25);
   const [rateType,    setRateType]    = useState("fixed");
+  const [variableRate,setVariableRate]= useState(5.5);
+  const [isFirstHome, setIsFirstHome] = useState(true);
+  const [buyerBearsRett, setBuyerBearsRett] = useState(false);
   const [includeInsurance, setIncludeInsurance] = useState(true);
   const [includeStamp,     setIncludeStamp]     = useState(true);
   const [showSchedule,     setShowSchedule]     = useState(false);
@@ -113,7 +139,7 @@ export default function MortgageCalculator() {
     setLoanYears(c.years);
   };
 
-  // Calculation logic (unchanged)
+  // Calculation logic with Saudi RETT and variable rate support
   const result = useMemo(() => {
     if (!country || !propPrice) return null;
     const price   = Number(propPrice);
@@ -121,11 +147,27 @@ export default function MortgageCalculator() {
     const principal = price - down;
     if (principal <= 0) return null;
 
-    const schedule = buildSchedule(principal, Number(interestRate), Number(loanYears));
+    const isSaudi = country.id === "sa";
+    let grossRett = 0;
+    let govtSupport = 0;
+    let netRett = 0;
+    let stampFee = 0;
+
+    if (isSaudi) {
+      grossRett = price * 0.05;
+      govtSupport = isFirstHome ? Math.min(price, 1000000) * 0.05 : 0;
+      netRett = Math.max(0, grossRett - govtSupport);
+      // Added to buyer's upfront closing costs only if buyer contractually agreed to pay RETT
+      stampFee = (includeStamp && buyerBearsRett) ? netRett : 0;
+    } else {
+      stampFee = includeStamp ? price * (country.stamp / 100) : 0;
+    }
+
+    const schedule = buildSchedule(principal, Number(interestRate), Number(loanYears), rateType, Number(variableRate));
     const pmt = schedule[0]?.payment || 0;
-    const totalPaid = pmt * schedule.length;
+    const pmtAfter5 = rateType === "variable" && Number(loanYears) > 5 ? (schedule[60]?.payment || pmt) : null;
+    const totalPaid = schedule.reduce((sum, r) => sum + r.payment, 0);
     const totalInterest = totalPaid - principal;
-    const stampFee   = includeStamp    ? price * (country.stamp / 100)   : 0;
     const insuranceFee = includeInsurance ? principal * (country.insurance / 100) : 0;
     const totalCost  = totalPaid + down + stampFee + insuranceFee;
 
@@ -142,8 +184,12 @@ export default function MortgageCalculator() {
       });
     }
 
-    return { principal, down, pmt, totalPaid, totalInterest, stampFee, insuranceFee, totalCost, schedule, yearly };
-  }, [country, propPrice, downPct, interestRate, loanYears, includeInsurance, includeStamp]);
+    return {
+      principal, down, pmt, pmtAfter5, totalPaid, totalInterest,
+      grossRett, govtSupport, netRett, stampFee, insuranceFee, totalCost,
+      schedule, yearly, isSaudi
+    };
+  }, [country, propPrice, downPct, interestRate, loanYears, rateType, variableRate, isFirstHome, buyerBearsRett, includeInsurance, includeStamp]);
 
   const sym = country?.symbol || "";
   function fmt(n) { return `${sym} ${Math.round(n).toLocaleString("en-US")}`; }
@@ -156,11 +202,19 @@ export default function MortgageCalculator() {
         { label: "قيمة العقار", value: fmt(Number(propPrice)) },
         { label: "الدفعة الأولى", value: fmt(result.down) },
         { label: "مبلغ القرض", value: fmt(result.principal) },
+        rateType === "variable" && Number(loanYears) > 5
+          ? { label: "القسط الشهري (السنوات 1–5)", value: fmt(result.pmt) }
+          : { label: "القسط الشهري", value: fmt(result.pmt) },
+        rateType === "variable" && Number(loanYears) > 5 && { label: `القسط الشهري (بعد السنة 5 بفائدة ${variableRate}٪)`, value: fmt(result.pmtAfter5) },
         { label: "إجمالي الأقساط", value: fmt(result.totalPaid) },
         { label: "إجمالي الفوائد", value: fmt(result.totalInterest) },
-        result.stampFee > 0 && { label: "رسوم التسجيل", value: fmt(result.stampFee) },
+        result.isSaudi && { label: "ضريبة التصرفات العقارية الإجمالية (5٪)", value: fmt(result.grossRett) },
+        result.isSaudi && result.govtSupport > 0 && { label: "دعم الدولة للمسكن الأول (سكني)", value: `− ${fmt(result.govtSupport)}` },
+        result.isSaudi && { label: "صافي الضريبة المستحقة نظاماً (على البائع)", value: fmt(result.netRett) },
+        result.isSaudi && buyerBearsRett && result.netRett > 0 && { label: "الضريبة المحمّلة على المشتري اتفاقاً", value: fmt(result.stampFee) },
+        !result.isSaudi && result.stampFee > 0 && { label: "رسوم التسجيل / الطوابع", value: fmt(result.stampFee) },
         result.insuranceFee > 0 && { label: "تأمين الممتلكات (كامل)", value: fmt(result.insuranceFee) },
-        { label: "التكلفة الإجمالية للتملك", value: fmt(result.totalCost), total: true },
+        { label: "التكلفة الإجمالية للتملك على المشتري", value: fmt(result.totalCost), total: true },
       ].filter(Boolean)
     : [];
 
@@ -243,7 +297,7 @@ export default function MortgageCalculator() {
             <div className="mg-stack mg-stack-lg">
               <div className="mg-two">
                 <Range
-                  label="معدل الفائدة السنوي"
+                  label={rateType === "variable" ? "معدل الفائدة لأول 5 سنوات" : "معدل الفائدة السنوي"}
                   valueText={`${interestRate}٪`}
                   min="1" max="35" step="0.25"
                   value={interestRate}
@@ -277,19 +331,70 @@ export default function MortgageCalculator() {
                   ))}
                 </div>
               </fieldset>
+
+              {rateType === "variable" && (
+                <div style={{ padding: "0.75rem", border: "1px dashed var(--i-ink)", borderRadius: "4px" }}>
+                  <Range
+                    label="معدل الفائدة المتوقع بعد 5 سنوات"
+                    valueText={`${variableRate}٪`}
+                    min="1" max="25" step="0.25"
+                    value={variableRate}
+                    onChange={(e) => setVariableRate(e.target.value)}
+                    minText="1٪" maxText="25٪"
+                  />
+                  <p className="mg-small" style={{ marginTop: "0.4rem", color: "var(--i-mute)" }}>
+                    محاكاة للفائدة المتغيرة: قسط ثابت بنسبة {interestRate}٪ لأول 5 سنوات، ثم يُعاد احتساب القسط بنسبة {variableRate}٪ للسنوات الـ {Math.max(0, Number(loanYears) - 5)} المتبقية.
+                  </p>
+                </div>
+              )}
             </div>
           </section>
 
           {/* Fees toggles */}
           <section className="mg-box" aria-labelledby="mg-s4">
-            <h2 className="mg-h2" id="mg-s4"><span className="mg-num">4</span><span>الرسوم والتأمين</span></h2>
+            <h2 className="mg-h2" id="mg-s4"><span className="mg-num">4</span><span>الرسوم والتأمين والضرائب</span></h2>
             <div className="mg-stack mg-stack-lg">
-              <Switch
-                label={`رسوم التسجيل / الطوابع (${country?.stamp}٪)`}
-                hint={result ? fmt(result.stampFee) : "—"}
-                checked={includeStamp}
-                onChange={setIncludeStamp}
-              />
+              {country?.id === "sa" ? (
+                <div className="mg-stack" style={{ padding: "0.75rem", border: "1px dashed var(--i-ink)", borderRadius: "4px" }}>
+                  <div>
+                    <h3 className="mg-h2 mg-h2-sm" style={{ marginBottom: "0.3rem" }}>ضريبة التصرفات العقارية (RETT - 5٪)</h3>
+                    <p className="mg-small" style={{ color: "var(--i-mute)", marginBottom: "0.6rem" }}>
+                      المكلف بالسداد نظاماً أمام هيئة الزكاة والضريبة والجمارك (ZATCA) هو <strong>البائع</strong>، مع تحمل الدولة للضريبة عن المسكن الأول للمواطن حتى 1,000,000 ر.س.
+                    </p>
+                  </div>
+                  <Switch
+                    label="شراء مسكن أول لمواطن (دعم الدولة حتى 1,000,000 ر.س)"
+                    hint={isFirstHome ? "مؤهل لدعم سكني (تغطية ضريبية حتى 50,000 ر.س)" : "مسكن إضافي أو غير مستوفٍ للدعم"}
+                    checked={isFirstHome}
+                    onChange={setIsFirstHome}
+                  />
+                  <Switch
+                    label="المشتري يتحمل الضريبة بموجب الاتفاق التعاقدي"
+                    hint={buyerBearsRett ? "تضاف الضريبة المتبقية لميزانية وتكاليف المشتري" : "يتحملها البائع نظاماً ولا تضاف لتكاليف المشتري"}
+                    checked={buyerBearsRett}
+                    onChange={setBuyerBearsRett}
+                  />
+                  {result && (
+                    <div style={{ fontSize: "0.82rem", background: "var(--i-soft)", padding: "0.6rem 0.75rem", borderRadius: "4px" }}>
+                      <div className="mg-line"><span>الضريبة الإجمالية (5٪):</span><strong>{fmt(result.grossRett)}</strong></div>
+                      <div className="mg-line"><span>دعم الدولة (سكني):</span><strong style={{ color: "var(--i-mute)" }}>{result.govtSupport > 0 ? `− ${fmt(result.govtSupport)}` : "0 ر.س"}</strong></div>
+                      <div className="mg-line" style={{ borderTop: "1px solid var(--i-ink)", paddingTop: "0.25rem", marginTop: "0.25rem" }}>
+                        <span>صافي الضريبة المستحقة:</span><strong>{fmt(result.netRett)}</strong>
+                      </div>
+                      <p className="mg-small" style={{ marginTop: "0.35rem", color: "var(--i-mute)", fontSize: "0.75rem" }}>
+                        * تنبيه: أهلية الدعم تخضع لشروط وضوابط منصة سكني ولا تعتبر مؤكدة من قملو.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Switch
+                  label={`رسوم التسجيل / الطوابع (${country?.stamp}٪)`}
+                  hint={result ? fmt(result.stampFee) : "—"}
+                  checked={includeStamp}
+                  onChange={setIncludeStamp}
+                />
+              )}
               <Switch
                 label={`تأمين الممتلكات السنوي (${country?.insurance}٪)`}
                 hint={result ? `${fmt(result.insuranceFee / Number(loanYears))} / سنة` : "—"}
@@ -305,8 +410,15 @@ export default function MortgageCalculator() {
           <div className="mg-sticky">
             {/* Monthly payment hero */}
             <section className="mg-result" aria-live="polite" aria-labelledby="mg-res-label">
-              <p className="mg-result-label" id="mg-res-label">القسط الشهري</p>
+              <p className="mg-result-label" id="mg-res-label">
+                {rateType === "variable" && Number(loanYears) > 5 ? "القسط الشهري (السنوات 1–5)" : "القسط الشهري"}
+              </p>
               <p className="mg-result-big"><bdi>{result ? fmt(result.pmt) : "—"}</bdi></p>
+              {rateType === "variable" && Number(loanYears) > 5 && result && (
+                <p className="mg-small" style={{ fontWeight: 700, marginTop: "0.2rem", color: "var(--i-on-accent)" }}>
+                  القسط بعد السنة 5: <bdi>{fmt(result.pmtAfter5)}</bdi> (بفائدة {variableRate}٪)
+                </p>
+              )}
               {result && (
                 <>
                   <div className="mg-two mg-result-cells">
@@ -471,7 +583,7 @@ const css = `
 
 .mg-head{margin-bottom:2rem;max-width:44rem}
 .mg-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
-.mg-h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;line-height:1.15;margin-bottom:.75rem}
+.mg-h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;line-height:1.15;margin-bottom:.75rem}
 .mg-lead{color:var(--i-mute);max-width:38rem}
 
 .mg-grid{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
@@ -481,10 +593,10 @@ const css = `
 @media (min-width:1024px){.mg-sticky{position:sticky;top:1rem}}
 
 .mg-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem}
-.mg-h2{display:flex;align-items:center;gap:.65rem;font-size:1.1rem;font-weight:800;margin-bottom:1rem}
+.mg-h2{display:flex;align-items:center;gap:.65rem;font-size:1.1rem;font-weight:700;margin-bottom:1rem}
 .mg-h2-sm{font-size:.95rem;margin-bottom:.75rem}
 .mg-h2-flush{margin-bottom:0}
-.mg-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:800;border-radius:2px}
+.mg-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:700;border-radius:2px}
 .mg-stack{display:grid;gap:1.1rem}
 .mg-stack-lg{gap:1.4rem}
 .mg-two{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
@@ -497,7 +609,7 @@ const css = `
 .mg-small{font-size:.78rem;color:var(--i-mute)}
 .mg-row{display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin-bottom:.4rem}
 .mg-row-wrap{flex-wrap:wrap;margin-bottom:0}
-.mg-value{font-size:.85rem;font-weight:800}
+.mg-value{font-size:.85rem;font-weight:700}
 .mg-input{width:100%;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.6rem .75rem;font-size:.95rem;font-weight:700;min-height:2.75rem}
 .mg-suffix-wrap{position:relative}
 .mg-suffix{position:absolute;inset-inline-end:.75rem;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:var(--i-mute);pointer-events:none}
@@ -522,11 +634,11 @@ const css = `
 
 .mg-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem}
 .mg-result-label{font-size:.9rem;font-weight:700}
-.mg-result-big{font-size:clamp(2rem,6vw,2.75rem);font-weight:900;line-height:1.15;margin:.2rem 0 1rem}
+.mg-result-big{font-size:clamp(2rem,6vw,2.75rem);font-weight:700;line-height:1.15;margin:.2rem 0 1rem}
 .mg-result-cells{grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
 .mg-result-cells>div{border:2px solid var(--i-on-accent);border-radius:4px;padding:.6rem .7rem}
 .mg-result-sm{font-size:.75rem;font-weight:600}
-.mg-result-val{font-size:.95rem;font-weight:800}
+.mg-result-val{font-size:.95rem;font-weight:700}
 .mg-between{display:flex;justify-content:space-between;gap:1rem}
 .mg-result-bar-wrap{margin-top:1rem;display:grid;gap:.4rem}
 .mg-bar{display:flex;height:1.4rem;border:2px solid var(--i-on-accent);border-radius:4px;overflow:hidden}
@@ -537,21 +649,21 @@ const css = `
 .mg-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.55rem .8rem;border-bottom:1px solid var(--i-ink);font-size:.85rem}
 .mg-rows>div:last-child{border-bottom:0}
 .mg-rows dt{font-weight:600;color:var(--i-mute)}
-.mg-rows dd{font-weight:800}
+.mg-rows dd{font-weight:700}
 .mg-rows-total{background:var(--i-soft)}
-.mg-rows-total dt{color:var(--i-ink);font-weight:800}
+.mg-rows-total dt{color:var(--i-ink);font-weight:700}
 
 .mg-tip{border:2px dashed var(--i-ink);border-radius:4px;padding:1rem}
 .mg-tip-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.3rem 0;font-size:.85rem}
-.mg-tip-rows dd{font-weight:800}
+.mg-tip-rows dd{font-weight:700}
 
 .mg-schedule{margin-top:2rem}
 .mg-actions{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
 .mg-table-wrap{margin-top:1rem;max-height:26rem;overflow:auto;border:2px solid var(--i-ink);border-radius:4px}
 .mg-table{width:100%;min-width:30rem;border-collapse:collapse;font-size:.8rem;font-variant-numeric:tabular-nums}
 .mg-table th,.mg-table td{padding:.5rem .7rem;text-align:start;border-bottom:1px solid var(--i-ink)}
-.mg-table thead th{position:sticky;top:0;background:var(--i-ink);color:var(--i-bg);font-weight:800}
-.mg-table tbody th{font-weight:800}
+.mg-table thead th{position:sticky;top:0;background:var(--i-ink);color:var(--i-bg);font-weight:700}
+.mg-table tbody th{font-weight:700}
 .mg-table tbody tr:nth-child(even){background:var(--i-soft)}
 
 .mg-disclaimer{margin-top:2rem;border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:.8rem 1rem;font-size:.8rem;color:var(--i-mute)}

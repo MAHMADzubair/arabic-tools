@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة القروض والتمويل الإسلامي 2026 | قسط المرابحة والسداد المبكر",
   description:
     "احسب قسط التمويل الشخصي والمرابحة الإسلامية والتمويل التقليدي، وإجمالي الأرباح، مع حاسبة التوفير عند السداد المبكر وفق لوائح البنك المركزي ساما ومصرف الإمارات.",
+  alternates: { canonical: "/loan-calculator" },
 };
 
 const guideData = {
@@ -121,3 +122,4 @@ export default function LoanCalculatorPage() {
     </div>
   );
 }
+

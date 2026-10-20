@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة العائد على الاستثمار ROI ومعدل النمو CAGR | دقيقة وشاملة",
   description:
     "احسب العائد على الاستثمار (ROI)، وصافي الأرباح، ومعدل النمو السنوي المركب (CAGR)، ومضاعف رأس المال لمشاريعك العقارية والتجارية وحملاتك التسويقية.",
+  alternates: { canonical: "/roi-calculator" },
   keywords: [
     "حاسبة العائد على الاستثمار",
     "حساب ROI",
@@ -98,3 +99,4 @@ export default function RoiCalculatorPage() {
     </>
   );
 }
+

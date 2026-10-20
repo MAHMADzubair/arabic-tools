@@ -8,6 +8,15 @@ const labelCls = "mb-1.5 block text-sm font-bold text-[var(--text)]";
 const reqCls = "text-[var(--error)]";
 
 export default function ContactForm() {
+  // Feature toggle: temporarily disable contact form submissions
+  if (process.env.NEXT_PUBLIC_DISABLE_CONTACT === "true") {
+    return (
+      <div className="rounded-3xl border-2 border-amber-400 bg-amber-50 p-10 text-center">
+        <p className="text-lg font-bold text-amber-900">نظام التواصل غير متاح حالياً. يرجى المتابعة لاحقاً.</p>
+      </div>
+    );
+  }
+
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -26,10 +35,10 @@ export default function ContactForm() {
     <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-10">
       {submitted ? (
         <div className="space-y-4 py-10 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[var(--success)] text-3xl font-black text-[var(--success)]">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[var(--success)] text-3xl font-bold text-[var(--success)]">
             ✓
           </div>
-          <h2 className="text-2xl font-black text-[var(--text)]">شكراً لتواصلك معنا!</h2>
+          <h2 className="text-2xl font-bold text-[var(--text)]">شكراً لتواصلك معنا!</h2>
           <p className="mx-auto max-w-md text-sm leading-8 text-[var(--text-2)]">
             تم استلام رسالتك بنجاح وسيقوم فريق العمل بمراجعتها والرد عليك عبر بريدك الإلكتروني في أقرب وقت ممكن.
           </p>
@@ -39,7 +48,7 @@ export default function ContactForm() {
               setSubmitted(false);
               setFormData({ name: "", email: "", subject: "استفسار عام", message: "" });
             }}
-            className="mt-4 rounded-xl border-2 border-[var(--text)] px-6 py-2.5 text-sm font-black text-[var(--text)] transition-colors hover:bg-[var(--text)] hover:text-[var(--bg)]"
+            className="mt-4 rounded-xl border-2 border-[var(--text)] px-6 py-2.5 text-sm font-bold text-[var(--text)] transition-colors hover:bg-[var(--text)] hover:text-[var(--bg)]"
           >
             إرسال رسالة أخرى
           </button>
@@ -113,7 +122,7 @@ export default function ContactForm() {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-[var(--orange)] py-3.5 text-base font-black text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
+            className="w-full rounded-xl bg-[var(--orange)] py-3.5 text-base font-bold text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
           >
             إرسال الرسالة
           </button>

@@ -67,7 +67,7 @@ function RelatedToolsStyles() {
       }
 
       .rt-head{ padding:1rem 1.25rem; border-bottom:2px solid var(--rt-ink); }
-      .rt-title{ margin:0; font-size:1.125rem; font-weight:800; }
+      .rt-title{ margin:0; font-size:1.125rem; font-weight:700; }
       .rt-sub{ margin:.25rem 0 0; font-size:.75rem; color:var(--rt-text2); }
 
       .rt-grid{
@@ -91,23 +91,23 @@ function RelatedToolsStyles() {
       .rt-num{
         flex:none; width:1.75rem; height:1.75rem; display:inline-flex;
         align-items:center; justify-content:center;
-        border:2px solid var(--rt-ink); font-weight:800; font-size:.8125rem;
+        border:2px solid var(--rt-ink); font-weight:700; font-size:.8125rem;
       }
       .rt-main{ display:flex; flex-direction:column; gap:.25rem; min-width:0; }
       .rt-row{ display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; }
       .rt-name{
-        font-weight:800; font-size:.875rem;
+        font-weight:700; font-size:.875rem;
         text-decoration:underline; text-underline-offset:3px;
         text-decoration-thickness:1px;
       }
       .rt-card:hover .rt-name{ text-decoration-thickness:2px; }
       .rt-badge{
         border:1px solid var(--rt-ink); padding:0 .375rem;
-        font-size:.625rem; font-weight:800; line-height:1.5;
+        font-size:.625rem; font-weight:700; line-height:1.5;
       }
       .rt-desc{ font-size:.75rem; line-height:1.7; color:var(--rt-text2); }
       .rt-cta{
-        align-self:flex-start; font-size:.75rem; font-weight:800;
+        align-self:flex-start; font-size:.75rem; font-weight:700;
         border-bottom:3px solid var(--rt-orange);
       }
       .rt-card:hover .rt-cta{ border-bottom-color:#0a0a0a; }

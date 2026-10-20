@@ -167,7 +167,7 @@ export default function UaeFinalSettlementPage() {
         <section className="mx-auto max-w-3xl px-4 py-8 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">
+              <h2 className="text-xl font-bold text-ink">
                 📖 ما هي المخالصة النهائية في الإمارات وما أهميتها؟
               </h2>
             </div>
@@ -183,7 +183,7 @@ export default function UaeFinalSettlementPage() {
 
             {/* Core Settlement Components */}
             <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 space-y-3">
-              <h3 className="text-sm font-extrabold text-emerald-950">ما الذي يدخل في حساب المخالصة النهائية؟</h3>
+              <h3 className="text-sm font-bold text-emerald-950">ما الذي يدخل في حساب المخالصة النهائية؟</h3>
               <ul className="space-y-2 text-xs text-emerald-900 leading-relaxed list-disc list-inside">
                 <li><strong className="text-ink">راتب آخر شهر:</strong> الأجر المستحق عن أيام العمل الفعلية في الشهر الأخير حتى تاريخ الانقطاع أو الإلغاء، محسوباً على الأجر الإجمالي.</li>
                 <li><strong className="text-ink">مكافأة نهاية الخدمة:</strong> استحقاق العامل الوافد بعد إكمال سنة مستمرة (21 يوماً عن أول 5 سنوات و30 يوماً بعدها) على الراتب الأساسي.</li>
@@ -196,7 +196,7 @@ export default function UaeFinalSettlementPage() {
             {/* Rules Breakdown */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-4">
-                <h3 className="text-sm font-extrabold text-ink mb-2">⚖️ كيف تُحسب مكافأة نهاية الخدمة؟</h3>
+                <h3 className="text-sm font-bold text-ink mb-2">⚖️ كيف تُحسب مكافأة نهاية الخدمة؟</h3>
                 <p className="text-xs text-ink-secondary leading-relaxed">
                   تنص المادة (51) على احتساب:
                   <br />• <strong>أجر 21 يوماً أساسياً</strong> عن كل سنة من السنوات الخمس الأولى.
@@ -208,7 +208,7 @@ export default function UaeFinalSettlementPage() {
               </div>
 
               <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-4">
-                <h3 className="text-sm font-extrabold text-ink mb-2">🏖️ كيف يُحسب بدل الإجازة والإنذار؟</h3>
+                <h3 className="text-sm font-bold text-ink mb-2">🏖️ كيف يُحسب بدل الإجازة والإنذار؟</h3>
                 <p className="text-xs text-ink-secondary leading-relaxed">
                   • <strong>بدل رصيد الإجازة:</strong> يُحسب بقسمة الراتب الأساسي على 30 يوماً وضرب الناتج في عدد أيام الإجازة المتبقية.
                   <br />• <strong>بدل مهلة الإنذار:</strong> يُحسب على الأجر الإجمالي كاملاً (الأساسي + البدلات). إذا أخل به صاحب العمل يُضاف لحساب العامل، وإذا أخل به العامل يُخصم من مستحقاته.
@@ -218,7 +218,7 @@ export default function UaeFinalSettlementPage() {
 
             {/* When tool does not apply */}
             <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 space-y-2">
-              <h3 className="text-sm font-extrabold text-amber-950">⚠️ متى لا تنطبق هذه الحاسبة القياسية؟</h3>
+              <h3 className="text-sm font-bold text-amber-950">⚠️ متى لا تنطبق هذه الحاسبة القياسية؟</h3>
               <ul className="space-y-1.5 text-xs text-amber-900 list-disc list-inside">
                 <li><strong>المواطنون الإماراتيون:</strong> يخضعون لنظام الهيئة العامة للمعاشات (GPSSA) أو صندوق أبوظبي للتقاعد.</li>
                 <li><strong>المناطق الحرة المالية (DIFC و ADGM):</strong> تطبق قوانين خاصة ونظام ادخار إلزامي كـ DEWS.</li>
@@ -229,7 +229,7 @@ export default function UaeFinalSettlementPage() {
 
             {/* Step by Step */}
             <div>
-              <h3 className="text-sm font-extrabold text-ink mb-3">🎯 خطوات استخدام الحاسبة</h3>
+              <h3 className="text-sm font-bold text-ink mb-3">🎯 خطوات استخدام الحاسبة</h3>
               <ol className="space-y-1.5 text-xs text-ink-secondary list-decimal list-inside">
                 <li><strong className="text-ink">تحديد صفة الموظف:</strong> التحقق من كون الموظف وافداً يخضع لقانون العمل الاتحادي بالقطاع الخاص.</li>
                 <li><strong className="text-ink">إدخال تواريخ الخدمة:</strong> تاريخ بدء العمل وآخر يوم عمل وأيام الإجازات غير المدفوعة.</li>
@@ -241,7 +241,7 @@ export default function UaeFinalSettlementPage() {
 
             {/* Practical Worked Example */}
             <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-5 space-y-3">
-              <h3 className="text-sm font-extrabold text-indigo-950">📊 مثال عملي تطبيقي بالأرقام</h3>
+              <h3 className="text-sm font-bold text-indigo-950">📊 مثال عملي تطبيقي بالأرقام</h3>
               <p className="text-xs text-indigo-900 leading-relaxed">
                 موظف في شركة خاصة بدبي براتب أساسي <strong>6,000 درهم</strong>، وراتب إجمالي <strong>9,000 درهم</strong>، بلغت مدة خدمته <strong>4 سنوات كاملة</strong>، ولديه <strong>10 أيام إجازة سنوية غير مستخدمة</strong>، وتم الالتزام بفترة الإنذار كاملة، وله مستحقات إضافية <strong>1,000 درهم</strong>، وعليه سلفة متبقية <strong>500 درهم</strong>:
               </p>
@@ -266,7 +266,7 @@ export default function UaeFinalSettlementPage() {
                   <span>استقطاع السلفة المتبقية</span>
                   <span className="font-bold text-rose-700">- 500.00 د.إ</span>
                 </div>
-                <div className="flex justify-between pt-1 font-black text-emerald-800 text-sm">
+                <div className="flex justify-between pt-1 font-bold text-emerald-800 text-sm">
                   <span>صافي المخالصة النهائية المستحقة الصرف</span>
                   <span>19,300.00 درهم إماراتي</span>
                 </div>
@@ -275,7 +275,7 @@ export default function UaeFinalSettlementPage() {
 
             {/* Official Sources */}
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-2 text-xs">
-              <h3 className="font-extrabold text-ink">📚 المصادر الرسمية</h3>
+              <h3 className="font-bold text-ink">📚 المصادر الرسمية</h3>
               <p className="text-ink-muted">
                 المصدر: وزارة الموارد البشرية والتوطين (MOHRE) والبوابة الرسمية لحكومة الإمارات — لا نُمثّل أي صفة حكومية رسمية.
               </p>
@@ -317,7 +317,7 @@ export default function UaeFinalSettlementPage() {
         <section className="mx-auto max-w-3xl px-4 py-4 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-6">
-              <h2 className="text-xl font-extrabold text-ink">❓ الأسئلة الشائعة حول المخالصة النهائية بالإمارات</h2>
+              <h2 className="text-xl font-bold text-ink">❓ الأسئلة الشائعة حول المخالصة النهائية بالإمارات</h2>
             </div>
             <div className="space-y-5">
               {[
@@ -343,7 +343,7 @@ export default function UaeFinalSettlementPage() {
                 },
               ].map((item, i) => (
                 <div key={i} className="border-b border-brand-border pb-5 last:border-b-0 last:pb-0">
-                  <h3 className="text-sm font-extrabold text-ink mb-2">س: {item.q}</h3>
+                  <h3 className="text-sm font-bold text-ink mb-2">س: {item.q}</h3>
                   <p className="text-sm text-ink-secondary leading-relaxed">ج: {item.a}</p>
                 </div>
               ))}
@@ -357,7 +357,7 @@ export default function UaeFinalSettlementPage() {
             <div className="flex items-center gap-3">
               <span className="text-3xl">⏳</span>
               <div>
-                <h3 className="text-sm font-extrabold text-blue-950">
+                <h3 className="text-sm font-bold text-blue-950">
                   هل تريد حساب تاريخ نهاية فترة الإنذار وبدل الأيام غير المنفذة؟
                 </h3>
                 <p className="text-xs text-blue-800 mt-0.5">
@@ -367,7 +367,7 @@ export default function UaeFinalSettlementPage() {
             </div>
             <Link
               href="/ar/ae/notice-period-calculator"
-              className="shrink-0 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-black px-4 py-2.5 transition shadow"
+              className="shrink-0 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-4 py-2.5 transition shadow"
             >
               حاسبة فترة الإنذار في الإمارات ←
             </Link>
@@ -378,7 +378,7 @@ export default function UaeFinalSettlementPage() {
         <section className="mx-auto max-w-3xl px-4 py-4 pb-12 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-5">
-              <h2 className="text-lg font-extrabold text-ink">🔗 أدوات وحاسبات ذات صلة بدولة الإمارات</h2>
+              <h2 className="text-lg font-bold text-ink">🔗 أدوات وحاسبات ذات صلة بدولة الإمارات</h2>
               <p className="text-xs text-ink-muted mt-1">حاسبات عمالية ومالية متكاملة لبيئة العمل الإماراتية</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -429,7 +429,7 @@ export default function UaeFinalSettlementPage() {
                   title: "مجمع أدوات وحاسبات الإمارات",
                   desc: "الدليل الشامل لكافة الحاسبات العمالية والمالية والضريبية المخصصة لدولة الإمارات.",
                   badge: "المجمع الشامل",
-                  badgeColor: "bg-emerald-700 text-white font-black",
+                  badgeColor: "bg-emerald-700 text-white font-bold",
                 },
               ].map((tool) => (
                 <Link

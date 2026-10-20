@@ -78,8 +78,8 @@ const CSS = `
 .fs-stack{display:flex;flex-direction:column;gap:20px}
 .fs-card{background:var(--sf);border:2px solid var(--ln);padding:20px;display:flex;flex-direction:column;gap:16px}
 .fs-head{display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--ln);padding-bottom:12px}
-.fs-num{width:32px;height:32px;flex:none;display:grid;place-items:center;background:var(--ink);color:var(--bg);font-weight:800;font-size:14px}
-.fs-head h2{font-size:18px;font-weight:800}
+.fs-num{width:32px;height:32px;flex:none;display:grid;place-items:center;background:var(--ink);color:var(--bg);font-weight:700;font-size:14px}
+.fs-head h2{font-size:18px;font-weight:700}
 .fs-grid{display:grid;gap:12px;grid-template-columns:1fr}
 @media(min-width:640px){.fs-g2{grid-template-columns:1fr 1fr}.fs-g3{grid-template-columns:1fr 1fr 1fr}}
 .fs-label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
@@ -90,7 +90,7 @@ const CSS = `
 @media(min-width:640px){.fs-t3{grid-template-columns:1fr 1fr 1fr}}
 .fs-tg{border:1px solid var(--ln);background:var(--sf);color:var(--ink);padding:10px 12px;text-align:right;font:inherit;font-size:13px;font-weight:600;cursor:pointer;min-height:44px}
 .fs-tg small{display:block;font-weight:400;font-size:11px;color:var(--mu);margin-top:2px}
-.fs-tg[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:800}
+.fs-tg[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
 .fs-tg[aria-pressed="true"] small{color:var(--bg);opacity:.8}
 .fs-note{border:1px solid var(--ln);padding:12px 14px;font-size:13px}
 .fs-note.warn{border-style:dashed}
@@ -99,30 +99,30 @@ const CSS = `
 .fs-box{border:1px solid var(--ln);background:var(--bg);padding:14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
 .fs-row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
 .fs-row b{white-space:nowrap}
-.fs-total{border:2px solid var(--ln);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:800}
-.fs-total span:last-child{font-size:22px;font-weight:900}
-.fs-sub{font-size:13px;font-weight:800;margin:0 0 10px}
+.fs-total{border:2px solid var(--ln);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:700}
+.fs-total span:last-child{font-size:22px;font-weight:700}
+.fs-sub{font-size:13px;font-weight:700;margin:0 0 10px}
 .fs-sub.ded{color:var(--er)}
 .fs-res{border:2px solid var(--ln);background:var(--sf)}
 .fs-hero{background:var(--ac);color:#0D0D0D;padding:24px;border-bottom:2px solid var(--ln)}
 .fs-hero p{margin:0}
-.fs-hero .big{font-size:clamp(34px,8vw,52px);font-weight:900;line-height:1.1;margin-top:6px}
-.fs-hero .big span{font-size:22px;font-weight:800}
+.fs-hero .big{font-size:clamp(34px,8vw,52px);font-weight:700;line-height:1.1;margin-top:6px}
+.fs-hero .big span{font-size:22px;font-weight:700}
 .fs-bd{padding:20px;display:flex;flex-direction:column;gap:6px}
 .fs-line{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln)}
 .fs-line .t{font-weight:700;font-size:14px}
 .fs-line .s{font-size:12px;color:var(--mu);margin-top:2px}
-.fs-line .a{font-weight:800;white-space:nowrap}
+.fs-line .a{font-weight:700;white-space:nowrap}
 .fs-line.gross{border-top:2px solid var(--ln);border-bottom:2px solid var(--ln);background:var(--bg);padding-inline:10px}
 .fs-line.ded .t,.fs-line.ded .a{color:var(--er)}
 .fs-line.net{background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);padding:14px 12px;margin-top:8px}
-.fs-line.net .t,.fs-line.net .a{font-size:17px;font-weight:900;color:#0D0D0D}
+.fs-line.net .t,.fs-line.net .a{font-size:17px;font-weight:700;color:#0D0D0D}
 .fs-acts{display:flex;flex-wrap:wrap;gap:10px;padding:16px 20px 20px;border-top:2px solid var(--ln)}
 .fs-btn{border:2px solid var(--ln);background:var(--sf);color:var(--ink);padding:10px 16px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;min-height:44px}
 .fs-btn:hover{background:var(--ink);color:var(--bg)}
 .fs-btn.pri{background:var(--ac);color:#0D0D0D}
 .fs-btn.pri:hover{background:var(--ink);color:var(--bg)}
-.fs-exp{width:100%;text-align:right;background:none;border:0;border-top:2px solid var(--ln);color:var(--ink);padding:14px 20px;font:inherit;font-size:14px;font-weight:800;cursor:pointer;display:flex;justify-content:space-between;min-height:44px}
+.fs-exp{width:100%;text-align:right;background:none;border:0;border-top:2px solid var(--ln);color:var(--ink);padding:14px 20px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;min-height:44px}
 .fs-exp:focus-visible{outline:3px solid var(--ac);outline-offset:-3px}
 .fs-calcs{padding:0 20px 20px;display:flex;flex-direction:column;gap:10px}
 .fs-calc{border:1px solid var(--ln);padding:12px;background:var(--bg)}
@@ -137,12 +137,12 @@ const CSS = `
 .fs-bar .fs-btn.pri{background:#FF6A1A}
 .fs-bar .fs-btn:hover{background:#0D0D0D;color:#fff}
 .fs-paper{padding:28px;display:flex;flex-direction:column;gap:22px;color:#0D0D0D;background:#fff;font-size:14px}
-.fs-paper h3{font-size:14px;font-weight:800;border-bottom:1px solid #0D0D0D;padding-bottom:4px;margin-bottom:10px}
+.fs-paper h3{font-size:14px;font-weight:700;border-bottom:1px solid #0D0D0D;padding-bottom:4px;margin-bottom:10px}
 .fs-paper table{width:100%;border-collapse:collapse}
 .fs-paper th,.fs-paper td{border:1px solid #0D0D0D;padding:8px 10px;text-align:right}
 .fs-paper thead th{background:#0D0D0D;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.fs-paper tr.g td{background:#EDEDEA;font-weight:800;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.fs-paper tfoot td{background:#FF6A1A;color:#0D0D0D;font-weight:900;border-width:2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.fs-paper tr.g td{background:#EDEDEA;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.fs-paper tfoot td{background:#FF6A1A;color:#0D0D0D;font-weight:700;border-width:2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .fs-info{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
 .fs-info small{display:block;font-size:11px;font-weight:700;color:#55554F}
 .fs-sig{display:grid;grid-template-columns:1fr 1fr;gap:40px;text-align:center;font-size:12px}
@@ -244,7 +244,7 @@ function Line({ label, sub, amount, type }) {
 function CalcExplain({ title, formula, law }) {
   return (
     <div className="fs-calc">
-      <p style={{ fontSize: 13, fontWeight: 800 }}>{title}</p>
+      <p style={{ fontSize: 13, fontWeight: 700 }}>{title}</p>
       <p className="f">{formula}</p>
       <p className="l">{law}</p>
     </div>
@@ -351,12 +351,12 @@ export default function FinalSettlementCalculator() {
       if (serviceYears < 2) {
         esobPercent = 0;
         esobNote = "لا يستحق مكافأة — الاستقالة قبل اكتمال سنتين خدمة (م/85)";
-      } else if (serviceYears < 5) {
+      } else if (serviceYears <= 5) {
         esobPercent = 1 / 3;
-        esobNote = "ثلث المكافأة (33.3٪) — استقالة بين سنتين و5 سنوات (م/85)";
+        esobNote = "ثلث المكافأة (33.3٪) — استقالة بين سنتين ولا تزيد على 5 سنوات (م/85)";
       } else if (serviceYears < 10) {
         esobPercent = 2 / 3;
-        esobNote = "ثلثا المكافأة (66.7٪) — استقالة بين 5 و10 سنوات (م/85)";
+        esobNote = "ثلثا المكافأة (66.7٪) — استقالة أكثر من 5 سنوات وأقل من 10 سنوات (م/85)";
       } else {
         esobNote = "المكافأة كاملة (100٪) — الاستقالة بعد 10 سنوات أو أكثر (م/85)";
       }
@@ -470,7 +470,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
       <div className="fs-card" style={{ borderWidth: 3 }}>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
           <div>
-            <h1 style={{ fontSize: "clamp(22px,4vw,30px)", fontWeight: 900 }}>حاسبة المخالصة النهائية في السعودية</h1>
+            <h1 style={{ fontSize: "clamp(22px,4vw,30px)", fontWeight: 700 }}>حاسبة المخالصة النهائية في السعودية</h1>
             <p style={{ margin: "8px 0 0", fontSize: 14, color: "var(--mu)" }}>
               تصفية كاملة لجميع مستحقات العامل وفق المواد 75 و84 و85 و111 من نظام العمل
             </p>
@@ -586,7 +586,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
               <b>{fmt(calc.y2Full)} ر.س</b>
             </div>
           )}
-          <div className="fs-row" style={{ borderTop: "1px solid var(--ln)", paddingTop: 8, fontWeight: 800 }}>
+          <div className="fs-row" style={{ borderTop: "1px solid var(--ln)", paddingTop: 8, fontWeight: 700 }}>
             <span>المكافأة الأصلية (100٪)</span>
             <b>{fmt(calc.fullGratuity)} ر.س</b>
           </div>
@@ -828,7 +828,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
 
             <div className="fs-paper" id="settlement-document">
               <div style={{ textAlign: "center", borderBottom: "3px solid #0D0D0D", paddingBottom: 16 }}>
-                <h2 style={{ fontSize: 24, fontWeight: 900 }}>نموذج مخالصة نهائية تقديرية</h2>
+                <h2 style={{ fontSize: 24, fontWeight: 700 }}>نموذج مخالصة نهائية تقديرية</h2>
                 <p style={{ margin: "6px 0 0", fontSize: 13 }}>Estimated Final Employment Settlement Statement</p>
                 <p style={{ margin: "4px 0 0", fontSize: 12, color: "#55554F" }}>
                   وفق أحكام نظام العمل السعودي الصادر بالمرسوم الملكي رقم (م/51) وتعديلاته 2026

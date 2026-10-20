@@ -331,7 +331,7 @@ function AnnualLeavePageStyles() {
       .ap-crumb-wrap{ padding-bottom:1rem; }
       .ap-crumb{ display:flex; gap:.5rem; align-items:center; font-size:.75rem; color:var(--ap-text2); }
       .ap-crumb a{ color:var(--ap-ink); text-decoration:underline; text-underline-offset:3px; }
-      .ap-crumb [aria-current]{ font-weight:800; color:var(--ap-ink); }
+      .ap-crumb [aria-current]{ font-weight:700; color:var(--ap-ink); }
 
       /* Banner (orange panel, black text) */
       .ap-banner{
@@ -342,13 +342,13 @@ function AnnualLeavePageStyles() {
       @media (min-width:640px){
         .ap-banner{ flex-direction:row; align-items:center; justify-content:space-between; }
       }
-      .ap-kicker{ margin:0; font-size:.6875rem; font-weight:800; letter-spacing:.04em; }
-      .ap-banner-title{ margin:.25rem 0 0; font-size:1.0625rem; font-weight:800; }
+      .ap-kicker{ margin:0; font-size:.6875rem; font-weight:700; letter-spacing:.04em; }
+      .ap-banner-title{ margin:.25rem 0 0; font-size:1.0625rem; font-weight:700; }
       .ap-banner-desc{ margin:.5rem 0 0; font-size:.75rem; line-height:1.7; }
       .ap-btn{
         flex:none; display:inline-block; padding:.625rem 1rem;
         background:#0a0a0a; color:#ffffff; border:2px solid #0a0a0a;
-        font-size:.75rem; font-weight:800; text-decoration:none;
+        font-size:.75rem; font-weight:700; text-decoration:none;
       }
       .ap-btn:hover{ background:#ffffff; color:#0a0a0a; }
       .ap-banner .ap-btn:focus-visible{ outline:3px solid #0a0a0a; outline-offset:3px; }
@@ -356,15 +356,15 @@ function AnnualLeavePageStyles() {
       /* Cards */
       .ap-card{ border:2px solid var(--ap-ink); background:var(--ap-paper); }
       .ap-card-head{ padding:1rem 1.25rem; border-bottom:2px solid var(--ap-ink); }
-      .ap-h2{ margin:0; font-size:1.25rem; font-weight:800; line-height:1.5; }
-      .ap-h3{ margin:0 0 .75rem; font-size:1rem; font-weight:800; }
+      .ap-h2{ margin:0; font-size:1.25rem; font-weight:700; line-height:1.5; }
+      .ap-h3{ margin:0 0 .75rem; font-size:1rem; font-weight:700; }
       .ap-h3-flush{ margin-bottom:.5rem; }
       .ap-body{ padding:1.25rem; display:grid; gap:1.75rem; }
       @media (min-width:640px){ .ap-body{ padding:1.5rem 2rem; } .ap-card-head{ padding:1.25rem 2rem; } }
 
       .ap-prose{ display:grid; gap:.75rem; font-size:.875rem; line-height:1.9; color:var(--ap-text2); }
       .ap-prose p,.ap-prose-sm{ margin:0; }
-      .ap-prose strong,.ap-prose-sm strong{ color:var(--ap-ink); font-weight:800; }
+      .ap-prose strong,.ap-prose-sm strong{ color:var(--ap-ink); font-weight:700; }
       .ap-prose-sm{ font-size:.8125rem; line-height:1.8; color:var(--ap-text2); }
 
       /* Steps */
@@ -374,7 +374,7 @@ function AnnualLeavePageStyles() {
         flex:none; width:1.5rem; height:1.5rem; margin-top:.125rem;
         display:inline-flex; align-items:center; justify-content:center;
         border:2px solid var(--ap-ink); color:var(--ap-ink);
-        font-size:.75rem; font-weight:800;
+        font-size:.75rem; font-weight:700;
       }
 
       /* Worked example */
@@ -387,18 +387,18 @@ function AnnualLeavePageStyles() {
       }
       .ap-calc-row:last-child{ border-bottom:0; }
       .ap-calc-row dt{ margin:0; color:var(--ap-text2); }
-      .ap-calc-row dd{ margin:0; font-weight:800; color:var(--ap-ink); }
+      .ap-calc-row dd{ margin:0; font-weight:700; color:var(--ap-ink); }
       .ap-calc-total{ background:var(--ap-orange); font-size:.875rem; }
-      .ap-calc-total dt,.ap-calc-total dd{ color:#0a0a0a; font-weight:800; }
+      .ap-calc-total dt,.ap-calc-total dd{ color:#0a0a0a; font-weight:700; }
 
       /* Laws */
       .ap-laws{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr; border:2px solid var(--ap-ink); }
       .ap-law{ padding:.875rem; border-bottom:1px solid var(--ap-ink); }
       .ap-law:last-child{ border-bottom:0; }
-      .ap-law-title{ margin:0; display:flex; gap:.5rem; align-items:center; font-size:.75rem; font-weight:800; }
+      .ap-law-title{ margin:0; display:flex; gap:.5rem; align-items:center; font-size:.75rem; font-weight:700; }
       .ap-code{
         flex:none; padding:0 .375rem; border:2px solid var(--ap-ink);
-        font-size:.625rem; font-weight:800; letter-spacing:.04em; line-height:1.6;
+        font-size:.625rem; font-weight:700; letter-spacing:.04em; line-height:1.6;
       }
       .ap-law-desc{ margin:.375rem 0 0; font-size:.75rem; line-height:1.8; color:var(--ap-text2); }
       @media (min-width:640px){
@@ -410,7 +410,7 @@ function AnnualLeavePageStyles() {
       /* FAQ */
       .ap-faq{ padding:1.125rem 1.25rem; border-bottom:1px solid var(--ap-ink); }
       .ap-faq:last-child{ border-bottom:0; }
-      .ap-faq-q{ margin:0 0 .5rem; font-size:.875rem; font-weight:800; line-height:1.7;
+      .ap-faq-q{ margin:0 0 .5rem; font-size:.875rem; font-weight:700; line-height:1.7;
         border-inline-start:6px solid var(--ap-orange); padding-inline-start:.625rem; }
       .ap-faq-a{ margin:0; font-size:.875rem; line-height:1.9; color:var(--ap-text2); }
       @media (min-width:640px){ .ap-faq{ padding:1.25rem 2rem; } }

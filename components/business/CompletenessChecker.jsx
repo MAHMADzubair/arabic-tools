@@ -137,7 +137,7 @@ const css = `
 .cc{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);color:var(--i-ink);padding:1.25rem;line-height:1.6}
 .cc h2,.cc p{margin:0;padding:0}
 .cc-head{margin-bottom:1rem}
-.cc-title{font-size:.95rem;font-weight:800}
+.cc-title{font-size:.95rem;font-weight:700}
 .cc-sub{font-size:.78rem;color:var(--i-mute)}
 .cc-progress{display:grid;gap:.4rem;margin-bottom:1rem}
 .cc-between{display:flex;justify-content:space-between;gap:1rem;font-size:.8rem}
@@ -152,7 +152,7 @@ const css = `
 .cc-item{display:flex;align-items:flex-start;gap:.6rem;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);color:var(--i-ink);padding:.55rem .75rem;font-size:.8rem;line-height:1.55}
 .cc-item[data-s="warning"]{border-style:dashed}
 .cc-item[data-s="missing"]{border-width:4px}
-.cc-tag{flex:none;border:2px solid var(--i-ink);border-radius:2px;padding:0 .4rem;font-size:.72rem;font-weight:800;line-height:1.5;white-space:nowrap}
+.cc-tag{flex:none;border:2px solid var(--i-ink);border-radius:2px;padding:0 .4rem;font-size:.72rem;font-weight:700;line-height:1.5;white-space:nowrap}
 .cc-item[data-s="missing"] .cc-tag{background:var(--i-ink);color:var(--i-bg)}
 .cc-hint{color:var(--i-mute)}
 `;

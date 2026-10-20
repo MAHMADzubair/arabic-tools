@@ -164,7 +164,7 @@ export default function UaeNoticePeriodCalculatorPage() {
             <div className="flex items-center gap-3">
               <span className="text-3xl">📋</span>
               <div>
-                <h3 className="text-sm font-extrabold text-emerald-950">
+                <h3 className="text-sm font-bold text-emerald-950">
                   احسب جميع مستحقات نهاية العمل
                 </h3>
                 <p className="text-xs text-emerald-800 mt-0.5">
@@ -174,7 +174,7 @@ export default function UaeNoticePeriodCalculatorPage() {
             </div>
             <Link
               href="/ar/ae/final-settlement-calculator"
-              className="shrink-0 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black px-4 py-2.5 transition shadow"
+              className="shrink-0 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2.5 transition shadow"
             >
               الانتقال إلى UAE Final Settlement Calculator ←
             </Link>
@@ -185,7 +185,7 @@ export default function UaeNoticePeriodCalculatorPage() {
         <section className="mx-auto max-w-4xl px-4 py-6 no-print print:hidden">
           <article className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">
+              <h2 className="text-xl font-bold text-ink">
                 دليل وأحكام فترة الإنذار في قانون العمل الإماراتي (المرسوم 33 لسنة 2021)
               </h2>
               <p className="text-xs text-ink-muted mt-1">
@@ -341,7 +341,7 @@ export default function UaeNoticePeriodCalculatorPage() {
         <section className="mx-auto max-w-4xl px-4 py-4 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-6">
-              <h2 className="text-xl font-extrabold text-ink">
+              <h2 className="text-xl font-bold text-ink">
                 ❓ الأسئلة الشائعة حول فترة الإنذار وبدل الإشعار بالإمارات
               </h2>
               <p className="text-xs text-ink-muted mt-1">
@@ -373,7 +373,7 @@ export default function UaeNoticePeriodCalculatorPage() {
                 },
               ].map((item, i) => (
                 <div key={i} className="border-b border-brand-border pb-5 last:border-b-0 last:pb-0">
-                  <h3 className="text-sm font-extrabold text-ink mb-2">س: {item.q}</h3>
+                  <h3 className="text-sm font-bold text-ink mb-2">س: {item.q}</h3>
                   <p className="text-sm text-ink-secondary leading-relaxed">ج: {item.a}</p>
                 </div>
               ))}
@@ -385,7 +385,7 @@ export default function UaeNoticePeriodCalculatorPage() {
         <section className="mx-auto max-w-4xl px-4 py-4 pb-12 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-5">
-              <h2 className="text-lg font-extrabold text-ink">🔗 أدوات وحاسبات عمالية ذات صلة بدولة الإمارات</h2>
+              <h2 className="text-lg font-bold text-ink">🔗 أدوات وحاسبات عمالية ذات صلة بدولة الإمارات</h2>
               <p className="text-xs text-ink-muted mt-1">حاسبات معتمدة ومتكاملة لبيئة العمل وقوانين العمل والضرائب الإماراتية</p>
             </div>
 
@@ -437,7 +437,7 @@ export default function UaeNoticePeriodCalculatorPage() {
                   title: "مجمع أدوات وحاسبات الإمارات الشامل",
                   desc: "الدليل الشامل لكافة الحاسبات العمالية والمالية والضريبية المخصصة لدولة الإمارات 2026.",
                   badge: "المجمع الشامل",
-                  badgeColor: "bg-emerald-700 text-white font-black",
+                  badgeColor: "bg-emerald-700 text-white font-bold",
                 },
               ].map((tool) => (
                 <Link

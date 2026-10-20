@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة مؤشر كتلة الجسم BMI والوزن المثالي | منظمة الصحة العالمية",
   description:
     "احسب مؤشر كتلة جسمك (BMI) بدقة واكتشف وزنك المثالي ونطاق السعرات الحرارية اليومية واحتياج الماء وفق معايير منظمة الصحة العالمية الرسمية للرجال والنساء.",
+  alternates: { canonical: "/bmi-calculator" },
   keywords: [
     "حاسبة BMI",
     "مؤشر كتلة الجسم",
@@ -95,3 +96,4 @@ export default function BmiCalculatorPage() {
     </>
   );
 }
+

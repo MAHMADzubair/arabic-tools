@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة زكاة الفطر المباركة | احسب مقدار الصاع بالكيلو أو نقداً للأسرة",
   description:
     "احسب زكاة الفطر عنك وعن أسرتك سواء عيناً بالأرز والحبوب (بالصاع والكيلوجرام) أو نقداً بالقيم الاسترشادية الصادرة في السعودية ومصر والإمارات.",
+  alternates: { canonical: "/zakat-al-fitr" },
 };
 
 const guideData = {
@@ -88,3 +89,4 @@ export default function ZakatFitrPage() {
     </div>
   );
 }
+

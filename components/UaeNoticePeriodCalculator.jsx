@@ -656,14 +656,14 @@ function NoticeStyles() {
       .nc-stack-s{ display:grid; gap:.25rem; }
 
       /* Text */
-      .nc-h1{ margin:0; font-size:1.5rem; font-weight:800; line-height:1.5; }
-      .nc-h2{ margin:0; font-size:.9375rem; font-weight:800; line-height:1.6; }
-      .nc-h3{ margin:0; font-size:.8125rem; font-weight:800; }
+      .nc-h1{ margin:0; font-size:1.5rem; font-weight:700; line-height:1.5; }
+      .nc-h2{ margin:0; font-size:.9375rem; font-weight:700; line-height:1.6; }
+      .nc-h3{ margin:0; font-size:.8125rem; font-weight:700; }
       .nc-lead{ margin:.25rem 0 0; font-size:.8125rem; line-height:1.9; color:var(--nc-text2); max-width:60ch; }
       .nc-text{ margin:0; font-size:.75rem; line-height:1.9; color:var(--nc-text2); }
       .nc-small{ margin:0; font-size:.6875rem; line-height:1.8; color:var(--nc-text2); }
-      .nc-small-b{ margin:0; font-size:.75rem; font-weight:800; }
-      .nc-tag{ margin:0; padding:.125rem .75rem; border:2px solid var(--nc-ink); font-size:.75rem; font-weight:800; white-space:nowrap; }
+      .nc-small-b{ margin:0; font-size:.75rem; font-weight:700; }
+      .nc-tag{ margin:0; padding:.125rem .75rem; border:2px solid var(--nc-ink); font-size:.75rem; font-weight:700; white-space:nowrap; }
 
       /* Layout */
       .nc-grid{ display:grid; grid-template-columns:1fr; gap:1.25rem; }
@@ -682,7 +682,7 @@ function NoticeStyles() {
       .nc-step{ display:flex; align-items:center; gap:.625rem; }
       .nc-num{
         flex:none; width:1.75rem; height:1.75rem; display:inline-flex; align-items:center; justify-content:center;
-        border:2px solid var(--nc-ink); font-size:.8125rem; font-weight:800;
+        border:2px solid var(--nc-ink); font-size:.8125rem; font-weight:700;
       }
       .nc-block{ border-top:2px solid var(--nc-ink); padding-top:.75rem; }
       .nc-opt{
@@ -690,7 +690,7 @@ function NoticeStyles() {
         background:var(--nc-paper); color:var(--nc-ink); font-family:inherit; cursor:pointer;
       }
       .nc-opt:hover{ background:var(--nc-muted); }
-      .nc-opt-t{ font-size:.8125rem; font-weight:800; }
+      .nc-opt-t{ font-size:.8125rem; font-weight:700; }
       .nc-opt-d{ font-size:.6875rem; line-height:1.7; color:var(--nc-text2); }
 
       /* Notes */
@@ -699,12 +699,12 @@ function NoticeStyles() {
       .nc-note-text{ margin:0; font-size:.75rem; line-height:1.9; color:var(--nc-text2); }
       .nc-mark{
         flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center;
-        border:2px solid currentColor; font-size:.75rem; font-weight:900; color:var(--nc-ink);
+        border:2px solid currentColor; font-size:.75rem; font-weight:700; color:var(--nc-ink);
       }
 
       /* Buttons / segmented */
       .nc-btn{
-        padding:.5rem .875rem; border:2px solid var(--nc-ink); font-size:.75rem; font-weight:800;
+        padding:.5rem .875rem; border:2px solid var(--nc-ink); font-size:.75rem; font-weight:700;
         font-family:inherit; cursor:pointer; background:var(--nc-paper); color:var(--nc-ink);
       }
       .nc-btn:hover{ background:var(--nc-muted); }
@@ -714,19 +714,19 @@ function NoticeStyles() {
       .nc-btn-ink:hover{ background:#fff; color:#0a0a0a; }
       .nc-link{
         justify-self:start; background:none; border:0; padding:0; font-family:inherit; font-size:.75rem;
-        font-weight:800; color:var(--nc-ink); text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+        font-weight:700; color:var(--nc-ink); text-decoration:underline; text-underline-offset:3px; cursor:pointer;
       }
       .nc-seg{ display:flex; border:2px solid var(--nc-ink); }
       .nc-seg button{
         flex:1; padding:.5rem .5rem; border:0; background:var(--nc-paper); color:var(--nc-ink);
-        font-size:.75rem; font-weight:800; font-family:inherit; cursor:pointer; line-height:1.6;
+        font-size:.75rem; font-weight:700; font-family:inherit; cursor:pointer; line-height:1.6;
       }
       .nc-seg button + button{ border-inline-start:2px solid var(--nc-ink); }
       .nc-seg button[aria-pressed="true"]{ background:var(--nc-ink); color:var(--nc-paper); }
 
       /* Fields */
       .nc-field{ display:grid; gap:.25rem; align-content:start; }
-      .nc-label{ margin:0; font-size:.75rem; font-weight:800; line-height:1.6; }
+      .nc-label{ margin:0; font-size:.75rem; font-weight:700; line-height:1.6; }
       .nc-hint{ font-weight:600; color:var(--nc-text2); }
       .nc-input{
         width:100%; min-width:0; box-sizing:border-box; border:2px solid var(--nc-ink);
@@ -738,26 +738,26 @@ function NoticeStyles() {
       .nc-input-wrap:focus-within{ outline:3px solid var(--nc-orange); outline-offset:2px; }
       .nc-input-bare{ flex:1; min-width:0; border:0; background:transparent; color:var(--nc-ink); padding:.625rem .75rem; font-size:.8125rem; font-weight:700; font-family:inherit; }
       .nc-input-bare:focus-visible{ outline:none; }
-      .nc-sym{ flex:none; padding:0 .75rem; display:inline-flex; align-items:center; background:var(--nc-muted); border-inline-start:2px solid var(--nc-ink); font-size:.75rem; font-weight:800; }
-      .nc-err{ margin:0; font-size:.6875rem; font-weight:800; }
-      .nc-err::before{ content:"! "; font-weight:900; }
+      .nc-sym{ flex:none; padding:0 .75rem; display:inline-flex; align-items:center; background:var(--nc-muted); border-inline-start:2px solid var(--nc-ink); font-size:.75rem; font-weight:700; }
+      .nc-err{ margin:0; font-size:.6875rem; font-weight:700; }
+      .nc-err::before{ content:"! "; font-weight:700; }
       .nc-check{ display:flex; gap:.625rem; align-items:flex-start; font-size:.75rem; line-height:1.8; cursor:pointer; }
       .nc-check input{ width:1.125rem; height:1.125rem; margin-top:.25rem; accent-color:var(--nc-orange); flex:none; }
 
       /* Result */
       .nc-result{ background:var(--nc-orange); color:#0a0a0a; border:2px solid var(--nc-ink); padding:1.25rem; display:grid; gap:1rem; }
-      .nc-result-h{ margin:0; font-size:.9375rem; font-weight:800; }
-      .nc-chip{ margin:0; padding:0 .5rem; border:2px solid #0a0a0a; font-size:.6875rem; font-weight:800; background:#fff; }
+      .nc-result-h{ margin:0; font-size:.9375rem; font-weight:700; }
+      .nc-chip{ margin:0; padding:0 .5rem; border:2px solid #0a0a0a; font-size:.6875rem; font-weight:700; background:#fff; }
       .nc-banner{ background:#fff; border:2px solid #0a0a0a; padding:1rem; text-align:center; display:grid; gap:.25rem; }
-      .nc-banner-t{ margin:0; font-size:.875rem; font-weight:900; }
-      .nc-big{ margin:0; font-size:1.875rem; font-weight:900; line-height:1.3; }
+      .nc-banner-t{ margin:0; font-size:.875rem; font-weight:700; }
+      .nc-big{ margin:0; font-size:1.875rem; font-weight:700; line-height:1.3; }
       .nc-banner-s{ margin:0; font-size:.75rem; font-weight:700; }
       .nc-dl{ margin:0; background:#fff; border:2px solid #0a0a0a; }
       .nc-row{ display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; padding:.375rem .75rem; border-top:1px solid #0a0a0a; font-size:.75rem; }
       .nc-row:first-child{ border-top:0; }
       .nc-row dt{ margin:0; color:#404040; }
       .nc-row dd{ margin:0; font-weight:700; }
-      .nc-row dd.nc-strong{ font-weight:900; }
+      .nc-row dd.nc-strong{ font-weight:700; }
       .nc-white{ background:#fff; border:2px dashed #0a0a0a; padding:.75rem; display:grid; gap:.25rem; }
       .nc-white .nc-small,.nc-white .nc-small-b{ color:#0a0a0a; }
 
@@ -766,7 +766,7 @@ function NoticeStyles() {
       .nc-fill{ height:100%; background:var(--nc-ink); }
       .nc-tl{ margin:0; padding:0; list-style:none; display:grid; gap:.875rem; }
       .nc-tl li{ display:flex; gap:.75rem; align-items:flex-start; }
-      .nc-dot{ flex:none; width:1.5rem; height:1.5rem; display:inline-flex; align-items:center; justify-content:center; border:2px solid var(--nc-ink); font-size:.75rem; font-weight:800; }
+      .nc-dot{ flex:none; width:1.5rem; height:1.5rem; display:inline-flex; align-items:center; justify-content:center; border:2px solid var(--nc-ink); font-size:.75rem; font-weight:700; }
       .nc-code{ margin:0; border:2px solid var(--nc-ink); background:var(--nc-muted); padding:.5rem .75rem; font-size:.6875rem; line-height:1.9; font-weight:700; }
 
       /* Dialog */
@@ -779,18 +779,18 @@ function NoticeStyles() {
       .nc-doc{ --d-ink:#0a0a0a; --d-text2:#404040; --d-or:#ff5a1f; background:#fff; color:var(--d-ink); border:2px solid #0a0a0a; }
       .nc-doc p{ margin:0; }
       .nc-doc-head{ background:var(--d-or); color:#0a0a0a; border-bottom:2px solid #0a0a0a; padding:1rem 1.25rem; text-align:center; display:grid; gap:.25rem; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
-      .nc-doc-title{ margin:0; font-size:1.25rem; font-weight:900; }
+      .nc-doc-title{ margin:0; font-size:1.25rem; font-weight:700; }
       .nc-doc-small{ font-size:.6875rem; font-weight:700; }
       .nc-doc-body{ padding:1rem 1.25rem; display:grid; gap:1rem; }
       .nc-doc-grid{ margin:0; display:grid; gap:.625rem 1rem; grid-template-columns:1fr 1fr; border:2px solid var(--d-ink); padding:.75rem 1rem; font-size:.75rem; }
       .nc-doc-grid dt{ color:var(--d-text2); font-size:.6875rem; }
-      .nc-doc-grid dd{ margin:0; font-weight:800; }
+      .nc-doc-grid dd{ margin:0; font-weight:700; }
       .nc-doc-total{ border:4px solid var(--d-ink); padding:.875rem; text-align:center; display:grid; gap:.25rem; }
-      .nc-doc-amount{ font-size:1.5rem; font-weight:900; }
-      .nc-doc-strong{ font-size:.75rem; font-weight:800; }
+      .nc-doc-amount{ font-size:1.5rem; font-weight:700; }
+      .nc-doc-strong{ font-size:.75rem; font-weight:700; }
       .nc-doc-disc{ display:flex; gap:.5rem; align-items:flex-start; border:2px dashed var(--d-ink); padding:.625rem .75rem; font-size:.625rem; line-height:1.8; color:var(--d-text2); }
       .nc-doc-disc > div{ display:grid; gap:.375rem; }
-      .nc-doc-excl{ flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center; border:2px solid var(--d-ink); font-weight:800; color:var(--d-ink); }
+      .nc-doc-excl{ flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center; border:2px solid var(--d-ink); font-weight:700; color:var(--d-ink); }
       .nc-doc-foot{ display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 
       @media print{

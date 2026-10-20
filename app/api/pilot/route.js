@@ -65,6 +65,12 @@ export async function POST(request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (!checkRL(ip)) return NextResponse.json({ success:false, error:"too_many_requests" }, { status:429 });
 
+  // Feature toggle: temporarily disable public lead submissions
+  if (process.env.DISABLE_PILOT === "true") {
+    console.warn("[PILOT] Public lead submissions are disabled.");
+    return NextResponse.json({ success:false, error:"service_unavailable", message:"حاليًا غير متاح. يرجى المتابعة في وقت لاحق." }, { status:503 });
+  }
+
   let body;
   try { body = await request.json(); }
   catch { return NextResponse.json({ success:false, error:"invalid_json" }, { status:400 }); }
@@ -123,8 +129,8 @@ export async function POST(request) {
     // IP not stored persistently — used only for in-memory rate limiting above
   };
 
-  // Always log (Vercel function logs)
-  console.log("[PILOT LEAD]", JSON.stringify({ ...lead, user_agent: "REDACTED" }));
+  // Redacted logging to avoid personal data leakage
+  console.log("[PILOT] Lead submission received.");
 
   const sb = getSB();
 

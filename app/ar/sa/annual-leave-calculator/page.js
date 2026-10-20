@@ -159,7 +159,7 @@ export default function SaudiAnnualLeavePage() {
         <section className="mx-auto max-w-3xl px-4 py-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">
+              <h2 className="text-xl font-bold text-ink">
                 🏖️ ما هو بدل الإجازات السنوية في نظام العمل السعودي؟
               </h2>
             </div>
@@ -175,7 +175,7 @@ export default function SaudiAnnualLeavePage() {
 
             {/* How to use */}
             <div className="rounded-xl border border-brand-border bg-brand-surface/40 p-4 space-y-2">
-              <h3 className="text-sm font-extrabold text-ink">
+              <h3 className="text-sm font-bold text-ink">
                 📋 كيفية استخدام الحاسبة خطوة بخطوة:
               </h3>
               <ol className="list-decimal list-inside text-xs leading-relaxed text-ink-secondary space-y-1.5">
@@ -196,14 +196,14 @@ export default function SaudiAnnualLeavePage() {
 
             {/* Numeric Example */}
             <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 space-y-2">
-              <h3 className="text-sm font-extrabold text-emerald-900">
+              <h3 className="text-sm font-bold text-emerald-900">
                 🔢 مثال عملي بالأرقام وفق المادة (111):
               </h3>
               <div className="text-xs leading-relaxed text-emerald-800 space-y-1">
                 <p>• موظف في شركة بالرياض راتبه الأساسي 7,500 ر.س وبدل السكن 1,500 ر.س وبدل النقل 1,000 ر.س (إجمالي الأجر الفعلي = <strong>10,000 ر.س</strong>).</p>
                 <p>• أمضى في المنشأة <strong>6 سنوات</strong>، وله رصيد إجازات لم يُستنفد مقداره <strong>18 يوماً</strong> عند انتهاء خدمته.</p>
                 <p>• الأجر اليومي = 10,000 ÷ 30 = <strong>333.33 ر.س</strong>.</p>
-                <p>• بدل رصيد الإجازة النقدي المستحق = 18 × 333.33 = <strong className="text-emerald-950 font-black">6,000.00 ر.س</strong> يُصرف بالكامل في المخالصة النهائية دون أي استقطاعات.</p>
+                <p>• بدل رصيد الإجازة النقدي المستحق = 18 × 333.33 = <strong className="text-emerald-950 font-bold">6,000.00 ر.س</strong> يُصرف بالكامل في المخالصة النهائية دون أي استقطاعات.</p>
               </div>
             </div>
           </div>
@@ -212,7 +212,7 @@ export default function SaudiAnnualLeavePage() {
         {/* ── PART 3: FAQ Section (الأسئلة الشائعة) ────────────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 pb-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
-            <h2 className="text-xl font-extrabold text-ink border-b border-brand-border pb-4">
+            <h2 className="text-xl font-bold text-ink border-b border-brand-border pb-4">
               ❓ الأسئلة الشائعة حول بدل الإجازة السنوية في السعودية
             </h2>
             <div className="space-y-4">
@@ -234,7 +234,7 @@ export default function SaudiAnnualLeavePage() {
         {/* ── PART 4: Related Saudi Tools (أدوات ذات صلة) ──────────────────────── */}
         <section className="mx-auto max-w-3xl px-4 pb-12">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-4">
-            <h2 className="text-base font-extrabold text-ink">
+            <h2 className="text-base font-bold text-ink">
               🔗 أدوات وحاسبات سعودية ذات صلة
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">

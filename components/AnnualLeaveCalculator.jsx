@@ -257,7 +257,7 @@ const CSS = `
 .alc *, .alc *::before, .alc *::after { box-sizing: border-box; }
 
 .alc-head { margin-block-end: 1.25rem; padding-inline-start: 0.9rem; border-inline-start: 4px solid var(--c-ink); }
-.alc-title { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.3; }
+.alc-title { margin: 0; font-size: 1.6rem; font-weight:700; line-height: 1.3; }
 .alc-sub { margin: 0.4rem 0 0; font-size: 0.9rem; line-height: 1.7; color: var(--c-ink-soft); }
 
 .alc-card {
@@ -350,7 +350,7 @@ input.alc-num { text-align: center; }
   gap: 0.5rem;
   flex-wrap: wrap;
   font-size: 2.1rem;
-  font-weight: 800;
+  font-weight:700;
   line-height: 1.2;
 }
 .alc-result-cur { font-size: 1rem; font-weight: 700; }

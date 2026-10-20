@@ -5,6 +5,7 @@ import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "Qemlo | أدوات عربية مجانية وحاسبات ومحولات يومية",
+  alternates: { canonical: "/" },
   description:
     "المنصة الشاملة للأدوات والحاسبات العربية المجانية: حاسبات مالية، أدوات الخليج، حاسبات إسلامية، ومحولات يومية مبنية على المصادر الرسمية وبدون تسجيل وبأعلى معايير الخصوصية.",
   openGraph: {
@@ -99,8 +100,8 @@ html{scroll-behavior:smooth}
 .pill:hover,.pill:focus-visible{border-color:var(--orange);transform:translateY(-3px);box-shadow:0 8px 0 -4px var(--orange)}
 .pill-plate{display:grid;place-items:center;width:36px;height:36px;border-radius:999px;background:var(--card);color:var(--card-text);font-size:18px;line-height:1;transition:background .18s,color .18s,transform .18s}
 .pill:hover .pill-plate,.pill:focus-visible .pill-plate{background:var(--orange);color:var(--on-orange);transform:rotate(-8deg) scale(1.06)}
-.pill-name{font-size:14px;font-weight:900}
-.pill-count{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:var(--orange);color:var(--on-orange);font-size:12px;font-weight:900}
+.pill-name{font-size:14px;font-weight:700;line-height:1.4;letter-spacing:normal}
+.pill-count{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:var(--orange);color:var(--on-orange);font-size:12px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
 .pill-soon{border-style:dashed;border-color:var(--text-3);box-shadow:none}
 .pill-soon .pill-plate{background:transparent;color:var(--text);border:2px dashed var(--text-3)}
 .pill-soon .pill-count{background:transparent;color:var(--text);border:2px solid var(--text-3)}
@@ -108,10 +109,16 @@ html{scroll-behavior:smooth}
   .marquee{gap:14px;padding:6px 20px}
   .pill{height:58px;gap:12px;padding-inline:8px 20px}
   .pill-plate{width:42px;height:42px;font-size:21px}
-  .pill-name{font-size:15px}
+  .pill-name{font-size:15px;font-weight:700}
 }
 
 .clamp-2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+
+/* Sprint 5A.2: 320px hero h1 floor — scoped to this page’s hero only.  */
+/* Does NOT affect h1 on tool pages or any other page.                    */
+@media (max-width: 360px) {
+  .hero-h1 { font-size: 1.75rem; line-height: 1.3; }
+}
 
 /* Features strip: faint ruled-paper texture + hover lift (decorative only) */
 .feat-strip{background-image:repeating-linear-gradient(0deg,transparent 0 31px,color-mix(in srgb,var(--text) 5%,transparent) 31px 32px)}
@@ -229,24 +236,24 @@ export default function HomePage() {
       <style dangerouslySetInnerHTML={{ __html: TOKENS_CSS }} />
 
       {/* ── Hero ── */}
-      <section className="w-full max-w-full overflow-hidden border-b border-[var(--border)] px-4 py-10 sm:py-20">
-        <div className="mx-auto grid max-w-5xl min-w-0 items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+      <section className="w-full max-w-full overflow-hidden border-b border-[var(--border)] px-4 py-8 sm:py-20">
+        <div className="mx-auto grid max-w-5xl min-w-0 items-center gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
           <div className="min-w-0">
-            <h1 className="text-3xl font-black leading-[1.3] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="hero-h1 text-[2rem] font-bold leading-[1.28] text-balance sm:text-5xl sm:leading-[1.25] lg:text-6xl lg:leading-[1.2]">
               كل حساباتك
               <br />
               في مكان واحد،
               <br />
-              <span className="underline decoration-[var(--orange)] decoration-[6px] underline-offset-[14px]">
+              <span className="underline decoration-[var(--orange)] decoration-[3px] underline-offset-[8px] sm:decoration-[6px] sm:underline-offset-[14px]">
                 بلا تسجيل
               </span>
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-8 text-[var(--text-2)] sm:text-lg">
+            <p className="mt-4 max-w-[42ch] text-[15px] font-normal leading-[1.75] text-[var(--text-2)] sm:mt-6 sm:max-w-lg sm:text-lg sm:leading-8">
               حاسبات ومحولات مالية وإسلامية ويومية مبنية للمستخدم العربي. تُحسب الأرقام داخل متصفحك، والخدمة مجانية تماماً.
             </p>
             <a
               href={`#${activeCategories[0]?.id ?? "upcoming"}`}
-              className="mt-8 inline-block rounded-xl bg-[var(--orange)] px-7 py-3.5 text-base font-black text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
+              className="mt-6 inline-flex min-h-[52px] items-center justify-center rounded-xl bg-[var(--orange)] px-8 py-3.5 text-base font-bold text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)] sm:mt-8"
             >
               تصفح الأدوات
             </a>
@@ -254,37 +261,37 @@ export default function HomePage() {
 
           {/* Receipt: a live "statement" of what the site holds */}
           <div className="mx-auto w-full max-w-sm min-w-0 lg:rotate-[-1.5deg]" aria-label="ملخص الموقع">
-            <div className="overflow-hidden bg-[var(--card)] px-5 pt-6 text-[var(--card-text)] sm:px-6">
+            <div className="overflow-hidden bg-[var(--card)] px-5 pt-5 text-[var(--card-text)] sm:px-6 sm:pt-6">
               <div className="flex items-baseline justify-between border-b border-dashed border-[var(--card-muted)] pb-3">
-                <p className="text-lg font-black">كشف الأدوات</p>
-                <p className="text-xs text-[var(--card-muted)]">Qemlo</p>
+                <p className="text-base font-bold leading-snug sm:text-lg">كشف الأدوات</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-[var(--card-muted)]">Qemlo</p>
               </div>
-              <ul className="py-3">
+              <ul className="py-2.5">
                 {activeCategories.map((cat) => (
                   <li key={cat.id}>
-                    <a href={`#${cat.id}`} className="flex items-baseline gap-2 py-1.5 text-sm hover:underline">
-                      <span className="shrink-0 font-semibold">{cat.nameAr}</span>
+                    <a href={`#${cat.id}`} className="flex items-baseline gap-2 py-[5px] text-[13px] leading-snug hover:underline sm:text-sm sm:py-1.5">
+                      <span className="shrink-0 font-medium">{cat.nameAr}</span>
                       <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                      <span className="shrink-0 font-black tabular-nums">{cat.tools.length.toLocaleString("ar-EG")}</span>
+                      <span className="shrink-0 font-bold tabular-nums">{cat.tools.length.toLocaleString("ar-EG")}</span>
                     </a>
                   </li>
                 ))}
-                <li className="flex items-baseline gap-2 py-1.5 text-sm">
-                  <span className="shrink-0 font-semibold">تسجيل مطلوب</span>
+                <li className="flex items-baseline gap-2 py-[5px] text-[13px] leading-snug sm:text-sm sm:py-1.5">
+                  <span className="shrink-0 font-medium">تسجيل مطلوب</span>
                   <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                  <span className="shrink-0 font-black">٠</span>
+                  <span className="shrink-0 font-bold tabular-nums">٠</span>
                 </li>
-                <li className="flex items-baseline gap-2 py-1.5 text-sm">
-                  <span className="shrink-0 font-semibold">رسوم الاستخدام</span>
+                <li className="flex items-baseline gap-2 py-[5px] text-[13px] leading-snug sm:text-sm sm:py-1.5">
+                  <span className="shrink-0 font-medium">رسوم الاستخدام</span>
                   <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                  <span className="shrink-0 font-black">٠</span>
+                  <span className="shrink-0 font-bold tabular-nums">٠</span>
                 </li>
               </ul>
-              <div className="-mx-5 flex items-center justify-between bg-[var(--orange)] px-5 py-4 text-[var(--on-orange)] sm:-mx-6 sm:px-6">
-                <span className="font-black">{stats[0].label}</span>
-                <span className="text-3xl font-black tabular-nums">{stats[0].value}</span>
+              <div className="-mx-5 flex items-center justify-between bg-[var(--orange)] px-5 py-3.5 text-[var(--on-orange)] sm:-mx-6 sm:px-6 sm:py-4">
+                <span className="text-[13px] font-bold leading-snug sm:text-sm">{stats[0].label}</span>
+                <span className="text-[28px] font-bold leading-none tabular-nums sm:text-3xl">{stats[0].value}</span>
               </div>
-              <p className="py-4 text-center text-xs text-[var(--card-muted)]">
+              <p className="py-3 text-center text-[11px] font-normal leading-normal text-[var(--card-muted)] sm:py-4 sm:text-xs">
                 {stats[1].value} تصنيفات · تُحدَّث القائمة مع كل أداة جديدة
               </p>
             </div>
@@ -310,22 +317,22 @@ export default function HomePage() {
         {activeCategories.map((cat) => (
           <section key={cat.id} id={cat.id} className="cat-sec min-w-0">
             {/* Section header */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap sm:items-end">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 sm:mb-6 sm:flex-nowrap sm:items-end">
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--card)] text-lg text-[var(--card-text)] sm:h-11 sm:w-11 sm:text-xl">
                   {cat.icon}
                 </div>
                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 sm:gap-x-3">
-                  <h2 className="text-lg font-black text-[var(--text)] sm:text-2xl">
+                  <h2 className="text-xl font-bold leading-tight text-[var(--text)] sm:text-2xl">
                     {cat.nameAr}
                   </h2>
-                  <span className="text-[11px] font-semibold text-[var(--text-3)] sm:text-xs">
+                  <span dir="ltr" className="text-xs font-medium text-[var(--text-3)]" style={{ unicodeBidi: "isolate" }}>
                     {cat.nameEn}
                   </span>
                 </div>
               </div>
               <div className="hidden flex-1 border-b-2 border-dotted border-[var(--border)] sm:mb-2 sm:block" aria-hidden="true" />
-              <span className="shrink-0 rounded-md bg-[var(--orange)] px-2.5 py-0.5 text-xs font-black text-[var(--on-orange)] sm:mb-1">
+              <span className="shrink-0 rounded-md bg-[var(--orange)] px-2.5 py-0.5 text-xs font-bold text-[var(--on-orange)] sm:mb-1">
                 {cat.tools.length} أدوات
               </span>
             </div>
@@ -348,10 +355,10 @@ export default function HomePage() {
                     🚀
                   </div>
                   <div className="min-w-0">
-                    <h2 className="text-xl font-black text-[var(--text)] sm:text-2xl">
+                    <h2 className="text-xl font-bold leading-tight text-[var(--text)] sm:text-2xl">
                       قريباً في Qemlo
                     </h2>
-                    <p className="mt-0.5 text-xs text-[var(--text-2)] sm:text-sm">
+                    <p className="mt-1 text-xs leading-normal text-[var(--text-2)] sm:text-sm">
                       نعمل على تطوير باقة متكاملة من الأدوات الرقمية لتغطية كافة احتياجاتك
                     </p>
                   </div>
@@ -373,10 +380,10 @@ export default function HomePage() {
                         <div className="flex min-w-0 items-center gap-2.5">
                           <span className="shrink-0 text-2xl">{cat.icon}</span>
                           <div className="min-w-0">
-                            <h3 className="text-sm font-bold text-[var(--text)] sm:text-base">
+                            <h3 className="text-sm font-bold leading-snug text-[var(--text)] sm:text-base">
                               {cat.nameAr}
                             </h3>
-                            <span className="block text-[11px] font-semibold text-[var(--text-3)]">
+                            <span dir="ltr" className="block text-[11px] font-medium text-[var(--text-3)]" style={{ unicodeBidi: "isolate" }}>
                               {cat.nameEn}
                             </span>
                           </div>
@@ -386,7 +393,7 @@ export default function HomePage() {
                         </span>
                       </div>
                       {cat.comingSoonDesc && (
-                        <p className="text-xs leading-relaxed text-[var(--text-2)]">
+                        <p className="mt-1 text-xs leading-relaxed text-[var(--text-2)]">
                           {cat.comingSoonDesc}
                         </p>
                       )}
@@ -428,16 +435,16 @@ function ToolItem({ tool }) {
 
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-[15px] font-extrabold leading-snug text-[var(--text)] sm:text-base">
+            <h3 className="text-[15px] font-bold leading-snug text-[var(--text)] sm:text-base sm:leading-normal">
               {tool.nameAr}
-            </span>
+            </h3>
             {tool.badge && (
-              <span className="shrink-0 rounded-md bg-[var(--orange)] px-1.5 py-0.5 text-[10px] font-black text-[var(--on-orange)] sm:text-xs">
+              <span className="shrink-0 rounded-md bg-[var(--orange)] px-2 py-0.5 text-[10px] font-bold text-[var(--on-orange)] sm:text-xs">
                 {tool.badge}
               </span>
             )}
           </span>
-          <span className="clamp-2 mt-1 block text-xs leading-5 text-[var(--text-2)] sm:text-sm sm:leading-6">
+          <span className="clamp-2 mt-1.5 block text-xs leading-relaxed text-[var(--text-2)] sm:text-sm sm:leading-6">
             {tool.descAr}
           </span>
         </span>
@@ -505,10 +512,10 @@ function FeaturesStrip() {
       <div className="mx-auto max-w-5xl min-w-0">
         <h2
           id="features-title"
-          className="mb-10 text-center text-2xl font-black sm:text-3xl"
+          className="mb-8 text-center text-2xl font-bold leading-snug sm:mb-10 sm:text-3xl"
         >
           لماذا{" "}
-          <span className="underline decoration-[var(--orange)] decoration-[5px] underline-offset-[10px]">
+          <span className="underline decoration-[var(--orange)] decoration-4 underline-offset-[8px] sm:decoration-[5px] sm:underline-offset-[10px]">
             Qemlo؟
           </span>
         </h2>
@@ -544,11 +551,11 @@ function FeaturesStrip() {
                 </svg>
               </span>
 
-              <h3 className="text-xl font-extrabold leading-snug">{f.title}</h3>
-              <p className="flex-1 text-sm leading-7 text-[var(--text-2)]">{f.desc}</p>
+              <h3 className="text-lg font-bold leading-snug sm:text-xl">{f.title}</h3>
+              <p className="flex-1 text-sm leading-relaxed text-[var(--text-2)]">{f.desc}</p>
 
               {/* Tag */}
-              <span className="mt-1 inline-block self-start rounded-full border border-[var(--text-3)] px-3 py-1 text-[11px] font-bold text-[var(--text-2)]">
+              <span className="mt-1 inline-block self-start rounded-full border border-[var(--text-3)] px-3 py-1 text-xs font-semibold text-[var(--text-2)]">
                 {f.tag}
               </span>
             </li>

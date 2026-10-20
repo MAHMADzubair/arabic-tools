@@ -82,39 +82,70 @@ function HoursField({ label, value, onChange, multiplier }) {
 
 export default function OvertimeCalculator({ initialCountry = "sa" }) {
   const salaryId = useId();
+  const allowancesId = useId();
 
   const [countryId, setCountryId] = useState(initialCountry);
   const [salary, setSalary] = useState("8000");
+  const [allowances, setAllowances] = useState("0");
   const [dayHours, setDayHours] = useState("10");
   const [nightHours, setNightHours] = useState("0");
   const [weekendHours, setWeekendHours] = useState("0");
 
   const country = COUNTRIES.find((c) => c.id === countryId) || COUNTRIES[0];
 
-  // Calculation logic (unchanged)
+  // Calculation logic
   const results = useMemo(() => {
     const s = toNum(salary);
     const dH = toNum(dayHours);
     const nH = toNum(nightHours);
     const wH = toNum(weekendHours);
 
-    // Hourly wage = Monthly basic wage / monthly standard hours
-    const hourlyWage = s > 0 ? s / country.hoursDivisor : 0;
+    let hourlyWage = 0;
+    let basicHourlyWage = 0;
+    let actualHourlyWage = 0;
+    let actualMonthlyWage = s;
+    let dayRate = 0;
+    let nightRate = 0;
+    let weekendRate = 0;
 
-    const dayRate = hourlyWage * country.dayMultiplier;
-    const nightRate = hourlyWage * country.nightMultiplier;
-    const weekendRate = hourlyWage * country.weekendMultiplier;
+    if (country.id === "sa") {
+      const basic = s;
+      const allw = toNum(allowances);
+      const actual = basic + allw;
+      actualMonthlyWage = actual;
+
+      basicHourlyWage = basic > 0 ? basic / country.hoursDivisor : 0;
+      actualHourlyWage = actual > 0 ? actual / country.hoursDivisor : 0;
+
+      // Saudi Article 107: Overtime hourly rate = Actual hourly wage + 50% of Basic hourly wage
+      const saudiOtRate = actualHourlyWage + 0.5 * basicHourlyWage;
+      hourlyWage = basicHourlyWage;
+      dayRate = saudiOtRate;
+      nightRate = saudiOtRate;
+      weekendRate = saudiOtRate;
+    } else {
+      hourlyWage = s > 0 ? s / country.hoursDivisor : 0;
+      basicHourlyWage = hourlyWage;
+      actualHourlyWage = hourlyWage;
+
+      dayRate = hourlyWage * country.dayMultiplier;
+      nightRate = hourlyWage * country.nightMultiplier;
+      weekendRate = hourlyWage * country.weekendMultiplier;
+    }
 
     const dayAmount = dH * dayRate;
     const nightAmount = nH * nightRate;
     const weekendAmount = wH * weekendRate;
 
     const totalOvertimePay = dayAmount + nightAmount + weekendAmount;
-    const totalSalaryWithOvertime = s + totalOvertimePay;
+    const totalSalaryWithOvertime = actualMonthlyWage + totalOvertimePay;
     const totalHours = dH + nH + wH;
 
     return {
       hourlyWage,
+      basicHourlyWage,
+      actualHourlyWage,
+      actualMonthlyWage,
       dayRate,
       nightRate,
       weekendRate,
@@ -125,7 +156,7 @@ export default function OvertimeCalculator({ initialCountry = "sa" }) {
       totalSalaryWithOvertime,
       totalHours,
     };
-  }, [salary, dayHours, nightHours, weekendHours, country]);
+  }, [salary, allowances, dayHours, nightHours, weekendHours, country]);
 
   const fmt = (n) =>
     n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -185,6 +216,32 @@ export default function OvertimeCalculator({ initialCountry = "sa" }) {
           </p>
         </div>
 
+        {/* Allowances Input for Saudi Arabia (Art. 107) */}
+        {country.id === "sa" && (
+          <div style={{ marginTop: "1rem" }}>
+            <label className="ot-label" htmlFor={allowancesId}>
+              البدلات الشهرية الثابتة الخاضعة للأجر الفعلي (سكن، نقل، أخرى) ({country.currency})
+            </label>
+            <div className="ot-suffix-wrap">
+              <input
+                id={allowancesId}
+                type="number"
+                inputMode="decimal"
+                min="0"
+                placeholder="مثال: 3000"
+                value={allowances}
+                onChange={(e) => setAllowances(e.target.value)}
+                className="ot-input"
+                style={{ paddingInlineEnd: "3.5rem" }}
+              />
+              <span className="ot-suffix" aria-hidden="true">{country.currency}</span>
+            </div>
+            <p className="ot-small">
+              الأجر الفعلي = <bdi>{fmt(results.actualMonthlyWage)} {country.currency}</bdi> (أجر الساعة الفعلي = <bdi>{fmt(results.actualHourlyWage)} {country.currency}</bdi> + 50٪ من الأساسي = <bdi>{fmt(results.basicHourlyWage * 0.5)} {country.currency}</bdi>)
+            </p>
+          </div>
+        )}
+
         {/* Overtime Hours Inputs */}
         <fieldset className="ot-fieldset ot-hours">
           <legend className="ot-label">ساعات العمل الإضافي المنجزة هذا الشهر</legend>
@@ -206,9 +263,19 @@ export default function OvertimeCalculator({ initialCountry = "sa" }) {
                 <dd><bdi>{results.totalHours}</bdi> ساعة</dd>
               </div>
               <div>
-                <dt>أجر الساعة الإضافية العادية</dt>
+                <dt>
+                  {country.id === "sa"
+                    ? "أجر الساعة الإضافية (الفعلي + 50٪ من الأساسي)"
+                    : "أجر الساعة الإضافية العادية"}
+                </dt>
                 <dd><bdi>{fmt(results.dayRate)} {country.currency}</bdi></dd>
               </div>
+              {country.id === "sa" && (
+                <div>
+                  <dt>إجمالي الأجر الشهري الفعلي (الأساسي + البدلات)</dt>
+                  <dd><bdi>{fmt(results.actualMonthlyWage)} {country.currency}</bdi></dd>
+                </div>
+              )}
               <div>
                 <dt>إجمالي الراتب مع العمل الإضافي</dt>
                 <dd><bdi>{fmt(results.totalSalaryWithOvertime)} {country.currency}</bdi></dd>
@@ -255,7 +322,7 @@ const css = `
 
 .ot-head{margin-bottom:1.75rem}
 .ot-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
-.ot-h1{font-size:clamp(1.9rem,5vw,2.6rem);font-weight:900;line-height:1.15;margin-bottom:.6rem}
+.ot-h1{font-size:clamp(1.9rem,5vw,2.6rem);font-weight:700;line-height:1.15;margin-bottom:.6rem}
 .ot-lead{color:var(--i-mute)}
 
 .ot-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem;display:grid;gap:1.5rem}
@@ -284,11 +351,11 @@ const css = `
 
 .ot-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem}
 .ot-result-label{font-size:.9rem;font-weight:700}
-.ot-result-big{font-size:clamp(2rem,7vw,3rem);font-weight:900;line-height:1.15;margin:.2rem 0 1rem}
+.ot-result-big{font-size:clamp(2rem,7vw,3rem);font-weight:700;line-height:1.15;margin:.2rem 0 1rem}
 .ot-result-rows{border-top:2px solid var(--i-on-accent)}
 .ot-result-rows>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.15rem 1rem;padding:.5rem 0;border-bottom:1px solid var(--i-on-accent);font-size:.9rem}
 .ot-result-rows>div:last-child{border-bottom:0;padding-bottom:0}
 .ot-result-rows dt{font-weight:600}
-.ot-result-rows dd{font-weight:800}
+.ot-result-rows dd{font-weight:700}
 .ot-empty{border:2px dashed var(--i-ink);border-radius:4px;padding:1rem;text-align:center;font-weight:700;font-size:.9rem}
 `;

@@ -5,6 +5,7 @@ export const metadata = {
   title: "محول العملات المباشر | أسعار الصرف وتحويل العملات الفوري",
   description:
     "حوّل بين الريال السعودي والدرهم الإماراتي والدولار واليورو والدينار والجنيه وأكثر من ١٢ عملة عربية وعالمية بأسعار صرف دقيقة ومحدثة.",
+  alternates: { canonical: "/currency-converter" },
 };
 
 const guideData = {
@@ -91,3 +92,4 @@ export default function CurrencyConverterPage() {
     </div>
   );
 }
+

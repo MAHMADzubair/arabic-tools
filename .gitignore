@@ -31,3 +31,8 @@ Thumbs.db
 .idea/
 
 .vercel
+
+# Supabase CLI local state
+supabase/.temp/
+.vercel
+.env*

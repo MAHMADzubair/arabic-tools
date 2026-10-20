@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة الميراث الشرعية 2026 | تقسيم التركة وحالات العول والرد والتعصيب",
   description:
     "احسب توزيع التركة الشرعية والأنصبة بدقة فائقة وفق أحكام القرآن الكريم وإجماع المذاهب الأربعة ونظام الأحوال الشخصية مع تفصيل العول والرد والحجب بالأرقام.",
+  alternates: { canonical: "/inheritance-calculator" },
 };
 
 const guideData = {
@@ -176,3 +177,4 @@ export default function InheritanceCalculatorPage() {
     </div>
   );
 }
+

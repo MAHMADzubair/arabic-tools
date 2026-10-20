@@ -169,7 +169,7 @@ const relatedTools = [
     title: "مجمع أدوات وحاسبات السعودية",
     desc: "الدليل الشامل لكافة الحاسبات العمالية والمالية والضريبية المخصصة للمملكة.",
     badge: "المجمع الشامل",
-    badgeColor: "bg-emerald-600 text-white font-black",
+    badgeColor: "bg-emerald-600 text-white font-bold",
   },
 ];
 
@@ -203,13 +203,13 @@ export default function SaudiQuotationGeneratorPage() {
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
 
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">📖 دليل عرض السعر الاحترافي في السعودية</h2>
+              <h2 className="text-xl font-bold text-ink">📖 دليل عرض السعر الاحترافي في السعودية</h2>
               <p className="text-xs text-ink-muted mt-1">للمستقلين والشركات الصغيرة والمتوسطة والمقاولين في المملكة</p>
             </div>
 
             {/* What is a quotation */}
             <div className="space-y-3 text-sm leading-relaxed text-ink-secondary">
-              <h3 className="text-base font-extrabold text-ink">ما هو عرض السعر؟</h3>
+              <h3 className="text-base font-bold text-ink">ما هو عرض السعر؟</h3>
               <p>
                 عرض السعر (Quotation أو Quote) هو وثيقة تجارية يُقدمها البائع أو مزود الخدمة للعميل المحتمل،
                 توضح تفاصيل السلع أو الخدمات المطلوبة وأسعارها وشروط التعامل وصلاحية العرض.
@@ -224,10 +224,10 @@ export default function SaudiQuotationGeneratorPage() {
 
             {/* Quote vs Invoice */}
             <div className="space-y-3">
-              <h3 className="text-base font-extrabold text-ink">ما الفرق بين عرض السعر والفاتورة الضريبية؟</h3>
+              <h3 className="text-base font-bold text-ink">ما الفرق بين عرض السعر والفاتورة الضريبية؟</h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 space-y-2">
-                  <h4 className="text-sm font-extrabold text-amber-900 flex items-center gap-2"><span>📋</span><span>عرض السعر</span></h4>
+                  <h4 className="text-sm font-bold text-amber-900 flex items-center gap-2"><span>📋</span><span>عرض السعر</span></h4>
                   <ul className="text-xs text-amber-800 space-y-1 list-disc list-inside leading-relaxed">
                     <li>مستند تجاري قبل إتمام الصفقة</li>
                     <li>لا أثر ضريبي قانوني ملزم</li>
@@ -237,7 +237,7 @@ export default function SaudiQuotationGeneratorPage() {
                   </ul>
                 </div>
                 <div className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-4 space-y-2">
-                  <h4 className="text-sm font-extrabold text-indigo-900 flex items-center gap-2"><span>🧾</span><span>الفاتورة الضريبية</span></h4>
+                  <h4 className="text-sm font-bold text-indigo-900 flex items-center gap-2"><span>🧾</span><span>الفاتورة الضريبية</span></h4>
                   <ul className="text-xs text-indigo-800 space-y-1 list-disc list-inside leading-relaxed">
                     <li>مستند قانوني بعد التوريد</li>
                     <li>أثر ضريبي ملزم (VAT 15%)</li>
@@ -251,7 +251,7 @@ export default function SaudiQuotationGeneratorPage() {
 
             {/* Required fields */}
             <div className="space-y-3">
-              <h3 className="text-base font-extrabold text-ink">ما البيانات التي يجب أن يتضمنها عرض السعر؟</h3>
+              <h3 className="text-base font-bold text-ink">ما البيانات التي يجب أن يتضمنها عرض السعر؟</h3>
               <div className="grid gap-2 sm:grid-cols-2 text-xs">
                 {[
                   { icon: "✅", label: "اسم وبيانات البائع أو المزود" },
@@ -274,7 +274,7 @@ export default function SaudiQuotationGeneratorPage() {
 
             {/* VAT in quotations */}
             <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-4 space-y-2">
-              <h3 className="text-base font-extrabold text-blue-900">هل يمكن إضافة ضريبة 15% إلى عرض السعر؟</h3>
+              <h3 className="text-base font-bold text-blue-900">هل يمكن إضافة ضريبة 15% إلى عرض السعر؟</h3>
               <p className="text-xs text-blue-800 leading-relaxed">
                 نعم، يُنصح بإظهار ضريبة القيمة المضافة 15% في عرض السعر لإعطاء العميل صورة واضحة عن التكلفة الإجمالية.
                 <span className="font-bold"> لكن إضافة الضريبة لعرض السعر لا تجعله فاتورة ضريبية. </span>
@@ -284,7 +284,7 @@ export default function SaudiQuotationGeneratorPage() {
 
             {/* How to use */}
             <div className="space-y-3">
-              <h3 className="text-base font-extrabold text-ink">كيفية إنشاء عرض سعر احترافي بهذه الأداة</h3>
+              <h3 className="text-base font-bold text-ink">كيفية إنشاء عرض سعر احترافي بهذه الأداة</h3>
               <ol className="space-y-2 text-sm text-ink-secondary leading-relaxed">
                 {[
                   "أدخل بيانات عرض السعر (الرقم، التاريخ، الصلاحية، العملة)",
@@ -299,7 +299,7 @@ export default function SaudiQuotationGeneratorPage() {
                   "بعد قبول العميل، استخدم زر 'تحويل إلى فاتورة' لنقل البيانات لمولد الفاتورة",
                 ].map((step, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                    <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
                     <span>{step}</span>
                   </li>
                 ))}
@@ -316,11 +316,11 @@ export default function SaudiQuotationGeneratorPage() {
         <section className="mx-auto max-w-3xl px-4 py-2">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-4">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">🔢 مثال توضيحي عملي</h2>
+              <h2 className="text-xl font-bold text-ink">🔢 مثال توضيحي عملي</h2>
               <p className="text-xs text-ink-muted mt-1">عرض سعر لمشروع تصميم وتطوير موقع إلكتروني</p>
             </div>
             <div className="rounded-xl border border-brand-border/80 p-4 space-y-2">
-              <h3 className="text-sm font-extrabold text-ink">مثال — تطوير موقع إلكتروني احترافي</h3>
+              <h3 className="text-sm font-bold text-ink">مثال — تطوير موقع إلكتروني احترافي</h3>
               <div className="text-xs text-ink-secondary space-y-1">
                 <div className="grid grid-cols-3 gap-2 font-bold text-ink border-b border-slate-200 pb-1 mb-2">
                   <span>البند</span><span>السعر</span><span>الإجمالي</span>
@@ -339,7 +339,7 @@ export default function SaudiQuotationGeneratorPage() {
               <div className="mt-2 space-y-1 text-xs">
                 <div className="flex justify-between text-ink-secondary"><span>المجموع الفرعي قبل الضريبة</span><span dir="ltr">9,500.00 ريال</span></div>
                 <div className="flex justify-between text-blue-700 font-bold"><span>ضريبة القيمة المضافة 15%</span><span dir="ltr">1,425.00 ريال</span></div>
-                <div className="flex justify-between text-indigo-700 font-black text-sm border-t border-slate-200 pt-1 mt-1"><span>الإجمالي النهائي</span><span dir="ltr">10,925.00 ريال</span></div>
+                <div className="flex justify-between text-indigo-700 font-bold text-sm border-t border-slate-200 pt-1 mt-1"><span>الإجمالي النهائي</span><span dir="ltr">10,925.00 ريال</span></div>
               </div>
               <p className="text-[11px] text-ink-muted mt-2">
                 الشروط: 50% مقدماً و50% عند الإنجاز — صالح لمدة 15 يوماً — <span className="font-bold">مثال توضيحي فقط</span>
@@ -352,12 +352,12 @@ export default function SaudiQuotationGeneratorPage() {
         <section className="mx-auto max-w-3xl px-4 py-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-5">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">❓ الأسئلة الشائعة</h2>
+              <h2 className="text-xl font-bold text-ink">❓ الأسئلة الشائعة</h2>
             </div>
             <div className="space-y-5">
               {faqJsonLd.mainEntity.map((item, i) => (
                 <div key={i} className="border-b border-brand-border pb-5 last:border-b-0 last:pb-0">
-                  <h3 className="text-sm font-extrabold text-ink mb-2">س: {item.name}</h3>
+                  <h3 className="text-sm font-bold text-ink mb-2">س: {item.name}</h3>
                   <p className="text-sm text-ink-secondary leading-relaxed">ج: {item.acceptedAnswer.text}</p>
                 </div>
               ))}

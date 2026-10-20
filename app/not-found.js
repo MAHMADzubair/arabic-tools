@@ -19,7 +19,7 @@ export default function NotFound() {
 
         {/* Heading */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-black text-ink sm:text-4xl">
+          <h1 className="text-3xl font-bold text-ink sm:text-4xl">
             الصفحة غير موجودة
           </h1>
           <p className="text-sm text-ink-secondary leading-relaxed">

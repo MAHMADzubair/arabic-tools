@@ -170,47 +170,47 @@ const CSS = `
 .fp-crumb ol{list-style:none;display:flex;flex-wrap:wrap;gap:6px;font-size:13px;color:var(--mu)}
 .fp-crumb li+li::before{content:"/";margin-inline-end:6px}
 .fp-crumb a{text-decoration:underline;text-underline-offset:3px}
-.fp-crumb [aria-current]{color:var(--ink);font-weight:800}
+.fp-crumb [aria-current]{color:var(--ink);font-weight:700}
 .fp-card{background:var(--sf);border:2px solid var(--ln);padding:24px;display:flex;flex-direction:column;gap:24px}
 @media(min-width:640px){.fp-card{padding:32px}}
 .fp-sec{padding-top:32px}
-.fp-h2{font-size:22px;font-weight:900;line-height:1.3;border-bottom:2px solid var(--ln);padding-bottom:14px}
-.fp-h3{font-size:16px;font-weight:800;margin-bottom:12px}
+.fp-h2{font-size:22px;font-weight:700;line-height:1.3;border-bottom:2px solid var(--ln);padding-bottom:14px}
+.fp-h3{font-size:16px;font-weight:700;margin-bottom:12px}
 .fp-p{font-size:14px;color:var(--ink)}
 .fp-p+.fp-p{margin-top:12px}
 .fp-steps{list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:s}
 .fp-steps li{display:flex;gap:12px;align-items:flex-start;font-size:14px;counter-increment:s}
-.fp-steps li::before{content:counter(s);flex:none;width:26px;height:26px;display:grid;place-items:center;background:var(--ink);color:var(--bg);font-weight:800;font-size:13px}
+.fp-steps li::before{content:counter(s);flex:none;width:26px;height:26px;display:grid;place-items:center;background:var(--ink);color:var(--bg);font-weight:700;font-size:13px}
 .fp-ex{border:2px solid var(--ln);background:var(--bg);padding:20px}
 .fp-exr{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln);font-size:14px}
 .fp-exr small{display:block;font-size:12px;color:var(--mu)}
 .fp-exr b{white-space:nowrap}
-.fp-net{display:flex;justify-content:space-between;gap:12px;margin-top:12px;padding:12px;background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);font-weight:900;font-size:16px}
+.fp-net{display:flex;justify-content:space-between;gap:12px;margin-top:12px;padding:12px;background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);font-weight:700;font-size:16px}
 .fp-fn{margin-top:12px;font-size:12px;color:var(--mu)}
 .fp-g2{display:grid;gap:12px;grid-template-columns:1fr}
 @media(min-width:640px){.fp-g2{grid-template-columns:1fr 1fr}.fp-g3{grid-template-columns:repeat(3,1fr)}}
 .fp-g3{display:grid;gap:12px;grid-template-columns:1fr}
 .fp-art{border:1px solid var(--ln);padding:16px;display:flex;flex-direction:column;gap:6px}
-.fp-tag{align-self:flex-start;background:var(--ink);color:var(--bg);font-size:12px;font-weight:800;padding:0 10px}
+.fp-tag{align-self:flex-start;background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:0 10px}
 .fp-art b{font-size:14px}
 .fp-art p{font-size:13px;color:var(--mu)}
 .fp-faq>div{padding:18px 0;border-bottom:1px solid var(--ln)}
 .fp-faq>div:first-child{padding-top:0}
 .fp-faq>div:last-child{border-bottom:0;padding-bottom:0}
-.fp-faq h3{font-size:15px;font-weight:800;margin-bottom:6px}
+.fp-faq h3{font-size:15px;font-weight:700;margin-bottom:6px}
 .fp-faq p{font-size:14px}
 .fp-chain{border:3px solid var(--ln);background:var(--bg);padding:20px}
-.fp-chain h2{font-size:18px;font-weight:900}
+.fp-chain h2{font-size:18px;font-weight:700}
 .fp-chain>p{font-size:13px;color:var(--mu);margin:4px 0 16px}
 .fp-lk{display:flex;flex-direction:column;gap:6px;text-decoration:none;background:var(--sf);border:1px solid var(--ln);border-inline-start:6px solid var(--ac);padding:14px 16px;min-height:44px}
 .fp-lk:hover{background:var(--ink);color:var(--bg)}
 .fp-lk:hover p{color:var(--bg)}
-.fp-lk h3,.fp-lk .t{font-size:14px;font-weight:800;margin:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fp-lk h3,.fp-lk .t{font-size:14px;font-weight:700;margin:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .fp-lk p{font-size:12px;color:var(--mu)}
-.fp-lk .go{font-size:12px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
-.fp-b{border:1px solid currentColor;font-size:11px;font-weight:800;padding:0 8px}
+.fp-lk .go{font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.fp-b{border:1px solid currentColor;font-size:11px;font-weight:700;padding:0 8px}
 .fp-rev{border:1px dashed var(--ln);padding:14px 16px;font-size:12px}
-.fp-rev a{font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.fp-rev a{font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .fp-bot{padding-bottom:48px}
 @media print{.fp-crumb{display:none}}
 `;

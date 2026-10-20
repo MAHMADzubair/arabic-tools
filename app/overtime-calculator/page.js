@@ -5,6 +5,7 @@ export const metadata = {
   title: "حاسبة العمل الإضافي (الأوفر تايم) 2026 | السعودية والإمارات والدول العربية",
   description:
     "احسب أجر ساعات العمل الإضافي بدقة وفق المادة (107) من نظام العمل السعودي (150%) والمادة (19) من قانون العمل الإماراتي، مع ساعات العمل الليلية والعطلات.",
+  alternates: { canonical: "/overtime-calculator" },
 };
 
 const guideData = {
@@ -97,3 +98,4 @@ export default function OvertimeCalculatorPage() {
     </div>
   );
 }
+

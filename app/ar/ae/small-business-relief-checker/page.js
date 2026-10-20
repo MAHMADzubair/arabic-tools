@@ -130,7 +130,7 @@ export default function UaeSbrPage() {
         <section className="mx-auto max-w-3xl px-4 py-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-6">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">📖 ما هي تسهيلات الأعمال الصغيرة في الإمارات؟</h2>
+              <h2 className="text-xl font-bold text-ink">📖 ما هي تسهيلات الأعمال الصغيرة في الإمارات؟</h2>
             </div>
             <div className="space-y-3 text-sm leading-relaxed text-ink-secondary">
               <p>تسهيلات الأعمال الصغيرة (Small Business Relief) آلية اختيارية أُدرجت ضمن نظام <strong className="text-ink">ضريبة الشركات الإماراتية</strong> بموجب القرار الوزاري رقم (73) لسنة 2023. تتيح للأشخاص المقيمين المؤهلين اختيار معاملة ضريبية مبسّطة، إذ قد يُعامَل الشخص المؤهل الذي يختار التسهيل كأنه لم يحقق دخلاً خاضعاً للضريبة للفترة المؤهلة وفق شروط التسهيل المقررة.</p>
@@ -139,19 +139,19 @@ export default function UaeSbrPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-emerald-950">💰 ما هو حد 3 ملايين درهم؟</h3>
+                <h3 className="text-sm font-bold text-emerald-950">💰 ما هو حد 3 ملايين درهم؟</h3>
                 <p className="text-xs text-emerald-900 leading-relaxed">يجب ألا تتجاوز الإيرادات <strong>3,000,000 درهم</strong> في الفترة الضريبية الحالية ولا في أي فترة سابقة ذات صلة. الإيرادات هنا إجمالي الدخل قبل خصم المصروفات.</p>
               </div>
               <div className="rounded-xl border border-rose-200 bg-rose-50/60 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-rose-950">📅 إلى متى يستمر التسهيل؟</h3>
+                <h3 className="text-sm font-bold text-rose-950">📅 إلى متى يستمر التسهيل؟</h3>
                 <p className="text-xs text-rose-900 leading-relaxed">وفق التوجيهات الحالية لـ FTA، التسهيل يسري على الفترات التي <strong>تنتهي في أو قبل 31 ديسمبر 2026</strong>. الفترات اللاحقة خارج النطاق الحالي.</p>
               </div>
               <div className="rounded-xl border border-purple-200 bg-purple-50/60 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-purple-950">🏙️ شركات المناطق الحرة</h3>
+                <h3 className="text-sm font-bold text-purple-950">🏙️ شركات المناطق الحرة</h3>
                 <p className="text-xs text-purple-900 leading-relaxed">الأشخاص المؤهلون في المناطق الحرة (<strong>QFZP</strong>) غير مؤهلين لهذا التسهيل. منشآت المناطق الحرة غير المصنفة كـ QFZP قد تكون مؤهلة.</p>
               </div>
               <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 space-y-2">
-                <h3 className="text-sm font-extrabold text-amber-950">🌐 المجموعات متعددة الجنسيات</h3>
+                <h3 className="text-sm font-bold text-amber-950">🌐 المجموعات متعددة الجنسيات</h3>
                 <p className="text-xs text-amber-900 leading-relaxed">الأعضاء في مجموعات متعددة الجنسيات بإيرادات عالمية موحدة <strong>تتجاوز 3.15 مليار درهم</strong> غير مؤهلين للتسهيل.</p>
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function UaeSbrPage() {
         <section className="mx-auto max-w-3xl px-4 py-2">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-5">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">🔢 أمثلة عملية</h2>
+              <h2 className="text-xl font-bold text-ink">🔢 أمثلة عملية</h2>
             </div>
             <div className="space-y-4">
               {[
@@ -174,9 +174,9 @@ export default function UaeSbrPage() {
                 { title: "مثال 5 — فترة تنتهي مارس 2027", scenario: "فترة ضريبية تنتهي: 31 مارس 2027 | إيرادات: 1,500,000 د.إ", result: "الفترة الضريبية خارج النطاق الزمني الحالي للتسهيل", color: "text-slate-700", note: "التسهيل يسري على الفترات المنتهية في أو قبل 31 ديسمبر 2026 فقط." },
               ].map((ex, i) => (
                 <div key={i} className="rounded-xl border border-brand-border/80 p-4 space-y-1">
-                  <h3 className="text-xs font-extrabold text-ink">{ex.title}</h3>
+                  <h3 className="text-xs font-bold text-ink">{ex.title}</h3>
                   <p className="text-xs text-ink-secondary">{ex.scenario}</p>
-                  <p className={`text-xs font-black ${ex.color}`}>النتيجة: {ex.result}</p>
+                  <p className={`text-xs font-bold ${ex.color}`}>النتيجة: {ex.result}</p>
                   <p className="text-[11px] text-ink-muted">{ex.note}</p>
                 </div>
               ))}
@@ -188,12 +188,12 @@ export default function UaeSbrPage() {
         <section className="mx-auto max-w-3xl px-4 py-8">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card space-y-5">
             <div className="border-b border-brand-border pb-4">
-              <h2 className="text-xl font-extrabold text-ink">❓ الأسئلة الشائعة</h2>
+              <h2 className="text-xl font-bold text-ink">❓ الأسئلة الشائعة</h2>
             </div>
             <div className="space-y-5">
               {faqJsonLd.mainEntity.map((item, i) => (
                 <div key={i} className="border-b border-brand-border pb-5 last:border-b-0 last:pb-0">
-                  <h3 className="text-sm font-extrabold text-ink mb-2">س: {item.name}</h3>
+                  <h3 className="text-sm font-bold text-ink mb-2">س: {item.name}</h3>
                   <p className="text-sm text-ink-secondary leading-relaxed">ج: {item.acceptedAnswer.text}</p>
                 </div>
               ))}
@@ -205,7 +205,7 @@ export default function UaeSbrPage() {
         <section className="mx-auto max-w-3xl px-4 py-4 pb-12">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-5">
-              <h2 className="text-lg font-extrabold text-ink">🔗 أدوات وحاسبات ذات صلة</h2>
+              <h2 className="text-lg font-bold text-ink">🔗 أدوات وحاسبات ذات صلة</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
@@ -213,7 +213,7 @@ export default function UaeSbrPage() {
                 { href: "/ar/ae/vat-registration-checker", icon: "🏢", title: "حاسبة أهلية التسجيل في ضريبة القيمة المضافة", desc: "هل تحتاج للتسجيل في ضريبة القيمة المضافة؟ حد 375,000 درهم.", badge: "FTA VAT", badgeColor: "bg-purple-100 text-purple-800" },
                 { href: "/vat-calculator/uae", icon: "🧾", title: "حاسبة ضريبة القيمة المضافة 5%", desc: "احسب ضريبة الـ 5% أو استخرج السعر الأصلي من أي فاتورة.", badge: "5% VAT", badgeColor: "bg-blue-100 text-blue-800" },
                 { href: "/ar/ae/e-invoicing-readiness-checker", icon: "⚡", title: "حاسبة جاهزية الفوترة الإلكترونية", desc: "تحقق من مواعيد تعيين مزود ASP وتطبيق منظومة الفوترة الإلكترونية.", badge: "جديد 2026", badgeColor: "bg-orange-100 text-orange-800" },
-                { href: "/ar/ae", icon: "🇦🇪", title: "مجمع أدوات وحاسبات الإمارات", desc: "الدليل الشامل لكافة الحاسبات المخصصة لدولة الإمارات.", badge: "الشامل", badgeColor: "bg-emerald-700 text-white font-black" },
+                { href: "/ar/ae", icon: "🇦🇪", title: "مجمع أدوات وحاسبات الإمارات", desc: "الدليل الشامل لكافة الحاسبات المخصصة لدولة الإمارات.", badge: "الشامل", badgeColor: "bg-emerald-700 text-white font-bold" },
               ].map((tool) => (
                 <Link key={tool.href} href={tool.href}
                   className="group flex items-start gap-3 rounded-xl border border-brand-border bg-white p-4 hover:border-brand hover:shadow-md transition-all">

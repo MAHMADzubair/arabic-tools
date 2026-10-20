@@ -130,13 +130,13 @@ function InvoiceCheckItem({ status, label, hint }) {
   return (
     <div className="flex items-start gap-2.5 rounded-xl border border-[var(--sig-border)] bg-[var(--sig-surface)] p-3">
       <span
-        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-current text-xs font-black ${tone}`}
+        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-current text-xs font-bold ${tone}`}
         aria-hidden="true"
       >
         {mark}
       </span>
       <div className="min-w-0">
-        <p className={`text-xs font-extrabold ${tone}`}>{label}</p>
+        <p className={`text-xs font-bold ${tone}`}>{label}</p>
         {hint && (
           <p className="mt-0.5 text-[10px] leading-5 text-[var(--sig-muted)]">
             {hint}
@@ -561,9 +561,9 @@ export default function UaeVatInvoiceGenerator() {
 
             <div className="flex items-center gap-2 mb-1">
 
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--sig-orange)] text-xs font-black text-[#0D0D0D]" aria-hidden="true">VAT</span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--sig-orange)] text-xs font-bold text-[#0D0D0D]" aria-hidden="true">VAT</span>
 
-              <h2 className="text-xl font-extrabold text-[var(--sig-text)]">مولد الفاتورة الضريبية في الإمارات</h2>
+              <h2 className="text-xl font-bold text-[var(--sig-text)]">مولد الفاتورة الضريبية في الإمارات</h2>
 
             </div>
 
@@ -655,9 +655,9 @@ export default function UaeVatInvoiceGenerator() {
 
           <div className="rounded-2xl border border-[var(--sig-border)] bg-[var(--sig-surface)] p-5 ">
 
-            <h2 className="text-sm font-extrabold text-[var(--sig-text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--sig-text)] mb-3 flex items-center gap-2">
 
-              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black">١</span>
+              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold">١</span>
 
               نوع الفاتورة
 
@@ -680,7 +680,7 @@ export default function UaeVatInvoiceGenerator() {
                   <div className="flex items-center gap-2 mb-1">
 
                     
-                    <span className="text-sm font-extrabold text-[var(--sig-text)]">{opt.label}</span>
+                    <span className="text-sm font-bold text-[var(--sig-text)]">{opt.label}</span>
 
                   </div>
 
@@ -688,7 +688,7 @@ export default function UaeVatInvoiceGenerator() {
 
                   {invoiceType === opt.id && (
 
-                    <span className="mt-2 inline-block text-[10px] font-black sig-primary px-2 py-0.5 rounded-full">✓ محدد</span>
+                    <span className="mt-2 inline-block text-[10px] font-bold sig-primary px-2 py-0.5 rounded-full">✓ محدد</span>
 
                   )}
 
@@ -742,9 +742,9 @@ export default function UaeVatInvoiceGenerator() {
 
           <div className="rounded-2xl border border-[var(--sig-border)] bg-[var(--sig-surface)] p-5 ">
 
-            <h2 className="text-sm font-extrabold text-[var(--sig-text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--sig-text)] mb-3 flex items-center gap-2">
 
-              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black">٢</span>
+              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold">٢</span>
 
               بيانات المورد (المنشأة المُصدِرة)
 
@@ -858,9 +858,9 @@ export default function UaeVatInvoiceGenerator() {
 
           <div className="rounded-2xl border border-[var(--sig-border)] bg-[var(--sig-surface)] p-5 ">
 
-            <h2 className="text-sm font-extrabold text-[var(--sig-text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--sig-text)] mb-3 flex items-center gap-2">
 
-              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black">٣</span>
+              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold">٣</span>
 
               بيانات العميل (المستلم)
 
@@ -972,9 +972,9 @@ export default function UaeVatInvoiceGenerator() {
 
           <div className="rounded-2xl border border-[var(--sig-border)] bg-[var(--sig-surface)] p-5 ">
 
-            <h2 className="text-sm font-extrabold text-[var(--sig-text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--sig-text)] mb-3 flex items-center gap-2">
 
-              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black">٤</span>
+              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold">٤</span>
 
               تفاصيل الفاتورة
 
@@ -1076,9 +1076,9 @@ export default function UaeVatInvoiceGenerator() {
 
           <div className="rounded-2xl border border-[var(--sig-border)] bg-[var(--sig-surface)] p-5 ">
 
-            <h2 className="text-sm font-extrabold text-[var(--sig-text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--sig-text)] mb-3 flex items-center gap-2">
 
-              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black">٥</span>
+              <span className="sig-step flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold">٥</span>
 
               بنود الفاتورة
 
@@ -1100,7 +1100,7 @@ export default function UaeVatInvoiceGenerator() {
 
                     <div className="flex items-center justify-between">
 
-                      <span className="text-xs font-extrabold text-[var(--sig-text-2)]">بند {idx + 1}</span>
+                      <span className="text-xs font-bold text-[var(--sig-text-2)]">بند {idx + 1}</span>
 
                       {lines.length > 1 && (
 
@@ -1208,7 +1208,7 @@ export default function UaeVatInvoiceGenerator() {
 
                         </span>
 
-                        <span className="rounded-full text-[11px] font-black bg-[var(--sig-surface-2)] text-[var(--sig-text)] px-2.5 py-0.5">
+                        <span className="rounded-full text-[11px] font-bold bg-[var(--sig-surface-2)] text-[var(--sig-text)] px-2.5 py-0.5">
 
                           المجموع: {fmt(calc?.lineTotal)} {details.currency}
 
@@ -1244,7 +1244,7 @@ export default function UaeVatInvoiceGenerator() {
 
           <div className="rounded-2xl border border-[var(--sig-border)] bg-[var(--sig-surface-2)] p-5 ">
 
-            <h2 className="text-sm font-extrabold text-[var(--sig-text)] mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-[var(--sig-text)] mb-3 flex items-center gap-2">
 
               <span className="text-base"></span> ملخص الإجماليات
 
@@ -1272,9 +1272,9 @@ export default function UaeVatInvoiceGenerator() {
 
                 <div key={i} className={`flex justify-between items-center py-1 ${row.bold ? "border-t border-[var(--sig-border)] pt-2" : ""}`}>
 
-                  <span className={`text-xs ${row.bold ? "font-extrabold" : "font-medium"} text-[var(--sig-text-2)]`}>{row.label}</span>
+                  <span className={`text-xs ${row.bold ? "font-bold" : "font-medium"} text-[var(--sig-text-2)]`}>{row.label}</span>
 
-                  <span className={`text-sm font-black ${row.color}`} dir="ltr">
+                  <span className={`text-sm font-bold ${row.color}`} dir="ltr">
 
                     {row.val < 0 ? "-" : ""}{fmt(Math.abs(row.val))} {details.currency}
 
@@ -1286,9 +1286,9 @@ export default function UaeVatInvoiceGenerator() {
 
               <div className="flex justify-between items-center border-t-2 border-[var(--sig-border)] pt-3 mt-2">
 
-                <span className="text-base font-extrabold text-[var(--sig-text)]">الإجمالي النهائي شامل الضريبة</span>
+                <span className="text-base font-bold text-[var(--sig-text)]">الإجمالي النهائي شامل الضريبة</span>
 
-                <span className="text-xl font-black text-[var(--sig-text)]" dir="ltr">
+                <span className="text-xl font-bold text-[var(--sig-text)]" dir="ltr">
 
                   {fmt(totals.grandTotal)} {details.currency}
 
@@ -1314,7 +1314,7 @@ export default function UaeVatInvoiceGenerator() {
 
                 <div>
 
-                  <h2 className="text-sm font-extrabold text-[var(--sig-text)]">فحص مبدئي لاكتمال الحقول المطلوبة</h2>
+                  <h2 className="text-sm font-bold text-[var(--sig-text)]">فحص مبدئي لاكتمال الحقول المطلوبة</h2>
 
                   <p className="text-[11px] text-[var(--sig-muted)]">ليس فحصاً رسمياً من هيئة الضرائب — تحقق شكلي فقط</p>
 
@@ -1386,7 +1386,7 @@ export default function UaeVatInvoiceGenerator() {
 
             <button onClick={() => setActiveTab("preview")}
 
-              className="sig-primary flex-1 rounded-xl py-3 text-sm font-extrabold transition-colors">
+              className="sig-primary flex-1 rounded-xl py-3 text-sm font-bold transition-colors">
 
               معاينة الفاتورة
 
@@ -1394,7 +1394,7 @@ export default function UaeVatInvoiceGenerator() {
 
             <button onClick={handlePrint}
 
-              className="sig-secondary flex-1 rounded-xl py-3 text-sm font-extrabold transition-colors">
+              className="sig-secondary flex-1 rounded-xl py-3 text-sm font-bold transition-colors">
 
               طباعة / حفظ PDF
 
@@ -1452,7 +1452,7 @@ export default function UaeVatInvoiceGenerator() {
 
                 <div>
 
-                  <p className="text-white text-xl font-black">فاتورة ضريبية</p>
+                  <p className="text-white text-xl font-bold">فاتورة ضريبية</p>
 
                   <p className="text-[#D4D4CE] text-sm font-semibold">Tax Invoice</p>
 
@@ -1466,7 +1466,7 @@ export default function UaeVatInvoiceGenerator() {
 
                 <div className="text-left" dir="ltr">
 
-                  <p className="text-white font-black text-lg">{details.invoiceNumber || "—"}</p>
+                  <p className="text-white font-bold text-lg">{details.invoiceNumber || "—"}</p>
 
                   <p className="text-[#D4D4CE] text-xs">{details.issueDate || ""}</p>
 
@@ -1492,9 +1492,9 @@ export default function UaeVatInvoiceGenerator() {
 
                 <div className="rounded-xl border border-[#D4D4CE] bg-[#F5F5F2] p-4">
 
-                  <p className="text-[10px] font-black text-[var(--sig-orange)] uppercase tracking-wide mb-2">المورد · Supplier</p>
+                  <p className="text-[10px] font-bold text-[var(--sig-orange)] uppercase tracking-wide mb-2">المورد · Supplier</p>
 
-                  <p className="font-extrabold text-[#0D0D0D] text-sm">{seller.name || "—"}</p>
+                  <p className="font-bold text-[#0D0D0D] text-sm">{seller.name || "—"}</p>
 
                   {seller.address && <p className="text-xs text-[#555555] mt-0.5">{seller.address}</p>}
 
@@ -1506,7 +1506,7 @@ export default function UaeVatInvoiceGenerator() {
 
                       <p className="text-[10px] font-bold text-[#6B6B66]">الرقم الضريبي TRN</p>
 
-                      <p className="font-black text-xs text-[#0D0D0D]" dir="ltr">{seller.trn}</p>
+                      <p className="font-bold text-xs text-[#0D0D0D]" dir="ltr">{seller.trn}</p>
 
                     </div>
 
@@ -1526,13 +1526,13 @@ export default function UaeVatInvoiceGenerator() {
 
                 <div className="rounded-xl border border-[#D4D4CE] bg-[#F5F5F2] p-4">
 
-                  <p className="text-[10px] font-black text-[#555555] uppercase tracking-wide mb-2">العميل · Customer</p>
+                  <p className="text-[10px] font-bold text-[#555555] uppercase tracking-wide mb-2">العميل · Customer</p>
 
                   {buyer.name ? (
 
                     <>
 
-                      <p className="font-extrabold text-[#0D0D0D] text-sm">{buyer.name}</p>
+                      <p className="font-bold text-[#0D0D0D] text-sm">{buyer.name}</p>
 
                       {buyer.address && <p className="text-xs text-[#555555] mt-0.5">{buyer.address}</p>}
 
@@ -1544,7 +1544,7 @@ export default function UaeVatInvoiceGenerator() {
 
                           <p className="text-[10px] font-bold text-[#6B6B66]">الرقم الضريبي TRN</p>
 
-                          <p className="font-black text-xs text-[#0D0D0D]" dir="ltr">{buyer.trn}</p>
+                          <p className="font-bold text-xs text-[#0D0D0D]" dir="ltr">{buyer.trn}</p>
 
                         </div>
 
@@ -1604,21 +1604,21 @@ export default function UaeVatInvoiceGenerator() {
 
                     <tr className="bg-[#F5F5F2] text-[#555555]">
 
-                      <th className="text-right p-2 font-extrabold rounded-tr-lg">#</th>
+                      <th className="text-right p-2 font-bold rounded-tr-lg">#</th>
 
-                      <th className="text-right p-2 font-extrabold">الوصف</th>
+                      <th className="text-right p-2 font-bold">الوصف</th>
 
-                      <th className="text-right p-2 font-extrabold">الكمية</th>
+                      <th className="text-right p-2 font-bold">الكمية</th>
 
-                      <th className="text-right p-2 font-extrabold">سعر الوحدة</th>
+                      <th className="text-right p-2 font-bold">سعر الوحدة</th>
 
-                      <th className="text-right p-2 font-extrabold">الخصم</th>
+                      <th className="text-right p-2 font-bold">الخصم</th>
 
-                      <th className="text-right p-2 font-extrabold">الضريبة</th>
+                      <th className="text-right p-2 font-bold">الضريبة</th>
 
-                      <th className="text-right p-2 font-extrabold">ضريبة</th>
+                      <th className="text-right p-2 font-bold">ضريبة</th>
 
-                      <th className="text-right p-2 font-extrabold rounded-tl-lg">الإجمالي</th>
+                      <th className="text-right p-2 font-bold rounded-tl-lg">الإجمالي</th>
 
                     </tr>
 
@@ -1654,7 +1654,7 @@ export default function UaeVatInvoiceGenerator() {
 
                           <td className="p-2 text-[#0D0D0D] font-medium" dir="ltr">{fmt(calc?.vatAmount)}</td>
 
-                          <td className="p-2 font-black text-[#0D0D0D]" dir="ltr">{fmt(calc?.lineTotal)}</td>
+                          <td className="p-2 font-bold text-[#0D0D0D]" dir="ltr">{fmt(calc?.lineTotal)}</td>
 
                         </tr>
 
@@ -1696,9 +1696,9 @@ export default function UaeVatInvoiceGenerator() {
 
                     <div key={i} className={`flex justify-between px-4 py-2 text-xs ${row.bold ? "bg-[#F5F5F2] border-t border-[#D4D4CE]" : "border-t border-[#D4D4CE] first:border-t-0"}`}>
 
-                      <span className={row.bold ? "font-extrabold text-[#0D0D0D]" : "text-[#555555]"}>{row.label}</span>
+                      <span className={row.bold ? "font-bold text-[#0D0D0D]" : "text-[#555555]"}>{row.label}</span>
 
-                      <span className={`font-black ${row.neg ? "sig-error-text" : row.bold ? "text-[#0D0D0D]" : "text-[#0D0D0D]"}`} dir="ltr">
+                      <span className={`font-bold ${row.neg ? "sig-error-text" : row.bold ? "text-[#0D0D0D]" : "text-[#0D0D0D]"}`} dir="ltr">
 
                         {row.neg ? "-" : ""}{fmt(Math.abs(row.val))} {details.currency}
 
@@ -1710,9 +1710,9 @@ export default function UaeVatInvoiceGenerator() {
 
                   <div className="flex justify-between px-4 py-3 bg-[var(--sig-ink)] text-white">
 
-                    <span className="text-sm font-extrabold">الإجمالي النهائي</span>
+                    <span className="text-sm font-bold">الإجمالي النهائي</span>
 
-                    <span className="text-sm font-black" dir="ltr">{fmt(totals.grandTotal)} {details.currency}</span>
+                    <span className="text-sm font-bold" dir="ltr">{fmt(totals.grandTotal)} {details.currency}</span>
 
                   </div>
 
@@ -1742,7 +1742,7 @@ export default function UaeVatInvoiceGenerator() {
 
               <div className="rounded-xl border border-[#D4D4CE] sig-warning-soft p-4 space-y-1.5">
 
-                <p className="text-[10px] font-extrabold sig-warning-text">إشعار مهم</p>
+                <p className="text-[10px] font-bold sig-warning-text">إشعار مهم</p>
 
                 <p className="text-[10px] sig-warning-text leading-relaxed">
 
@@ -1778,7 +1778,7 @@ export default function UaeVatInvoiceGenerator() {
 
       <div className="rounded-2xl border border-rose-200 sig-error-soft/60 p-5  no-print">
 
-        <h3 className="mb-2 flex items-center gap-2 text-sm font-extrabold text-[var(--sig-ink-text)]">
+        <h3 className="mb-2 flex items-center gap-2 text-sm font-bold text-[var(--sig-ink-text)]">
 
           <span>📡</span> هذه الأداة ليست نظام فوترة إلكترونية
 
@@ -1790,7 +1790,7 @@ export default function UaeVatInvoiceGenerator() {
 
             الفاتورة الإلكترونية في الإمارات (e-Invoice) هي بيانات منظمة يتم تبادلها إلكترونياً والإبلاغ عنها عبر المنظومة الرسمية المعتمدة من هيئة الضرائب الاتحادية.
 
-            ملفات PDF ومستندات Word والصور والنسخ الممسوحة ضوئياً ورسائل البريد الإلكتروني <span className="font-black">لا تُعدّ فواتير إلكترونية</span>.
+            ملفات PDF ومستندات Word والصور والنسخ الممسوحة ضوئياً ورسائل البريد الإلكتروني <span className="font-bold">لا تُعدّ فواتير إلكترونية</span>.
 
           </p>
 

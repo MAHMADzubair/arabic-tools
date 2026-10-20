@@ -87,11 +87,11 @@ function LegalDisclaimerStyles() {
 
       .ld-head{
         display:flex; align-items:center; gap:.5rem; margin:0 0 .5rem;
-        font-weight:800; font-size:.8125rem; color:var(--ld-ink);
+        font-weight:700; font-size:.8125rem; color:var(--ld-ink);
       }
       .ld-tag{
         flex:none; width:1.25rem; height:1.25rem; display:inline-flex;
-        align-items:center; justify-content:center; font-weight:800;
+        align-items:center; justify-content:center; font-weight:700;
         background:var(--ld-orange); color:#0a0a0a; border:2px solid var(--ld-ink);
       }
       .ld-body{ margin:0; color:var(--ld-text2); }
@@ -107,7 +107,7 @@ function LegalDisclaimerStyles() {
         margin:.75rem 0 0; padding-top:.5rem; border-top:1px solid var(--ld-ink);
         font-weight:700; color:var(--ld-ink);
       }
-      .ld-src span{ font-weight:800; }
+      .ld-src span{ font-weight:700; }
 
       .ld-sr{
         position:absolute; width:1px; height:1px; overflow:hidden;

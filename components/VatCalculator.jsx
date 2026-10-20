@@ -120,7 +120,7 @@ export default function VatCalculator({
           <span>🧾</span>
           <span>{pageBadge || "أداة حساب ضريبة القيمة المضافة"}</span>
         </div>
-        <h1 className="mb-3 text-3xl font-extrabold text-ink sm:text-5xl">
+        <h1 className="mb-3 text-3xl font-bold text-ink sm:text-5xl">
           {pageTitle || "حاسبة ضريبة القيمة المضافة (VAT)"}
         </h1>
         <p className="mx-auto max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
@@ -326,7 +326,7 @@ export default function VatCalculator({
                 <span className="inline-block rounded-full bg-brand-light px-3 py-1 text-xs font-bold text-brand-dark">
                   النتيجة الحسابية
                 </span>
-                <h2 className="mt-1 text-2xl font-black text-ink">
+                <h2 className="mt-1 text-2xl font-bold text-ink">
                   تفاصيل الفاتورة الضريبية
                 </h2>
               </div>
@@ -344,7 +344,7 @@ export default function VatCalculator({
               <p className="text-xs font-bold text-ink-muted">
                 المبلغ النهائي المستحق (شامل الضريبة)
               </p>
-              <p className="mt-1 text-3xl font-black text-brand-dark sm:text-4xl">
+              <p className="mt-1 text-3xl font-bold text-brand-dark sm:text-4xl">
                 {formatCurrency(result.totalAmount, currency)}
               </p>
               <p className="mt-1 text-xs font-semibold text-brand">
@@ -373,10 +373,10 @@ export default function VatCalculator({
               </div>
 
               <div className="flex items-center justify-between pt-1">
-                <span className="font-sans font-extrabold text-ink">
+                <span className="font-sans font-bold text-ink">
                   الإجمالي الكلي شامل الضريبة:
                 </span>
-                <span className="font-black text-brand text-base">
+                <span className="font-bold text-brand text-base">
                   {formatCurrency(result.totalAmount, currency)}
                 </span>
               </div>

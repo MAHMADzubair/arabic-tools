@@ -50,7 +50,7 @@ function OfficialSourceStyles() {
 
       .os-line,.os-note{ margin:0; }
       .os-note{ margin-top:.25rem; }
-      .os-label{ font-weight:800; color:var(--os-ink); }
+      .os-label{ font-weight:700; color:var(--os-ink); }
 
       @media print{
         .os-box{ border-color:#000; color:#000; }

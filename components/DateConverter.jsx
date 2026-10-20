@@ -503,13 +503,13 @@ const CSS = `
 
 .dc-head { margin-block-end: 1.25rem; padding-inline-start: 0.9rem; border-inline-start: 4px solid var(--c-ink); }
 .dc-badge { display: inline-block; margin: 0 0 0.6rem; padding: 0.2rem 0.7rem; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--c-ink); border-radius: 999px; }
-.dc-title { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.4; }
+.dc-title { margin: 0; font-size: 1.6rem; font-weight:700; line-height: 1.4; }
 @media (min-width: 640px) { .dc-title { font-size: 2rem; } }
 .dc-sub { margin: 0.5rem 0 0; max-width: 60ch; font-size: 0.92rem; line-height: 1.8; color: var(--c-ink-soft); }
 
 .dc-today { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-block-end: 1.25rem; padding: 0.9rem 1rem; color: var(--c-on-ink); background: var(--c-ink); border-radius: 12px; }
 .dc-today .dc-label { color: inherit; opacity: 0.85; }
-.dc-today-v { margin: 0.2rem 0 0; font-size: 0.95rem; font-weight: 800; }
+.dc-today-v { margin: 0.2rem 0 0; font-size: 0.95rem; font-weight:700; }
 .dc-today .dc-btn { color: var(--c-on-ink); background: transparent; border-color: var(--c-on-ink); }
 .dc-today .dc-btn:hover { background: var(--c-signal); color: var(--c-on-signal); border-color: var(--c-signal); }
 
@@ -530,7 +530,7 @@ const CSS = `
 
 .dc-card { margin: 0; padding: 1.1rem; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 14px; display: grid; gap: 1rem; min-width: 0; }
 .dc-fs { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 0.6rem; }
-.dc-h2 { margin: 0; padding: 0; font-size: 1rem; font-weight: 800; }
+.dc-h2 { margin: 0; padding: 0; font-size: 1rem; font-weight:700; }
 .dc-line { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 .dc-label { margin: 0; font-size: 0.82rem; font-weight: 700; }
 .dc-hint { margin: 0; font-size: 0.8rem; line-height: 1.7; color: var(--c-ink-soft); }
@@ -557,8 +557,8 @@ const CSS = `
 .dc-warn { margin: 0; padding: 0.7rem 0.8rem; font-size: 0.82rem; line-height: 1.8; color: var(--c-warning); border: 2px dashed var(--c-warning); border-radius: 10px; }
 
 .dc-event { padding: 1rem; border: 2px solid var(--c-ink); border-inline-start-width: 8px; border-radius: 12px; display: grid; gap: 0.3rem; background: var(--c-surface); }
-.dc-tag { justify-self: start; padding: 0.1rem 0.6rem; font-size: 0.72rem; font-weight: 800; color: var(--c-on-ink); background: var(--c-ink); border-radius: 999px; }
-.dc-event-t { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.dc-tag { justify-self: start; padding: 0.1rem 0.6rem; font-size: 0.72rem; font-weight:700; color: var(--c-on-ink); background: var(--c-ink); border-radius: 999px; }
+.dc-event-t { margin: 0; font-size: 1.05rem; font-weight:700; }
 
 /* Calendar */
 .dc-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem; text-align: center; }
@@ -573,9 +573,9 @@ const CSS = `
 /* Result: orange is a background only, text stays ink */
 .dc-result { padding: 1.25rem; color: var(--c-on-signal); background: var(--c-signal); border-radius: 14px; display: grid; gap: 0.5rem; }
 .dc-result-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin: 0; font-size: 0.82rem; font-weight: 700; }
-.dc-tag-o { padding: 0.1rem 0.65rem; font-size: 0.76rem; font-weight: 800; border: 2px solid var(--c-on-signal); border-radius: 999px; }
+.dc-tag-o { padding: 0.1rem 0.65rem; font-size: 0.76rem; font-weight:700; border: 2px solid var(--c-on-signal); border-radius: 999px; }
 .dc-result-day { margin: 0.6rem 0 0; font-size: 0.9rem; font-weight: 700; }
-.dc-big { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.5; }
+.dc-big { margin: 0; font-size: 1.6rem; font-weight:700; line-height: 1.5; }
 .dc-digits { margin: 0; font-size: 1rem; font-weight: 700; justify-self: start; }
 .dc-actions { display: flex; gap: 0.5rem; margin-block-start: 0.6rem; }
 .dc-rbtn {

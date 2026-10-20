@@ -1,7 +1,8 @@
 export const metadata = {
-  title: "شروط الاستخدام | Qemlo",
+  title: "شروط الاستخدام",
   description:
     "شروط وأحكام استخدام منصة Qemlo، حدود المسؤولية القانونية والاسترشادية، وحقوق الملكية الفكرية.",
+  alternates: { canonical: "/terms" },
 };
 
 // Edit this by hand whenever the terms actually change.
@@ -43,7 +44,7 @@ const CSS = `
 
 .terms-head { margin-block-end: 2rem; padding-inline-start: 1rem; border-inline-start: 4px solid var(--c-ink); }
 .terms-badge { display: inline-block; margin: 0 0 0.7rem; padding: 0.2rem 0.75rem; font-size: 0.78rem; font-weight: 700; border: 1px solid var(--c-ink); border-radius: 999px; }
-.terms-title { margin: 0; font-size: 2rem; font-weight: 800; line-height: 1.3; }
+.terms-title { margin: 0; font-size: 2rem; font-weight:700; line-height: 1.3; }
 @media (min-width: 640px) { .terms-title { font-size: 2.4rem; } }
 .terms-date { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--c-ink-soft); }
 
@@ -53,8 +54,8 @@ const CSS = `
 .terms-sec { padding-block: 1.75rem; border-block-start: 1px solid var(--c-line); }
 .terms-sec:first-child { padding-block-start: 0; border-block-start: 0; }
 .terms-sec:last-child { padding-block-end: 0; }
-.terms-h2 { display: flex; align-items: center; gap: 0.7rem; margin: 0 0 0.8rem; font-size: 1.2rem; font-weight: 800; line-height: 1.5; }
-.terms-n { flex: none; display: inline-grid; place-items: center; width: 2rem; height: 2rem; font-size: 0.9rem; font-weight: 800; color: var(--c-on-ink); background: var(--c-ink); border-radius: 6px; }
+.terms-h2 { display: flex; align-items: center; gap: 0.7rem; margin: 0 0 0.8rem; font-size: 1.2rem; font-weight:700; line-height: 1.5; }
+.terms-n { flex: none; display: inline-grid; place-items: center; width: 2rem; height: 2rem; font-size: 0.9rem; font-weight:700; color: var(--c-on-ink); background: var(--c-ink); border-radius: 6px; }
 .terms-p { margin: 0; font-size: 1rem; line-height: 2; color: var(--c-ink-soft); }
 .terms-p strong { color: var(--c-ink); }
 .terms-list { margin: 0.9rem 0 0; padding-inline-start: 1.4rem; display: grid; gap: 0.6rem; font-size: 0.95rem; line-height: 1.9; color: var(--c-ink-soft); }

@@ -138,13 +138,13 @@ const CSS = `
 @media(min-width:1024px){.ha-grid{grid-template-columns:3fr 2fr;align-items:start}.ha-sticky{position:sticky;top:96px}}
 .ha-card{background:var(--sf);border:2px solid var(--ln);padding:20px;display:flex;flex-direction:column;gap:14px}
 .ha-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--ln);padding-bottom:10px}
-.ha-head h2,.ha-head h3{font-size:17px;font-weight:800}
+.ha-head h2,.ha-head h3{font-size:17px;font-weight:700}
 .ha-g3{display:grid;gap:10px;grid-template-columns:1fr 1.4fr 1fr}
 .ha-lbl{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
 .ha-in{width:100%;border:1px solid var(--ln);background:var(--bg);color:var(--ink);padding:10px 12px;font:inherit;font-size:15px;border-radius:0;min-height:44px}
 .ha-in:focus-visible,.ha-tg:focus-visible,.ha-btn:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
 .ha-tg{border:1px solid var(--ln);background:var(--sf);color:var(--ink);padding:6px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:40px}
-.ha-tg[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:800}
+.ha-tg[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:700}
 .ha-seg{display:inline-flex;border:1px solid var(--ln)}
 .ha-seg .ha-tg{border:0}
 .ha-seg .ha-tg+.ha-tg{border-inline-start:1px solid var(--ln)}
@@ -155,7 +155,7 @@ const CSS = `
 .ha-note.bad{border:3px solid var(--er);color:var(--er);font-weight:700}
 .ha-hero{background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);padding:22px;display:flex;flex-direction:column;gap:14px}
 .ha-hero p{margin:0}
-.ha-big{font-size:clamp(44px,8vw,60px);font-weight:900;line-height:1}
+.ha-big{font-size:clamp(44px,8vw,60px);font-weight:700;line-height:1}
 .ha-btn{border:2px solid var(--ln);background:var(--sf);color:var(--ink);padding:10px 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;min-height:44px;text-align:center}
 .ha-btn:hover{background:var(--ink);color:var(--bg)}
 .ha-hero .ha-btn{background:#fff;color:#0D0D0D;border-color:#0D0D0D}
@@ -164,19 +164,19 @@ const CSS = `
 @media(min-width:640px){.ha-t3{grid-template-columns:repeat(3,1fr)}}
 .ha-tile{border:1px solid var(--ln);background:var(--bg);padding:12px;text-align:center}
 .ha-tile span{display:block;font-size:12px;color:var(--mu)}
-.ha-tile b{display:block;font-size:20px;font-weight:900;margin-top:2px}
+.ha-tile b{display:block;font-size:20px;font-weight:700;margin-top:2px}
 .ha-ms{display:grid;gap:12px;grid-template-columns:1fr}
 @media(min-width:640px){.ha-ms{grid-template-columns:1fr 1fr}}
 .ha-m{border:1px dashed var(--ln);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:13px}
 .ha-m.on{border:3px solid var(--ln);background:var(--bg)}
-.ha-m h4{margin:0;font-size:14px;font-weight:800}
+.ha-m h4{margin:0;font-size:14px;font-weight:700}
 .ha-m p{margin:0;font-size:12px;color:var(--mu)}
-.ha-tag{align-self:flex-start;border:1px solid var(--ln);padding:0 8px;font-size:11px;font-weight:800}
+.ha-tag{align-self:flex-start;border:1px solid var(--ln);padding:0 8px;font-size:11px;font-weight:700}
 .ha-m.on .ha-tag{background:var(--ink);color:var(--bg)}
 .ha-line{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln);font-size:13px}
 .ha-line:last-child{border-bottom:0}
 .ha-line b{border:1px solid var(--ln);padding:0 8px;white-space:nowrap}
-.ha-sub{margin:0;font-size:14px;font-weight:800}
+.ha-sub{margin:0;font-size:14px;font-weight:700}
 @media print{.ha-noprint{display:none!important}.ha-sticky{position:static}}
 @media (prefers-reduced-motion:reduce){.ha *{transition:none!important}}
 `;
@@ -344,7 +344,7 @@ export default function HijriAgeCalculator() {
 
       {/* Header */}
       <header style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: "clamp(26px,5vw,38px)", fontWeight: 900 }}>حاسبة العمر بالهجري والميلادي</h1>
+        <h1 style={{ fontSize: "clamp(26px,5vw,38px)", fontWeight: 700 }}>حاسبة العمر بالهجري والميلادي</h1>
         <p style={{ margin: "10px 0 0", maxWidth: 640, color: "var(--mu)" }}>
           احسب عمرك الدقيق بالسنوات والأشهر والأيام بالتقويمين الهجري والميلادي مع موعد عيد ميلادك القادم وإحصائيات حياتك.
         </p>
@@ -492,12 +492,12 @@ export default function HijriAgeCalculator() {
           <section className="ha-hero">
             <div className="ha-row">
               <p style={{ fontSize: 13, fontWeight: 700 }}>العمر الدقيق بالهجري</p>
-              <p style={{ fontSize: 12, fontWeight: 800, border: "2px solid #0D0D0D", padding: "1px 10px" }}>تقويم أم القرى</p>
+              <p style={{ fontSize: 12, fontWeight: 700, border: "2px solid #0D0D0D", padding: "1px 10px" }}>تقويم أم القرى</p>
             </div>
 
             {ok ? (
               <div>
-                <p className="ha-big">{resolved.hAge.years} <span style={{ fontSize: 20, fontWeight: 800 }}>سنة هجرية</span></p>
+                <p className="ha-big">{resolved.hAge.years} <span style={{ fontSize: 20, fontWeight: 700 }}>سنة هجرية</span></p>
                 <p style={{ marginTop: 6, fontSize: 15, fontWeight: 700 }}>
                   و{resolved.hAge.months} شهر و{resolved.hAge.days} يوم
                 </p>
