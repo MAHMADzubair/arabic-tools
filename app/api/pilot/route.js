@@ -65,9 +65,9 @@ export async function POST(request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (!checkRL(ip)) return NextResponse.json({ success:false, error:"too_many_requests" }, { status:429 });
 
-  // Feature toggle: temporarily disable public lead submissions
-  if (process.env.DISABLE_PILOT === "true") {
-    console.warn("[PILOT] Public lead submissions are disabled.");
+  // Feature toggle: disabled by default, enable with NEXT_PUBLIC_ENABLE_PILOT=true
+  if (process.env.NEXT_PUBLIC_ENABLE_PILOT !== "true") {
+    console.warn("[PILOT] Public lead submissions are disabled (default).");
     return NextResponse.json({ success:false, error:"service_unavailable", message:"حاليًا غير متاح. يرجى المتابعة في وقت لاحق." }, { status:503 });
   }
 
