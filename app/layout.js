@@ -173,6 +173,7 @@ export const metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
   },
+  other: [{ name: "google-adsense-account", content: "ca-pub-4706954030329423" }],
 };
 
 export default function RootLayout({ children }) {
