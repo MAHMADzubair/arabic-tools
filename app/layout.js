@@ -177,11 +177,22 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "";
+  const ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_ADSENSE_PUB_ID;
 
   return (
     <html lang="ar" dir="rtl" className={ibmPlexArabic.variable}>
       <head>
         <style dangerouslySetInnerHTML={{ __html: TOKENS_CSS }} />
+        {/* Google AdSense — Site Ownership Verification (Sprint 9B) */}
+        {ADSENSE_PUB_ID && (
+          <Script
+            id="google-adsense"
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}`}
+            strategy="beforeInteractive"
+            crossOrigin="anonymous"
+          />
+        )}
       </head>
       <body suppressHydrationWarning={true} className="flex min-h-screen flex-col bg-[var(--bg)] text-[var(--text)]">
         {/* Organization Structured Data — authoritative Qemlo entity */}
