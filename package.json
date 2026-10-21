@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "test": "node --test",
+    "test:umrah": "node --test tests/umrahCalculatorStringCheck.test.mjs",
     "test:staging": "node --test tests/staging-integration.test.js",
     "build": "next build",
     "start": "next start",
