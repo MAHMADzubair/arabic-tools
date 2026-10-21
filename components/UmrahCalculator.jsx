@@ -8,21 +8,21 @@ import { useState, useMemo } from "react";
 
 const COUNTRIES = [
 
-  { id: "pk", name: "???? ???????", currency: "PKR", symbol: "?", flight: 85000, visa: 15000, dailyFood: 2500, transport: 1200, shopping: 20000 },
+  { id: "pk", name: "باكستان", currency: "PKR", symbol: "₨", flight: 85000, visa: 15000, dailyFood: 2500, transport: 1200, shopping: 20000 },
 
-  { id: "eg", name: "???? ???", currency: "EGP", symbol: "?.?", flight: 12000, visa: 3000, dailyFood: 450, transport: 200, shopping: 4000 },
+  { id: "eg", name: "مصر", currency: "EGP", symbol: "£", flight: 12000, visa: 3000, dailyFood: 450, transport: 200, shopping: 4000 },
 
-  { id: "sa", name: "???? ????????", currency: "SAR", symbol: "?.?", flight: 800, visa: 0, dailyFood: 120, transport: 60, shopping: 1000 },
+  { id: "sa", name: "المملكة العربية السعودية", currency: "SAR", symbol: "ر.س", flight: 800, visa: 0, dailyFood: 120, transport: 60, shopping: 1000 },
 
-  { id: "ae", name: "???? ????????", currency: "AED", symbol: "?.?", flight: 1800, visa: 320, dailyFood: 300, transport: 120, shopping: 2000 },
+  { id: "ae", name: "الإمارات العربية المتحدة", currency: "AED", symbol: "د.إ", flight: 1800, visa: 320, dailyFood: 300, transport: 120, shopping: 2000 },
 
-  { id: "gb", name: "???? ??????? ???????", currency: "GBP", symbol: "£", flight: 650, visa: 150, dailyFood: 80, transport: 35, shopping: 400 },
+  { id: "gb", name: "المملكة المتحدة", currency: "GBP", symbol: "£", flight: 650, visa: 150, dailyFood: 80, transport: 35, shopping: 400 },
 
-  { id: "us", name: "???? ???????? ???????", currency: "USD", symbol: "$", flight: 1100, visa: 150, dailyFood: 100, transport: 40, shopping: 500 },
+  { id: "us", name: "الولايات المتحدة الأمريكية", currency: "USD", symbol: "$", flight: 1100, visa: 150, dailyFood: 100, transport: 40, shopping: 500 },
 
-  { id: "my", name: "???? ???????", currency: "MYR", symbol: "RM", flight: 3800, visa: 600, dailyFood: 350, transport: 150, shopping: 2000 },
+  { id: "my", name: "ماليزيا", currency: "MYR", symbol: "RM", flight: 3800, visa: 600, dailyFood: 350, transport: 150, shopping: 2000 },
 
-  { id: "bd", name: "???? ????????", currency: "BDT", symbol: "?", flight: 55000, visa: 15000, dailyFood: 2000, transport: 800, shopping: 15000 },
+  { id: "bd", name: "بنغلاديش", currency: "BDT", symbol: "৳", flight: 55000, visa: 15000, dailyFood: 2000, transport: 800, shopping: 15000 },
 
 ];
 
@@ -30,13 +30,13 @@ const COUNTRIES = [
 
 const SEASONS = [
 
-  { id: "regular", name: "???? (???? ???????)", flightMult: 1, hotelMult: 1 },
+  { id: "regular", name: "العادي (الموسم العادي)", flightMult: 1, hotelMult: 1 },
 
-  { id: "ramadan", name: "?? ?????", flightMult: 2.2, hotelMult: 3.5 },
+  { id: "ramadan", name: "رمضان", flightMult: 2.2, hotelMult: 3.5 },
 
-  { id: "dhul_hijja", name: "?? ?? ????? (??? ????)", flightMult: 1.6, hotelMult: 2.2 },
+  { id: "dhul_hijja", name: "ذو الحجة (العطلة الأخيرة)", flightMult: 1.6, hotelMult: 2.2 },
 
-  { id: "last_10", name: "?? ????? ??????? (?????)", flightMult: 3.0, hotelMult: 5.0 },
+  { id: "last_10", name: "آخر 10 أيام (الموسم الأخير)", flightMult: 3.0, hotelMult: 5.0 },
 
 ];
 
@@ -44,13 +44,13 @@ const SEASONS = [
 
 const HOTELS = [
 
-  { id: "budget", name: "?? ??????? / ???", sarPerNight: 150, desc: "??? ?????? ?? ????? ?? ?????" },
+  { id: "budget", name: "فندق اقتصادي / 2 نجوم", sarPerNight: 150, desc: "فندق بأسعار معقولة ومرافق بسيطة" },
 
-  { id: "3star", name: "??? ???? 3 ????", sarPerNight: 350, desc: "???? ?? ????? (???? ?? 2 ??)" },
+  { id: "3star", name: "فندق 3 نجوم", sarPerNight: 350, desc: "فندق متوسط المستوى مع خدمات جيدة" },
 
-  { id: "4star", name: "???? ???? 4 ????", sarPerNight: 750, desc: "????? ??????? (500? – 2??)" },
+  { id: "4star", name: "فندق 4 نجوم", sarPerNight: 750, desc: "فندق فاخر مع مرافق متميزة" },
 
-  { id: "5star", name: "????? ???? 5 ????", sarPerNight: 1800, desc: "???? ???? (??? ?? 500?)" },
+  { id: "5star", name: "فندق 5 نجوم", sarPerNight: 1800, desc: "فندق خمس نجوم مع أفضل الخدمات" },
 
 ];
 
@@ -58,11 +58,11 @@ const HOTELS = [
 
 const MEAL_PLANS = [
 
-  { id: "self", name: "?? ????? ????", mult: 1 },
+  { id: "self", name: "بدون وجبات", mult: 1 },
 
-  { id: "half", name: "?? ??? ?????", mult: 1.5 },
+  { id: "half", name: "نصف إقامة", mult: 1.5 },
 
-  { id: "full", name: "?? ????? ?????", mult: 2.0 },
+  { id: "full", name: "إقامة كاملة", mult: 2.0 },
 
 ];
 
@@ -292,17 +292,17 @@ export default function UmrahCalculator() {
 
   const items = result ? [
 
-    { label: "?? ????? ???????", value: result.flight },
+    { label: "تكلفة الطيران", value: result.flight },
 
-    { label: "?? ???? ????????", value: result.visa },
+    { label: "تكلفة التأشيرة", value: result.visa },
 
-    { label: "?? ??????? ????????", value: result.hotel },
+    { label: "تكلفة الفندق", value: result.hotel },
 
-    { label: "?? ?????? ????????", value: result.food },
+    { label: "تكلفة الطعام", value: result.food },
 
-    { label: "?? ????????? ????????", value: result.transport },
+    { label: "تكلفة النقل", value: result.transport },
 
-    { label: "?? ?????? ????????", value: result.shopping },
+    { label: "تكلفة التسوق", value: result.shopping },
 
   ] : [];
 
@@ -340,7 +340,7 @@ export default function UmrahCalculator() {
 
           {o.hotelMult && o.id !== "regular" && (
 
-            <span className="block text-[10px] font-normal opacity-70 mt-0.5">???? ×{o.hotelMult} · ????? ×{o.flightMult}</span>
+            <span className="block text-[10px] font-normal opacity-70 mt-0.5">فندق ×{o.hotelMult} · طيران ×{o.flightMult}</span>
 
           )}
 
@@ -361,15 +361,15 @@ export default function UmrahCalculator() {
 
       <div className="mb-8 text-center space-y-3">
 
-        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--uc-orange)] bg-[var(--uc-orange)] px-4 py-1.5 text-sm font-bold text-[var(--uc-on-orange)]"><span>????? ????? ??????</span>
+        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--uc-orange)] bg-[var(--uc-orange)] px-4 py-1.5 text-sm font-bold text-[var(--uc-on-orange)]"><span>تكلفة العمرة المتوقعة</span>
 
         </div>
 
-        <h1 className="text-3xl font-bold text-[var(--uc-text)] sm:text-4xl">????? ????? ?????? ???????</h1>
+        <h1 className="text-3xl font-bold text-[var(--uc-text)] sm:text-4xl">أداة حساب تكلفة العمرة</h1>
 
         <p className="mx-auto max-w-xl text-sm text-[var(--uc-text-2)] sm:text-base">
 
-          ???? ????? ????? ???????? ???? — ????? ???????? ??????? ??????? ????????? ????????? ??????.
+          احسب تكلفة رحلتك للعمرة مع جميع المتغيرات مثل الطيران، الفنادق، الطعام، والتسوق.
 
         </p>
 
@@ -385,7 +385,7 @@ export default function UmrahCalculator() {
 
           <div className="uc-card rounded-2xl p-5 space-y-4">
 
-            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>??? ????????</h2>
+            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>الدولة</h2>
 
             <SelectGrid items={COUNTRIES} selected={countryId} onSelect={setCountryId} cols={4} />
 
@@ -397,15 +397,15 @@ export default function UmrahCalculator() {
 
           <div className="uc-card rounded-2xl p-5 space-y-4">
 
-            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>????????? ???? ???????</h2>
+            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>عدد الأشخاص و الأيام</h2>
 
             <div className="grid grid-cols-3 gap-4">
 
-              <div className="space-y-1.5"><label className="text-xs font-semibold text-[var(--uc-text-2)]">????????</label><Counter value={adults} setValue={setAdults} min={1} /></div>
+              <div className="space-y-1.5"><label className="text-xs font-semibold text-[var(--uc-text-2)]">عدد البالغين</label><Counter value={adults} setValue={setAdults} min={1} /></div>
 
-              <div className="space-y-1.5"><label className="text-xs font-semibold text-[var(--uc-text-2)]">???????</label><Counter value={children} setValue={setChildren} min={0} /></div>
+              <div className="space-y-1.5"><label className="text-xs font-semibold text-[var(--uc-text-2)]">عدد الأطفال</label><Counter value={children} setValue={setChildren} min={0} /></div>
 
-              <div className="space-y-1.5"><label className="text-xs font-semibold text-[var(--uc-text-2)]">???? ???????</label><Counter value={days} setValue={setDays} min={3} /></div>
+              <div className="space-y-1.5"><label className="text-xs font-semibold text-[var(--uc-text-2)]">عدد الأيام</label><Counter value={days} setValue={setDays} min={3} /></div>
 
             </div>
 
@@ -417,7 +417,7 @@ export default function UmrahCalculator() {
 
           <div className="uc-card rounded-2xl p-5 space-y-3">
 
-            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>???? ?????</h2>
+            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>الموسم</h2>
 
             <SelectGrid items={SEASONS} selected={seasonId} onSelect={setSeasonId} cols={2} />
 
@@ -429,7 +429,7 @@ export default function UmrahCalculator() {
 
           <div className="uc-card rounded-2xl p-5 space-y-3">
 
-            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>??? ??????</h2>
+            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>الفنادق</h2>
 
             <SelectGrid items={HOTELS} selected={hotelId} onSelect={setHotelId} cols={2} />
 
@@ -443,11 +443,11 @@ export default function UmrahCalculator() {
 
             <div className="uc-card rounded-2xl p-5 space-y-3">
 
-              <h2 className="text-sm font-bold text-[var(--uc-text)]">?? ???? ???????</h2>
+              <h2 className="text-sm font-bold text-[var(--uc-text)]">الطيران</h2>
 
               <div className="space-y-2">
 
-                {[{ id: "economy", label: "?? ????????" }, { id: "business", label: "?? ???? ????? (×???)" }].map((f) => (
+                {[{ id: "economy", label: "اقتصادية" }, { id: "business", label: "أعمال (×3.5)" }].map((f) => (
 
                   <button key={f.id} type="button" onClick={() => setFlightClass(f.id)}
 
@@ -465,7 +465,7 @@ export default function UmrahCalculator() {
 
             <div className="uc-card rounded-2xl p-5 space-y-3">
 
-              <h2 className="text-sm font-bold text-[var(--uc-text)]">?? ??? ???????</h2>
+              <h2 className="text-sm font-bold text-[var(--uc-text)]">خطة الوجبات</h2>
 
               <div className="space-y-2">
 
@@ -493,15 +493,15 @@ export default function UmrahCalculator() {
 
           <div className="uc-card rounded-2xl p-5 space-y-4">
 
-            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>?????? ??????</h2>
+            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>خيارات إضافية</h2>
 
             <div className="flex items-center justify-between">
 
               <div>
 
-                <p className="text-sm font-semibold text-[var(--uc-text)]">????? ???? ????????</p>
+                <p className="text-sm font-semibold text-[var(--uc-text)]">تضمين التأشيرة</p>
 
-                <p className="text-xs text-[var(--uc-muted)]">{fmt((country?.visa || 0) * travelers, sym)} ???????</p>
+                <p className="text-xs text-[var(--uc-muted)]">{fmt((country?.visa || 0) * travelers, sym)} إجمالي تكلفة التأشيرات لجميع المسافرين</p>
 
               </div>
 
@@ -517,7 +517,7 @@ export default function UmrahCalculator() {
 
             <div className="space-y-1.5">
 
-              <label className="text-sm font-semibold text-[var(--uc-text)]">?? ??????? ?????? ?????? ({sym})</label>
+              <label className="text-sm font-semibold text-[var(--uc-text)]">المشتريات الإضافية ({sym})</label>
 
               <input type="number" min="0" value={extraShopping} onChange={(e) => setExtraShopping(e.target.value)} placeholder="0"
 
@@ -539,17 +539,17 @@ export default function UmrahCalculator() {
 
             <div className="uc-result rounded-2xl p-6 space-y-2">
 
-              <p className="text-sm font-medium opacity-80">??????? ????????? ???????</p>
+              <p className="text-sm font-medium opacity-80">النتيجة الإجمالية</p>
 
               <p className="text-4xl font-bold tracking-tight">{result ? fmt(result.total, sym) : "—"}</p>
 
-              <p className="text-xs opacity-70">?????? ????? ({travelers} ????? · {days} ???)</p>
+              <p className="text-xs opacity-70">الإجمالي ({travelers} أشخاص · {days} أيام)</p>
 
               {result && (
 
                 <div className="mt-3 rounded-xl bg-[var(--uc-surface)]/15 p-3 backdrop-blur-sm">
 
-                  <p className="text-xs opacity-80">??????? ????? ??????</p>
+                  <p className="text-xs opacity-80">السعر للفرد</p>
 
                   <p className="text-2xl font-bold">{fmt(result.perPerson, sym)}</p>
 
@@ -565,7 +565,7 @@ export default function UmrahCalculator() {
 
               <div className="uc-card rounded-2xl p-5 space-y-3">
 
-                <h3 className="text-sm font-bold text-[var(--uc-text)]">????? ????????</h3>
+                <h3 className="text-sm font-bold text-[var(--uc-text)]">تفصيل التكلفة</h3>
 
                 <div className="space-y-2.5">
 
@@ -591,7 +591,7 @@ export default function UmrahCalculator() {
 
                         </div>
 
-                        <p className="text-[10px] text-[var(--uc-muted)]">{pct}% ?? ????????</p>
+                        <p className="text-[10px] text-[var(--uc-muted)]">{pct}% من المجموع</p>
 
                       </div>
 
@@ -603,17 +603,17 @@ export default function UmrahCalculator() {
 
                 <div className="uc-warning mt-3 rounded-xl border p-3 text-xs space-y-1 leading-relaxed">
 
-                  <p className="font-bold flex items-center gap-1"><span>??</span> ????? ?????</p>
+                  <p className="font-bold flex items-center gap-1"><span>⚠️</span> ملاحظة</p>
 
-                  {seasonId === "last_10" && <p>• ????? ??????? ?? ?????? — ????? ?????? ???? ??? ??%</p>}
+                  {seasonId === "last_10" && <p>• قد تصل تكلفة الفندق إلى {season.hotelMult} أضعاف السعر في الموسم العادي</p>}
 
-                  {seasonId === "ramadan" && <p>• ?????: ???? ?????? ??? ? ???? ??? ?????</p>}
+                  {seasonId === "ramadan" && <p>• في شهر رمضان قد ترتفع أسعار الطيران والفنادق</p>}
 
-                  {hotelId === "5star" && <p>• ????? ? ???? ????? ?? ???? ??% ?? ????? ???????</p>}
+                  
 
-                  <p>• ????? ??????? ??? ???????? ????????? ???? ?????</p>
+                  <p>• يرجى مراجعة الأسعار قبل الحجز</p>
 
-                  <p>• ??????? ?? ??????? ?????? ???? ?????</p>
+                  <p>• يرجى مراجعة الشروط والأحكام قبل الحجز</p>
 
                 </div>
 
@@ -625,11 +625,11 @@ export default function UmrahCalculator() {
 
             <div className="uc-card rounded-2xl p-4 text-center space-y-1">
 
-              <p className="text-xs text-[var(--uc-muted)]">?????? ???????</p>
+              <p className="text-xs text-[var(--uc-muted)]">موسم</p>
 
               <p className="text-base font-bold text-[var(--uc-text)]">{season?.name}</p>
 
-              {season?.id !== "regular" && <p className="text-xs text-[var(--uc-orange)]">×{season.hotelMult} ??? ????? ???????</p>}
+              {season?.id !== "regular" && <p className="text-xs text-[var(--uc-orange)]">×{season.hotelMult} مضاعف الموسم</p>}
 
             </div>
 
@@ -639,7 +639,7 @@ export default function UmrahCalculator() {
 
       </div>
 
-      <p className="mt-8 text-center text-xs text-[var(--uc-muted)]">?? ??? ?????? ??????? ????????? ???. ?????? ??????? ??????? ???? ??????? ???????? ?????? ???????.</p>
+      <p className="mt-8 text-center text-xs text-[var(--uc-muted)]">ملاحظة: الأسعار تقديرية وقد تختلف حسب تغير أسعار الصرف.</p>
 
     </div>
 
