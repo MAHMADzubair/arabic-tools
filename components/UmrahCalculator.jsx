@@ -58,11 +58,11 @@ const HOTELS = [
 
 const MEAL_PLANS = [
 
-  { id: "self", name: "نفسك", mult: 1 },
+  { id: "self", name: "بدون وجبات", mult: 1 },
 
-  { id: "half", name: "نصف", mult: 1.5 },
+  { id: "half", name: "نصف إقامة", mult: 1.5 },
 
-  { id: "full", name: "كامل", mult: 2.0 },
+  { id: "full", name: "إقامة كاملة", mult: 2.0 },
 
 ];
 
@@ -417,7 +417,7 @@ export default function UmrahCalculator() {
 
           <div className="uc-card rounded-2xl p-5 space-y-3">
 
-            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span class="uc-step" aria-hidden="true">•</span>الموسم</h2>
+            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>الموسم</h2>
 
             <SelectGrid items={SEASONS} selected={seasonId} onSelect={setSeasonId} cols={2} />
 
@@ -429,7 +429,7 @@ export default function UmrahCalculator() {
 
           <div className="uc-card rounded-2xl p-5 space-y-3">
 
-            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span class="uc-step" aria-hidden="true">•</span>الفنادق</h2>
+            <h2 className="flex items-center gap-2 text-base font-bold text-[var(--uc-text)]"><span className="uc-step" aria-hidden="true">•</span>الفنادق</h2>
 
             <SelectGrid items={HOTELS} selected={hotelId} onSelect={setHotelId} cols={2} />
 
@@ -465,7 +465,7 @@ export default function UmrahCalculator() {
 
             <div className="uc-card rounded-2xl p-5 space-y-3">
 
-              <h2 className="text-sm font-bold text-[var(--uc-text)]">الوجبة</h2>
+              <h2 className="text-sm font-bold text-[var(--uc-text)]">خطة الوجبات</h2>
 
               <div className="space-y-2">
 
@@ -501,7 +501,7 @@ export default function UmrahCalculator() {
 
                 <p className="text-sm font-semibold text-[var(--uc-text)]">تضمين التأشيرة</p>
 
-                <p className="text-xs text-[var(--uc-muted)]">{fmt((country?.visa || 0) * travelers, sym)} لكل مسافر</p>
+                <p className="text-xs text-[var(--uc-muted)]">{fmt((country?.visa || 0) * travelers, sym)} إجمالي تكلفة التأشيرات لجميع المسافرين</p>
 
               </div>
 
@@ -605,11 +605,11 @@ export default function UmrahCalculator() {
 
                   <p className="font-bold flex items-center gap-1"><span>⚠️</span> ملاحظة</p>
 
-                  {seasonId === "last_10" && <p>• في آخر 10 أيام قد تزيد الأسعار بنسبة {season.hotelMult * 100}%</p>}
+                  {seasonId === "last_10" && <p>• قد تصل تكلفة الفندق إلى {season.hotelMult} أضعاف السعر في الموسم العادي</p>}
 
                   {seasonId === "ramadan" && <p>• في شهر رمضان قد ترتفع أسعار الطيران والفنادق</p>}
 
-                  {hotelId === "5star" && <p>• اختيار فندق 5 نجوم يضيف تكلفة إضافية بنسبة {hotel.hotelMult * 100}%</p>}
+                  
 
                   <p>• يرجى مراجعة الأسعار قبل الحجز</p>
 
