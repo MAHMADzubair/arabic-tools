@@ -1,4 +1,4 @@
-﻿import UaeNoticePeriodCalculator from "@/components/UaeNoticePeriodCalculator";
+import UaeNoticePeriodCalculator from "@/components/UaeNoticePeriodCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -67,7 +67,7 @@ const faqJsonLd = {
       name: "هل يجوز الاتفاق على فترة إنذار تقل عن 30 يوماً أو تزيد عن 90 يوماً؟",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "الأصل القانوني الآمر بنص المادة 43 يمنع الاتفاق على مدة تقل عن 30 يوماً أو تزيد عن 90 يوماً في العقود المحددة المدة العادية. ومع ذلك، يجوز للطرفين لاحقاً وباتفاق كتابي صريح الإعفاء من الإنذار أو تقليص مدته مع الحفاظ على حقوق العامل.",
+          text: "الأصل القانوني المنصوص في المادة 43 يمنع الاتفاق على مدة تقل عن 30 يوماً أو تزيد عن 90 يوماً في العقود، لكن يمكن للطرفين كتابة اتفاق صريح بإعفاء الطرف من فترة الإنذار أو تقليلها، بشرط الحفاظ على حقوق العامل وفقاً للمادة 43.",
       },
     },
     {
@@ -151,7 +151,7 @@ export default function UaeNoticePeriodCalculatorPage() {
         <GeoAnswerSummary
           whatItDoes="تحسب مدة فترة الإنذار وتاريخ آخر يوم عمل وبدل الإنذار التقديري للموظف أو صاحب العمل"
           appliesTo="دولة الإمارات العربية المتحدة — عقود العمل في القطاع الخاص"
-          keyRule="مدة الإنذار تتراوح بين 30 و90 يوماً حسب مدة الخدمة — المادة 43 من المرسوم بقانون 33 لسنة 2021"
+          keyRule="مدة الإنذار تتراوح بين 30 و90 يوماً وفقاً للمادة 43 من المرسوم بقانون 33 لسنة 2021"
           authority="وزارة الموارد البشرية والتوطين (MOHRE)"
           authorityUrl="https://mohre.gov.ae"
           lastReviewed="سبتمبر 2026"
