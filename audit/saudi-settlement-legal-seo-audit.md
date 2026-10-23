@@ -22,45 +22,45 @@ Administered by the Ministry of Human Resources and Social Development (HRSD —
 | Field | Previous (wrong) | Corrected |
 |---|---|---|
 | Decree number | م/14 | **م/44** |
-| Hijri date | — | 8 Safar 1446H |
-| Gregorian date | — | 23 August 2024 |
-| Published in | — | Official Gazette (Umm Al-Qura) |
+| Hijri signing date | — | **8 Safar 1446H** |
+| Gregorian signing date | stated as "23 August 2024" | **12 August 2024** |
+| Official Gazette publication | — | **23 August 2024** |
 | Effective date | stated as "18 February 2025" | **19 February 2025** |
 
-**Source for decree number and publication date:**
-Clyde & Co — *KSA Labour Law amendments series: Part 1* (March 2025):
-> "On 23 August 2024, Royal Decree M/44 was published in the Official Gazette, introducing
-> significant amendments to the Kingdom of Saudi Arabia (KSA) Labour Law, which took effect on
-> 19 February 2025."
-https://www.clydeco.com/en/insights/2025/03/ksa-labour-law-amendments-resignations
+**Primary official source — HRSD announcement (verbatim):**
+> "…the enforcement of the amendments to the Labour Law issued under Royal Decree No. (44),
+> dated **8 Safar 1446 AH (12/08/2024 AD)**…"
 
-**Source for effective date 19 February 2025 (HRSD-relayed):**
-People Matters Global — MHRSD announcement:
-> "The Ministry of Human Resources and Social Development (MHRSD) has announced that the
-> amendments made to the Labour Law are effective from February 19, 2025."
-https://me.peoplemattersglobal.com/news/economy-policy/ksa-to-implement-key-labour-law-amendments-from-tomorrow-onwards-heres-a-peek-44429
+HRSD — Ministry announcement on publication of Executive Regulations:
+https://www.hrsd.gov.sa/en/media-center/news/وزارة-الموارد-البشرية-والتنمية-الاجتماعية-تُعلن-عن-نشر-اللائحة-التنفيذية-لتعديلات-نظام-العمل
 
-Global Payroll Alliance (citing HRSD/Argaam):
-https://gpa.net/blogs/middle-east/saudi-arabia-labor-law-amendments-now-in-effect
+**Calendar verification:** Hijri-calendar.com Safar 1446 table confirms 8 Safar 1446H = **12 August 2024**:
+https://hijri-calendar.com/en/Safar/1446
 
-King & Spalding — Council of Ministers approval 6 August 2024, gazette 23 August 2024,
-in force 19 February 2025 (180-day deferral):
-https://www.kslaw.com/insights/articles/amendments-to-the-saudi-labor-law-approved
+**Key distinction:**
+- **Decree signing date:** 8 Safar 1446H = **12 August 2024** (when the King signed the decree)
+- **Gazette publication date:** **23 August 2024** (when it appeared in Umm Al-Qura official gazette)
+- **Effective date:** **19 February 2025** (180 days after gazette publication; confirmed by HRSD)
 
-**Note on minor date discrepancy across secondary sources:**
-One secondary source (Al Tamimi & Co, November 2024) stated 18 February; Morgan Lewis (August
-2024, before gazette publication) stated 25 February. Both predate the MHRSD's own announcement
-confirming 19 February. The HRSD-relayed announcement of 19 February 2025 is treated as
-authoritative. The previous audit report and DLA Piper note of "18 Feb" have been corrected.
+Previous audit incorrectly paired 8 Safar 1446H with the gazette date (23 Aug) rather than the
+signing date (12 Aug). Both the page footer and this document have been corrected.
 
-**HRSD official Labor Law page:**
-https://www.hrsd.gov.sa/knowledge-centre/decisions-and-regulations/regulation-and-procedures/%D9%86%D8%B8%D8%A7%D9%85-%D8%A7%D9%84%D8%B9%D9%85%D9%84
+**Supporting sources:**
+- HRSD — Implementing Regulations amendment project (cites "Decree No. 44, dated 08/02/1446"):
+  https://www.hrsd.gov.sa/en/media-center/events/041120242
+- Clyde & Co — "On 23 August 2024, Royal Decree M/44 was **published in the Official Gazette**":
+  https://www.clydeco.com/en/insights/2025/03/ksa-labour-law-amendments-resignations
+- Dentons — "proposed on 02/02/1446H corresponding to 06/08/2024G" (Cabinet decision date, not signing date):
+  https://www.dentons.com/en/insights/alerts/2024/september/18/amendments-to-the-kingdom-of-saudi-arabia-labor-law-key-changes-for-employers-in-the-ksa-for-2025
+- King & Spalding — gazette 23 August 2024, in force 19 February 2025 (180-day deferral):
+  https://www.kslaw.com/insights/articles/amendments-to-the-saudi-labor-law-approved
 
-**HRSD Cabinet approval announcement (6 August 2024):**
-https://www.hrsd.gov.sa/en/media-center/news/060720242
-
-**HRSD — Implementing Regulations amendment project (cites "Decree No. 44, dated 08/02/1446"):**
-https://www.hrsd.gov.sa/en/media-center/events/041120242
+**Note on the 19 February effective date:**
+The HRSD announcement itself is the primary authoritative confirmation. One secondary source
+(Al Tamimi, Nov 2024) stated 18 February; Morgan Lewis (Aug 2024) stated 25 February. Both
+predate the MHRSD's own announcement confirming 19 February. See also:
+- Global Payroll Alliance (citing HRSD/Argaam): https://gpa.net/blogs/middle-east/saudi-arabia-labor-law-amendments-now-in-effect
+- HRSD official Labor Law page: https://www.hrsd.gov.sa/knowledge-centre/decisions-and-regulations/regulation-and-procedures/%D9%86%D8%B8%D8%A7%D9%85-%D8%A7%D9%84%D8%B9%D9%85%D9%84
 
 ---
 
@@ -314,34 +314,53 @@ https://www.hrsd.gov.sa/en/knowledge-centre/articles/312
 3. `staging-integration.test.js:97` — Concurrent Atomic Rate Limiting
 4. `staging-integration.test.js:117` — Cleanup Function Execution Permissions
 
-**Root cause:** All four fail with `"Unregistered API key"` (Supabase error). Diagnosis
-(without reading or printing any credential values):
+**Error message:** all fail with Supabase error `"Unregistered API key"`.
 
-- Both `.env.local` and `.vercel/.env.preview.local` target the **same** Supabase project
-  reference (`ufyhkmrzpynbecapuejd`). Project ref is consistent — no mis-targeting.
-- Keys are present (SERVICE_ROLE_KEY 41 chars, ANON_KEY 92 chars) but are **rejected by the
-  Supabase API** as unregistered. This means the keys were rotated or revoked in the Supabase
-  dashboard after they were last written to `.env.local`.
-- This is an **ops/credentials issue, not a code defect**. The tests themselves are correct,
-  the live tests are not mocked, skipped, or hidden — they fail honestly.
+**Root-cause diagnosis (keys inspected for format only — values never read or printed):**
+
+| Check | Expected | Actual |
+|---|---|---|
+| Project URL present | yes | yes |
+| Project ref in URL | valid `ufyhkmrzpynbecapuejd` | matches both env files |
+| SERVICE_ROLE_KEY length | 180–220 chars (Supabase JWT) | **41 chars** |
+| SUPABASE_ANON_KEY length | 150–220 chars (Supabase JWT) | **69 chars** |
+| Keys start with `eyJ` (JWT header) | yes | **no** |
+| Keys contain 2 dots (JWT segments) | yes (header.payload.sig) | **0 dots** |
+
+**Conclusion:** The configured keys are **not Supabase JWTs at all**. A Supabase JWT is a
+compact three-segment base64url token starting with `eyJ` (base64url of `{"`). The values in
+`.env.local` are 41 and 69 characters with no JWT structure — they are wrong-type values
+(possibly partial tokens, API keys from a different service, or placeholder strings).
+
+This is **not a key rotation issue** — rotated keys would still be JWT-formatted. The keys
+were never valid Supabase JWTs in this environment. The "Unregistered API key" error is
+Supabase's response to a token it cannot parse as a valid signed JWT for project
+`ufyhkmrzpynbecapuejd`.
+
+**What correct Supabase keys look like (format only, never the values):**
+```
+SUPABASE_URL=https://ufyhkmrzpynbecapuejd.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.<payload>.<signature>
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.<payload>.<signature>
+```
 
 **Action required from project owner (no code change needed):**
 
-1. Open Supabase Dashboard → Project `ufyhkmrzpynbecapuejd`
-   (https://supabase.com/dashboard/project/ufyhkmrzpynbecapuejd)
-2. Navigate: **Settings → API**
-3. Locate the **Project URL**, **anon / public key**, and **service_role / secret key**.
-4. Update `.env.local` with the current values for these exact variable names:
+1. Open Supabase Dashboard → Project `ufyhkmrzpynbecapuejd`:
+   https://supabase.com/dashboard/project/ufyhkmrzpynbecapuejd/settings/api
+2. Copy the **Project URL** (should be `https://ufyhkmrzpynbecapuejd.supabase.co`)
+3. Copy the **`anon` / `public`** key — it will be a long string starting with `eyJ`
+4. Copy the **`service_role` / `secret`** key — also starts with `eyJ`, longer
+5. Replace the current values in `.env.local`:
    ```
-   SUPABASE_URL=
-   SUPABASE_ANON_KEY=
-   SUPABASE_SERVICE_ROLE_KEY=
+   SUPABASE_URL=https://ufyhkmrzpynbecapuejd.supabase.co
+   SUPABASE_ANON_KEY=<paste eyJ... anon key>
+   SUPABASE_SERVICE_ROLE_KEY=<paste eyJ... service_role key>
    ```
-5. Run `npm test` locally — the 4 DB-integration tests should then pass.
-6. Update the same variables in Vercel's environment settings for the staging/preview
-   deployment if the Vercel preview also needs live DB access.
+6. Run `npm test` — the 4 DB-integration tests should then pass
+7. **Do not commit** `.env.local` — it is in `.gitignore`
 
-**Do not commit or log these values.** `.env.local` is gitignored.
+The staging tests themselves are correct and are not mocked, skipped, or masked.
 
 ---
 
