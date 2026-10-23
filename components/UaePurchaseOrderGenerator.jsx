@@ -259,13 +259,42 @@ export default function UaePurchaseOrderGenerator() {
 
   const handlePrint = () => { setActiveTab("preview"); setTimeout(() => window.print(), 300); };
 
-  // ── Open invoice generator (unchanged) ─────────────────────────────────────────
+  // ── Open invoice generator ────────────────────────────────────────────────────
+  /**
+   * Derive a draft invoice number from the PO number.
+   *
+   * Rules (applied in order):
+   *  1. Strip a leading PO- / LPO- / po- / lpo- prefix (case-insensitive) and
+   *     prepend INV-.
+   *  2. If no recognised prefix is found, prepend "INV-" to whatever the user
+   *     entered.
+   *
+   * This is a *draft reference* only.  A compliant sequential tax invoice
+   * number must be assigned by the supplier's invoicing system; the PO
+   * reference is preserved in the notes so the issuer can cross-reference it.
+   */
+  const deriveDraftInvoiceNumber = (poNumber) => {
+    const stripped = poNumber.replace(/^(L?PO[-_]?)/i, "");
+    return `INV-${stripped}`;
+  };
+
   const handleOpenInvoice = () => {
     try {
+      const draftInvNumber = deriveDraftInvoiceNumber(poDetails.poNumber);
       const payload = {
-        seller: { name: supplier.name, address: supplier.address, emirate: supplier.emirate, trn: supplier.trn, email: supplier.email, phone: supplier.phone, cr: "" },
-        buyer:  { name: buyer.name, address: buyer.address, emirate: buyer.emirate, trn: buyer.trn, vatRegistered: buyer.trn ? "yes" : "no" },
-        details: { invoiceNumber: poDetails.poNumber.replace("PO-", "INV-"), issueDate: poDetails.issueDate, supplyDate: "", currency: poDetails.currency, notes: delivery.notes },
+        seller:  { name: supplier.name, address: supplier.address, emirate: supplier.emirate, trn: supplier.trn, email: supplier.email, phone: supplier.phone, cr: "" },
+        buyer:   { name: buyer.name, address: buyer.address, emirate: buyer.emirate, trn: buyer.trn, vatRegistered: buyer.trn ? "yes" : "no" },
+        details: {
+          invoiceNumber: draftInvNumber,
+          issueDate:     poDetails.issueDate,
+          supplyDate:    "",
+          currency:      poDetails.currency,
+          // Preserve the PO reference so the invoice issuer can cross-reference it.
+          notes: [
+            `مرجع أمر الشراء / PO Ref: ${poDetails.poNumber}`,
+            delivery.notes,
+          ].filter(Boolean).join("\n"),
+        },
         lines: lines.map(l => ({ id: l.id, name: l.name, qty: l.qty, unitPrice: l.unitPrice, discount: l.discount, vatRateId: l.vatRateId })),
       };
       localStorage.setItem("uae_invoice_prefill_v1", JSON.stringify(payload));
@@ -359,7 +388,8 @@ export default function UaePurchaseOrderGenerator() {
       <header className="po-card po-noprint">
         <div className="po-head-row">
           <div>
-            <h1 className="po-h1">مولد أمر الشراء في الإمارات</h1>
+            {/* Intentionally not an H1 — the page hero already owns the H1 */}
+            <p className="po-h1" role="heading" aria-level="2">مولد أمر الشراء في الإمارات</p>
             <p className="po-lead">أنشئ أمر شراء احترافي بالعربية والإنجليزية — للشركات والمتاجر وفرق المشتريات في الإمارات</p>
           </div>
           <button type="button" className="po-btn po-btn-o" onClick={handleReset}>مسح</button>
@@ -536,6 +566,15 @@ export default function UaePurchaseOrderGenerator() {
           {/* 5 — Charges */}
           <section className="po-card" aria-labelledby="po-s5">
             <StepTitle n="5" id="po-s5">رسوم إضافية (اختياري)</StepTitle>
+            {/* VAT-treatment notice — visible to user before printing */}
+            <div className="po-dash po-noprint" role="note">
+              <p className="po-small-b">⚠️ تنبيه: معالجة ضريبة القيمة المضافة على الرسوم الإضافية</p>
+              <p className="po-small">
+                المبالغ المدخلة هنا تُضاف كما هي إلى الإجمالي النهائي — بدون احتساب ضريبة قيمة مضافة إضافية.
+                إذا كانت هذه الرسوم خاضعة لـ VAT، فيجب أن يشمل المبلغ المدخل ضريبة القيمة المضافة، أو يمكنك إضافتها كبند منفصل في قسم «بنود الطلب» باختيار نسبة الضريبة المناسبة.
+                المعالجة الضريبية الفعلية تحددها الفاتورة الضريبية الرسمية الصادرة من المورد.
+              </p>
+            </div>
             <div className="po-stack">
               {[
                 { key: "shipping",     placeholder: "رسوم الشحن والتوصيل", lab: "التسمية" },
@@ -545,7 +584,7 @@ export default function UaePurchaseOrderGenerator() {
                 <div key={key} className="po-two">
                   <TextField id={`po-c-${key}-l`} label={lab} placeholder={placeholder} value={charges[key].label}
                     onChange={(v) => setCharges((c) => ({ ...c, [key]: { ...c[key], label: v } }))} />
-                  <TextField id={`po-c-${key}-a`} label={`المبلغ (${cur})`} type="number" min="0" step="any" placeholder="0.00" dir="ltr"
+                  <TextField id={`po-c-${key}-a`} label={`المبلغ (${cur}) — كما هو، بدون VAT إضافي`} type="number" min="0" step="any" placeholder="0.00" dir="ltr"
                     value={charges[key].amount}
                     onChange={(v) => setCharges((c) => ({ ...c, [key]: { ...c[key], amount: v } }))} />
                 </div>
@@ -733,7 +772,10 @@ export default function UaePurchaseOrderGenerator() {
                     {chargeRows.map((c, i) => (
                       <tr key={`charge-${i}`}>
                         <td>—</td>
-                        <td><em>{c.label}</em></td>
+                        <td>
+                          <em>{c.label}</em>
+                          <span className="po-doc-charge-note"> (رسوم إضافية — بدون VAT إضافي)</span>
+                        </td>
                         <td colSpan={poDetails.showVat ? 7 : 5} />
                         <td className="po-doc-strong" dir="ltr">{fmt(parseNum(c.amount))}</td>
                       </tr>
@@ -859,7 +901,7 @@ function PoStyles() {
         padding:.5rem .875rem; border:2px solid var(--po-ink); font-size:.75rem; font-weight:700;
         font-family:inherit; cursor:pointer; background:var(--po-paper); color:var(--po-ink);
       }
-      .po-btn-sm{ padding:.25rem .625rem; }
+      .po-btn-sm{ padding:.375rem .875rem; min-height:2.75rem; }
       .po-btn-o:hover,.po-btn:hover{ background:var(--po-muted); }
       .po-btn-p{ background:var(--po-orange); color:#0a0a0a; flex:1; }
       .po-btn-p:hover{ background:var(--po-ink); color:var(--po-paper); }
@@ -969,6 +1011,7 @@ function PoStyles() {
       .po-doc-terms strong{ color:var(--d-ink); }
       .po-doc-sigs{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; padding-top:.75rem; text-align:center; font-size:.6875rem; color:var(--d-text2); }
       .po-doc-line{ border-bottom:2px solid var(--d-ink); height:3rem; margin-bottom:.5rem; }
+      .po-doc-charge-note{ font-size:.5625rem; font-weight:400; color:var(--d-text2); margin-inline-start:.375rem; }
       .po-doc-disc{ display:flex; gap:.5rem; align-items:flex-start; border:2px dashed var(--d-ink); padding:.625rem .75rem; font-size:.625rem; line-height:1.8; color:var(--d-text2); }
       .po-doc-excl{ flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center; border:2px solid var(--d-ink); font-weight:700; color:var(--d-ink); }
 
