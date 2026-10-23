@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useId } from "react";
-import { SITE_URL } from "@/lib/siteConfig";
+import React, { useState, useMemo, useEffect, useRef, useId } from "react";
+import { SITE_URL } from "../lib/siteConfig";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function toNum(v) {
@@ -719,7 +719,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
 
         <div className="fs-bd">
           <Line label="آخر راتب مستحق" sub={`${calc.daysWorked} يوماً × ${fmt(calc.daily)} ر.س/يوم`} amount={calc.lastMonthPay} />
-          <Line label="مكافأة نهاية الخدمة" sub={calc.esobNote} amount={calc.eosb} />
+          <Line label="مكافأة نهاية الخدمة المستحقة" sub={calc.esobNote} amount={calc.eosb} />
           <Line
             label="بدل رصيد الإجازة السنوية"
             sub={calc.leaveDays > 0 ? `${calc.leaveDays} يوم × ${fmt(calc.leaveDailyRate)} ر.س` : "لم تُدخل أيام إجازة"}
