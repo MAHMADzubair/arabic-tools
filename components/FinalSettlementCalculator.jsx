@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useId } from "react";
-import { SITE_URL } from "@/lib/siteConfig";
+import React, { useState, useMemo, useEffect, useRef, useId } from "react";
+import { SITE_URL } from "../lib/siteConfig";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function toNum(v) {
@@ -344,7 +344,7 @@ export default function FinalSettlementCalculator() {
     let esobPercent = 1.0;
     let esobNote = "";
     if (["terminate", "retire", "mutual", "fixed_expired"].includes(terminationReason)) {
-      esobNote = "استحقاق كامل (100٪) وفق المادة (84) من نظام العمل";
+      esobNote = "استحقاق كامل (100٪) وفق المادة (84) — يسري على الإنهاء الاعتيادي؛ الفصل التأديبي بموجب المادة (80) يُسقط المكافأة وخارج نطاق الحاسبة";
     } else if (terminationReason === "female_special") {
       esobNote = "استحقاق كامل استثنائي بموجب المادة (87) من نظام العمل";
     } else if (terminationReason === "resign") {
@@ -719,7 +719,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
 
         <div className="fs-bd">
           <Line label="آخر راتب مستحق" sub={`${calc.daysWorked} يوماً × ${fmt(calc.daily)} ر.س/يوم`} amount={calc.lastMonthPay} />
-          <Line label="مكافأة نهاية الخدمة" sub={calc.esobNote} amount={calc.eosb} />
+          <Line label="مكافأة نهاية الخدمة المستحقة" sub={calc.esobNote} amount={calc.eosb} />
           <Line
             label="بدل رصيد الإجازة السنوية"
             sub={calc.leaveDays > 0 ? `${calc.leaveDays} يوم × ${fmt(calc.leaveDailyRate)} ر.س` : "لم تُدخل أيام إجازة"}
