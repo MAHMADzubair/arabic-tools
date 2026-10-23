@@ -344,7 +344,7 @@ export default function FinalSettlementCalculator() {
     let esobPercent = 1.0;
     let esobNote = "";
     if (["terminate", "retire", "mutual", "fixed_expired"].includes(terminationReason)) {
-      esobNote = "استحقاق كامل (100٪) وفق المادة (84) من نظام العمل";
+      esobNote = "استحقاق كامل (100٪) وفق المادة (84) — يسري على الإنهاء الاعتيادي؛ الفصل التأديبي بموجب المادة (80) يُسقط المكافأة وخارج نطاق الحاسبة";
     } else if (terminationReason === "female_special") {
       esobNote = "استحقاق كامل استثنائي بموجب المادة (87) من نظام العمل";
     } else if (terminationReason === "resign") {
