@@ -302,18 +302,24 @@ export default function UaePurchaseOrderGenerator() {
     window.open("/ar/ae/vat-invoice-generator", "_blank");
   };
 
-  // ── Calculations (unchanged) ──────────────────────────────────────────────────
+  // ── Calculations (discount summary fix: effective discount capped at gross) ──
   const { lineCalcs, totals } = useMemo(() => {
     const lineCalcs = lines.map(l => {
       const rateObj      = VAT_RATES.find(r => r.id === l.vatRateId) || VAT_RATES[0];
       const effectiveRate = poDetails.showVat ? rateObj.rate : null;
       const result       = calcLineVat({ qty: l.qty, unitPrice: l.unitPrice, discount: l.discount, vatRate: effectiveRate });
-      return { ...result, rateObj };
+      // effectiveDiscount: the discount actually applied to this line (capped at gross).
+      // This is what reconciles the summary: grossTotal - effectiveDiscountTotal = sum of taxableBases.
+      // We preserve result.discount (raw entered) for display/warning purposes.
+      const effectiveDiscount = Math.min(result.discount, result.gross);
+      return { ...result, rateObj, effectiveDiscount };
     });
 
     const chargeTotal = parseNum(charges.shipping.amount) + parseNum(charges.installation.amount) + parseNum(charges.custom.amount);
-    const grossTotal    = lineCalcs.reduce((s, l) => s + l.gross, 0);
-    const totalDiscount = lineCalcs.reduce((s, l) => s + l.discount, 0);
+    const grossTotal         = lineCalcs.reduce((s, l) => s + l.gross, 0);
+    // totalDiscount shown in summary = sum of EFFECTIVE (capped) discounts.
+    // This ensures: grossTotal - totalDiscount = sum of taxableBases (always reconciles).
+    const totalDiscount      = lineCalcs.reduce((s, l) => s + l.effectiveDiscount, 0);
     const taxable5      = lineCalcs.filter(l => l.rateObj.id === "5").reduce((s, l) => s + l.taxableBase, 0);
     const taxable0      = lineCalcs.filter(l => l.rateObj.id === "0").reduce((s, l) => s + l.taxableBase, 0);
     const exemptTotal   = lineCalcs.filter(l => l.rateObj.id === "exempt").reduce((s, l) => s + l.taxableBase, 0);

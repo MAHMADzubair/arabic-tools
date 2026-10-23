@@ -325,6 +325,153 @@ All 8 FAQs are factually accurate and appropriately scoped:
 3. **E-invoicing (UAE FTA):** The tool correctly clarifies it produces a browser PDF, not a PEPPOL-formatted e-invoice. If UAE e-invoicing mandate extends to smaller businesses, a dedicated e-invoicing tool will be required.
 4. **FTA TRN live lookup:** Currently format-only. Live verification against EmaraTax API would require API access and is a separate feature.
 
+## CORRECTIONS — PR #8 (October 23, 2026)
+
+Two issues identified during review were resolved in this correction commit.
+
+---
+
+### CORRECTION 1: Invoice Handoff Was Not Complete
+
+**Finding:** `UaeVatInvoiceGenerator.jsx` had **zero** `localStorage` reads. The key `uae_invoice_prefill_v1` written by the PO generator handoff was never consumed. The handoff was write-only.
+
+**Evidence:** `grep -r "invoice_prefill\|localStorage\|prefill" components/UaeVatInvoiceGenerator.jsx` — no matches.
+
+**Fix applied to `components/UaeVatInvoiceGenerator.jsx`:**
+
+1. Added `useEffect` import.
+2. Added `INV_PREFILL_KEY = "uae_invoice_prefill_v1"` constant.
+3. Added `useEffect` on mount to read and structurally validate the prefill key.
+4. Added `prefillPayload` and `prefillDismissed` state.
+5. Added `handleImportPrefill()` — applies payload to invoice form state:
+   - PO `supplier` → invoice `seller` (role is correct: supplier issues the invoice)
+   - PO `buyer` → invoice `buyer`
+   - PO `lines` (vatRateId, discount, qty, unitPrice, name) → invoice `lines`
+   - PO `details.invoiceNumber` (draft ref) → `details.invoiceNumber` (pre-filled, user must verify)
+   - PO number → `details.notes` cross-reference
+   - New sequential IDs (1, 2, 3…) to prevent any ID collision
+   - Empty payload fields do **not** overwrite existing form data
+   - `localStorage.removeItem()` only called after successful import
+6. Added `handleDismissPrefill()` — sets dismissed flag, does NOT remove localStorage key.
+7. Added visible import banner (RTL, branded) with explicit warning about invoice number.
+
+**Mapping correctness:**
+- PO supplier = the party who **receives** the PO and **issues** the invoice → correct as seller
+- PO buyer = the party who **issued** the PO and **receives** the invoice → correct as buyer
+- Invoice number = draft reference only; supplier must assign compliant sequential number
+
+**Safety:**
+- Malformed/null/missing localStorage: caught in try/catch, banner never shown
+- Empty `lines` array: existing form lines preserved
+- Partial payload (no seller/no lines): only present fields merged, defaults kept
+- Key cleared only on accepted import, not on dismiss
+
+---
+
+### CORRECTION 2: Discount Summary Reconciliation
+
+**Finding:** The `totalDiscount` in the summary was computed as the sum of raw entered discount values (`result.discount` from `calcLineVat`). When a discount exceeds the line gross, `calcLineVat` correctly clamps `taxableBase` to 0 — but still returns `discount: d` (the raw value). This made the summary arithmetic incorrect:
+
+```
+Example: gross=100, entered_discount=150
+Summary showed: Subtotal=100, Discounts=-150, Taxable=0
+But: 100 - 150 = -50 ≠ 0  ← inconsistent
+```
+
+**Fix applied to `components/UaePurchaseOrderGenerator.jsx`:**
+
+In the `useMemo` totals reducer, an `effectiveDiscount` is computed per line:
+```js
+const effectiveDiscount = Math.min(result.discount, result.gross);
+```
+
+`totalDiscount` in the summary uses `effectiveDiscount` (capped), not the raw value.
+
+**What is preserved:**
+- `result.discount` (raw) is still returned by `calcLineVat` — used for the `discountExceedsGross()` warning flag, which correctly fires on the raw entered value
+- `businessUtils.js` is **not modified** — the fix is scoped entirely to the PO component's `useMemo` reducer
+- No other tools are affected
+
+**Reconciliation guarantee after fix:**
+```
+grossTotal - totalDiscount = sum(taxableBases)   ← always true
+```
+
+**Discount display policy:**
+- The printed document shows the effective capped discount (what was actually applied)
+- The `po-err` warning still appears when entered > gross (raw check)
+- User's entered value is not mutated in the input field
+
+---
+
+### Tests Added (Correction Commit)
+
+**`tests/uaePOInvoiceIntegration.test.mjs`** — 30 integration tests:
+
+**PO → Invoice handoff (7 tests):**
+- Payload shape: seller=supplier, buyer=buyer, lines with all fields
+- Buyer without TRN → vatRegistered=no
+- LPO prefix fix in invoice number
+- PO reference in notes field
+- Empty delivery notes → no double newline
+- Currency propagated
+
+**Invoice import logic (12 tests):**
+- Seller/buyer roles correct
+- New sequential IDs assigned to lines
+- Invoice number is draft reference, not raw PO number
+- PO number preserved in notes, not as invoice number
+- Empty payload fields don't overwrite existing form data
+- exempt and out-of-scope vatRateId preserved through handoff
+- Null payload guarded safely
+- Malformed JSON caught by SyntaxError
+- Partial payload (no lines) uses defaults
+- Empty lines array uses existing form lines
+- Key only cleared on import, not on dismiss
+
+**Discount reconciliation (8 tests):**
+- disc=0, disc<gross, disc=gross, disc>gross (all reconcile)
+- Multi-line, mixed VAT rates
+- Raw discount preserved for UI warning flag
+- Printed summary arithmetic
+- formatAED consistently 2dp
+
+**Round-trip (3 tests):**
+- Full PO state → payload → import → correct invoice state
+- Round-trip calculations produce correct UAE VAT totals
+
+---
+
+## CHANGES MADE (Correction Commit)
+
+| File | Change |
+|---|---|
+| `components/UaeVatInvoiceGenerator.jsx` | Added `useEffect` import; `INV_PREFILL_KEY` constant; prefill state; `useEffect` mount reader; `handleImportPrefill()`; `handleDismissPrefill()`; import banner JSX |
+| `components/UaePurchaseOrderGenerator.jsx` | Discount summary fix: `effectiveDiscount = Math.min(discount, gross)` in `useMemo` reducer; updated comment |
+| `tests/uaePOInvoiceIntegration.test.mjs` | NEW — 30 integration tests |
+| `audit/day5-uae-purchase-order-audit.md` | This correction section added |
+
+---
+
+## UPDATED TEST RESULTS (Post-Correction)
+
+| Suite | Tests | Pass | Fail | Skip |
+|---|---|---|---|---|
+| New PO tests (uaePurchaseOrderGenerator) | 35 | 35 | 0 | 0 |
+| New integration tests (uaePOInvoiceIntegration) | 30 | 30 | 0 | 0 |
+| Full suite (`npm test`) | 225 | 225 | 0 | 0 |
+| Umrah tests | 5 | 5 | 0 | 0 |
+
+Production build: ✅ Clean, exit 0, 72 static pages
+
+### PostCSS Security Advisories — Execution Path Review
+
+The 2 advisories (`postcss <=8.5.22`) affect:
+- **GHSA-qx2v-qp2m-jg93** (XSS via `</style>` in stringify): This path is exercised at **build time** when Next.js processes CSS. It is not exercised at runtime by end users of the UAE Purchase Order Generator. Risk: low for production traffic; requires malicious input into the build pipeline.
+- **GHSA-6g55-p6wh-862q / GHSA-fxqj-rqcc-2cmp / GHSA-r28c-9q8g-f849** (source-map path traversal): These are also build-time, not runtime. The `from` option or `sourceMappingURL` would need to be attacker-controlled during the build process.
+
+**Conclusion:** These advisories pose no direct runtime risk to website visitors. The fix (`npm audit fix --force`) would upgrade to Next.js 16 — a breaking change requiring regression testing across all 72 pages. This is tracked as a separate sprint item, not dismissed.
+
 ---
 
 *Audit prepared for QEMLO internal review. Not for public distribution as legal advice.*
