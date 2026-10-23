@@ -316,51 +316,114 @@ https://www.hrsd.gov.sa/en/knowledge-centre/articles/312
 
 **Error message:** all fail with Supabase error `"Unregistered API key"`.
 
-**Root-cause diagnosis (keys inspected for format only — values never read or printed):**
+---
 
-| Check | Expected | Actual |
-|---|---|---|
-| Project URL present | yes | yes |
-| Project ref in URL | valid `ufyhkmrzpynbecapuejd` | matches both env files |
-| SERVICE_ROLE_KEY length | 180–220 chars (Supabase JWT) | **41 chars** |
-| SUPABASE_ANON_KEY length | 150–220 chars (Supabase JWT) | **69 chars** |
-| Keys start with `eyJ` (JWT header) | yes | **no** |
-| Keys contain 2 dots (JWT segments) | yes (header.payload.sig) | **0 dots** |
+### 5.1 Key-family inspection (prefix only — no values read or printed)
 
-**Conclusion:** The configured keys are **not Supabase JWTs at all**. A Supabase JWT is a
-compact three-segment base64url token starting with `eyJ` (base64url of `{"`). The values in
-`.env.local` are 41 and 69 characters with no JWT structure — they are wrong-type values
-(possibly partial tokens, API keys from a different service, or placeholder strings).
+| Check | Finding |
+|---|---|
+| Project URL format | `https://ufyhkmrzpynbecapuejd.supabase.co` — valid Supabase URL |
+| Project ref | `ufyhkmrzpynbecapuejd` — consistent across both env files |
+| `SUPABASE_SERVICE_ROLE_KEY` prefix | `sb_secret_…` — **modern Supabase secret key** |
+| `SUPABASE_ANON_KEY` prefix | `sb_publishable_…` — **modern Supabase publishable key** |
+| Key lengths | SVC: 41 chars; ANON: 69 chars — consistent with modern short-string format |
+| JWT format (`eyJ` prefix, 3 segments) | Not applicable — modern keys are NOT JWTs by design |
 
-This is **not a key rotation issue** — rotated keys would still be JWT-formatted. The keys
-were never valid Supabase JWTs in this environment. The "Unregistered API key" error is
-Supabase's response to a token it cannot parse as a valid signed JWT for project
-`ufyhkmrzpynbecapuejd`.
+**CORRECTION of previous diagnosis:** An earlier audit incorrectly concluded these were
+"wrong-type values" because they lacked JWT structure. This was wrong. Supabase introduced a
+second key family in 2024–2025:
 
-**What correct Supabase keys look like (format only, never the values):**
+- **Modern keys** (`sb_publishable_…` / `sb_secret_…`) — short strings, NOT JWTs, by design.
+  See: https://supabase.com/docs/guides/getting-started/api-keys
+- **Legacy keys** (`anon` / `service_role`) — long JWT strings starting with `eyJ`.
+
+The project is using **modern format keys**. They are structurally valid.
+
+---
+
+### 5.2 Root-cause analysis: why modern keys return "Unregistered API key"
+
+The Supabase `"Unregistered API key"` error means the project's API gateway did not recognise
+the key as registered for that project. For modern `sb_` keys this can occur for three reasons:
+
+**Cause A — `supabase-js` version incompatibility (most likely)**
+
+`supabase-js@2.117.3` (installed) is a **legacy v2 release**. When it calls PostgREST
+(database, `.from().select()`, `.rpc()`) it sends the key in both the `apikey` header AND
+`Authorization: Bearer <key>`. For legacy JWT keys that is harmless. For modern `sb_` keys the
+Supabase API gateway tries to verify the `Authorization: Bearer` value as a JWT, fails, and
+returns `"Unregistered API key"`.
+
+The supabase-js migration notes confirm this:
+> "new-format keys are not JWTs, and the gateway now accepts apikey-only requests… Send
+> publishable and secret keys on the `apikey` header only. If you also pass the key on
+> `Authorization: Bearer`, the platform tries to parse it as a JWT and rejects the request."
+> — https://github.com/supabase/supabase-js/blob/master/docs/MIGRATION.md
+
+The MIGRATION.md notes that newer supabase-js versions detect `sb_` prefixed keys and stop
+sending them on `Authorization: Bearer`. `2.117.3` may not include that detection.
+
+**Cause B — Legacy keys disabled in Supabase Dashboard**
+
+Supabase allows project owners to disable legacy JWT keys once modern keys are in use. If
+the Dashboard has disabled legacy keys AND the code was still sending JWT keys, both would
+fail. This is less likely given the env already contains modern keys.
+
+**Cause C — Keys created for a different project or environment**
+
+The `sb_publishable_` and `sb_secret_` keys configured could belong to a staging sub-project
+or a different environment than `ufyhkmrzpynbecapuejd`. The project URL matches, but the keys
+could still be mismatched if they were generated under a different project.
+
+---
+
+### 5.3 Application code compatibility check
+
+`lib/sessionAuth.js` calls:
+```js
+createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
 ```
-SUPABASE_URL=https://ufyhkmrzpynbecapuejd.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.<payload>.<signature>
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.<payload>.<signature>
-```
+No custom headers are set. The behaviour is entirely determined by what `supabase-js@2.117.3`
+does internally when it serialises the API key onto the request. If it sends the modern
+`sb_secret_` key on `Authorization: Bearer`, the gateway rejects it. No code change is needed
+if the supabase-js version is updated; alternatively the legacy JWT keys can be used.
 
-**Action required from project owner (no code change needed):**
+---
+
+### 5.4 Action required from project owner
+
+The tests are correct and must not be mocked, skipped, or masked. To resolve:
+
+**Option A — Keep modern keys, upgrade supabase-js (recommended)**
+
+1. Upgrade `@supabase/supabase-js` to the latest v2 (or v3) release that natively supports
+   modern `sb_` key format without sending them on `Authorization: Bearer`:
+   ```
+   npm install @supabase/supabase-js@latest
+   ```
+2. Run `npm test` — the 4 DB-integration tests should then pass if the keys are valid for
+   project `ufyhkmrzpynbecapuejd`.
+
+**Option B — Switch to legacy JWT keys (quick fix)**
 
 1. Open Supabase Dashboard → Project `ufyhkmrzpynbecapuejd`:
-   https://supabase.com/dashboard/project/ufyhkmrzpynbecapuejd/settings/api
-2. Copy the **Project URL** (should be `https://ufyhkmrzpynbecapuejd.supabase.co`)
-3. Copy the **`anon` / `public`** key — it will be a long string starting with `eyJ`
-4. Copy the **`service_role` / `secret`** key — also starts with `eyJ`, longer
-5. Replace the current values in `.env.local`:
+   https://supabase.com/dashboard/project/ufyhkmrzpynbecapuejd/settings/api-keys
+2. Under **"Legacy API keys"** (or **"anon / service_role"** tab), find the JWT-based keys.
+   If they have been disabled, re-enable them.
+3. Copy the `anon` key (long string starting with `eyJ`) and the `service_role` key
+   (also `eyJ`, longer).
+4. Update `.env.local`:
    ```
-   SUPABASE_URL=https://ufyhkmrzpynbecapuejd.supabase.co
    SUPABASE_ANON_KEY=<paste eyJ... anon key>
    SUPABASE_SERVICE_ROLE_KEY=<paste eyJ... service_role key>
    ```
-6. Run `npm test` — the 4 DB-integration tests should then pass
-7. **Do not commit** `.env.local` — it is in `.gitignore`
+5. Run `npm test`. Do not commit `.env.local`.
 
-The staging tests themselves are correct and are not mocked, skipped, or masked.
+**Option C — Verify key-to-project match**
+
+If neither option above resolves it, confirm the `sb_publishable_` and `sb_secret_` keys in
+`.env.local` are from project `ufyhkmrzpynbecapuejd` and not a different environment. In
+the Supabase Dashboard, the key management page lists which project each key belongs to.
 
 ---
 
