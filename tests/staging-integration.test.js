@@ -54,7 +54,30 @@ test("Staging Database: Anonymous & Authenticated RLS Denial", async (t) => {
     .from("admin_sessions")
     .select("*");
 
-  // RLS or REVOKE must deny read access
+  // Distinguish RLS denial from authentication failure:
+  // - RLS denial: error code PGRST301, or empty array (SELECT returns empty for hidden rows)
+  // - Auth failure: error code JWTExpired, InvalidAPIKey, or similar credential error
+  // A test that accepts an "Invalid API key" error as "RLS working" is misleading.
+  if (sessionErr) {
+    const code = sessionErr.code ?? "";
+    const msg  = (sessionErr.message ?? "").toLowerCase();
+    const isCredentialFailure =
+      msg.includes("invalid api key") ||
+      msg.includes("jwt")             ||
+      msg.includes("invalid_key")     ||
+      code === "401"                  ||
+      code === "PGRST301" === false && msg.includes("unauthorized");
+
+    assert.equal(
+      isCredentialFailure,
+      false,
+      `RLS test cannot pass on credential failure (error: ${sessionErr.message}). ` +
+      "The Supabase project API key may be revoked or the project may be paused. " +
+      "Owner action required: regenerate API keys at app.supabase.com."
+    );
+  }
+
+  // RLS or REVOKE must deny read access (no credential error — genuine access check)
   const isDenied = sessionErr || (Array.isArray(sessionData) && sessionData.length === 0);
   assert.ok(isDenied, "Anonymous client MUST be denied access to admin_sessions");
 
@@ -62,6 +85,24 @@ test("Staging Database: Anonymous & Authenticated RLS Denial", async (t) => {
   const { data: attemptData, error: attemptErr } = await anonClient
     .from("admin_login_attempts")
     .select("*");
+
+  if (attemptErr) {
+    const code = attemptErr.code ?? "";
+    const msg  = (attemptErr.message ?? "").toLowerCase();
+    const isCredentialFailure =
+      msg.includes("invalid api key") ||
+      msg.includes("jwt")             ||
+      msg.includes("invalid_key")     ||
+      code === "401"                  ||
+      code === "PGRST301" === false && msg.includes("unauthorized");
+
+    assert.equal(
+      isCredentialFailure,
+      false,
+      `RLS test cannot pass on credential failure (error: ${attemptErr.message}). ` +
+      "Owner action required: regenerate API keys at app.supabase.com."
+    );
+  }
 
   const isAttemptDenied = attemptErr || (Array.isArray(attemptData) && attemptData.length === 0);
   assert.ok(isAttemptDenied, "Anonymous client MUST be denied access to admin_login_attempts");
