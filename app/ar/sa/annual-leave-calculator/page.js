@@ -21,6 +21,10 @@ export const metadata = {
   ],
   alternates: {
     canonical: "/ar/sa/annual-leave-calculator",
+    languages: {
+      "ar-SA": "/ar/sa/annual-leave-calculator",
+      "ar-AE": "/ar/ae/final-settlement-calculator",
+    },
   },
   openGraph: {
     title: "حاسبة بدل الإجازات السنوية في السعودية 2026 | نظام العمل السعودي",
