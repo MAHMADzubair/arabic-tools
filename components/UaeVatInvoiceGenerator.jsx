@@ -2,7 +2,7 @@
 
 
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 
 import {
 
@@ -288,6 +288,9 @@ function InvoiceStyles() {
   );
 }
 
+// ─── PO prefill key (written by UaePurchaseOrderGenerator handoff) ────────────
+const INV_PREFILL_KEY = "uae_invoice_prefill_v1";
+
 export default function UaeVatInvoiceGenerator() {
 
   const [invoiceType, setInvoiceType] = useState("full"); // "full" | "simplified"*
@@ -305,6 +308,155 @@ export default function UaeVatInvoiceGenerator() {
   const [activeTab, setActiveTab] = useState("form"); // "form" | "preview"*
 
   const [validationOpen, setValidationOpen] = useState(false);
+
+  // ── PO → Invoice prefill state ──────────────────────────────────────────────
+  // prefillPayload: the parsed payload awaiting user confirmation (or null)
+  // prefillDismissed: true after user dismisses the banner without importing
+  const [prefillPayload,   setPrefillPayload]   = useState(null);
+  const [prefillDismissed, setPrefillDismissed] = useState(false);
+  // prefillError: Arabic error message shown when import is rejected
+  const [prefillError,      setPrefillError]    = useState("");
+  // invoiceNumberConfirmed: true once the user explicitly acknowledges that the
+  // invoice number field contains their supplier-assigned sequential number,
+  // not merely the auto-derived PO reference. This gate prevents exporting a
+  // document whose invoice number has not been intentionally reviewed.
+  const [invoiceNumberConfirmed, setInvoiceNumberConfirmed] = useState(false);
+
+  // On mount: read the prefill key written by the PO generator handoff.
+  // We do NOT import automatically — the user must confirm to avoid overwriting
+  // any invoice data they may have already started entering.
+  useEffect(() => {
+    try {
+      const raw = typeof window !== "undefined" && localStorage.getItem(INV_PREFILL_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      // Basic structural validation — must have at least seller or lines
+      if (parsed && (parsed.seller || parsed.lines)) {
+        setPrefillPayload(parsed);
+      }
+    } catch {
+      // Malformed JSON or restricted storage — silently ignore
+    }
+  }, []);
+
+  /**
+   * Apply the PO prefill payload to the invoice form.
+   *
+   * Mapping:
+   *   PO supplier → Invoice seller  (PO buyer issued the order TO this supplier)
+   *   PO buyer    → Invoice buyer   (PO buyer will receive the invoice)
+   *   PO lines    → Invoice lines   (qty, unitPrice, discount, vatRateId preserved)
+   *   PO poNumber → details.notes   (kept as PO reference, NOT used as invoice number)
+   *   PO details.invoiceNumber → details.invoiceNumber (user-assigned draft number)
+   *
+   * The invoice number from the PO handoff is a *draft reference only*.
+   * The supplier must assign a compliant sequential invoice number.
+   * We pre-populate it but label it clearly in the completeness checker.
+   *
+   * We only clear the localStorage key after a successful accepted import.
+   */
+  const handleImportPrefill = () => {
+    if (!prefillPayload) return;
+
+    // ── Validate the COMPLETE payload BEFORE applying any state updates ──
+    // Reject if: no seller name, no buyer name, or no valid non-empty lines.
+    // This prevents demo/preset line items from remaining when the PO payload
+    // is incomplete — the import is rejected entirely, user's data is kept.
+    const p = prefillPayload;
+
+    if (!p.seller || !p.seller.name || !p.seller.name.trim()) {
+      setPrefillError("تعذّر الاستيراد: بيانات المورد غير مكتملة. يرجى إكمال اسم المورد في أمر الشراء أولاً.");
+      return;
+    }
+    if (!p.buyer || !p.buyer.name || !p.buyer.name.trim()) {
+      setPrefillError("تعذّر الاستيراد: بيانات العميل غير مكتملة. يرجى إكمال اسم العميل في أمر الشراء أولاً.");
+      return;
+    }
+    if (!Array.isArray(p.lines) || p.lines.length === 0) {
+      setPrefillError("تعذّر الاستيراد: لا توجد بنود في أمر الشراء. يرجى إضافة بند واحد على الأقل قبل التحويل.");
+      return;
+    }
+    // Check each line has at least a name
+    const invalidLines = p.lines.filter(l => !l.name || !l.name.trim());
+    if (invalidLines.length > 0) {
+      setPrefillError(`تعذّر الاستيراد: ${invalidLines.length} بند بدون وصف. يرجى إكمال وصف جميع البنود في أمر الشراء.`);
+      return;
+    }
+
+    // ── Validation passed — apply state updates atomically ──
+    setPrefillError("");
+    try {
+      // Use blank defaults as the merge base — NOT current state (which starts as
+      // PRESETS.full demo data). This ensures no demo/sample seller info leaks
+      // into the invoice when the PO payload has an empty field.
+      const blankSeller  = { name: "", address: "", emirate: "دبي", trn: "", cr: "", email: "", phone: "" };
+      const blankBuyer   = { name: "", address: "", emirate: "", vatRegistered: "no", trn: "" };
+      const blankDetails = { invoiceNumber: "", issueDate: "", supplyDate: "", currency: "AED", notes: "" };
+
+      // Seller = PO supplier (the party who will issue the invoice)
+      setSeller({
+        ...blankSeller,
+        ...(p.seller ? {
+          name:    p.seller.name    || "",
+          address: p.seller.address || "",
+          emirate: p.seller.emirate || blankSeller.emirate,
+          trn:     p.seller.trn     || "",
+          email:   p.seller.email   || "",
+          phone:   p.seller.phone   || "",
+          cr:      p.seller.cr      || "",
+        } : {}),
+      });
+
+      // Buyer = PO buyer (the party who will receive the invoice)
+      setBuyer({
+        ...blankBuyer,
+        ...(p.buyer ? {
+          name:         p.buyer.name    || "",
+          address:      p.buyer.address || "",
+          emirate:      p.buyer.emirate || "",
+          trn:          p.buyer.trn     || "",
+          vatRegistered: p.buyer.trn ? "yes" : (p.buyer.vatRegistered || "no"),
+        } : {}),
+      });
+
+      // Invoice details — invoiceNumber is a draft reference, not auto-validated
+      setDetails({
+        ...blankDetails,
+        ...(p.details ? {
+          invoiceNumber: p.details.invoiceNumber || "",
+          issueDate:     p.details.issueDate     || "",
+          currency:      p.details.currency      || "AED",
+          notes:         p.details.notes         || "",
+        } : {}),
+      });
+
+      // Invoice number imported from PO must be confirmed by the user
+      setInvoiceNumberConfirmed(false);
+
+      // Lines — ALWAYS set, even if somehow empty (never leave demo presets)
+      setLines(p.lines.map((l, i) => ({
+        id:        i + 1,
+        name:      l.name      || "",
+        qty:       l.qty       || "1",
+        unitPrice: l.unitPrice || "",
+        discount:  l.discount  || "0",
+        vatRateId: l.vatRateId || "5",
+      })));
+
+      // Only clear the key after successful import
+      try { localStorage.removeItem(INV_PREFILL_KEY); } catch { /* ignore */ }
+      setPrefillPayload(null);
+    } catch {
+      // If anything goes wrong during import, leave the form untouched
+      setPrefillError("تعذّر الاستيراد: حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+    }
+  };
+
+  const handleDismissPrefill = () => {
+    // User declined import — keep form as-is, do NOT remove the key
+    // (they can reload the page and the banner will reappear if they change their mind)
+    setPrefillDismissed(true);
+  };
 
 
 
@@ -330,9 +482,9 @@ export default function UaeVatInvoiceGenerator() {
 
     setActiveTab("form");
 
+    setInvoiceNumberConfirmed(false);
+
   }, []);
-
-
 
   const resetForm = useCallback(() => {
 
@@ -349,6 +501,8 @@ export default function UaeVatInvoiceGenerator() {
     setShowValidation(false);
 
     setActiveTab("form");
+
+    setInvoiceNumberConfirmed(false);
 
   }, []);
 
@@ -464,7 +618,14 @@ export default function UaeVatInvoiceGenerator() {
 
     // Invoice details*
 
-    details.invoiceNumber.trim() ? ok("رقم الفاتورة التسلسلي") : miss("رقم الفاتورة", "مطلوب");
+    // Invoice details — invoice number must be confirmed when it looks like a PO-derived ref
+    if (!details.invoiceNumber.trim()) {
+      miss("رقم الفاتورة", "مطلوب");
+    } else if (!invoiceNumberConfirmed) {
+      warn("رقم الفاتورة التسلسلي", "يرجى تأكيد أن هذا الرقم صادر من المورد وليس مرجعاً مشتقاً من أمر الشراء");
+    } else {
+      ok("رقم الفاتورة التسلسلي");
+    }
 
     details.issueDate            ? ok("تاريخ الإصدار")           : miss("تاريخ الإصدار", "مطلوب");
 
@@ -522,7 +683,7 @@ export default function UaeVatInvoiceGenerator() {
 
     return c;
 
-  }, [seller, buyer, details, lines, invoiceType]);
+  }, [seller, buyer, details, lines, invoiceType, invoiceNumberConfirmed]);
 
 
 
@@ -532,12 +693,15 @@ export default function UaeVatInvoiceGenerator() {
 
   // ── Print ───────────────────────────────────────────────────────────────────*
 
+  // canExportInvoice: the single authoritative gate for all preview/print paths.
+  // False when invoice number is empty OR not yet explicitly confirmed.
+  // Checked by handlePrint(), the preview tab navigation, and both print buttons.
+  const canExportInvoice = (details.invoiceNumber || "").trim() !== "" && invoiceNumberConfirmed;
+
   const handlePrint = () => {
-
+    if (!canExportInvoice) return; // guard at handler level — cannot be bypassed
     setActiveTab("preview");
-
     setTimeout(() => window.print(), 300);
-
   };
 
 
@@ -548,6 +712,58 @@ export default function UaeVatInvoiceGenerator() {
 
     <div className="sig-invoice mx-auto max-w-3xl space-y-4 px-4 py-6" dir="rtl">
       <InvoiceStyles />
+
+      {/* ── PO Prefill Import Banner ── */}
+      {prefillPayload && !prefillDismissed && (
+        <aside
+          className="rounded-2xl border-2 border-[var(--sig-orange)] bg-[var(--sig-surface)] p-4 no-print"
+          role="alert"
+          aria-live="polite"
+        >
+          <div className="flex items-start gap-3">
+            <span className="text-2xl shrink-0" aria-hidden="true">📦</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-[var(--sig-text)]">
+                تم اكتشاف بيانات من مولد أمر الشراء الإماراتي
+              </p>
+              <p className="text-xs text-[var(--sig-text-2)] mt-1 leading-relaxed">
+                يمكن استيراد بيانات المورد والعميل والأصناف تلقائياً. لن تُستبدل البيانات الحالية إلا بعد موافقتك.
+              </p>
+              <p className="text-xs text-[var(--sig-text-2)] mt-1 leading-relaxed">
+                <strong>تنبيه:</strong> رقم الفاتورة المُملّأ مسبقاً هو مرجع مشتق من أمر الشراء — يجب على المورد
+                تعيين رقم فاتورة تسلسلي معتمد قبل الإصدار الرسمي.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleImportPrefill}
+                  className="rounded-xl sig-primary px-4 py-2 text-xs font-bold transition-all"
+                >
+                  استيراد بيانات أمر الشراء
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDismissPrefill}
+                  className="rounded-xl sig-secondary px-4 py-2 text-xs font-bold transition-all"
+                >
+                  تجاهل
+                </button>
+              </div>
+              {/* Import rejection error — keeps payload, user's data untouched */}
+              {prefillError && (
+                <div className="mt-3 rounded-xl border border-[var(--sig-error)] sig-error-soft p-3">
+                  <p className="text-xs sig-error-text font-bold leading-relaxed">
+                    {prefillError}
+                  </p>
+                  <p className="text-[11px] text-[var(--sig-muted)] mt-1 leading-relaxed">
+                    لم يتم تغيير بياناتك الحالية. يمكنك تصحيح أمر الشراء ثم إعادة التحويل.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </aside>
+      )}
 
 
 
@@ -983,13 +1199,41 @@ export default function UaeVatInvoiceGenerator() {
             <div className="grid gap-3 sm:grid-cols-2">
 
               <div>
-
                 <label className={labelCls}>رقم الفاتورة التسلسلي *</label>
-
-                <input className={inputCls} placeholder="INV-2026-001" dir="ltr" value={details.invoiceNumber}
-
-                  onChange={e => setDetails(d => ({ ...d, invoiceNumber: e.target.value }))} />
-
+                <input
+                  className={inputCls}
+                  placeholder="INV-2026-001"
+                  dir="ltr"
+                  value={details.invoiceNumber}
+                  onChange={e => {
+                    setDetails(d => ({ ...d, invoiceNumber: e.target.value }));
+                    // Any edit resets confirmation — user must re-confirm
+                    setInvoiceNumberConfirmed(false);
+                  }}
+                />
+                {/* Invoice number confirmation gate.
+                    Required when: number is non-empty AND not yet explicitly confirmed.
+                    The auto-derived PO reference (INV-XXXX) must not be treated as
+                    a compliant sequential invoice number without supplier review. */}
+                {details.invoiceNumber.trim() && !invoiceNumberConfirmed && (
+                  <div className="mt-2 rounded-xl border border-[var(--sig-border)] sig-warning-soft p-2.5">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5 shrink-0 accent-[var(--sig-orange)]"
+                        checked={invoiceNumberConfirmed}
+                        onChange={e => setInvoiceNumberConfirmed(e.target.checked)}
+                        aria-describedby="inv-num-confirm-hint"
+                      />
+                      <span id="inv-num-confirm-hint" className="text-[11px] sig-warning-text leading-relaxed font-bold">
+                        أؤكد أن هذا الرقم هو رقم فاتورة تسلسلي معتمد صادر من المورد — وليس مجرد مرجع مشتق من أمر الشراء.
+                      </span>
+                    </label>
+                  </div>
+                )}
+                {details.invoiceNumber.trim() && invoiceNumberConfirmed && (
+                  <p className="text-[11px] sig-success-text mt-1 font-bold">✓ تم تأكيد رقم الفاتورة</p>
+                )}
               </div>
 
               <div>
@@ -1384,23 +1628,37 @@ export default function UaeVatInvoiceGenerator() {
 
           <div className="flex flex-col sm:flex-row gap-3 no-print">
 
-            <button onClick={() => setActiveTab("preview")}
-
-              className="sig-primary flex-1 rounded-xl py-3 text-sm font-bold transition-colors">
-
+            <button
+              onClick={() => canExportInvoice && setActiveTab("preview")}
+              disabled={!canExportInvoice}
+              aria-disabled={!canExportInvoice}
+              className="sig-primary flex-1 rounded-xl py-3 text-sm font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               معاينة الفاتورة
-
             </button>
 
-            <button onClick={handlePrint}
-
-              className="sig-secondary flex-1 rounded-xl py-3 text-sm font-bold transition-colors">
-
+            <button
+              onClick={handlePrint}
+              disabled={!canExportInvoice}
+              aria-disabled={!canExportInvoice}
+              className="sig-secondary flex-1 rounded-xl py-3 text-sm font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               طباعة / حفظ PDF
-
             </button>
 
           </div>
+
+          {/* Blocking explanation — shown whenever export is locked */}
+          {!canExportInvoice && (
+            <div className="rounded-xl border border-[var(--sig-border)] sig-warning-soft p-3 no-print" role="alert" aria-live="polite">
+              <p className="text-xs sig-warning-text font-bold leading-relaxed">
+                {!details.invoiceNumber.trim()
+                  ? "⚠️ أدخل رقم الفاتورة التسلسلي قبل المعاينة أو الطباعة."
+                  : "⚠️ يرجى تأكيد رقم الفاتورة — ضع علامة في خانة التأكيد أسفل حقل الرقم للمتابعة."}
+              </p>
+              <p className="text-[11px] text-[var(--sig-muted)] mt-1 leading-relaxed">
+                رقم الفاتورة المُملّأ تلقائياً مشتق من أمر الشراء ولا يُعدّ رقماً تسلسلياً معتمداً. يجب على المورد تعيين رقم فاتورة رسمي قبل الإصدار.
+              </p>
+            </div>
+          )}
 
         </div>
 
@@ -1426,9 +1684,11 @@ export default function UaeVatInvoiceGenerator() {
 
             </button>
 
-            <button onClick={handlePrint}
-
-              className="rounded-xl bg-[var(--sig-orange)] hover:bg-[var(--sig-ink)] text-white font-bold text-xs px-4 py-2 transition-all">
+            <button
+              onClick={handlePrint}
+              disabled={!canExportInvoice}
+              aria-disabled={!canExportInvoice}
+              className="rounded-xl bg-[var(--sig-orange)] hover:bg-[var(--sig-ink)] text-white font-bold text-xs px-4 py-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
 
               طباعة / حفظ PDF
 

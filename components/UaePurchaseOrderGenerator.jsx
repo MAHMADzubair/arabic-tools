@@ -257,15 +257,48 @@ export default function UaePurchaseOrderGenerator() {
     setActiveTab("form");
   };
 
-  const handlePrint = () => { setActiveTab("preview"); setTimeout(() => window.print(), 300); };
+  const handlePrint = () => {
+    if (hasOverDiscount) return; // handler-level guard — cannot be bypassed
+    setActiveTab("preview");
+    setTimeout(() => window.print(), 300);
+  };
 
-  // ── Open invoice generator (unchanged) ─────────────────────────────────────────
+  // ── Open invoice generator ────────────────────────────────────────────────────
+  /**
+   * Derive a draft invoice number from the PO number.
+   *
+   * Rules (applied in order):
+   *  1. Strip a leading PO- / LPO- / po- / lpo- prefix (case-insensitive) and
+   *     prepend INV-.
+   *  2. If no recognised prefix is found, prepend "INV-" to whatever the user
+   *     entered.
+   *
+   * This is a *draft reference* only.  A compliant sequential tax invoice
+   * number must be assigned by the supplier's invoicing system; the PO
+   * reference is preserved in the notes so the issuer can cross-reference it.
+   */
+  const deriveDraftInvoiceNumber = (poNumber) => {
+    const stripped = poNumber.replace(/^(L?PO[-_]?)/i, "");
+    return `INV-${stripped}`;
+  };
+
   const handleOpenInvoice = () => {
     try {
+      const draftInvNumber = deriveDraftInvoiceNumber(poDetails.poNumber);
       const payload = {
-        seller: { name: supplier.name, address: supplier.address, emirate: supplier.emirate, trn: supplier.trn, email: supplier.email, phone: supplier.phone, cr: "" },
-        buyer:  { name: buyer.name, address: buyer.address, emirate: buyer.emirate, trn: buyer.trn, vatRegistered: buyer.trn ? "yes" : "no" },
-        details: { invoiceNumber: poDetails.poNumber.replace("PO-", "INV-"), issueDate: poDetails.issueDate, supplyDate: "", currency: poDetails.currency, notes: delivery.notes },
+        seller:  { name: supplier.name, address: supplier.address, emirate: supplier.emirate, trn: supplier.trn, email: supplier.email, phone: supplier.phone, cr: "" },
+        buyer:   { name: buyer.name, address: buyer.address, emirate: buyer.emirate, trn: buyer.trn, vatRegistered: buyer.trn ? "yes" : "no" },
+        details: {
+          invoiceNumber: draftInvNumber,
+          issueDate:     poDetails.issueDate,
+          supplyDate:    "",
+          currency:      poDetails.currency,
+          // Preserve the PO reference so the invoice issuer can cross-reference it.
+          notes: [
+            `مرجع أمر الشراء / PO Ref: ${poDetails.poNumber}`,
+            delivery.notes,
+          ].filter(Boolean).join("\n"),
+        },
         lines: lines.map(l => ({ id: l.id, name: l.name, qty: l.qty, unitPrice: l.unitPrice, discount: l.discount, vatRateId: l.vatRateId })),
       };
       localStorage.setItem("uae_invoice_prefill_v1", JSON.stringify(payload));
@@ -273,18 +306,24 @@ export default function UaePurchaseOrderGenerator() {
     window.open("/ar/ae/vat-invoice-generator", "_blank");
   };
 
-  // ── Calculations (unchanged) ──────────────────────────────────────────────────
+  // ── Calculations (discount summary fix: effective discount capped at gross) ──
   const { lineCalcs, totals } = useMemo(() => {
     const lineCalcs = lines.map(l => {
       const rateObj      = VAT_RATES.find(r => r.id === l.vatRateId) || VAT_RATES[0];
       const effectiveRate = poDetails.showVat ? rateObj.rate : null;
       const result       = calcLineVat({ qty: l.qty, unitPrice: l.unitPrice, discount: l.discount, vatRate: effectiveRate });
-      return { ...result, rateObj };
+      // effectiveDiscount: the discount actually applied to this line (capped at gross).
+      // This is what reconciles the summary: grossTotal - effectiveDiscountTotal = sum of taxableBases.
+      // We preserve result.discount (raw entered) for display/warning purposes.
+      const effectiveDiscount = Math.min(result.discount, result.gross);
+      return { ...result, rateObj, effectiveDiscount };
     });
 
     const chargeTotal = parseNum(charges.shipping.amount) + parseNum(charges.installation.amount) + parseNum(charges.custom.amount);
-    const grossTotal    = lineCalcs.reduce((s, l) => s + l.gross, 0);
-    const totalDiscount = lineCalcs.reduce((s, l) => s + l.discount, 0);
+    const grossTotal         = lineCalcs.reduce((s, l) => s + l.gross, 0);
+    // totalDiscount shown in summary = sum of EFFECTIVE (capped) discounts.
+    // This ensures: grossTotal - totalDiscount = sum of taxableBases (always reconciles).
+    const totalDiscount      = lineCalcs.reduce((s, l) => s + l.effectiveDiscount, 0);
     const taxable5      = lineCalcs.filter(l => l.rateObj.id === "5").reduce((s, l) => s + l.taxableBase, 0);
     const taxable0      = lineCalcs.filter(l => l.rateObj.id === "0").reduce((s, l) => s + l.taxableBase, 0);
     const exemptTotal   = lineCalcs.filter(l => l.rateObj.id === "exempt").reduce((s, l) => s + l.taxableBase, 0);
@@ -310,6 +349,12 @@ export default function UaePurchaseOrderGenerator() {
   }, [buyer, supplier, poDetails, lines, delivery]);
 
   const { okCount, warnCount, missCount, completePct } = calcCompleteness(checks);
+
+  // Lines where entered discount exceeds the line gross — prevents misleading PDF
+  const overDiscountLines = lines.filter(l =>
+    discountExceedsGross(l.qty, l.unitPrice, l.discount)
+  );
+  const hasOverDiscount = overDiscountLines.length > 0;
 
   const cur = poDetails.currency;
   const statusLabel = STATUS_OPTIONS.find((s) => s.id === poDetails.status)?.label;
@@ -359,7 +404,8 @@ export default function UaePurchaseOrderGenerator() {
       <header className="po-card po-noprint">
         <div className="po-head-row">
           <div>
-            <h1 className="po-h1">مولد أمر الشراء في الإمارات</h1>
+            {/* Intentionally not an H1 — the page hero already owns the H1 */}
+            <p className="po-h1" role="heading" aria-level="2">مولد أمر الشراء في الإمارات</p>
             <p className="po-lead">أنشئ أمر شراء احترافي بالعربية والإنجليزية — للشركات والمتاجر وفرق المشتريات في الإمارات</p>
           </div>
           <button type="button" className="po-btn po-btn-o" onClick={handleReset}>مسح</button>
@@ -375,7 +421,13 @@ export default function UaePurchaseOrderGenerator() {
 
         <div className="po-tabs" role="group" aria-label="العرض">
           <button type="button" aria-pressed={activeTab === "form"} onClick={() => setActiveTab("form")}>إدخال البيانات</button>
-          <button type="button" aria-pressed={activeTab === "preview"} onClick={() => setActiveTab("preview")}>معاينة أمر الشراء</button>
+          <button
+            type="button"
+            aria-pressed={activeTab === "preview"}
+            disabled={hasOverDiscount}
+            aria-disabled={hasOverDiscount}
+            onClick={() => !hasOverDiscount && setActiveTab("preview")}
+          >معاينة أمر الشراء</button>
         </div>
       </header>
 
@@ -536,6 +588,15 @@ export default function UaePurchaseOrderGenerator() {
           {/* 5 — Charges */}
           <section className="po-card" aria-labelledby="po-s5">
             <StepTitle n="5" id="po-s5">رسوم إضافية (اختياري)</StepTitle>
+            {/* VAT-treatment notice — visible to user before printing */}
+            <div className="po-dash po-noprint" role="note">
+              <p className="po-small-b">⚠️ تنبيه: معالجة ضريبة القيمة المضافة على الرسوم الإضافية</p>
+              <p className="po-small">
+                المبالغ المدخلة هنا تُضاف كما هي إلى الإجمالي النهائي — بدون احتساب ضريبة قيمة مضافة إضافية.
+                إذا كانت هذه الرسوم خاضعة لـ VAT، فيجب أن يشمل المبلغ المدخل ضريبة القيمة المضافة، أو يمكنك إضافتها كبند منفصل في قسم «بنود الطلب» باختيار نسبة الضريبة المناسبة.
+                المعالجة الضريبية الفعلية تحددها الفاتورة الضريبية الرسمية الصادرة من المورد.
+              </p>
+            </div>
             <div className="po-stack">
               {[
                 { key: "shipping",     placeholder: "رسوم الشحن والتوصيل", lab: "التسمية" },
@@ -545,7 +606,7 @@ export default function UaePurchaseOrderGenerator() {
                 <div key={key} className="po-two">
                   <TextField id={`po-c-${key}-l`} label={lab} placeholder={placeholder} value={charges[key].label}
                     onChange={(v) => setCharges((c) => ({ ...c, [key]: { ...c[key], label: v } }))} />
-                  <TextField id={`po-c-${key}-a`} label={`المبلغ (${cur})`} type="number" min="0" step="any" placeholder="0.00" dir="ltr"
+                  <TextField id={`po-c-${key}-a`} label={`المبلغ (${cur}) — كما هو، بدون VAT إضافي`} type="number" min="0" step="any" placeholder="0.00" dir="ltr"
                     value={charges[key].amount}
                     onChange={(v) => setCharges((c) => ({ ...c, [key]: { ...c[key], amount: v } }))} />
                 </div>
@@ -626,12 +687,45 @@ export default function UaePurchaseOrderGenerator() {
 
           {/* Actions */}
           <div className="po-actions po-bottom">
-            <button type="button" className="po-btn po-btn-p" onClick={() => setActiveTab("preview")}>معاينة أمر الشراء</button>
-            <button type="button" className="po-btn po-btn-o" onClick={handlePrint}>طباعة / PDF</button>
+            <button
+              type="button"
+              className="po-btn po-btn-p"
+              onClick={() => setActiveTab("preview")}
+              disabled={hasOverDiscount}
+              aria-disabled={hasOverDiscount}
+            >
+              معاينة أمر الشراء
+            </button>
+            <button
+              type="button"
+              className="po-btn po-btn-o"
+              onClick={handlePrint}
+              disabled={hasOverDiscount}
+              aria-disabled={hasOverDiscount}
+            >
+              طباعة / PDF
+            </button>
             <button type="button" className="po-btn po-btn-o" onClick={handleOpenInvoice}>
               فتح مولد الفاتورة<span className="po-sr"> (يفتح في نافذة جديدة)</span>
             </button>
           </div>
+
+          {/* Over-discount blocking error — prevents printing a contradictory document */}
+          {hasOverDiscount && (
+            <aside className="po-note" role="alert" aria-live="assertive">
+              <span className="po-mark" aria-hidden="true">!</span>
+              <div className="po-note-body">
+                <p className="po-small-b">لا يمكن معاينة أو طباعة أمر الشراء</p>
+                <p className="po-small">
+                  {overDiscountLines.length === 1
+                    ? `البند "${overDiscountLines[0].name || (lines.indexOf(overDiscountLines[0]) + 1)}" يحتوي على خصم يتجاوز قيمة البند.`
+                    : `${overDiscountLines.length} بنود تحتوي على خصوم تتجاوز قيمتها.`
+                  }
+                  {" "}يرجى تصحيح قيم الخصم قبل المتابعة — الطباعة بقيم متناقضة قد تُصدر وثيقة مالية مضللة.
+                </p>
+              </div>
+            </aside>
+          )}
 
           <aside className="po-note-b">
             <p className="po-small-b">ملاحظة</p>
@@ -645,7 +739,13 @@ export default function UaePurchaseOrderGenerator() {
         <>
           <div className="po-actions po-noprint">
             <button type="button" className="po-btn po-btn-o" onClick={() => setActiveTab("form")}>العودة للتعديل</button>
-            <button type="button" className="po-btn po-btn-p" onClick={handlePrint}>طباعة / PDF</button>
+            <button
+              type="button"
+              className="po-btn po-btn-p"
+              onClick={handlePrint}
+              disabled={hasOverDiscount}
+              aria-disabled={hasOverDiscount}
+            >طباعة / PDF</button>
           </div>
 
           <article id="po-print" className="po-doc">
@@ -723,7 +823,7 @@ export default function UaePurchaseOrderGenerator() {
                           <td dir="ltr">{line.qty}</td>
                           <td>{line.unit}</td>
                           <td dir="ltr">{fmt(parseNum(line.unitPrice))}</td>
-                          <td dir="ltr">{parseNum(line.discount) > 0 ? `(${fmt(parseNum(line.discount))})` : "—"}</td>
+                          <td dir="ltr">{parseNum(calc?.effectiveDiscount) > 0 ? `(${fmt(calc.effectiveDiscount)})` : "—"}</td>
                           {poDetails.showVat && <td><span className="po-doc-tag">{rateObj.tag}</span></td>}
                           {poDetails.showVat && <td dir="ltr">{fmt(calc?.vatAmount)}</td>}
                           <td className="po-doc-strong" dir="ltr">{fmt(calc?.lineTotal)}</td>
@@ -733,7 +833,10 @@ export default function UaePurchaseOrderGenerator() {
                     {chargeRows.map((c, i) => (
                       <tr key={`charge-${i}`}>
                         <td>—</td>
-                        <td><em>{c.label}</em></td>
+                        <td>
+                          <em>{c.label}</em>
+                          <span className="po-doc-charge-note"> (رسوم إضافية — بدون VAT إضافي)</span>
+                        </td>
                         <td colSpan={poDetails.showVat ? 7 : 5} />
                         <td className="po-doc-strong" dir="ltr">{fmt(parseNum(c.amount))}</td>
                       </tr>
@@ -859,7 +962,8 @@ function PoStyles() {
         padding:.5rem .875rem; border:2px solid var(--po-ink); font-size:.75rem; font-weight:700;
         font-family:inherit; cursor:pointer; background:var(--po-paper); color:var(--po-ink);
       }
-      .po-btn-sm{ padding:.25rem .625rem; }
+      .po-btn:disabled,.po-btn[aria-disabled="true"]{ opacity:.45; cursor:not-allowed; pointer-events:none; }
+      .po-btn-sm{ padding:.375rem .875rem; min-height:2.75rem; }
       .po-btn-o:hover,.po-btn:hover{ background:var(--po-muted); }
       .po-btn-p{ background:var(--po-orange); color:#0a0a0a; flex:1; }
       .po-btn-p:hover{ background:var(--po-ink); color:var(--po-paper); }
@@ -882,6 +986,7 @@ function PoStyles() {
       }
       .po-tabs button + button,.po-seg button + button{ border-inline-start:2px solid var(--po-ink); }
       .po-tabs button[aria-pressed="true"],.po-seg button[aria-pressed="true"]{ background:var(--po-ink); color:var(--po-paper); }
+      .po-tabs button:disabled,.po-tabs button[aria-disabled="true"]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
       .po-seg button{ flex:none; padding:.375rem 1.25rem; }
 
       /* Fields */
@@ -969,6 +1074,7 @@ function PoStyles() {
       .po-doc-terms strong{ color:var(--d-ink); }
       .po-doc-sigs{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; padding-top:.75rem; text-align:center; font-size:.6875rem; color:var(--d-text2); }
       .po-doc-line{ border-bottom:2px solid var(--d-ink); height:3rem; margin-bottom:.5rem; }
+      .po-doc-charge-note{ font-size:.5625rem; font-weight:400; color:var(--d-text2); margin-inline-start:.375rem; }
       .po-doc-disc{ display:flex; gap:.5rem; align-items:flex-start; border:2px dashed var(--d-ink); padding:.625rem .75rem; font-size:.625rem; line-height:1.8; color:var(--d-text2); }
       .po-doc-excl{ flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center; border:2px solid var(--d-ink); font-weight:700; color:var(--d-ink); }
 
