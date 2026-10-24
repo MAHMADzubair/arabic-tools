@@ -314,6 +314,8 @@ export default function UaeVatInvoiceGenerator() {
   // prefillDismissed: true after user dismisses the banner without importing
   const [prefillPayload,   setPrefillPayload]   = useState(null);
   const [prefillDismissed, setPrefillDismissed] = useState(false);
+  // prefillError: Arabic error message shown when import is rejected
+  const [prefillError,      setPrefillError]    = useState("");
   // invoiceNumberConfirmed: true once the user explicitly acknowledges that the
   // invoice number field contains their supplier-assigned sequential number,
   // not merely the auto-derived PO reference. This gate prevents exporting a
@@ -355,9 +357,35 @@ export default function UaeVatInvoiceGenerator() {
    */
   const handleImportPrefill = () => {
     if (!prefillPayload) return;
-    try {
-      const p = prefillPayload;
 
+    // ── Validate the COMPLETE payload BEFORE applying any state updates ──
+    // Reject if: no seller name, no buyer name, or no valid non-empty lines.
+    // This prevents demo/preset line items from remaining when the PO payload
+    // is incomplete — the import is rejected entirely, user's data is kept.
+    const p = prefillPayload;
+
+    if (!p.seller || !p.seller.name || !p.seller.name.trim()) {
+      setPrefillError("تعذّر الاستيراد: بيانات المورد غير مكتملة. يرجى إكمال اسم المورد في أمر الشراء أولاً.");
+      return;
+    }
+    if (!p.buyer || !p.buyer.name || !p.buyer.name.trim()) {
+      setPrefillError("تعذّر الاستيراد: بيانات العميل غير مكتملة. يرجى إكمال اسم العميل في أمر الشراء أولاً.");
+      return;
+    }
+    if (!Array.isArray(p.lines) || p.lines.length === 0) {
+      setPrefillError("تعذّر الاستيراد: لا توجد بنود في أمر الشراء. يرجى إضافة بند واحد على الأقل قبل التحويل.");
+      return;
+    }
+    // Check each line has at least a name
+    const invalidLines = p.lines.filter(l => !l.name || !l.name.trim());
+    if (invalidLines.length > 0) {
+      setPrefillError(`تعذّر الاستيراد: ${invalidLines.length} بند بدون وصف. يرجى إكمال وصف جميع البنود في أمر الشراء.`);
+      return;
+    }
+
+    // ── Validation passed — apply state updates atomically ──
+    setPrefillError("");
+    try {
       // Use blank defaults as the merge base — NOT current state (which starts as
       // PRESETS.full demo data). This ensures no demo/sample seller info leaks
       // into the invoice when the PO payload has an empty field.
@@ -405,23 +433,22 @@ export default function UaeVatInvoiceGenerator() {
       // Invoice number imported from PO must be confirmed by the user
       setInvoiceNumberConfirmed(false);
 
-      // Lines — assign new IDs to prevent any collisions; preserve all calc fields
-      if (Array.isArray(p.lines) && p.lines.length > 0) {
-        setLines(p.lines.map((l, i) => ({
-          id:        i + 1,
-          name:      l.name      || "",
-          qty:       l.qty       || "1",
-          unitPrice: l.unitPrice || "",
-          discount:  l.discount  || "0",
-          vatRateId: l.vatRateId || "5",
-        })));
-      }
+      // Lines — ALWAYS set, even if somehow empty (never leave demo presets)
+      setLines(p.lines.map((l, i) => ({
+        id:        i + 1,
+        name:      l.name      || "",
+        qty:       l.qty       || "1",
+        unitPrice: l.unitPrice || "",
+        discount:  l.discount  || "0",
+        vatRateId: l.vatRateId || "5",
+      })));
 
       // Only clear the key after successful import
       try { localStorage.removeItem(INV_PREFILL_KEY); } catch { /* ignore */ }
       setPrefillPayload(null);
     } catch {
       // If anything goes wrong during import, leave the form untouched
+      setPrefillError("تعذّر الاستيراد: حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
     }
   };
 
@@ -722,6 +749,17 @@ export default function UaeVatInvoiceGenerator() {
                   تجاهل
                 </button>
               </div>
+              {/* Import rejection error — keeps payload, user's data untouched */}
+              {prefillError && (
+                <div className="mt-3 rounded-xl border border-[var(--sig-error)] sig-error-soft p-3">
+                  <p className="text-xs sig-error-text font-bold leading-relaxed">
+                    {prefillError}
+                  </p>
+                  <p className="text-[11px] text-[var(--sig-muted)] mt-1 leading-relaxed">
+                    لم يتم تغيير بياناتك الحالية. يمكنك تصحيح أمر الشراء ثم إعادة التحويل.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </aside>
