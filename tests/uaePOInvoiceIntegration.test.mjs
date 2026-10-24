@@ -872,35 +872,192 @@ test("Import clean: invoice number confirmation reset on import", () => {
     "imported draft ref needs confirmation");
 });
 
-// ─── SECTION 10: Browser/component validation evidence ───────────────────────
-// Next.js 15 "use client" components with window.print(), localStorage,
-// and useEffect cannot be rendered in Node's built-in test runner without
-// a full JSDOM + React DOM + act() setup that would require a react-dom@19
-// peer-dep addition and jest/vitest environment shim — a major dependency
-// change explicitly prohibited by the sprint rules.
+// ─── SECTION 10: Bypass regression tests + coverage disclosure ────────────────
 //
-// Coverage approach: all LOGIC FUNCTIONS are extracted and tested identically
-// to how the components call them. The tests in sections 7-9 above cover the
-// exact code paths that the React render and event handlers execute.
+// COVERAGE DISCLOSURE (honest):
+// The tests in this file test MIRRORED pure-logic functions — not rendered
+// React components. They verify the exact calculation, mapping, and gating
+// logic that the components execute, but they do NOT:
+//   - Render React component trees
+//   - Fire synthetic DOM events (click, change)
+//   - Assert on rendered HTML output
 //
-// Manual browser-test protocol (to be executed by reviewer before merge):
+// Next.js 15 "use client" components with window.print(), localStorage, and
+// useEffect cannot be rendered in Node's built-in test runner without a full
+// JSDOM + react-dom@19 + act() setup — a major dependency change prohibited
+// by the sprint rules.
+//
+// The browser test steps below are NOT a test. They are a manual verification
+// checklist the reviewer MUST execute before approving merge. They are
+// intentionally placed as a comment, not an assertion, so they do not inflate
+// the pass count or imply automated coverage that does not exist.
+//
+// MANUAL BROWSER TEST CHECKLIST (reviewer to execute before merge):
+//
+//   [ ] 1. PO over-discount gate: Add line qty=1, price=100, discount=150.
+//        Verify ALL of these are disabled: tab bar "معاينة", form "معاينة
+//        أمر الشراء", form "طباعة / PDF". Arabic error message visible.
+//        Correct discount to 50 → all re-enable.
+//   [ ] 2. PO tab bar bypass: With over-discount active, try clicking the tab
+//        bar "معاينة أمر الشراء" button — it must remain disabled.
+//   [ ] 3. PO preview-while-open bypass: Open preview (valid discount), then
+//        go back and change a discount to exceed gross. Return to preview tab
+//        — the "طباعة / PDF" button inside preview must be disabled.
+//   [ ] 4. PO printed discount column: Set disc=50 on a 100-AED line. Preview.
+//        Discount column shows (50.00). Grand total = 52.50. Row reconciles.
+//   [ ] 5. Invoice confirmation gate: Load invoice generator. Enter no invoice
+//        number. Verify "معاينة الفاتورة" and "طباعة / حفظ PDF" are disabled.
+//        Arabic explanation visible.
+//   [ ] 6. Invoice number entered but unconfirmed: Type "INV-2026-001". Verify
+//        buttons still disabled. Checkbox visible. Check it → buttons enable.
+//   [ ] 7. Invoice preview bypass: Confirm number, go to preview. Go back,
+//        edit the invoice number. Return — "طباعة / حفظ PDF" in preview is
+//        now disabled again (confirmation reset on edit).
+//   [ ] 8. PO→Invoice handoff: Fill PO, click "فتح مولد الفاتورة". New tab.
+//        Import banner visible. Click import. Verify seller=PO supplier (not
+//        preset demo "شركة النخيل"), buyer=PO buyer, lines/vat/discount
+//        preserved. Invoice number unconfirmed — must check box to print.
+//   [ ] 9. Dismiss without import: With prefill banner visible, click "تجاهل".
+//        Form retains preset data. localStorage key NOT removed.
+//   [ ] 10. Import blank fields: PO with empty supplier name → invoice seller
+//         shows empty, NOT demo preset name.
 
-test("Browser test protocol documented — manual verification required", () => {
-  // This test documents the required manual browser verification steps.
-  // It always passes as a reminder; actual execution requires a browser.
-  const browserTestSteps = [
-    "1. Open https://qemlo.com/ar/ae/purchase-order-generator (or localhost)",
-    "2. [Over-discount gate] Add line: qty=1, price=100, discount=150. Verify 'معاينة' and 'طباعة' buttons are disabled with Arabic error message. Correct discount to 50. Verify buttons re-enable.",
-    "3. [Printed discount] Set disc=50 on a 100-AED line. Switch to preview. Verify printed discount column shows (50.00) not (150.00), and grand total = 52.50.",
-    "4. [PO→Invoice handoff] Fill in supplier/buyer/lines. Click 'فتح مولد الفاتورة'. New tab opens invoice generator.",
-    "5. [Import banner] Verify orange import banner appears immediately. Verify banner shows warning about invoice number being a draft reference.",
-    "6. [No preset contamination] Before clicking import, note the preset seller name ('شركة النخيل'). Click 'استيراد بيانات أمر الشراء'. Verify seller field shows PO supplier name, NOT preset demo name.",
-    "7. [Field mapping] Verify: PO supplier → invoice Seller; PO buyer → invoice Buyer; line items, vatRateId, discounts all present.",
-    "8. [Invoice number confirmation] Verify invoice number field is pre-filled. Verify checkbox '⚠️ أؤكد أن هذا الرقم...' is visible and unchecked. Verify completeness checker shows 'يحتاج مراجعة' for invoice number.",
-    "9. [Confirm number] Check the confirmation checkbox. Verify completeness checker shows '✓ رقم الفاتورة التسلسلي'.",
-    "10. [Dismiss without import] Reload page, navigate to invoice generator with prefill key set. Click 'تجاهل'. Verify form retains preset data. Verify localStorage key NOT removed.",
-    "11. [No overwrite] Manually type seller name in invoice form. Then import. Verify: if PO payload has a seller name, it replaces the typed name. If PO seller name is empty, form shows empty (not demo).",
-  ];
-  assert.ok(browserTestSteps.length >= 10, "browser test protocol has ≥10 steps");
-  assert.ok(browserTestSteps.every(s => s.length > 0), "all steps are non-empty strings");
+// ── Invoice canExportInvoice gate logic (bypass regression) ──
+
+/**
+ * Mirror of the canExportInvoice condition from UaeVatInvoiceGenerator.jsx.
+ * This is the SINGLE authoritative gate checked by handlePrint(), preview
+ * navigation, and both print buttons.
+ */
+function canExportInvoice(invoiceNumber, invoiceNumberConfirmed) {
+  const num = invoiceNumber || "";
+  return num.trim() !== "" && invoiceNumberConfirmed === true;
+}
+
+test("Bypass regression: empty invoice number → canExportInvoice=false", () => {
+  assert.equal(canExportInvoice("", true),         false, "empty → blocked");
+  assert.equal(canExportInvoice("   ", true),      false, "whitespace → blocked");
+  assert.equal(canExportInvoice(null, true),       false, "null → blocked");
+  assert.equal(canExportInvoice(undefined, true),  false, "undefined → blocked");
 });
+
+test("Bypass regression: non-empty but unconfirmed → canExportInvoice=false", () => {
+  assert.equal(canExportInvoice("INV-2026-001", false), false, "unconfirmed → blocked");
+  assert.equal(canExportInvoice("INV-2026-001", null), false, "null confirmed → blocked");
+  assert.equal(canExportInvoice("INV-2026-001", 0),    false, "falsy → blocked");
+});
+
+test("Bypass regression: non-empty AND confirmed → canExportInvoice=true", () => {
+  assert.equal(canExportInvoice("INV-2026-001", true), true, "confirmed → allowed");
+  assert.equal(canExportInvoice("PO-2026-1234", true), true, "any string + confirmed → allowed");
+});
+
+test("Bypass regression: handlePrint returns early when canExportInvoice=false", () => {
+  // Simulate the handler guard: if (!canExportInvoice) return;
+  let printCalled = false;
+  const simulateHandlePrint = (inv, confirmed) => {
+    if (!canExportInvoice(inv, confirmed)) return; // early return
+    printCalled = true; // would call setActiveTab + window.print
+  };
+  // Empty number
+  simulateHandlePrint("", true);
+  assert.equal(printCalled, false, "empty number: print not called");
+  // Unconfirmed
+  simulateHandlePrint("INV-2026-001", false);
+  assert.equal(printCalled, false, "unconfirmed: print not called");
+  // Confirmed — now allowed
+  simulateHandlePrint("INV-2026-001", true);
+  assert.equal(printCalled, true, "confirmed: print called");
+});
+
+test("Bypass regression: editing invoice number resets confirmation (gate re-locks)", () => {
+  let invoiceNumber = "INV-2026-001";
+  let confirmed = true;
+  // Simulate onChange handler: setDetails + setInvoiceNumberConfirmed(false)
+  const onEdit = (newVal) => { invoiceNumber = newVal; confirmed = false; };
+
+  // Before edit — export allowed
+  assert.equal(canExportInvoice(invoiceNumber, confirmed), true, "before edit: allowed");
+  // Edit triggered
+  onEdit("INV-2026-002");
+  assert.equal(confirmed, false, "confirmation reset after edit");
+  assert.equal(canExportInvoice(invoiceNumber, confirmed), false, "after edit: blocked");
+  // Re-confirm
+  confirmed = true;
+  assert.equal(canExportInvoice(invoiceNumber, confirmed), true, "after re-confirm: allowed");
+});
+
+test("Bypass regression: PO import resets confirmation (gate re-locks)", () => {
+  let confirmed = true;
+  // Simulate handleImportPrefill calling setInvoiceNumberConfirmed(false)
+  confirmed = false;
+  const derived = deriveDraftInvoiceNumber("PO-2026-1234");
+  assert.equal(canExportInvoice(derived, confirmed), false, "imported draft ref: blocked until confirmed");
+});
+
+test("Bypass regression: applyPreset resets confirmation (gate re-locks)", () => {
+  let confirmed = true;
+  // Simulate applyPreset calling setInvoiceNumberConfirmed(false)
+  confirmed = false;
+  assert.equal(canExportInvoice("INV-2026-001", confirmed), false, "preset number: blocked until confirmed");
+});
+
+// ── PO hasOverDiscount handler-level guard (bypass regression) ──
+
+/**
+ * Mirror of the handlePrint guard from UaePurchaseOrderGenerator.jsx.
+ * if (hasOverDiscount) return; — checked at the handler level, not just
+ * on the button's disabled attribute.
+ */
+function poHandlePrintGuard(hasOverDiscount) {
+  if (hasOverDiscount) return false; // early return, no print
+  return true; // would proceed to setActiveTab + window.print
+}
+
+test("Bypass regression: PO handlePrint blocked when hasOverDiscount=true", () => {
+  assert.equal(poHandlePrintGuard(true),  false, "over-discount: print blocked at handler");
+  assert.equal(poHandlePrintGuard(false), true,  "valid discount: print allowed");
+});
+
+test("Bypass regression: PO over-discount gate computes correctly for all line states", () => {
+  // Mirror of the component's overDiscountLines + hasOverDiscount computation
+  const lines = [
+    { qty: "2", unitPrice: "100", discount: "50"   }, // OK
+    { qty: "1", unitPrice: "200", discount: "250"  }, // OVER
+    { qty: "3", unitPrice: "50",  discount: "0"    }, // OK
+  ];
+  const overLines = lines.filter(l => discountExceedsGross(l.qty, l.unitPrice, l.discount));
+  const hasOverDiscount = overLines.length > 0;
+
+  assert.equal(hasOverDiscount, true, "one over-discount line → gate active");
+  assert.equal(poHandlePrintGuard(hasOverDiscount), false, "print blocked");
+});
+
+test("Bypass regression: PO no over-discount lines → gate inactive → print allowed", () => {
+  const lines = [
+    { qty: "2", unitPrice: "100", discount: "50"  }, // OK
+    { qty: "1", unitPrice: "200", discount: "200" }, // exactly equal — not over
+    { qty: "3", unitPrice: "50",  discount: "0"   }, // OK
+  ];
+  const overLines = lines.filter(l => discountExceedsGross(l.qty, l.unitPrice, l.discount));
+  const hasOverDiscount = overLines.length > 0;
+
+  assert.equal(hasOverDiscount, false, "no over-discount → gate inactive");
+  assert.equal(poHandlePrintGuard(hasOverDiscount), true, "print allowed");
+});
+
+test("Bypass regression: PO single line with discount exactly equal to gross does NOT trigger gate", () => {
+  // discountExceedsGross uses strict >, so == gross is NOT over
+  assert.equal(discountExceedsGross("1", "100", "100"), false, "disc==gross: not over");
+  assert.equal(discountExceedsGross("1", "100", "101"), true,  "disc==gross+1: over");
+  assert.equal(poHandlePrintGuard(discountExceedsGross("1", "100", "100")), true,  "print allowed for ==gross");
+  assert.equal(poHandlePrintGuard(discountExceedsGross("1", "100", "101")), false, "print blocked for >gross");
+});
+
+test("Bypass regression: PO tab bar preview button must respect hasOverDiscount", () => {
+  // Mirror of the tab bar onClick guard: !hasOverDiscount && setActiveTab("preview")
+  const canNavigateToPreview = (hasOverDiscount) => !hasOverDiscount;
+  assert.equal(canNavigateToPreview(true),  false, "over-discount: tab bar preview blocked");
+  assert.equal(canNavigateToPreview(false), true,  "valid: tab bar preview allowed");
+});
+

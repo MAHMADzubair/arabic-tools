@@ -257,7 +257,11 @@ export default function UaePurchaseOrderGenerator() {
     setActiveTab("form");
   };
 
-  const handlePrint = () => { setActiveTab("preview"); setTimeout(() => window.print(), 300); };
+  const handlePrint = () => {
+    if (hasOverDiscount) return; // handler-level guard — cannot be bypassed
+    setActiveTab("preview");
+    setTimeout(() => window.print(), 300);
+  };
 
   // ── Open invoice generator ────────────────────────────────────────────────────
   /**
@@ -417,7 +421,13 @@ export default function UaePurchaseOrderGenerator() {
 
         <div className="po-tabs" role="group" aria-label="العرض">
           <button type="button" aria-pressed={activeTab === "form"} onClick={() => setActiveTab("form")}>إدخال البيانات</button>
-          <button type="button" aria-pressed={activeTab === "preview"} onClick={() => setActiveTab("preview")}>معاينة أمر الشراء</button>
+          <button
+            type="button"
+            aria-pressed={activeTab === "preview"}
+            disabled={hasOverDiscount}
+            aria-disabled={hasOverDiscount}
+            onClick={() => !hasOverDiscount && setActiveTab("preview")}
+          >معاينة أمر الشراء</button>
         </div>
       </header>
 
@@ -729,7 +739,13 @@ export default function UaePurchaseOrderGenerator() {
         <>
           <div className="po-actions po-noprint">
             <button type="button" className="po-btn po-btn-o" onClick={() => setActiveTab("form")}>العودة للتعديل</button>
-            <button type="button" className="po-btn po-btn-p" onClick={handlePrint}>طباعة / PDF</button>
+            <button
+              type="button"
+              className="po-btn po-btn-p"
+              onClick={handlePrint}
+              disabled={hasOverDiscount}
+              aria-disabled={hasOverDiscount}
+            >طباعة / PDF</button>
           </div>
 
           <article id="po-print" className="po-doc">
@@ -970,6 +986,7 @@ function PoStyles() {
       }
       .po-tabs button + button,.po-seg button + button{ border-inline-start:2px solid var(--po-ink); }
       .po-tabs button[aria-pressed="true"],.po-seg button[aria-pressed="true"]{ background:var(--po-ink); color:var(--po-paper); }
+      .po-tabs button:disabled,.po-tabs button[aria-disabled="true"]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
       .po-seg button{ flex:none; padding:.375rem 1.25rem; }
 
       /* Fields */

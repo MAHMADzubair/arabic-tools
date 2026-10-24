@@ -666,12 +666,15 @@ export default function UaeVatInvoiceGenerator() {
 
   // ── Print ───────────────────────────────────────────────────────────────────*
 
+  // canExportInvoice: the single authoritative gate for all preview/print paths.
+  // False when invoice number is empty OR not yet explicitly confirmed.
+  // Checked by handlePrint(), the preview tab navigation, and both print buttons.
+  const canExportInvoice = (details.invoiceNumber || "").trim() !== "" && invoiceNumberConfirmed;
+
   const handlePrint = () => {
-
+    if (!canExportInvoice) return; // guard at handler level — cannot be bypassed
     setActiveTab("preview");
-
     setTimeout(() => window.print(), 300);
-
   };
 
 
@@ -1587,23 +1590,37 @@ export default function UaeVatInvoiceGenerator() {
 
           <div className="flex flex-col sm:flex-row gap-3 no-print">
 
-            <button onClick={() => setActiveTab("preview")}
-
-              className="sig-primary flex-1 rounded-xl py-3 text-sm font-bold transition-colors">
-
+            <button
+              onClick={() => canExportInvoice && setActiveTab("preview")}
+              disabled={!canExportInvoice}
+              aria-disabled={!canExportInvoice}
+              className="sig-primary flex-1 rounded-xl py-3 text-sm font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               معاينة الفاتورة
-
             </button>
 
-            <button onClick={handlePrint}
-
-              className="sig-secondary flex-1 rounded-xl py-3 text-sm font-bold transition-colors">
-
+            <button
+              onClick={handlePrint}
+              disabled={!canExportInvoice}
+              aria-disabled={!canExportInvoice}
+              className="sig-secondary flex-1 rounded-xl py-3 text-sm font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
               طباعة / حفظ PDF
-
             </button>
 
           </div>
+
+          {/* Blocking explanation — shown whenever export is locked */}
+          {!canExportInvoice && (
+            <div className="rounded-xl border border-[var(--sig-border)] sig-warning-soft p-3 no-print" role="alert" aria-live="polite">
+              <p className="text-xs sig-warning-text font-bold leading-relaxed">
+                {!details.invoiceNumber.trim()
+                  ? "⚠️ أدخل رقم الفاتورة التسلسلي قبل المعاينة أو الطباعة."
+                  : "⚠️ يرجى تأكيد رقم الفاتورة — ضع علامة في خانة التأكيد أسفل حقل الرقم للمتابعة."}
+              </p>
+              <p className="text-[11px] text-[var(--sig-muted)] mt-1 leading-relaxed">
+                رقم الفاتورة المُملّأ تلقائياً مشتق من أمر الشراء ولا يُعدّ رقماً تسلسلياً معتمداً. يجب على المورد تعيين رقم فاتورة رسمي قبل الإصدار.
+              </p>
+            </div>
+          )}
 
         </div>
 
@@ -1629,9 +1646,11 @@ export default function UaeVatInvoiceGenerator() {
 
             </button>
 
-            <button onClick={handlePrint}
-
-              className="rounded-xl bg-[var(--sig-orange)] hover:bg-[var(--sig-ink)] text-white font-bold text-xs px-4 py-2 transition-all">
+            <button
+              onClick={handlePrint}
+              disabled={!canExportInvoice}
+              aria-disabled={!canExportInvoice}
+              className="rounded-xl bg-[var(--sig-orange)] hover:bg-[var(--sig-ink)] text-white font-bold text-xs px-4 py-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
 
               طباعة / حفظ PDF
 
