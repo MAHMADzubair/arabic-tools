@@ -346,6 +346,12 @@ export default function UaePurchaseOrderGenerator() {
 
   const { okCount, warnCount, missCount, completePct } = calcCompleteness(checks);
 
+  // Lines where entered discount exceeds the line gross — prevents misleading PDF
+  const overDiscountLines = lines.filter(l =>
+    discountExceedsGross(l.qty, l.unitPrice, l.discount)
+  );
+  const hasOverDiscount = overDiscountLines.length > 0;
+
   const cur = poDetails.currency;
   const statusLabel = STATUS_OPTIONS.find((s) => s.id === poDetails.status)?.label;
 
@@ -671,12 +677,45 @@ export default function UaePurchaseOrderGenerator() {
 
           {/* Actions */}
           <div className="po-actions po-bottom">
-            <button type="button" className="po-btn po-btn-p" onClick={() => setActiveTab("preview")}>معاينة أمر الشراء</button>
-            <button type="button" className="po-btn po-btn-o" onClick={handlePrint}>طباعة / PDF</button>
+            <button
+              type="button"
+              className="po-btn po-btn-p"
+              onClick={() => setActiveTab("preview")}
+              disabled={hasOverDiscount}
+              aria-disabled={hasOverDiscount}
+            >
+              معاينة أمر الشراء
+            </button>
+            <button
+              type="button"
+              className="po-btn po-btn-o"
+              onClick={handlePrint}
+              disabled={hasOverDiscount}
+              aria-disabled={hasOverDiscount}
+            >
+              طباعة / PDF
+            </button>
             <button type="button" className="po-btn po-btn-o" onClick={handleOpenInvoice}>
               فتح مولد الفاتورة<span className="po-sr"> (يفتح في نافذة جديدة)</span>
             </button>
           </div>
+
+          {/* Over-discount blocking error — prevents printing a contradictory document */}
+          {hasOverDiscount && (
+            <aside className="po-note" role="alert" aria-live="assertive">
+              <span className="po-mark" aria-hidden="true">!</span>
+              <div className="po-note-body">
+                <p className="po-small-b">لا يمكن معاينة أو طباعة أمر الشراء</p>
+                <p className="po-small">
+                  {overDiscountLines.length === 1
+                    ? `البند "${overDiscountLines[0].name || (lines.indexOf(overDiscountLines[0]) + 1)}" يحتوي على خصم يتجاوز قيمة البند.`
+                    : `${overDiscountLines.length} بنود تحتوي على خصوم تتجاوز قيمتها.`
+                  }
+                  {" "}يرجى تصحيح قيم الخصم قبل المتابعة — الطباعة بقيم متناقضة قد تُصدر وثيقة مالية مضللة.
+                </p>
+              </div>
+            </aside>
+          )}
 
           <aside className="po-note-b">
             <p className="po-small-b">ملاحظة</p>
@@ -768,7 +807,7 @@ export default function UaePurchaseOrderGenerator() {
                           <td dir="ltr">{line.qty}</td>
                           <td>{line.unit}</td>
                           <td dir="ltr">{fmt(parseNum(line.unitPrice))}</td>
-                          <td dir="ltr">{parseNum(line.discount) > 0 ? `(${fmt(parseNum(line.discount))})` : "—"}</td>
+                          <td dir="ltr">{parseNum(calc?.effectiveDiscount) > 0 ? `(${fmt(calc.effectiveDiscount)})` : "—"}</td>
                           {poDetails.showVat && <td><span className="po-doc-tag">{rateObj.tag}</span></td>}
                           {poDetails.showVat && <td dir="ltr">{fmt(calc?.vatAmount)}</td>}
                           <td className="po-doc-strong" dir="ltr">{fmt(calc?.lineTotal)}</td>
@@ -907,6 +946,7 @@ function PoStyles() {
         padding:.5rem .875rem; border:2px solid var(--po-ink); font-size:.75rem; font-weight:700;
         font-family:inherit; cursor:pointer; background:var(--po-paper); color:var(--po-ink);
       }
+      .po-btn:disabled,.po-btn[aria-disabled="true"]{ opacity:.45; cursor:not-allowed; pointer-events:none; }
       .po-btn-sm{ padding:.375rem .875rem; min-height:2.75rem; }
       .po-btn-o:hover,.po-btn:hover{ background:var(--po-muted); }
       .po-btn-p{ background:var(--po-orange); color:#0a0a0a; flex:1; }

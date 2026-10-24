@@ -314,6 +314,11 @@ export default function UaeVatInvoiceGenerator() {
   // prefillDismissed: true after user dismisses the banner without importing
   const [prefillPayload,   setPrefillPayload]   = useState(null);
   const [prefillDismissed, setPrefillDismissed] = useState(false);
+  // invoiceNumberConfirmed: true once the user explicitly acknowledges that the
+  // invoice number field contains their supplier-assigned sequential number,
+  // not merely the auto-derived PO reference. This gate prevents exporting a
+  // document whose invoice number has not been intentionally reviewed.
+  const [invoiceNumberConfirmed, setInvoiceNumberConfirmed] = useState(false);
 
   // On mount: read the prefill key written by the PO generator handoff.
   // We do NOT import automatically — the user must confirm to avoid overwriting
@@ -353,53 +358,62 @@ export default function UaeVatInvoiceGenerator() {
     try {
       const p = prefillPayload;
 
+      // Use blank defaults as the merge base — NOT current state (which starts as
+      // PRESETS.full demo data). This ensures no demo/sample seller info leaks
+      // into the invoice when the PO payload has an empty field.
+      const blankSeller  = { name: "", address: "", emirate: "دبي", trn: "", cr: "", email: "", phone: "" };
+      const blankBuyer   = { name: "", address: "", emirate: "", vatRegistered: "no", trn: "" };
+      const blankDetails = { invoiceNumber: "", issueDate: "", supplyDate: "", currency: "AED", notes: "" };
+
       // Seller = PO supplier (the party who will issue the invoice)
-      if (p.seller) {
-        setSeller(s => ({
-          ...s,
-          name:    p.seller.name    || s.name,
-          address: p.seller.address || s.address,
-          emirate: p.seller.emirate || s.emirate,
-          trn:     p.seller.trn     || s.trn,
-          email:   p.seller.email   || s.email,
-          phone:   p.seller.phone   || s.phone,
-          cr:      p.seller.cr      || s.cr || "",
-        }));
-      }
+      setSeller({
+        ...blankSeller,
+        ...(p.seller ? {
+          name:    p.seller.name    || "",
+          address: p.seller.address || "",
+          emirate: p.seller.emirate || blankSeller.emirate,
+          trn:     p.seller.trn     || "",
+          email:   p.seller.email   || "",
+          phone:   p.seller.phone   || "",
+          cr:      p.seller.cr      || "",
+        } : {}),
+      });
 
       // Buyer = PO buyer (the party who will receive the invoice)
-      if (p.buyer) {
-        setBuyer(b => ({
-          ...b,
-          name:         p.buyer.name    || b.name,
-          address:      p.buyer.address || b.address,
-          emirate:      p.buyer.emirate || b.emirate,
-          trn:          p.buyer.trn     || b.trn,
-          vatRegistered: p.buyer.trn ? "yes" : (p.buyer.vatRegistered || b.vatRegistered),
-        }));
-      }
+      setBuyer({
+        ...blankBuyer,
+        ...(p.buyer ? {
+          name:         p.buyer.name    || "",
+          address:      p.buyer.address || "",
+          emirate:      p.buyer.emirate || "",
+          trn:          p.buyer.trn     || "",
+          vatRegistered: p.buyer.trn ? "yes" : (p.buyer.vatRegistered || "no"),
+        } : {}),
+      });
 
       // Invoice details — invoiceNumber is a draft reference, not auto-validated
-      if (p.details) {
-        setDetails(d => ({
-          ...d,
-          invoiceNumber: p.details.invoiceNumber || d.invoiceNumber,
-          issueDate:     p.details.issueDate     || d.issueDate,
-          currency:      p.details.currency      || d.currency,
-          // Merge notes: prepend PO reference (already embedded by PO generator)
-          notes:         p.details.notes         || d.notes,
-        }));
-      }
+      setDetails({
+        ...blankDetails,
+        ...(p.details ? {
+          invoiceNumber: p.details.invoiceNumber || "",
+          issueDate:     p.details.issueDate     || "",
+          currency:      p.details.currency      || "AED",
+          notes:         p.details.notes         || "",
+        } : {}),
+      });
+
+      // Invoice number imported from PO must be confirmed by the user
+      setInvoiceNumberConfirmed(false);
 
       // Lines — assign new IDs to prevent any collisions; preserve all calc fields
       if (Array.isArray(p.lines) && p.lines.length > 0) {
         setLines(p.lines.map((l, i) => ({
-          id:         i + 1,
-          name:       l.name       || "",
-          qty:        l.qty        || "1",
-          unitPrice:  l.unitPrice  || "",
-          discount:   l.discount   || "0",
-          vatRateId:  l.vatRateId  || "5",
+          id:        i + 1,
+          name:      l.name      || "",
+          qty:       l.qty       || "1",
+          unitPrice: l.unitPrice || "",
+          discount:  l.discount  || "0",
+          vatRateId: l.vatRateId || "5",
         })));
       }
 
@@ -441,9 +455,9 @@ export default function UaeVatInvoiceGenerator() {
 
     setActiveTab("form");
 
+    setInvoiceNumberConfirmed(false);
+
   }, []);
-
-
 
   const resetForm = useCallback(() => {
 
@@ -460,6 +474,8 @@ export default function UaeVatInvoiceGenerator() {
     setShowValidation(false);
 
     setActiveTab("form");
+
+    setInvoiceNumberConfirmed(false);
 
   }, []);
 
@@ -575,7 +591,14 @@ export default function UaeVatInvoiceGenerator() {
 
     // Invoice details*
 
-    details.invoiceNumber.trim() ? ok("رقم الفاتورة التسلسلي") : miss("رقم الفاتورة", "مطلوب");
+    // Invoice details — invoice number must be confirmed when it looks like a PO-derived ref
+    if (!details.invoiceNumber.trim()) {
+      miss("رقم الفاتورة", "مطلوب");
+    } else if (!invoiceNumberConfirmed) {
+      warn("رقم الفاتورة التسلسلي", "يرجى تأكيد أن هذا الرقم صادر من المورد وليس مرجعاً مشتقاً من أمر الشراء");
+    } else {
+      ok("رقم الفاتورة التسلسلي");
+    }
 
     details.issueDate            ? ok("تاريخ الإصدار")           : miss("تاريخ الإصدار", "مطلوب");
 
@@ -633,7 +656,7 @@ export default function UaeVatInvoiceGenerator() {
 
     return c;
 
-  }, [seller, buyer, details, lines, invoiceType]);
+  }, [seller, buyer, details, lines, invoiceType, invoiceNumberConfirmed]);
 
 
 
@@ -1135,13 +1158,41 @@ export default function UaeVatInvoiceGenerator() {
             <div className="grid gap-3 sm:grid-cols-2">
 
               <div>
-
                 <label className={labelCls}>رقم الفاتورة التسلسلي *</label>
-
-                <input className={inputCls} placeholder="INV-2026-001" dir="ltr" value={details.invoiceNumber}
-
-                  onChange={e => setDetails(d => ({ ...d, invoiceNumber: e.target.value }))} />
-
+                <input
+                  className={inputCls}
+                  placeholder="INV-2026-001"
+                  dir="ltr"
+                  value={details.invoiceNumber}
+                  onChange={e => {
+                    setDetails(d => ({ ...d, invoiceNumber: e.target.value }));
+                    // Any edit resets confirmation — user must re-confirm
+                    setInvoiceNumberConfirmed(false);
+                  }}
+                />
+                {/* Invoice number confirmation gate.
+                    Required when: number is non-empty AND not yet explicitly confirmed.
+                    The auto-derived PO reference (INV-XXXX) must not be treated as
+                    a compliant sequential invoice number without supplier review. */}
+                {details.invoiceNumber.trim() && !invoiceNumberConfirmed && (
+                  <div className="mt-2 rounded-xl border border-[var(--sig-border)] sig-warning-soft p-2.5">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5 shrink-0 accent-[var(--sig-orange)]"
+                        checked={invoiceNumberConfirmed}
+                        onChange={e => setInvoiceNumberConfirmed(e.target.checked)}
+                        aria-describedby="inv-num-confirm-hint"
+                      />
+                      <span id="inv-num-confirm-hint" className="text-[11px] sig-warning-text leading-relaxed font-bold">
+                        أؤكد أن هذا الرقم هو رقم فاتورة تسلسلي معتمد صادر من المورد — وليس مجرد مرجع مشتق من أمر الشراء.
+                      </span>
+                    </label>
+                  </div>
+                )}
+                {details.invoiceNumber.trim() && invoiceNumberConfirmed && (
+                  <p className="text-[11px] sig-success-text mt-1 font-bold">✓ تم تأكيد رقم الفاتورة</p>
+                )}
               </div>
 
               <div>
