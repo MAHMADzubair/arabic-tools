@@ -162,6 +162,7 @@ const relatedTools = [
     badge: "Business",
     badgeColor: "bg-amber-100 text-amber-800",
   },
+
   {
     href: "/ar/ae/corporate-tax-calculator",
     icon: "🏛️",

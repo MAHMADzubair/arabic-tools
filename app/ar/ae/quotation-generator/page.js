@@ -1,4 +1,4 @@
-﻿import UaeQuotationGenerator from "@/components/UaeQuotationGenerator";
+import UaeQuotationGenerator from "@/components/UaeQuotationGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -9,17 +9,7 @@ export const metadata = {
   title: "مولد عرض سعر الإمارات 2026 | نموذج Quotation مجاني",
   description:
     "أنشئ عرض سعر احترافي بالعربية والإنجليزية في الإمارات، أضف المنتجات والخدمات والخصومات وضريبة VAT واطبع نموذجاً جاهزاً للعميل.",
-  keywords: [
-    "عرض سعر الإمارات",
-    "مولد عرض سعر",
-    "نموذج quotation الإمارات",
-    "عرض سعر احترافي بالعربية",
-    "UAE quotation generator",
-    "quote template UAE Arabic",
-    "عرض أسعار خدمات الإمارات",
-    "نموذج عرض سعر مجاني",
-    "عرض سعر مع VAT الإمارات",
-  ],
+
   alternates: {
     canonical: "/ar/ae/quotation-generator",
     languages: {
@@ -171,6 +161,7 @@ const relatedTools = [
     badge: "الشامل",
     badgeColor: "bg-emerald-700 text-white font-bold",
   },
+
 ];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
