@@ -1,4 +1,4 @@
-﻿import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
+import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -23,7 +23,7 @@ export const metadata = {
     canonical: "/ar/sa/annual-leave-calculator",
     languages: {
       "ar-SA": "/ar/sa/annual-leave-calculator",
-      "ar-AE": "/ar/ae/final-settlement-calculator",
+
     },
   },
   openGraph: {
