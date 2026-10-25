@@ -20,22 +20,22 @@ The "Discovered — currently not indexed" status in Google Search Console is mo
 - JSON-LD: BreadcrumbList + SoftwareApplication + FAQPage (5 FAQs) ✅
 - H1: Rendered inside `<UaeQuotationGenerator />` component ✅
 - Internal links FROM page: to hub, to 5 related UAE tools, breadcrumbs ✅
-- Google Live URL Test: Passed ✅
+
 
 ### 2. `/ar/ae/vat-registration-checker` ✅ Eligible
 - Title: `"حاسبة التسجيل في ضريبة القيمة المضافة الإمارات | VAT Registration UAE 2026"` ✅
 - H1: Explicit `<h1>` in page.js hero section ✅
 - JSON-LD: BreadcrumbList + SoftwareApplication + FAQPage (10 FAQs) ✅
 - hreflang: ar-SA + ar-AE pair ✅
-- Google Live URL Test: Passed ✅
+
 
 ### 3. `/ar/sa/annual-leave-calculator` ✅ Eligible — **FIX-3 applied**
 - Title: `"حاسبة بدل الإجازات السنوية في السعودية 2026"` ✅
 - H1: Confirmed inside `<AnnualLeaveCalculator />` ✅
 - JSON-LD: FAQPage + BreadcrumbList + SoftwareApplication ✅
-- hreflang: **Missing before fix — added ar-SA + ar-AE pair** ✅
+- hreflang: **Missing before fix — self-referential only (ar-SA)** ✅
 - Internal links FROM page: 4 related SA tools ✅
-- Google Live URL Test: Passed ✅
+
 
 ### 4. `/gratuity-calculator/saudi` ⚠️ Eligible — **FIX-1 applied**
 - Title: `"حاسبة مكافأة نهاية الخدمة في السعودية 2026 | المادتان 84 و85"` ✅
@@ -103,7 +103,7 @@ Added `languages: { "ar-SA": "/ar/sa/annual-leave-calculator", "ar-AE": "/ar/ae/
 - Production robots.txt — `Allow: /` for all 9 ✅
 - X-Robots-Tag — only noindex on preview, not production ✅
 - middleware.js — no redirect rules for any of the 9 ✅
-- Sitemap — all 9 present at priorities 0.85–0.9 ✅
+- Sitemap — all 60 URLs present at appropriate priorities ✅
 - Country hubs `/ar/ae` and `/ar/sa` — real static HTML with crawlable anchor links to all tools ✅
 - H1 elements — all confirmed in component source ✅
 - No duplicate content or cross-pointing canonicals ✅
