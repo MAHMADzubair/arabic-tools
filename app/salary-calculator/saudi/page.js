@@ -3,7 +3,7 @@ import SalaryCalculator from "@/components/SalaryCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 import GeoSummary from "@/components/business/GeoSummary";
 import { SITE_URL } from "@/lib/siteConfig";
-import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
+
 
 export const metadata = {
 
@@ -137,16 +137,7 @@ export default function SaudiSalaryPage() {
         disclaimer="هذه الأداة استرشادية — نتائجها تقديرية ولا تُعدّ مسيراً رسمياً. راجع قسم الموارد البشرية أو بوابة GOSI لأرقام دقيقة."
       />
       <ToolGuideSection {...guideData} />
-      <RelatedBusinessTools
-        title="أدوات ذات صلة"
-        subtitle="روابط سريعة إلى أدوات أخرى في السوق"
-        tools={[
-{ href: "/gratuity-calculator/saudi", icon: "💰", title: "حاسبة مكافأة نهاية الخدمة", desc: "احسب مكافأة نهاية الخدمة في السعودية" },
-{ href: "/overtime-calculator/saudi", icon: "⏰", title: "حاسبة العمل الإضافي", desc: "احسب أجر العمل الإضافي في السعودية" },
-{ href: "/ar/sa/final-settlement-calculator", icon: "🏁", title: "محول التسوية النهائية", desc: "حاسبة التسوية النهائية للرواتب في السعودية" },
-{ href: "/ar/sa", icon: "🇸🇦", title: "أدوات السعودية", desc: "مجموعة أدوات وحاسبات السوق السعودي" }
-        ]}
-      />
+      <a href="/ar/sa" className="text-blue-600 hover:underline" title="أدوات السعودية">أدوات السعودية</a>
     </div>
   );
 }
