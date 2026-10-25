@@ -410,6 +410,21 @@ export default function HomePage() {
         )}
       </main>
 
+      {/* ── Country hubs strip — crawlable links to SA and UAE tool collections ── */}
+      {/* These links ensure Googlebot can reach the hub pages from the homepage   */}
+      <div className="mx-auto max-w-5xl px-4 pb-4 pt-2">
+        <div className="flex flex-wrap gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm">
+          <span className="font-bold text-[var(--text-2)]">أدوات دول الخليج:</span>
+          <a href="/ar/sa" className="font-semibold text-[var(--text)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--orange)] transition-colors">
+            🇸🇦 أدوات السعودية
+          </a>
+          <span aria-hidden="true" className="text-[var(--border)]">·</span>
+          <a href="/ar/ae" className="font-semibold text-[var(--text)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--orange)] transition-colors">
+            🇦🇪 أدوات الإمارات
+          </a>
+        </div>
+      </div>
+
       {/* ── Features Strip ── */}
       <FeaturesStrip />
 

@@ -1,4 +1,4 @@
-﻿import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
+import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -21,6 +21,10 @@ export const metadata = {
   ],
   alternates: {
     canonical: "/ar/sa/annual-leave-calculator",
+    languages: {
+      "ar-SA": "/ar/sa/annual-leave-calculator",
+
+    },
   },
   openGraph: {
     title: "حاسبة بدل الإجازات السنوية في السعودية 2026 | نظام العمل السعودي",
