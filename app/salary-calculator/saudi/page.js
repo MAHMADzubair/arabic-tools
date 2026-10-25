@@ -1,11 +1,12 @@
 import SalaryCalculator from "@/components/SalaryCalculator";
-import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
+
 import ToolGuideSection from "@/components/ToolGuideSection";
 import GeoSummary from "@/components/business/GeoSummary";
 import { SITE_URL } from "@/lib/siteConfig";
+import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 
 export const metadata = {
-  keywords: ["حساب راتب الصافي السعودية", "آلة حساب الرواتب", "حساب صافي الراتب", "GOSI", "sanad", "حساب صافي الراتب السعودي"],
+
   title: "حاسبة الراتب الصافي في السعودية 2026 | خصم التأمينات GOSI وساند",
   description:
     "احسب صافي راتبك في السعودية بدقة بعد استقطاع التأمينات الاجتماعية (GOSI) وساند وفق النظامين السابق والجديد 2026، مع تفصيل بدل السكن والنقل ومنصة قوى ونظام حماية الأجور.",
@@ -140,8 +141,10 @@ export default function SaudiSalaryPage() {
         title="أدوات ذات صلة"
         subtitle="روابط سريعة إلى أدوات أخرى في السوق"
         tools={[
-          { href: "/ar/ae/vat-registration-checker", icon: "🏢", title: "حاسبة التسجيل في ضريبة القيمة المضافة", desc: "تحقق من الالتزام بالتسجيل في VAT" },
-          { href: "/ar/ae/quotation-generator", icon: "📋", title: "مولد عرض السعر", desc: "إنشاء عروض أسعار احترافية" },
+{ href: "/gratuity-calculator/saudi", icon: "💰", title: "حاسبة مكافأة نهاية الخدمة", desc: "احسب مكافأة نهاية الخدمة في السعودية" },
+{ href: "/overtime-calculator/saudi", icon: "⏰", title: "حاسبة العمل الإضافي", desc: "احسب أجر العمل الإضافي في السعودية" },
+{ href: "/ar/sa/final-settlement-calculator", icon: "🏁", title: "محول التسوية النهائية", desc: "حاسبة التسوية النهائية للرواتب في السعودية" },
+{ href: "/ar/sa", icon: "🇸🇦", title: "أدوات السعودية", desc: "مجموعة أدوات وحاسبات السوق السعودي" }
         ]}
       />
     </div>

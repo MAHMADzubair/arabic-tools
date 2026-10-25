@@ -162,14 +162,7 @@ const relatedTools = [
     badge: "Business",
     badgeColor: "bg-amber-100 text-amber-800",
   },
-  {
-    href: "/salary-calculator/saudi",
-    icon: "💰",
-    title: "حاسبة الراتب الصافي في السعودية",
-    desc: "احسب صافي راتبك في المملكة العربية السعودية",
-    badge: "Business",
-    badgeColor: "bg-green-100 text-green-800",
-  },
+
   {
     href: "/ar/ae/corporate-tax-calculator",
     icon: "🏛️",
