@@ -93,7 +93,7 @@ Added a small `أدوات دول الخليج` strip with crawlable `<a href="/a
 ### FIX-3 — hreflang on Annual Leave Calculator
 **File:** `app/ar/sa/annual-leave-calculator/page.js`
 
-Added `languages: { "ar-SA": "/ar/sa/annual-leave-calculator", "ar-AE": "/ar/ae/final-settlement-calculator" }` to the metadata alternates. This page was the only one of the 9 missing the cross-country signal.
+Added `languages: { "ar-SA": "/ar/sa/annual-leave-calculator" }` to the metadata alternates. No ar-AE alternate exists.
 
 ---
 
