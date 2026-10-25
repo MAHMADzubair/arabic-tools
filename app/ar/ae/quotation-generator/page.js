@@ -1,4 +1,4 @@
-﻿import UaeQuotationGenerator from "@/components/UaeQuotationGenerator";
+import UaeQuotationGenerator from "@/components/UaeQuotationGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -170,6 +170,14 @@ const relatedTools = [
     desc: "جميع الأدوات الضريبية والعمالية والمالية المخصصة للسوق الإماراتي.",
     badge: "الشامل",
     badgeColor: "bg-emerald-700 text-white font-bold",
+  },
+  {
+    href: "/salary-calculator/saudi",
+    icon: "💰",
+    title: "حاسبة الراتب الصافي في السعودية",
+    desc: "احسب صافي راتبك في المملكة العربية السعودية",
+    badge: "Business",
+    badgeColor: "bg-green-100 text-green-800",
   },
 ];
 
