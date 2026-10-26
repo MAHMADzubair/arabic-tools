@@ -8,7 +8,7 @@
  * color classes), emoji icons removed, FAQ gets aria-controls, answers stay
  * in the DOM (via `hidden`) for SEO.
  */
-import { useState } from "react";
+import React, { useState } from "react";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 const allTools = [
@@ -41,6 +41,33 @@ const allTools = [
   { href: "/overtime-calculator/uae", title: "حاسبة العمل الإضافي في الإمارات", desc: "احسب أجر ساعات العمل الإضافي في الإمارات وفق المادة (19): 125% نهاراً و150% ليلاً والعطلات." },
 ];
 
+// Curated contextual internal linking clusters for Gulf payroll / labour calculators
+const saudiCuratedTools = [
+  { href: "/salary-calculator/saudi", title: "حاسبة الراتب الصافي في السعودية", desc: "احسب صافي راتبك الشهري في المملكة العربية السعودية بعد استقطاع التأمينات (GOSI) وساند." },
+  { href: "/gratuity-calculator/saudi", title: "حاسبة مكافأة نهاية الخدمة في السعودية", desc: "احسب مكافأة نهاية الخدمة لموظفي القطاع الخاص في السعودية وفق المادتين (84 و85) من نظام العمل." },
+  { href: "/overtime-calculator/saudi", title: "حاسبة العمل الإضافي في السعودية", desc: "احسب أجر ساعات العمل الإضافي في السعودية وفق المادة (107) من نظام العمل بنسبة 150%." },
+  { href: "/ar/sa/final-settlement-calculator", title: "حاسبة المخالصة النهائية بالسعودية", desc: "تصفية كاملة لمستحقات العامل: نهاية الخدمة، آخر راتب، رصيد الإجازات، ومهلة الإشعار مع نموذج مخالصة قابل للطباعة." },
+  { href: "/ar/sa/annual-leave-calculator", title: "حاسبة بدل الإجازات السنوية بالسعودية", desc: "احسب رصيد إجازتك السنوية وأجر أيام الإجازة والتعويض النقدي عن رصيد الإجازات غير المستنفدة بموجب نظام العمل." },
+  { href: "/ar/sa/article-77-calculator", title: "حاسبة تعويض المادة 77 (إنهاء العقد)", desc: "احسب التعويض المالي لإنهاء عقد العمل لسبب غير مشروع بموجب المادة (77) من نظام العمل السعودي." },
+];
+
+const uaeCuratedTools = [
+  { href: "/salary-calculator/uae", title: "حاسبة الراتب في الإمارات", desc: "احسب صافي راتبك الشهري بالدرهم الإماراتي مع تفصيل الراتب الأساسي والبدلات ورسوم التأمين ضد التعطل (ILOE)." },
+  { href: "/gratuity-calculator/uae", title: "حاسبة مكافأة نهاية الخدمة في الإمارات", desc: "احسب مكافأة نهاية الخدمة في الإمارات وفق المادة (51) من قانون العمل الاتحادي 33 لسنة 2021 دون أي خصم للاستقالة." },
+  { href: "/overtime-calculator/uae", title: "حاسبة العمل الإضافي في الإمارات", desc: "احسب أجر ساعات العمل الإضافي في الإمارات وفق المادة (19): 125% نهاراً و150% ليلاً والعطلات." },
+  { href: "/ar/ae/final-settlement-calculator", title: "حاسبة المخالصة النهائية في الإمارات", desc: "تصفية شاملة لجميع مستحقات العامل في الإمارات: مكافأة نهاية الخدمة، آخر راتب، رصيد الإجازات، وبدل الإنذار مع نموذج قابل للطباعة." },
+  { href: "/ar/ae/notice-period-calculator", title: "حاسبة فترة الإنذار وبدل الإشعار", desc: "احسب مدة الإنذار وتاريخ آخر يوم عمل والأيام غير المنفذة وبدل الإنذار التقديري وفق المادة (43) من قانون العمل الإماراتي." },
+];
+
+export const TARGETED_GULF_ROUTES = {
+  "/salary-calculator/saudi": saudiCuratedTools,
+  "/gratuity-calculator/saudi": saudiCuratedTools,
+  "/overtime-calculator/saudi": saudiCuratedTools,
+  "/salary-calculator/uae": uaeCuratedTools,
+  "/gratuity-calculator/uae": uaeCuratedTools,
+  "/overtime-calculator/uae": uaeCuratedTools,
+};
+
 export default function ToolGuideSection({
   currentPath,
   aboutTitle,
@@ -56,8 +83,11 @@ export default function ToolGuideSection({
 }) {
   const [openFaq, setOpenFaq] = useState(0);
 
-  const relatedTools = allTools.filter((tool) => tool.href !== currentPath);
-  const currentTool = allTools.find((tool) => tool.href === currentPath);
+  const curatedList = TARGETED_GULF_ROUTES[currentPath];
+  const relatedTools = curatedList
+    ? curatedList.filter((tool) => tool.href !== currentPath)
+    : allTools.filter((tool) => tool.href !== currentPath);
+  const currentTool = (curatedList || allTools).find((tool) => tool.href === currentPath) || allTools.find((tool) => tool.href === currentPath);
 
   const faqSchema = {
     "@context": "https://schema.org",
