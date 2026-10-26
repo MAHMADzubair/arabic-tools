@@ -1,4 +1,4 @@
-﻿import UaePurchaseOrderGenerator from "@/components/UaePurchaseOrderGenerator";
+import UaePurchaseOrderGenerator from "@/components/UaePurchaseOrderGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -6,9 +6,9 @@ import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export const metadata = {
-  title: "نموذج أمر شراء الإمارات | مولد LPO PDF جاهز 2026",
+  title: "نموذج أمر شراء الإمارات (PO/LPO) | مولد PDF جاهز 2026",
   description:
-    "أنشئ نموذج أمر شراء LPO في الإمارات بالدرهم AED، مع بيانات المورد والأصناف وضريبة القيمة المضافة وشروط التسليم، ثم اطبعه أو احفظه PDF.",
+    "أنشئ نموذج أمر شراء (PO/LPO) في الإمارات بالدرهم AED، مع بيانات المورد والأصناف وضريبة القيمة المضافة وشروط التسليم. اطبعه أو احفظه PDF مجاناً وبدون تسجيل.",
   keywords: [
     "نموذج أمر شراء الإمارات",
     "LPO الإمارات",
@@ -23,9 +23,9 @@ export const metadata = {
     canonical: "/ar/ae/purchase-order-generator",
   },
   openGraph: {
-    title: "نموذج أمر شراء الإمارات | مولد LPO PDF جاهز 2026",
+    title: "نموذج أمر شراء الإمارات (PO/LPO) | مولد PDF جاهز 2026",
     description:
-      "أنشئ نموذج أمر شراء LPO في الإمارات بالدرهم AED مع بيانات المورد والأصناف وضريبة القيمة المضافة، واطبعه أو احفظه PDF مباشرة.",
+      "أنشئ نموذج أمر شراء (PO/LPO) في الإمارات بالدرهم AED، مع بيانات المورد والأصناف وضريبة القيمة المضافة وشروط التسليم. اطبعه أو احفظه PDF مجاناً وبدون تسجيل.",
     url: `${SITE_URL}/ar/ae/purchase-order-generator`,
     type: "website",
     locale: "ar_AE",
