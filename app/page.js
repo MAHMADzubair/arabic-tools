@@ -1,6 +1,7 @@
 import Script from "next/script";
 import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
-
+import HomeHero from "@/components/home/HomeHero";
+import CategoryBrowseShowcase from "@/components/home/CategoryBrowseShowcase";
 import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 export const metadata = {
@@ -236,83 +237,13 @@ export default function HomePage() {
       <style dangerouslySetInnerHTML={{ __html: TOKENS_CSS }} />
 
       {/* ── Hero ── */}
-      <section className="w-full max-w-full overflow-hidden border-b border-[var(--border)] px-4 py-8 sm:py-20">
-        <div className="mx-auto grid max-w-5xl min-w-0 items-center gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
-          <div className="min-w-0">
-            <h1 className="hero-h1 text-[2rem] font-bold leading-[1.28] text-balance sm:text-5xl sm:leading-[1.25] lg:text-6xl lg:leading-[1.2]">
-              كل حساباتك
-              <br />
-              في مكان واحد،
-              <br />
-              <span className="underline decoration-[var(--orange)] decoration-[3px] underline-offset-[8px] sm:decoration-[6px] sm:underline-offset-[14px]">
-                بلا تسجيل
-              </span>
-            </h1>
-            <p className="mt-4 max-w-[42ch] text-[15px] font-normal leading-[1.75] text-[var(--text-2)] sm:mt-6 sm:max-w-lg sm:text-lg sm:leading-8">
-              حاسبات ومحولات مالية وإسلامية ويومية مبنية للمستخدم العربي. تُحسب الأرقام داخل متصفحك، والخدمة مجانية تماماً.
-            </p>
-            <a
-              href={`#${activeCategories[0]?.id ?? "upcoming"}`}
-              className="mt-6 inline-flex min-h-[52px] items-center justify-center rounded-xl bg-[var(--orange)] px-8 py-3.5 text-base font-bold text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)] sm:mt-8"
-            >
-              تصفح الأدوات
-            </a>
-          </div>
+      <HomeHero toolCount={totalTools} />
 
-          {/* Receipt: a live "statement" of what the site holds */}
-          <div className="mx-auto w-full max-w-sm min-w-0 lg:rotate-[-1.5deg]" aria-label="ملخص الموقع">
-            <div className="overflow-hidden bg-[var(--card)] px-5 pt-5 text-[var(--card-text)] sm:px-6 sm:pt-6">
-              <div className="flex items-baseline justify-between border-b border-dashed border-[var(--card-muted)] pb-3">
-                <p className="text-base font-bold leading-snug sm:text-lg">كشف الأدوات</p>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-[var(--card-muted)]">Qemlo</p>
-              </div>
-              <ul className="py-2.5">
-                {activeCategories.map((cat) => (
-                  <li key={cat.id}>
-                    <a href={`#${cat.id}`} className="flex items-baseline gap-2 py-[5px] text-[13px] leading-snug hover:underline sm:text-sm sm:py-1.5">
-                      <span className="shrink-0 font-medium">{cat.nameAr}</span>
-                      <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                      <span className="shrink-0 font-bold tabular-nums">{cat.tools.length.toLocaleString("ar-EG")}</span>
-                    </a>
-                  </li>
-                ))}
-                <li className="flex items-baseline gap-2 py-[5px] text-[13px] leading-snug sm:text-sm sm:py-1.5">
-                  <span className="shrink-0 font-medium">تسجيل مطلوب</span>
-                  <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                  <span className="shrink-0 font-bold tabular-nums">٠</span>
-                </li>
-                <li className="flex items-baseline gap-2 py-[5px] text-[13px] leading-snug sm:text-sm sm:py-1.5">
-                  <span className="shrink-0 font-medium">رسوم الاستخدام</span>
-                  <span className="flex-1 border-b border-dotted border-[var(--card-muted)]" aria-hidden="true" />
-                  <span className="shrink-0 font-bold tabular-nums">٠</span>
-                </li>
-              </ul>
-              <div className="-mx-5 flex items-center justify-between bg-[var(--orange)] px-5 py-3.5 text-[var(--on-orange)] sm:-mx-6 sm:px-6 sm:py-4">
-                <span className="text-[13px] font-bold leading-snug sm:text-sm">{stats[0].label}</span>
-                <span className="text-[28px] font-bold leading-none tabular-nums sm:text-3xl">{stats[0].value}</span>
-              </div>
-              <p className="py-3 text-center text-[11px] font-normal leading-normal text-[var(--card-muted)] sm:py-4 sm:text-xs">
-                {stats[1].value} تصنيفات · تُحدَّث القائمة مع كل أداة جديدة
-              </p>
-            </div>
-            <div className="tear" aria-hidden="true" />
-          </div>
-        </div>
-      </section>
-
-      {/* ── Category strip (auto-scrolling, not sticky) ── */}
-      <nav dir="rtl" aria-label="تصنيفات الأدوات" className="cat-strip w-full max-w-full overflow-hidden">
-        <div data-marquee className="mx-auto w-full max-w-5xl overflow-hidden">
-          <div data-n={navItems.length} className="marquee w-full max-w-full">
-            {[false, true].map((dup) =>
-              navItems.map((item) => <Pill key={`${dup}-${item.id}`} item={item} dup={dup} />)
-            )}
-          </div>
-        </div>
-      </nav>
+      {/* ── Category Browse Showcase (Interactive Desktop & Mobile Component) ── */}
+      <CategoryBrowseShowcase />
 
       {/* ── Categories ── */}
-      <main className="mx-auto max-w-5xl min-w-0 space-y-12 px-4 py-10 sm:space-y-14 sm:py-16">
+      <div id="tools" className="mx-auto max-w-5xl min-w-0 space-y-12 px-4 py-10 sm:space-y-14 sm:py-16">
         {/* Full Active Sections */}
         {activeCategories.map((cat) => (
           <section key={cat.id} id={cat.id} className="cat-sec min-w-0">
@@ -408,7 +339,7 @@ export default function HomePage() {
             </div>
           </section>
         )}
-      </main>
+      </div>
 
       {/* ── Country hubs strip — crawlable links to SA and UAE tool collections ── */}
       {/* These links ensure Googlebot can reach the hub pages from the homepage   */}

@@ -200,3 +200,251 @@ tbody tr:hover {
     box-shadow: none !important;
   }
 }
+
+/* ── Qemlo Premium Glassmorphic & Color Protection Rules ── */
+.qemlo-glossy-pill {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.45), inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25) !important;
+}
+
+.qemlo-white-card {
+  background-color: #FFFFFF !important;
+  color: #0D0D0D !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.qemlo-white-card-title {
+  color: #0D0D0D !important;
+}
+
+.qemlo-white-card-desc {
+  color: #55554F !important;
+}
+
+.qemlo-search-pill {
+  background-color: #FFFFFF !important;
+  color: #0D0D0D !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.35) !important;
+}
+
+.qemlo-search-pill * {
+  color: #0D0D0D;
+}
+
+/* Strict mobile white tool card protection against global dark theme tokens */
+.qemlo-mobile-tool-container {
+  background-color: #F7F7F4 !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+@media (min-width: 1024px) {
+  :root:not([data-theme="light"]) .qemlo-mobile-tool-container,
+  :root[data-theme="dark"] .qemlo-mobile-tool-container {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+}
+
+.qemlo-mobile-tool-card {
+  background-color: #FFFFFF !important;
+  color: #0D0D0D !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+
+.qemlo-mobile-tool-card h3 {
+  color: #0D0D0D !important;
+}
+
+.qemlo-mobile-tool-card p {
+  color: #666660 !important;
+}
+
+@media (min-width: 1024px) {
+  :root:not([data-theme="light"]) .qemlo-mobile-tool-card,
+  :root[data-theme="dark"] .qemlo-mobile-tool-card {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important;
+  }
+  :root:not([data-theme="light"]) .qemlo-mobile-tool-card h3,
+  :root[data-theme="dark"] .qemlo-mobile-tool-card h3 {
+    color: #FFFFFF !important;
+  }
+  :root:not([data-theme="light"]) .qemlo-mobile-tool-card p,
+  :root[data-theme="dark"] .qemlo-mobile-tool-card p {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HERO & HEADER LIGHT MODE ADAPTATION (Sprint 5D / Theme Support)
+   ══════════════════════════════════════════════════════════════ */
+:root[data-theme="light"] .qemlo-hero-panel {
+  background: linear-gradient(180deg, #FFF7F2 0%, #FDFBF8 40%, #F5F5F2 100%) !important;
+  color: #0D0D0D !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05) !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-glow-1 {
+  background: radial-gradient(circle, rgba(255, 91, 4, 0.12) 0%, rgba(255, 245, 238, 0) 70%) !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-glow-2 {
+  background: radial-gradient(circle, rgba(255, 138, 61, 0.10) 0%, rgba(255, 245, 238, 0) 70%) !important;
+}
+
+:root[data-theme="light"] .qemlo-glossy-pill {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.75) 100%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.08), inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+:root[data-theme="light"] .qemlo-header-nav-link {
+  color: #333330 !important;
+}
+:root[data-theme="light"] .qemlo-header-nav-link:hover {
+  color: #FF5B04 !important;
+}
+
+:root[data-theme="light"] .qemlo-header-action-btn {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #0D0D0D !important;
+}
+:root[data-theme="light"] .qemlo-header-action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.09) !important;
+}
+:root[data-theme="light"] .qemlo-header-action-btn svg {
+  color: #0D0D0D;
+}
+:root[data-theme="light"] .qemlo-header-action-btn kbd {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #666660 !important;
+}
+
+:root[data-theme="light"] .qemlo-country-name {
+  color: #0D0D0D !important;
+}
+:root[data-theme="light"] .qemlo-country-arrow {
+  color: rgba(13, 13, 13, 0.6) !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-title {
+  color: #0D0D0D !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-subtitle {
+  color: #555550 !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-kicker {
+  background-color: rgba(255, 91, 4, 0.08) !important;
+  border-color: rgba(255, 91, 4, 0.22) !important;
+  color: #0D0D0D !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-secondary-btn {
+  background-color: #FFFFFF !important;
+  border-color: #D4D4CE !important;
+  color: #0D0D0D !important;
+  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.06) !important;
+}
+:root[data-theme="light"] .qemlo-hero-secondary-btn:hover {
+  background-color: #F5F5F2 !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-badges {
+  color: #666660 !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-tool-window {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+:root[data-theme="light"] .qemlo-hero-tool-window .qemlo-mobile-tool-card {
+  background-color: #FFFFFF !important;
+  color: #0D0D0D !important;
+  border: 1px solid rgba(0, 0, 0, 0.07) !important;
+  box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+:root[data-theme="light"] .qemlo-hero-tool-window .qemlo-mobile-tool-card h3 {
+  color: #0D0D0D !important;
+}
+:root[data-theme="light"] .qemlo-hero-tool-window .qemlo-mobile-tool-card p {
+  color: #666660 !important;
+}
+:root[data-theme="light"] .qemlo-hero-tool-window .qemlo-chip {
+  background-color: #EAEAE5 !important;
+  color: #444440 !important;
+  border-color: transparent !important;
+}
+:root[data-theme="light"] .qemlo-hero-tool-window .qemlo-chip:hover {
+  border-color: #FF5B04 !important;
+  color: #FF5B04 !important;
+}
+
+/* Hide scrollbar completely across browsers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Continuous infinite rotating slider marquee for mobile */
+@keyframes qemlo-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
+}
+
+.qemlo-mobile-marquee {
+  display: flex;
+  width: max-content;
+  animation: qemlo-marquee 25s linear infinite;
+}
+
+.qemlo-mobile-marquee:hover,
+.qemlo-mobile-marquee:active {
+  animation-play-state: paused;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ADMIN COMMAND CENTER ISOLATION & LTR TOKENS
+   ══════════════════════════════════════════════════════════════ */
+body:has(#admin-root) {
+  direction: ltr !important;
+  background-color: #0D0D0D !important;
+  color: #F5F5F2 !important;
+}
+
+body:has(#admin-root) footer,
+body:has(#admin-root) header,
+body:has(#admin-root) a[href="#main"] {
+  display: none !important;
+}
+
+#admin-root {
+  direction: ltr !important;
+  text-align: left !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: -0.011em;
+}
+
+#admin-root * {
+  box-sizing: border-box;
+}

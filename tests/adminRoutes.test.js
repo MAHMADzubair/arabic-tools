@@ -79,10 +79,10 @@ test("Robots.txt: Preserves valid crawl rules and sitemap on Production", () => 
         {
           userAgent: "*",
           allow: "/",
-          disallow: ["/api/", "/internal/"],
+          disallow: ["/api/", "/internal/", "/admin/"],
         },
       ],
-      "Production must allow / and disallow /api/ and /internal/"
+      "Production must allow / and disallow /api/, /internal/, and /admin/"
     );
     assert.ok(prodRobots.sitemap.includes("/sitemap.xml"), "Production must link to sitemap.xml");
   } finally {

@@ -33,10 +33,12 @@ const CSS = `
 .hd-bar>*{pointer-events:auto}
 .hd-wrap{max-width:64rem;margin:0 auto}
 .hd-top{position:relative}
-.hd-pill{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 8px 7px 10px;border:2px solid var(--border);border-radius:22px;color:var(--text);
-  background:var(--surface);background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  box-shadow:0 10px 30px -16px rgba(0,0,0,.45);transition:border-color .2s}
-.hd-pill:hover{border-color:var(--text-3)}
+.hd-pill{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 14px 8px 16px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:var(--text);
+  background:linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.05) 100%);
+  -webkit-backdrop-filter:blur(28px) saturate(190%);backdrop-filter:blur(28px) saturate(190%);
+  box-shadow:0 16px 40px -10px rgba(0,0,0,.45),inset 0 1px 1.5px 0 rgba(255,255,255,.45),inset 0 -1px 1px 0 rgba(0,0,0,.25);
+  transition:border-color .2s,box-shadow .2s}
+.hd-pill:hover{border-color:rgba(255,91,4,.45);box-shadow:0 18px 44px -10px rgba(0,0,0,.55),inset 0 1px 1.5px 0 rgba(255,255,255,.5)}
 .hd-logo{display:flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;flex:none}
 .hd-mark{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;transition:transform .25s;flex-shrink:0}
 .hd-logo:hover .hd-mark{transform:scale(1.08)}
@@ -116,7 +118,10 @@ const CSS = `
 /* mobile: minimal header (logo + one small button), no extra effects */
 @media(max-width:767px){
 .hd-bar{padding:8px 10px 0}
-.hd-pill{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--surface);box-shadow:none;border-radius:14px;padding:6px 8px 6px 10px}
+.hd-pill{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 6px 12px;border:1px solid rgba(255,255,255,.2);border-radius:999px;color:var(--text);
+  background:linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  box-shadow:0 8px 24px -6px rgba(0,0,0,.4),inset 0 1px 1px rgba(255,255,255,.3)}
 .hd-pill:hover{border-color:var(--border)}
 .hd-logo:hover .hd-mark{transform:none}
 .hd-mark{width:34px;height:34px;font-size:16px;border-radius:10px}
@@ -247,6 +252,9 @@ export default function Header() {
 
   const cur = (href) => (pathname === href ? "page" : undefined);
   const jumpTo = (id) => listRef.current?.querySelector(`#hd-sec-${id}`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+
+  if (pathname === "/") return null;
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/internal")) return null;
 
   return (
     <div className="hd">
