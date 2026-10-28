@@ -18,6 +18,7 @@
 
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { checkAndRecordLoginAttempt, RL_MAX_ATTEMPTS, RL_WINDOW_MS } from "../lib/sessionAuth.js";
 
 /**
@@ -243,4 +244,18 @@ test("Auth Reliability 10: Invariant — No rate limit failure mode permits logi
     assert.equal(dispatch.status, s.expectedStatus, `Scenario '${s.name}' must return HTTP ${s.expectedStatus}`);
     assert.ok(dispatch.response.error, `Scenario '${s.name}' must provide safe error message`);
   }
+});
+
+// Troubleshooting should identify RPC failure categories without leaking secrets.
+test("Admin RPC diagnostic logging is Preview-only and redacted", () => {
+  const source = readFileSync("lib/sessionAuth.js", "utf8");
+  const start = source.indexOf('if (process.env.VERCEL_ENV === "preview") {', source.indexOf("export async function checkAndRecordLoginAttempt"));
+  const end = source.indexOf("// Fail closed if RPC returned an error", start);
+  assert.ok(start > 0 && end > start, "Preview diagnostic should be present");
+  const diagnostic = source.slice(start, end);
+  assert.ok(diagnostic.includes("[Admin Rate Limit Diagnostics]"));
+  assert.ok(diagnostic.includes("permittedCodes.has(rpcErr.code)"));
+  assert.ok(!diagnostic.includes("rpcErr.message"), "RPC error message must not be logged");
+  assert.ok(!diagnostic.includes("process.env.SUPABASE_SERVICE_ROLE_KEY"));
+  assert.ok(!diagnostic.includes("JSON.stringify({ ip"));
 });
