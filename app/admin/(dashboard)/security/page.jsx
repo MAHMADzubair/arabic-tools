@@ -62,11 +62,11 @@ export default async function SecurityCenterPage() {
         <KpiCard title="Login Attempts (24h)" value={snapshot.loginAttempts24h ?? "Unavailable"}
           subtitle="All attempts; results not separately recorded" source="Supabase" />
         <KpiCard title="Login Rate Limit" value="5 per 15 min"
-          subtitle="Requires verified database RPC in staging" source="Policy"
-          badge={<StatusBadge status="pending" label="Verification Required" size="sm" />} />
+          subtitle="Atomic RPC configured; check enforcement in target deployment before release" source="Policy"
+          badge={<StatusBadge status="neutral" label="Policy Configured · QA Pending" size="sm" />} />
         <KpiCard title="Multi-Factor Authentication" value={mfaReady ? "Configured" : "Setup Required"}
-          subtitle="TOTP enforced in login; requires verified owner enrollment and live QA" source="Owner Access"
-          badge={<StatusBadge status={mfaReady ? "warning" : "error"} label={mfaReady ? "Verification Pending" : "Release Blocker"} size="sm" />} />
+          subtitle="Server checks owner identity, password and TOTP configuration; login/logout QA is separate" source="Owner Access"
+          badge={<StatusBadge status={mfaReady ? "warning" : "error"} label={mfaReady ? "Config Ready · QA Pending" : "Release Blocker"} size="sm" />} />
       </div>
 
       <div className="mt-6 rounded-xl border border-[#262626] bg-[#161616] p-5">
