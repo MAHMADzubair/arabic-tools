@@ -28,3 +28,35 @@ jobs:
         run: npm test
       - name: Verify production build
         run: npm run build
+      - name: Smoke test real Next.js server HTML and protected admin API
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERCEL_ENV=production npm run start > /tmp/qemlo-next.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in {1..35}; do
+            if curl --silent --max-time 3 http://127.0.0.1:3000/ -o /dev/null; then break; fi
+            sleep 1
+          done
+          home_code=$(curl --silent --max-time 15 -o /tmp/qemlo-home.html -w '%{http_code}' http://127.0.0.1:3000/)
+          if [ "$home_code" != "200" ]; then
+            echo "Homepage HTTP status: $home_code"
+            tail -80 /tmp/qemlo-next.log
+            exit 1
+          fi
+          grep -q 'application/ld+json' /tmp/qemlo-home.html
+          grep -q '"@type":"Organization"' /tmp/qemlo-home.html
+          grep -q '"@type":"WebSite"' /tmp/qemlo-home.html
+          tool_code=$(curl --silent --max-time 15 -o /tmp/qemlo-tool.html -w '%{http_code}' http://127.0.0.1:3000/overtime-calculator/saudi)
+          if [ "$tool_code" != "200" ]; then
+            echo "Saudi overtime page HTTP status: $tool_code"
+            tail -80 /tmp/qemlo-next.log
+            exit 1
+          fi
+          admin_auth_code=$(curl --silent --max-time 15 -X POST -H 'Content-Type: application/json' -d '{"password":"invalid"}' -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/admin/auth)
+          if [ "$admin_auth_code" != "503" ]; then
+            echo "Production admin API must be disabled until MFA: HTTP $admin_auth_code"
+            exit 1
+          fi
+          echo "Public runtime smoke checks passed; admin API failed closed."
