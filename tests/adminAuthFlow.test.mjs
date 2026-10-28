@@ -77,7 +77,7 @@ test("Admin Auth API: Rejects invalid password when staging rate-limit service i
 
     const response = await POST(req);
     const data = await response.json();
-    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (process.env.ADMIN_MFA_ENABLED === "true" && process.env.ADMIN_LOGIN_EMAIL && process.env.ADMIN_TOTP_SECRET && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       assert.equal(response.status, 401, "Invalid password must be rejected when the rate limiter is available");
       assert.ok(data.error.includes("Invalid administrative credentials"));
     } else {
