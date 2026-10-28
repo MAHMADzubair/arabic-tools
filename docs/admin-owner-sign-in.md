@@ -81,3 +81,24 @@ Do not create a password-only fallback. If the authenticator device is lost, den
 ## Preview rollout — private owner link
 
 Changes remain in draft PR #21 until reviewed. Validate the new `/owner-access` route in the latest feature-branch Preview deployment before merging. The feature intentionally does not create a separate Vercel project or configure `admin.qemlo.com` DNS. If a dedicated subdomain is wanted, add it separately through Vercel Domains + DNS after staging auth QA. A new URL does not fix missing/invalid Preview environment variables; keep the server-side MFA readiness gate fail-closed.
+
+## Phase 1 — owner release verification (Preview only)
+
+The current auth gate requires exactly these six server-side settings: `ADMIN_LOGIN_EMAIL`, `ADMIN_SECRET`, `ADMIN_TOTP_SECRET`, `ADMIN_MFA_ENABLED`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. The former `MFA_ENCRYPTION_KEY` dashboard warning was obsolete and is **not** part of this TOTP implementation. Presence/format checks do not verify a working Supabase API key; exercise the real Preview flow.
+
+Security verification matrix (mark each item only when independently observed):
+
+| Check | Evidence needed | Status before owner QA |
+| --- | --- | --- |
+| Three-factor login | One successful owner login in protected Preview | Owner-reported success; do not assume Production |
+| Logout | Click **Owner → Sign Out** in Preview; observe successful response, cookie removal, and redirect to `/owner-access` | Owner browser QA required |
+| Session revocation | After logout, reload `/admin` and `/api/admin/health` with old session: no protected content | Owner browser QA required |
+| Anonymous access | New incognito browser with no admin session cannot view `/admin` data | Owner browser QA required |
+| Session expiry | Unit/staging test for expiry; 8-hour absolute lifetime is not an idle timer | Automated test evidence required |
+| Rate limiting | Staging test checks exactly 5 allowed attempts per 15 min, subsequent requests rejected; avoid trying many passwords on a shared IP | Verify test report and target Preview RPC |
+| SEO and public pages | Live public homepage, Saudi/UAE tools, sitemap and robots remain unchanged; owner route is noindex | Regression + deployment QA required |
+| Cleanup | Confirm authorized staging `cleanup_expired_admin_data` RPC plus actual scheduled execution separately | Scheduling unverified |
+
+**Logout policy:** The service must not report successful revocation merely because the database UPDATE had no error. Require confirmation that the targeted session row was changed; never expose raw tokens in logs or client payloads. A failed revocation returns an error and removes the browser cookie without claiming server revocation success. Request an owner-side retry/investigation if this occurs.
+
+If all checks pass, request explicit approval to promote the feature. Do not merge this Draft PR or modify Production environment variables on the basis of UI status badges alone.
