@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdminAuthConfigured, verifyAdminTotp } from "@/lib/adminMfa";
+import { isAdminAuthConfigured, verifyAdminTotp, sanitizeEnvVar } from "@/lib/adminMfa";
 import {
   COOKIE_NAME,
   createSession,
@@ -97,8 +97,10 @@ export async function POST(request) {
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body.password === "string" ? body.password : "";
   const totp = typeof body.totp === "string" ? body.totp : "";
-  const emailOk = email.length <= 320 && safeCompare(email, process.env.ADMIN_LOGIN_EMAIL.toLowerCase());
-  const passwordOk = password.length <= 256 && safeCompare(password, process.env.ADMIN_SECRET);
+  const configuredEmail = sanitizeEnvVar(process.env.ADMIN_LOGIN_EMAIL).toLowerCase();
+  const configuredSecret = sanitizeEnvVar(process.env.ADMIN_SECRET);
+  const emailOk = email.length <= 320 && safeCompare(email, configuredEmail);
+  const passwordOk = password.length <= 256 && safeCompare(password, configuredSecret);
   const totpOk = verifyAdminTotp(totp);
   if (!emailOk || !passwordOk || !totpOk) {
     return NextResponse.json(

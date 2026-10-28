@@ -2,7 +2,7 @@ import React from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { COOKIE_NAME, verifySession } from "@/lib/sessionAuth";
-import { isAdminAuthConfigured } from "@/lib/adminMfa";
+import { isAdminAuthConfigured, getAdminAuthConfigStatus } from "@/lib/adminMfa";
 import AdminLoginForm from "../admin/login/AdminLoginForm";
 
 export const metadata = {
@@ -19,6 +19,10 @@ export default async function AdminLoginPage() {
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
     if (token && (await verifySession(token))) redirect("/admin");
+  } else {
+    // Non-sensitive PASS/FAIL diagnostic status in server logs only
+    const status = getAdminAuthConfigStatus();
+    console.warn("[Admin MFA Gate Diagnostics]", JSON.stringify(status));
   }
 
   return (

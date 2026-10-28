@@ -48,6 +48,13 @@ test("Owner MFA: fail-closed readiness requires owner ID, long password, seed, D
     process.env.ADMIN_LOGIN_EMAIL = "owner@example.com";
     process.env.ADMIN_SECRET = "short";
     assert.equal(isAdminAuthConfigured(), false);
+    process.env.ADMIN_SECRET = "a-unique-private-example-password-2026";
+
+    // Test sanitization of quoted or whitespace-padded environment values
+    process.env.ADMIN_MFA_ENABLED = '"true"';
+    process.env.ADMIN_LOGIN_EMAIL = ' "owner@example.com" ';
+    process.env.ADMIN_TOTP_SECRET = `"${RFC_SECRET_BASE32}"`;
+    assert.equal(isAdminAuthConfigured(), true);
   } finally {
     for (const key of keys) {
       if (previous[key] === undefined) delete process.env[key];
