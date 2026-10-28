@@ -47,3 +47,17 @@ test("Owner protected routes still require server-side session verification", ()
   assert.ok(layout.includes('redirect("/owner-access")'));
   assert.ok(health.includes("verifySession("));
 });
+
+test("Admin sidebar exposes a persistent owner Sign Out action on desktop and mobile", () => {
+  const sidebar = read("components/admin/AdminSidebar.jsx");
+  const shell = read("components/admin/AdminShell.jsx");
+  assert.ok(shell.includes("<AdminSidebar"), "all admin pages use the persistent sidebar");
+  assert.ok(sidebar.includes('aria-label="Sign Out"'));
+  assert.ok(sidebar.includes("handleSignOut"));
+  assert.ok(sidebar.includes('body: JSON.stringify({ action: "logout" })'));
+  assert.ok(sidebar.includes('if (!response.ok) throw'), "failed revocation cannot be presented as success");
+  assert.ok(sidebar.includes('router.replace("/owner-access")'));
+  assert.ok(sidebar.includes("onCloseMobile?.()"), "sign-out closes mobile navigation");
+  assert.ok(sidebar.includes("loggingOut"), "the action prevents duplicate requests");
+  assert.ok(sidebar.includes('role="alert"'), "sign-out failure is visible");
+});
