@@ -49,3 +49,17 @@ test("privileged admin pages and API remain gated on MFA configuration", () => {
   assert.ok(auth.indexOf("verifyAdminTotp(totp)") < auth.indexOf("createSession(ip, userAgent)"));
   assert.ok(auth.includes("getSessionCookieOptions()"));
 });
+
+test("owner sign in clears password and authenticator fields after navigation or logout", () => {
+  const form = source("app/admin/login/AdminLoginForm.jsx");
+  assert.ok(form.includes('autoComplete="off"'), "avoid asking browsers to refill saved owner password");
+  assert.ok(!form.includes('autoComplete="current-password"'));
+  assert.ok(form.includes("setPassword(\"\")"));
+  assert.ok(form.includes("setTotp(\"\")"));
+  assert.ok(form.includes('window.addEventListener("pageshow", clearSensitiveFields)'), "clear restored browser page state");
+  assert.ok(form.includes('window.removeEventListener("pageshow", clearSensitiveFields)'), "clean up listener");
+  assert.ok(form.includes("passwordRef.current.value = \"\""), "clear any DOM-restored password");
+  assert.ok(form.includes("totpRef.current.value = \"\""), "clear any DOM-restored OTP");
+  assert.ok(form.includes("setShowPassword(false)"), "password should be masked by default");
+  assert.ok(form.includes('router.replace("/admin")'), "existing successful owner sign-in preserved");
+});
