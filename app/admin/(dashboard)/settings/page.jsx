@@ -2,6 +2,7 @@ import React from "react";
 import AdminShell from "@/components/admin/AdminShell";
 import KpiCard from "@/components/admin/KpiCard";
 import StatusBadge from "@/components/admin/StatusBadge";
+import { isAdminAuthConfigured } from "@/lib/adminMfa";
 import { Settings, Shield, Lock, ExternalLink } from "@/components/admin/Icons";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,7 @@ export const metadata = {
 };
 
 export default function SettingsPage() {
+  const ownerMfaReady = isAdminAuthConfigured();
   const envChecklist = [
     { name: "ADMIN_SECRET", desc: "Administrative master passphrase", configured: Boolean(process.env.ADMIN_SECRET), critical: true },
     { name: "SUPABASE_URL", desc: "PostgreSQL project endpoint", configured: Boolean(process.env.SUPABASE_URL), critical: true },
@@ -29,11 +31,11 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <KpiCard
           title="MFA Policy"
-          value="Not Implemented"
-          subtitle="Production admin access blocked until independently verified"
+          value={ownerMfaReady ? "Configured" : "Setup Required"}
+          subtitle="TOTP is implemented; staging verification and owner enrollment must be completed before production activation"
           source="Security Policy"
           highlight={true}
-          badge={<StatusBadge status="error" label="Release Blocker" size="sm" />}
+          badge={<StatusBadge status={ownerMfaReady ? "warning" : "error"} label={ownerMfaReady ? "Verify End-to-End" : "Release Blocker"} size="sm" />}
         />
         <KpiCard
           title="Data Retention"
