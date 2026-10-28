@@ -31,7 +31,7 @@ test("Admin Auth API: Returns 503 if ADMIN_SECRET is not configured", async () =
     const response = await POST(req);
     assert.equal(response.status, 503);
     const data = await response.json();
-    assert.ok(data.error.includes("ADMIN_SECRET"));
+    assert.equal(data.error, "admin_temporarily_unavailable");
   } finally {
     if (origSecret) process.env.ADMIN_SECRET = origSecret;
   }
