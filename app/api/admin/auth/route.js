@@ -10,6 +10,10 @@ import {
 } from "@/lib/sessionAuth";
 
 export async function POST(request) {
+  // Never issue privileged admin sessions in production until MFA is implemented.
+  if (process.env.VERCEL_ENV === "production") {
+    return NextResponse.json({ error: "admin_temporarily_unavailable" }, { status: 503 });
+  }
   const adminSecret = process.env.ADMIN_SECRET;
   if (!adminSecret) {
     return NextResponse.json(

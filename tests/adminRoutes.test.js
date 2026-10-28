@@ -13,7 +13,11 @@ import nextConfig from "../next.config.js";
 
 // ── 1. Direct Server Data Access: fetchLeadsDirect() ──────────────────────────
 
-test("Server Data Access: fetchLeadsDirect queries Supabase directly without HTTP self-fetch", async () => {
+test("Server Data Access: fetchLeadsDirect queries Supabase directly without HTTP self-fetch", async (t) => {
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    t.skip("Real Supabase direct-read integration requires separately configured staging credentials");
+    return;
+  }
   const result = await fetchLeadsDirect();
   assert.equal(typeof result, "object", "Must return an object");
   assert.ok(Array.isArray(result.leads), "Must return leads array");

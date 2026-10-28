@@ -60,23 +60,34 @@ test("Admin Auth API: Rejects cross-origin requests", async () => {
 
 // ── 4. Invalid Password Handling ─────────────────────────────────────────────
 
-test("Admin Auth API: Rejects invalid password with 401 Unauthorized", async () => {
+test("Admin Auth API: Rejects invalid password when staging rate-limit service is available; otherwise fails closed", async () => {
+  const previousSecret = process.env.ADMIN_SECRET;
   process.env.ADMIN_SECRET = "correct-admin-secret-2026";
 
-  const req = new Request("http://localhost:3000/api/admin/auth", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Host: "localhost:3000",
-      Origin: "http://localhost:3000",
-    },
-    body: JSON.stringify({ password: "wrong-password" }),
-  });
+  try {
+    const req = new Request("http://localhost:3000/api/admin/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Host: "localhost:3000",
+        Origin: "http://localhost:3000",
+      },
+      body: JSON.stringify({ password: "wrong-password" }),
+    });
 
-  const response = await POST(req);
-  assert.equal(response.status, 401);
-  const data = await response.json();
-  assert.ok(data.error.includes("Invalid administrative credentials"));
+    const response = await POST(req);
+    const data = await response.json();
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      assert.equal(response.status, 401, "Invalid password must be rejected when the rate limiter is available");
+      assert.ok(data.error.includes("Invalid administrative credentials"));
+    } else {
+      assert.equal(response.status, 503, "Missing database must deny authentication (fail-closed)");
+      assert.ok(data.error, "Fail-closed response must explain the unavailability");
+    }
+  } finally {
+    if (previousSecret === undefined) delete process.env.ADMIN_SECRET;
+    else process.env.ADMIN_SECRET = previousSecret;
+  }
 });
 
 // ── 5. Timing Attack Safe Comparison ─────────────────────────────────────────

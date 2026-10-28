@@ -4,6 +4,9 @@ import { COOKIE_NAME, verifySession, getSupabaseAdmin } from "@/lib/sessionAuth"
 export const dynamic = "force-dynamic";
 
 export async function GET(request) {
+  if (process.env.VERCEL_ENV === "production") {
+    return NextResponse.json({ error: "admin_temporarily_unavailable" }, { status: 503 });
+  }
   // Enforce session authorization
   const token = request.cookies?.get ? request.cookies.get(COOKIE_NAME)?.value : null;
   const isValid = await verifySession(token);
