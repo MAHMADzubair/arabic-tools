@@ -6,6 +6,7 @@ import DataTable from "@/components/admin/DataTable";
 import EmptyState from "@/components/admin/EmptyState";
 import { getSupabaseAdmin } from "@/lib/sessionAuth";
 import { getAdminOperationalSnapshot } from "@/lib/adminOperationalSnapshot";
+import { isAdminAuthConfigured } from "@/lib/adminMfa";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Security Center | QEMLO Command Center" };
@@ -19,6 +20,7 @@ function maskIp(ip) {
 
 export default async function SecurityCenterPage() {
   const snapshot = await getAdminOperationalSnapshot();
+  const mfaReady = isAdminAuthConfigured();
   let attempts = null;
 
   if (snapshot.status === "healthy" || snapshot.status === "degraded") {
@@ -62,16 +64,16 @@ export default async function SecurityCenterPage() {
         <KpiCard title="Login Rate Limit" value="5 per 15 min"
           subtitle="Requires verified database RPC in staging" source="Policy"
           badge={<StatusBadge status="pending" label="Verification Required" size="sm" />} />
-        <KpiCard title="Multi-Factor Authentication" value="Not Implemented"
-          subtitle="Production admin access intentionally blocked" source="Release Gate"
-          badge={<StatusBadge status="error" label="Production Blocker" size="sm" />} />
+        <KpiCard title="Multi-Factor Authentication" value={mfaReady ? "Configured" : "Setup Required"}
+          subtitle="TOTP enforced in login; requires verified owner enrollment and live QA" source="Owner Access"
+          badge={<StatusBadge status={mfaReady ? "warning" : "error"} label={mfaReady ? "Verification Pending" : "Release Blocker"} size="sm" />} />
       </div>
 
       <div className="mt-6 rounded-xl border border-[#262626] bg-[#161616] p-5">
         <h3 className="text-sm font-semibold text-[#F5F5F2]">Authentication Safeguards</h3>
         <p className="mt-2 text-xs leading-relaxed text-[#A3A39E]">
           Sessions use hashed tokens, HttpOnly cookies, explicit revocation, and server-side authorization.
-          Production admin access remains disabled until MFA and staging integration tests are verified.
+          Admin access requires the configured owner identity, password, and TOTP code, with rate limiting and server-side session validation.
           Session lifetime is eight hours maximum, not a sliding inactivity timeout.
         </p>
       </div>
