@@ -63,7 +63,7 @@ test("Admin integrity: disconnected integrations never claim active traffic or r
   assert.ok(revenue.includes("API Unverified"));
   assert.ok(!revenue.includes("Authorized AdSense revenue reporting active"));
   const settings = get("app/admin/(dashboard)/settings/page.jsx");
-  assert.ok(settings.includes('value="Not Implemented"'));
+  assert.ok(settings.includes("ownerMfaReady"));
   assert.ok(!settings.includes('label="Enforced in Prod"'));
 });
 
