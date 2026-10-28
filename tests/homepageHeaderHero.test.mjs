@@ -10,7 +10,7 @@ test("Homepage Header & Hero: private owner login is not advertised to public vi
     path.join(rootDir, "components/home/HomeHeader.jsx"),
     "utf8"
   );
-  const ownerLinks = (homeHeaderCode.match(/href="\\/(?:admin\\/login|owner-access)"/g) || []).length;
+  const ownerLinks = Number(homeHeaderCode.includes('href="/admin/login"')) + Number(homeHeaderCode.includes('href="/owner-access"'));
   assert.equal(ownerLinks, 0, "public header must not advertise the private owner portal");
   assert.ok(homeHeaderCode.includes("كل الأدوات متاحة بلا تسجيل"), "public tools must remain registration-free");
 });
