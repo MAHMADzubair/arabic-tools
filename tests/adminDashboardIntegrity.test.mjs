@@ -79,7 +79,7 @@ test("Admin integrity: public footer is isolated without disturbing public metad
 
 test("Admin integrity: production stays fail-closed until separately verified MFA", () => {
   const files = [
-    "app/admin/layout.jsx",
+    "app/admin/(dashboard)/layout.jsx",
     "app/api/admin/auth/route.js",
     "app/api/admin/health/route.js",
   ];
