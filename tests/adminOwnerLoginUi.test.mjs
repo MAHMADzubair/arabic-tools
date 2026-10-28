@@ -4,15 +4,26 @@ import fs from "node:fs";
 
 const source = (path) => fs.readFileSync(path, "utf8");
 
-test("owner sign in is linked from both homepage profile and mobile drawer", () => {
+test("owner sign in uses a standalone, unadvertised owner-access URL", () => {
   const header = source("components/home/HomeHeader.jsx");
-  const links = header.match(/href="\/admin\/login"/g) || [];
-  assert.equal(links.length, 2);
-  assert.ok(header.includes("Admin Sign In"));
+  assert.ok(!header.includes('href="/admin/login"'));
+  assert.ok(!header.includes('href="/owner-access"'));
+  assert.ok(!header.includes("Admin Sign In"));
+  const privatePage = source("app/owner-access/page.jsx");
+  const legacy = source("app/admin/login/page.jsx");
+  assert.ok(privatePage.includes("isAdminAuthConfigured()"));
+  assert.ok(privatePage.includes('robots: { index: false'));
+  assert.ok(legacy.includes('redirect("/owner-access")'));
+  const dashboard = source("app/admin/(dashboard)/layout.jsx");
+  assert.ok(dashboard.includes('redirect("/owner-access")'));
+  const globalHeader = source("components/Header.jsx");
+  assert.ok(globalHeader.includes('pathname === "/owner-access"'));
+  const footer = source("components/admin/PublicFooterGate.jsx");
+  assert.ok(footer.includes('path === "/owner-access"'));
 });
 
 test("owner sign in has identity, password and authenticator inputs", () => {
-  const page = source("app/admin/login/page.jsx");
+  const page = source("app/owner-access/page.jsx");
   const form = source("app/admin/login/AdminLoginForm.jsx");
   assert.ok(page.includes("isAdminAuthConfigured()"));
   assert.ok(page.includes("Private sign-in is temporarily unavailable") || page.includes("temporarily unavailable"));
