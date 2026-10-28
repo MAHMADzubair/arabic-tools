@@ -36,6 +36,23 @@ describe("sessionAuth caching and env isolation", () => {
     assert.strictEqual(clientA, clientB, "cached client should be returned");
   });
 
+  it("normalizes accidental quotes and whitespace before passing Supabase credentials", async () => {
+    const url = "https://staging-example.supabase.co";
+    const key = "sb_secret_TEST_ONLY_NOT_A_REAL_KEY";
+    process.env.SUPABASE_URL = '  "' + url + '"  ';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "  '" + key + "'\r\n";
+
+    const client = await getSupabaseAdmin();
+    assert.ok(client, "a server-side client should be initialized");
+    assert.equal(getSupabaseAdmin._cached.url, url);
+    assert.equal(getSupabaseAdmin._cached.key, key);
+
+    // Equivalent cleaned values must reuse the same client instance.
+    process.env.SUPABASE_URL = url;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = key;
+    assert.strictEqual(await getSupabaseAdmin(), client);
+  });
+
   it("creates a new client when credentials change", async () => {
     const clientA = await getSupabaseAdmin();
     process.env.SUPABASE_URL = "http://different.supabase.co";

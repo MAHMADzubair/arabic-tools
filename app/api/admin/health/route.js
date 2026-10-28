@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
 import { COOKIE_NAME, verifySession } from "@/lib/sessionAuth";
+import { isAdminAuthConfigured } from "@/lib/adminMfa";
 import { getAdminOperationalSnapshot } from "@/lib/adminOperationalSnapshot";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request) {
-  // Production admin remains disabled until MFA is implemented and verified.
-  if (process.env.VERCEL_ENV === "production") {
+  // Server-side fail-closed MFA and owner configuration gate.
+  if (process.env.VERCEL_ENV === "production" && !isAdminAuthConfigured()) {
     return NextResponse.json({ error: "admin_temporarily_unavailable" }, { status: 503 });
   }
 
+  if (!isAdminAuthConfigured()) {
+    return NextResponse.json({ error: "admin_temporarily_unavailable" }, { status: 503 });
+  }
   const token = request.cookies?.get ? request.cookies.get(COOKIE_NAME)?.value : null;
   if (!(await verifySession(token))) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });

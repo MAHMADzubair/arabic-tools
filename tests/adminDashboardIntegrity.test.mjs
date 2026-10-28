@@ -63,7 +63,7 @@ test("Admin integrity: disconnected integrations never claim active traffic or r
   assert.ok(revenue.includes("API Unverified"));
   assert.ok(!revenue.includes("Authorized AdSense revenue reporting active"));
   const settings = get("app/admin/(dashboard)/settings/page.jsx");
-  assert.ok(settings.includes('value="Not Implemented"'));
+  assert.ok(settings.includes("ownerMfaReady"));
   assert.ok(!settings.includes('label="Enforced in Prod"'));
 });
 
@@ -79,7 +79,7 @@ test("Admin integrity: public footer is isolated without disturbing public metad
 
 test("Admin integrity: production stays fail-closed until separately verified MFA", () => {
   const files = [
-    "app/admin/layout.jsx",
+    "app/admin/(dashboard)/layout.jsx",
     "app/api/admin/auth/route.js",
     "app/api/admin/health/route.js",
   ];
@@ -88,5 +88,5 @@ test("Admin integrity: production stays fail-closed until separately verified MF
   }
   const header = get("components/admin/AdminHeader.jsx");
   assert.ok(header.includes('if (!response.ok) throw'));
-  assert.ok(header.includes('router.replace("/admin/login")'));
+  assert.ok(header.includes('router.replace("/owner-access")'));
 });

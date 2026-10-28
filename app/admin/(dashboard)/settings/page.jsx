@@ -2,7 +2,7 @@ import React from "react";
 import AdminShell from "@/components/admin/AdminShell";
 import KpiCard from "@/components/admin/KpiCard";
 import StatusBadge from "@/components/admin/StatusBadge";
-import { Settings, Shield, Lock, ExternalLink } from "@/components/admin/Icons";
+import { getAdminAuthConfigStatus, isAdminAuthConfigured } from "@/lib/adminMfa";
 
 export const dynamic = "force-dynamic";
 
@@ -11,12 +11,18 @@ export const metadata = {
 };
 
 export default function SettingsPage() {
+  const ownerMfaReady = isAdminAuthConfigured();
+  const mfaConfigStatus = getAdminAuthConfigStatus();
+  // Configuration validates format/presence only; it is not a successful
+  // database API call or proof of a live owner sign-in or logout.
   const envChecklist = [
-    { name: "ADMIN_SECRET", desc: "Administrative master passphrase", configured: Boolean(process.env.ADMIN_SECRET), critical: true },
-    { name: "SUPABASE_URL", desc: "PostgreSQL project endpoint", configured: Boolean(process.env.SUPABASE_URL), critical: true },
-    { name: "SUPABASE_SERVICE_ROLE_KEY", desc: "Server-only database service key", configured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY), critical: true },
+    { name: "ADMIN_LOGIN_EMAIL", desc: "Private owner identity; email format checked", configured: mfaConfigStatus.ADMIN_LOGIN_EMAIL === "PASS", critical: true },
+    { name: "ADMIN_SECRET", desc: "Owner password; minimum 24 characters", configured: mfaConfigStatus.ADMIN_SECRET === "PASS", critical: true },
+    { name: "ADMIN_TOTP_SECRET", desc: "Time-based authenticator seed; Base32 format checked", configured: mfaConfigStatus.ADMIN_TOTP_SECRET === "PASS", critical: true },
+    { name: "ADMIN_MFA_ENABLED", desc: "Explicit TOTP enforcement flag", configured: mfaConfigStatus.ADMIN_MFA_ENABLED === "PASS", critical: true },
+    { name: "SUPABASE_URL", desc: "Server-side database project endpoint", configured: mfaConfigStatus.SUPABASE_URL === "PASS", critical: true },
+    { name: "SUPABASE_SERVICE_ROLE_KEY", desc: "Server-only database key; presence checked, API access unverified", configured: mfaConfigStatus.SUPABASE_SERVICE_ROLE_KEY === "PASS", critical: true },
     { name: "NEXT_PUBLIC_ADSENSE_PUB_ID", desc: "Public AdSense publisher ID", configured: Boolean(process.env.NEXT_PUBLIC_ADSENSE_PUB_ID), critical: false },
-    { name: "MFA_ENCRYPTION_KEY", desc: "Planned MFA encryption key (no MFA implementation yet)", configured: Boolean(process.env.MFA_ENCRYPTION_KEY), critical: true },
     { name: "GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL", desc: "GSC service account email", configured: Boolean(process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL), critical: false },
     { name: "GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY", desc: "GSC service account key", configured: Boolean(process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY), critical: false },
     { name: "ADSENSE_CLIENT_ID", desc: "Google AdSense OAuth client ID", configured: Boolean(process.env.ADSENSE_CLIENT_ID), critical: false },
@@ -29,11 +35,11 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <KpiCard
           title="MFA Policy"
-          value="Not Implemented"
-          subtitle="Production admin access blocked until independently verified"
+          value={ownerMfaReady ? "Configured" : "Setup Required"}
+          subtitle="TOTP, owner identity, password and database settings are checked server-side. Successful login, logout and release QA require separate verification."
           source="Security Policy"
           highlight={true}
-          badge={<StatusBadge status="error" label="Release Blocker" size="sm" />}
+          badge={<StatusBadge status={ownerMfaReady ? "warning" : "error"} label={ownerMfaReady ? "Configuration Ready · QA Pending" : "Release Blocker"} size="sm" />}
         />
         <KpiCard
           title="Data Retention"
@@ -59,7 +65,7 @@ export default function SettingsPage() {
               Environment Configuration Audit
             </h3>
             <p className="mt-0.5 text-xs text-[#A3A39E]">
-              Status of required and optional server configuration keys. Secret values are strictly hidden.
+              Server-side presence and format checks only; not a database connection or API authorization test. Secret values are never shown.
             </p>
           </div>
           <span className="text-xs text-[#73736C]">
@@ -98,7 +104,7 @@ export default function SettingsPage() {
                   <td className="py-3 text-right">
                     <StatusBadge
                       status={item.configured ? "success" : item.critical ? "error" : "disconnected"}
-                      label={item.configured ? "Present" : "Missing"}
+                      label={item.configured ? (item.critical ? "Format OK" : "Present") : (item.critical ? "Missing / Invalid" : "Missing")}
                       size="sm"
                     />
                   </td>
@@ -121,15 +127,15 @@ export default function SettingsPage() {
         <ul className="mt-4 space-y-2.5 text-xs text-[#A3A39E]">
           <li className="flex items-start gap-2">
             <span className="font-bold text-[#FF5B04]">✓</span>
-            <span>This admin interface has no public registration flow; external identity controls must be verified separately.</span>
+            <span>This admin interface has no public registration flow; a private entry URL does not replace authentication.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold text-[#FF5B04]">✓</span>
-            <span>Server-side database reads use service-role credentials; production access remains gated pending MFA.</span>
+            <span>Admin operations require server-side credentials and database-backed sessions. Production access must pass separate release checks.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold text-[#FF5B04]">✓</span>
-            <span>robots.txt requests crawlers not to index routes matching <code className="text-[#FF5B04]">/admin/*</code> or <code className="text-[#FF5B04]">/api/*</code>; it is not an access control mechanism.</span>
+            <span>robots.txt and noindex are crawler directives, not authorization controls. Session checks and MFA protect private routes.</span>
           </li>
         </ul>
       </div>

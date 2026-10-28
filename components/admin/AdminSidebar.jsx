@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Activity,
@@ -18,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  LogOut,
 } from "./Icons";
 
 export const NAV_ITEMS = [
@@ -41,6 +42,29 @@ export default function AdminSidebar({
   onCloseMobile,
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
+
+  const handleSignOut = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    setLogoutError("");
+    try {
+      const response = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "logout" }),
+      });
+      if (!response.ok) throw new Error("Session revocation was not confirmed.");
+      onCloseMobile?.();
+      router.replace("/owner-access");
+      router.refresh();
+    } catch {
+      setLogoutError("Sign-out could not be confirmed. Please retry.");
+      setLoggingOut(false);
+    }
+  };
 
   return (
     <>
@@ -156,8 +180,24 @@ export default function AdminSidebar({
           </nav>
         </div>
 
-        {/* Footer info: Public site link & Version */}
+        {/* Persistent owner-only sign-out, reachable even if the top header scrolls away. */}
         <div className="border-t border-[#222222] p-3">
+          <button
+            type="button"
+            onClick={handleSignOut}
+            disabled={loggingOut}
+            aria-label="Sign Out"
+            title="Sign Out"
+            className="mb-2 flex w-full items-center gap-2.5 rounded-lg border border-rose-500/25 bg-rose-500/5 px-3 py-2 text-xs font-semibold text-rose-400 transition hover:border-rose-500/50 hover:bg-rose-500/10 disabled:cursor-wait disabled:opacity-60"
+          >
+            <LogOut className="h-4 w-4 shrink-0" />
+            {(!collapsed || mobileOpen) && (
+              <span>{loggingOut ? "Signing out..." : "Sign Out"}</span>
+            )}
+          </button>
+          {logoutError && (
+            <p role="alert" className="mb-2 text-[11px] text-rose-400">{logoutError}</p>
+          )}
           <a
             href="/"
             target="_blank"

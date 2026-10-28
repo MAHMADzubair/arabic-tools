@@ -254,7 +254,7 @@ export default function Header() {
   const jumpTo = (id) => listRef.current?.querySelector(`#hd-sec-${id}`)?.scrollIntoView({ block: "start", behavior: "smooth" });
 
   if (pathname === "/") return null;
-  if (pathname?.startsWith("/admin") || pathname?.startsWith("/internal")) return null;
+  if (pathname === "/owner-access" || pathname?.startsWith("/admin") || pathname?.startsWith("/internal")) return null;
 
   return (
     <div className="hd">

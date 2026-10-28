@@ -31,7 +31,7 @@ test("Admin Auth API: Returns 503 if ADMIN_SECRET is not configured", async () =
     const response = await POST(req);
     assert.equal(response.status, 503);
     const data = await response.json();
-    assert.ok(data.error.includes("ADMIN_SECRET"));
+    assert.equal(data.error, "admin_temporarily_unavailable");
   } finally {
     if (origSecret) process.env.ADMIN_SECRET = origSecret;
   }
@@ -77,7 +77,7 @@ test("Admin Auth API: Rejects invalid password when staging rate-limit service i
 
     const response = await POST(req);
     const data = await response.json();
-    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (process.env.ADMIN_MFA_ENABLED === "true" && process.env.ADMIN_LOGIN_EMAIL && process.env.ADMIN_TOTP_SECRET && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       assert.equal(response.status, 401, "Invalid password must be rejected when the rate limiter is available");
       assert.ok(data.error.includes("Invalid administrative credentials"));
     } else {
@@ -111,7 +111,8 @@ test("Admin Health API: Rejects unauthenticated requests with 401", async () => 
   });
 
   const response = await getHealth(req);
-  assert.equal(response.status, 401);
+  const configured = process.env.ADMIN_MFA_ENABLED === "true" && Boolean(process.env.ADMIN_LOGIN_EMAIL && process.env.ADMIN_TOTP_SECRET && process.env.ADMIN_SECRET && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+  assert.equal(response.status, configured ? 401 : 503);
   const data = await response.json();
-  assert.equal(data.error, "unauthorized");
+  assert.equal(data.error, configured ? "unauthorized" : "admin_temporarily_unavailable");
 });

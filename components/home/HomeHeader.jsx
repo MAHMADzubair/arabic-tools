@@ -251,7 +251,7 @@ export default function HomeHeader() {
               )}
             </button>
 
-            {/* Profile Circular Button (Strictly No Admin Link) */}
+            {/* Public account information — private owner access is on a standalone URL */}
             <div className="relative" ref={profileRef}>
               <button
                 type="button"
@@ -519,7 +519,7 @@ export default function HomeHeader() {
               </button>
             </div>
 
-            {/* Mobile Guest Info (NO Admin login!) */}
+            {/* Public tools need no registration. */}
             <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-3.5 text-center">
               <p className="text-xs font-semibold text-[#B5B5B0]">
                 جميع الأدوات والحاسبات مجانية بالكامل وبلا تسجيل

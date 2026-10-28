@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isAdminAuthConfigured, verifyAdminTotp, sanitizeEnvVar } from "@/lib/adminMfa";
 import {
   COOKIE_NAME,
   createSession,
@@ -10,16 +11,10 @@ import {
 } from "@/lib/sessionAuth";
 
 export async function POST(request) {
-  // Never issue privileged admin sessions in production until MFA is implemented.
-  if (process.env.VERCEL_ENV === "production") {
+  // Production remains fail-closed until owner email, rotated password, a valid
+  // authenticator seed, explicit MFA enablement and DB credentials are configured.
+  if (process.env.VERCEL_ENV === "production" && !isAdminAuthConfigured()) {
     return NextResponse.json({ error: "admin_temporarily_unavailable" }, { status: 503 });
-  }
-  const adminSecret = process.env.ADMIN_SECRET;
-  if (!adminSecret) {
-    return NextResponse.json(
-      { error: "ADMIN_SECRET not configured on server" },
-      { status: 503 }
-    );
   }
 
   const ct = request.headers.get("content-type") || "";
@@ -65,13 +60,20 @@ export async function POST(request) {
     return NextResponse.json({ error: "invalid_content_type" }, { status: 400 });
   }
 
+  if (!isAdminAuthConfigured()) {
+    return NextResponse.json({ error: "admin_temporarily_unavailable" }, { status: 503 });
+  }
+
   // ── Logout Action ──────────────────────────────────────────
   if (body.action === "logout") {
     const rawToken = request.cookies.get(COOKIE_NAME)?.value;
-    if (rawToken) {
-      await revokeSession(rawToken);
-    }
-    const res = NextResponse.json({ success: true, message: "logged_out" });
+    const revoked = rawToken ? await revokeSession(rawToken) : true;
+    // Clear the browser cookie even when DB revocation could not be confirmed.
+    // Return an error instead of falsely claiming the remote session was revoked.
+    const res = NextResponse.json(
+      revoked ? { success: true, message: "logged_out" } : { error: "logout_unavailable" },
+      { status: revoked ? 200 : 503 }
+    );
     res.cookies.set(COOKIE_NAME, "", {
       ...getSessionCookieOptions(),
       maxAge: 0,
@@ -90,9 +92,17 @@ export async function POST(request) {
     );
   }
 
-  // 2. Validate password in constant time
-  const password = String(body.password || "").trim();
-  if (!safeCompare(password, adminSecret)) {
+  // 2. Require all three inputs: owner identifier, master password and TOTP.
+  // Never log passwords, MFA codes or seed values.
+  const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+  const password = typeof body.password === "string" ? body.password : "";
+  const totp = typeof body.totp === "string" ? body.totp : "";
+  const configuredEmail = sanitizeEnvVar(process.env.ADMIN_LOGIN_EMAIL).toLowerCase();
+  const configuredSecret = sanitizeEnvVar(process.env.ADMIN_SECRET);
+  const emailOk = email.length <= 320 && safeCompare(email, configuredEmail);
+  const passwordOk = password.length <= 256 && safeCompare(password, configuredSecret);
+  const totpOk = verifyAdminTotp(totp);
+  if (!emailOk || !passwordOk || !totpOk) {
     return NextResponse.json(
       { error: "Invalid administrative credentials" },
       { status: 401 }

@@ -57,7 +57,7 @@ export default function AdminHeader({
         body: JSON.stringify({ action: "logout" }),
       });
       if (!response.ok) throw new Error("Session revocation could not be verified.");
-      router.replace("/admin/login");
+      router.replace("/owner-access");
       router.refresh();
     } catch {
       setLogoutError("Sign-out could not be confirmed. Please retry.");
