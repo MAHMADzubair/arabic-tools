@@ -5,13 +5,13 @@ import path from "node:path";
 
 const rootDir = process.cwd();
 
-test("Homepage Header & Hero: private owner login available without a public account requirement", () => {
+test("Homepage Header & Hero: private owner login is not advertised to public visitors", () => {
   const homeHeaderCode = fs.readFileSync(
     path.join(rootDir, "components/home/HomeHeader.jsx"),
     "utf8"
   );
-  const ownerLinks = homeHeaderCode.split('href="/admin/login"').length - 1;
-  assert.equal(ownerLinks, 2, "desktop profile and mobile drawer must link to owner login");
+  const ownerLinks = (homeHeaderCode.match(/href="\\/(?:admin\\/login|owner-access)"/g) || []).length;
+  assert.equal(ownerLinks, 0, "public header must not advertise the private owner portal");
   assert.ok(homeHeaderCode.includes("كل الأدوات متاحة بلا تسجيل"), "public tools must remain registration-free");
 });
 
