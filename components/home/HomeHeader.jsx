@@ -251,7 +251,7 @@ export default function HomeHeader() {
               )}
             </button>
 
-            {/* Profile Circular Button (Strictly No Admin Link) */}
+            {/* Public account information and private owner sign-in entry */}
             <div className="relative" ref={profileRef}>
               <button
                 type="button"
@@ -292,6 +292,17 @@ export default function HomeHeader() {
                     <span className="inline-block rounded-md bg-[#FF5B04]/15 px-2 py-1 text-[11px] font-bold text-[#FF5B04]">
                       الاستخدام مجاني 100% حالياً
                     </span>
+                  </div>
+                  <div className="mt-3 border-t border-white/10 pt-3">
+                    <Link
+                      href="/admin/login"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex min-h-10 w-full items-center justify-between rounded-xl border border-[#FF5B04]/30 bg-[#FF5B04]/10 px-3 py-2 text-xs font-semibold text-[#F5F5F2] transition hover:bg-[#FF5B04]/20"
+                      aria-label="Admin sign in — private owner only"
+                    >
+                      <span>دخول المسؤول · Admin Sign In</span>
+                      <span aria-hidden="true" className="text-[#FF5B04]">↗</span>
+                    </Link>
                   </div>
                 </div>
               )}
@@ -519,11 +530,18 @@ export default function HomeHeader() {
               </button>
             </div>
 
-            {/* Mobile Guest Info (NO Admin login!) */}
+            {/* Public tools need no registration; owner access is separate. */}
             <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-3.5 text-center">
               <p className="text-xs font-semibold text-[#B5B5B0]">
                 جميع الأدوات والحاسبات مجانية بالكامل وبلا تسجيل
               </p>
+              <Link
+                href="/admin/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-3 flex min-h-11 items-center justify-center rounded-xl border border-[#FF5B04]/40 bg-[#FF5B04]/10 px-3 text-xs font-bold text-[#F5F5F2] hover:bg-[#FF5B04]/20"
+              >
+                دخول المسؤول · Admin Sign In
+              </Link>
             </div>
 
             {/* Theme Toggle in Mobile Drawer */}
