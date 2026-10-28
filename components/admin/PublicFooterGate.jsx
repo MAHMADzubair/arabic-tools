@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
  */
 export default function PublicFooterGate({ children }) {
   const path = usePathname();
-  if (path === "/admin" || path?.startsWith("/admin/") || path === "/internal" || path?.startsWith("/internal/")) {
+  if (path === "/owner-access" || path === "/admin" || path?.startsWith("/admin/") || path === "/internal" || path?.startsWith("/internal/")) {
     return null;
   }
   return <>{children}</>;
