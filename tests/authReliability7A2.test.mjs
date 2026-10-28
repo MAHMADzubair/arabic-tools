@@ -19,7 +19,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { checkAndRecordLoginAttempt, RL_MAX_ATTEMPTS, RL_WINDOW_MS } from "../lib/sessionAuth.js";
+import { checkAndRecordLoginAttempt, classifyAdminRateLimitRpcError, RL_MAX_ATTEMPTS, RL_WINDOW_MS } from "../lib/sessionAuth.js";
 
 /**
  * Pure rate-limit evaluation runner mirroring lib/sessionAuth.js checkAndRecordLoginAttempt
@@ -258,4 +258,22 @@ test("Admin RPC diagnostic logging is Preview-only and redacted", () => {
   assert.ok(!diagnostic.includes("rpcErr.message"), "RPC error message must not be logged");
   assert.ok(!diagnostic.includes("process.env.SUPABASE_SERVICE_ROLE_KEY"));
   assert.ok(!diagnostic.includes("JSON.stringify({ ip"));
+});
+
+
+test("Admin RPC error categories distinguish Preview staging failures without disclosing messages", () => {
+  const cases = [
+    [{ code: "PGRST202", message: "Could not find the function" }, "rpc_missing_or_schema_cache"],
+    [{ code: "42501", message: "permission denied" }, "supabase_permission_denied"],
+    [{ code: "other", message: "Unregistered API key" }, "invalid_supabase_api_key"],
+    [{ code: "other", message: "Invalid JWT" }, "supabase_authentication_failure"],
+    [{ code: "42P01", message: "relation admin_login_attempts does not exist" }, "database_schema_missing"],
+    [{ message: "fetch failed" }, "supabase_connection_failure"],
+    [{ code: "UNKNOWN", message: "secret-api-token-should-never-appear" }, "unclassified_rpc_error"],
+  ];
+  for (const [err, expected] of cases) {
+    const category = classifyAdminRateLimitRpcError(err);
+    assert.equal(category, expected);
+    assert.ok(!category.includes("secret-api-token"));
+  }
 });
