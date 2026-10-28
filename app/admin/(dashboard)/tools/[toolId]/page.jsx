@@ -2,11 +2,10 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
-import KpiCard from "@/components/admin/KpiCard";
-import ChartCard from "@/components/admin/ChartCard";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { TOOLS, CATEGORIES } from "@/lib/registry";
-import { Wrench, ExternalLink, ChevronLeft } from "@/components/admin/Icons";
+import EmptyState from "@/components/admin/EmptyState";
+import { ExternalLink, ChevronLeft } from "@/components/admin/Icons";
 
 export const dynamic = "force-dynamic";
 
@@ -19,14 +18,6 @@ export default async function ToolDetailPage({ params }) {
   }
 
   const category = CATEGORIES.find((c) => c.id === tool.category);
-
-  // Funnel representation for the tool
-  const funnelSteps = [
-    { label: "1. Tool Opened", value: 100, pct: "100%" },
-    { label: "2. Input Interacted", value: 85, pct: "85%" },
-    { label: "3. Calculation Completed", value: 72, pct: "72%" },
-    { label: "4. Result Shared / Exported", value: 28, pct: "28%" },
-  ];
 
   return (
     <AdminShell title={`Tool Analytics — ${tool.nameEn}`}>
@@ -93,65 +84,10 @@ export default async function ToolDetailPage({ params }) {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard
-          title="Completion Benchmark"
-          value="72%"
-          subtitle="Started to completed calculation"
-          source="Funnel"
-          highlight={true}
-          badge={<StatusBadge status="live" label="High" size="sm" />}
-        />
-        <KpiCard
-          title="Export Conversion"
-          value="28%"
-          subtitle="Users saving PDF or print"
-          source="Funnel"
-          badge={<StatusBadge status="success" label="Healthy" size="sm" />}
-        />
-        <KpiCard
-          title="Error Rate"
-          value="< 1.2%"
-          subtitle="Form validation exception rate"
-          source="Diagnostics"
-          badge={<StatusBadge status="neutral" label="Minimal" size="sm" />}
-        />
-        <KpiCard
-          title="Country Support"
-          value={(tool.countries || []).length || "All"}
-          subtitle="Legal localized jurisdictions"
-          source="Registry"
-          badge={<StatusBadge status="info" label="Verified" size="sm" />}
-        />
-      </div>
-
-      {/* Conversion Funnel Breakdown */}
-      <div className="mt-6 rounded-xl border border-[#262626] bg-[#161616] p-5">
-        <h3 className="text-sm font-semibold text-[#F5F5F2]">
-          Conversion & Drop-off Funnel
-        </h3>
-        <p className="mt-0.5 text-xs text-[#A3A39E]">
-          Step-by-step user journey through this calculator. Zero user inputs or form data are collected.
-        </p>
-
-        <div className="mt-5 space-y-4">
-          {funnelSteps.map((step, idx) => (
-            <div key={idx} className="space-y-1.5">
-              <div className="flex justify-between text-xs font-semibold">
-                <span className="text-[#F5F5F2]">{step.label}</span>
-                <span className="font-mono text-[#FF5B04]">{step.pct}</span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-[#121212]">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#FF5B04] to-[#FF7326] transition-all duration-500"
-                  style={{ width: step.pct }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <EmptyState
+        title="Tool Conversion Analytics — Setup Required"
+        description="The tool registry information above is current. No verified funnel, export conversion or error-rate telemetry is connected; these metrics are intentionally unavailable."
+      />
     </AdminShell>
   );
 }
