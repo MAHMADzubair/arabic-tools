@@ -5,21 +5,14 @@ import path from "node:path";
 
 const rootDir = process.cwd();
 
-test("Homepage Header & Hero: No public admin login links in homepage components", () => {
+test("Homepage Header & Hero: private owner login available without a public account requirement", () => {
   const homeHeaderCode = fs.readFileSync(
     path.join(rootDir, "components/home/HomeHeader.jsx"),
     "utf8"
   );
-  assert.equal(
-    homeHeaderCode.includes("/admin"),
-    false,
-    "HomeHeader must never contain /admin link"
-  );
-  assert.equal(
-    homeHeaderCode.includes("دخول المشرف"),
-    false,
-    "HomeHeader must never contain 'دخول المشرف' public admin login"
-  );
+  const ownerLinks = homeHeaderCode.match(/href="\\/admin\\/login"/g) || [];
+  assert.equal(ownerLinks.length, 2, "desktop profile and mobile drawer must link to owner login");
+  assert.ok(homeHeaderCode.includes("كل الأدوات متاحة بلا تسجيل"), "public tools must remain registration-free");
 });
 
 test("Homepage Header: 6 GCC country hubs are properly configured", () => {
