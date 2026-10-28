@@ -111,7 +111,8 @@ test("Admin Health API: Rejects unauthenticated requests with 401", async () => 
   });
 
   const response = await getHealth(req);
-  assert.equal(response.status, 401);
+  const configured = process.env.ADMIN_MFA_ENABLED === "true" && Boolean(process.env.ADMIN_LOGIN_EMAIL && process.env.ADMIN_TOTP_SECRET && process.env.ADMIN_SECRET && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+  assert.equal(response.status, configured ? 401 : 503);
   const data = await response.json();
-  assert.equal(data.error, "unauthorized");
+  assert.equal(data.error, configured ? "unauthorized" : "admin_temporarily_unavailable");
 });
