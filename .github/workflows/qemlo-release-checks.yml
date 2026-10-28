@@ -54,13 +54,13 @@ jobs:
             tail -80 /tmp/qemlo-next.log
             exit 1
           fi
-          login_code=$(curl --silent --max-time 15 -o /tmp/qemlo-admin-login.html -w '%{http_code}' http://127.0.0.1:3000/admin/login)
+          login_code=$(curl --silent --max-time 15 -o /tmp/qemlo-owner-access.html -w '%{http_code}' http://127.0.0.1:3000/owner-access)
           if [ "$login_code" != "200" ]; then
-            echo "Admin sign-in route should render safely: HTTP $login_code"
+            echo "Private owner-access sign-in route should render safely: HTTP $login_code"
             tail -80 /tmp/qemlo-next.log
             exit 1
           fi
-          grep -q 'Admin access is being configured' /tmp/qemlo-admin-login.html
+          grep -q 'Admin access is being configured' /tmp/qemlo-owner-access.html
           protected_code=$(curl --silent --max-time 15 -o /tmp/qemlo-protected.html -w '%{http_code}' http://127.0.0.1:3000/admin)
           if grep -q 'Overview Dashboard' /tmp/qemlo-protected.html; then
             echo "Protected dashboard content leaked while MFA configuration is absent."
