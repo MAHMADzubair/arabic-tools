@@ -1,11 +1,9 @@
 import React from "react";
-import Link from "next/link";
 import AdminShell from "@/components/admin/AdminShell";
 import StatusBadge from "@/components/admin/StatusBadge";
 import KpiCard from "@/components/admin/KpiCard";
-import DataTable from "@/components/admin/DataTable";
+import ToolsRegistryTable from "@/components/admin/ToolsRegistryTable";
 import { getActiveTools, CATEGORIES } from "@/lib/registry";
-import { Wrench, ExternalLink, ArrowUpRight } from "@/components/admin/Icons";
 
 export const dynamic = "force-dynamic";
 
@@ -17,103 +15,18 @@ export default function ToolAnalyticsPage() {
   const tools = getActiveTools();
   const categories = CATEGORIES;
 
-  const columns = [
-    {
-      key: "nameEn",
-      label: "Tool Name",
-      sortable: true,
-      render: (val, row) => (
-        <div className="flex items-center gap-2.5">
-          <span className="text-lg">{row.icon}</span>
-          <div>
-            <Link
-              href={`/admin/tools/${row.id}`}
-              className="font-semibold text-[#F5F5F2] hover:text-[#FF5B04]"
-            >
-              {val}
-            </Link>
-            <span className="block text-[11px] text-[#A3A39E]" dir="rtl">
-              {row.nameAr}
-            </span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: "category",
-      label: "Category",
-      sortable: true,
-      render: (val) => {
-        const cat = categories.find((c) => c.id === val);
-        return (
-          <span className="capitalize text-[#A3A39E]">
-            {cat ? cat.nameEn : val}
-          </span>
-        );
-      },
-    },
-    {
-      key: "status",
-      label: "Lifecycle",
-      sortable: true,
-      render: (val) => (
-        <StatusBadge
-          status={val === "active" ? "success" : "pending"}
-          label={val}
-          size="sm"
-        />
-      ),
-    },
-    {
-      key: "countries",
-      label: "Markets",
-      render: (val) => (
-        <div className="flex flex-wrap gap-1">
-          {(val || []).map((code) => (
-            <span
-              key={code}
-              className="rounded bg-[#202020] px-1.5 py-0.5 text-[10px] font-mono uppercase text-[#A3A39E]"
-            >
-              {code}
-            </span>
-          ))}
-        </div>
-      ),
-    },
-    {
-      key: "featured",
-      label: "Featured",
-      render: (val) => (
-        <span className={`text-[11px] font-bold ${val ? "text-[#FF5B04]" : "text-[#73736C]"}`}>
-          {val ? "★ Yes" : "No"}
-        </span>
-      ),
-    },
-    {
-      key: "id",
-      label: "Actions",
-      render: (id, row) => (
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/admin/tools/${id}`}
-            className="inline-flex items-center gap-1 rounded bg-[#202020] px-2 py-1 text-[11px] font-semibold text-[#F5F5F2] transition hover:bg-[#2A2A2A] hover:text-[#FF5B04]"
-          >
-            <span>Funnel</span>
-            <ArrowUpRight className="h-3 w-3" />
-          </Link>
-          <a
-            href={row.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded bg-[#202020] px-2 py-1 text-[11px] font-medium text-[#73736C] transition hover:bg-[#2A2A2A] hover:text-[#F5F5F2]"
-          >
-            <span>Public</span>
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        </div>
-      ),
-    },
-  ];
+  const categoryNames = Object.fromEntries(categories.map((category) => [category.id, category.nameEn]));
+  const tableRows = tools.map((tool) => ({
+    id: tool.id,
+    href: tool.href,
+    nameEn: tool.nameEn,
+    nameAr: tool.nameAr,
+    icon: tool.icon,
+    categoryLabel: categoryNames[tool.category] || tool.category,
+    status: tool.status,
+    marketLabels: (tool.countries || []).join(", ").toUpperCase(),
+    featuredLabel: tool.featured ? "Yes" : "No",
+  }));
 
   return (
     <AdminShell title="Tool Analytics & Performance">
@@ -163,12 +76,7 @@ export default function ToolAnalyticsPage() {
           </div>
         </div>
 
-        <DataTable
-          columns={columns}
-          data={tools}
-          searchPlaceholder="Search tools by name, slug or category..."
-          rowsPerPage={12}
-        />
+        <ToolsRegistryTable tools={tableRows} />
       </div>
     </AdminShell>
   );
