@@ -36,7 +36,7 @@ export function middleware(request) {
   // but a nested layout alone is not the only authorization boundary.
   const isAdminPage = pathname === "/admin" || pathname.startsWith("/admin/");
   const isLogin = pathname === "/admin/login" || pathname === "/admin/login/";
-  if (process.env.VERCEL_ENV === "production" && isAdminPage && !isLogin) {
+  if ((process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production") && isAdminPage && !isLogin) {
     const readyForMfaRouting =
       process.env.ADMIN_MFA_ENABLED === "true" &&
       Boolean(process.env.ADMIN_LOGIN_EMAIL) &&
