@@ -36,9 +36,9 @@ test("release: remove unused malformed public route group layout", () => {
   assert.equal(fs.existsSync(path.join(root, "app/(public)/layout.jsx")), false);
 });
 
-test("release: production admin interface and sensitive APIs remain blocked until MFA", () => {
+test("release: production privileged admin requires configured MFA", () => {
   for (const file of [
-    "app/admin/layout.jsx",
+    "app/admin/(dashboard)/layout.jsx",
     "app/api/admin/auth/route.js",
     "app/api/admin/health/route.js",
   ]) {
