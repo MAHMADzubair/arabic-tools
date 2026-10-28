@@ -1,16 +1,19 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
+import { isAdminAuthConfigured } from "@/lib/adminMfa";
 import { COOKIE_NAME, verifySession } from "@/lib/sessionAuth";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProtectedDashboardLayout({ children }) {
-  const adminSecret = process.env.ADMIN_SECRET;
+  // Fail closed on production if MFA, owner identity or database is not configured.
+  if (process.env.VERCEL_ENV === "production" && !isAdminAuthConfigured()) notFound();
+  if (!isAdminAuthConfigured()) redirect("/admin/login");
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
   const isValid = await verifySession(token);
 
-  if (!isValid || !adminSecret) {
+  if (!isValid) {
     redirect("/admin/login");
   }
 
