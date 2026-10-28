@@ -22,36 +22,36 @@ export default function SeoPage() {
       {/* Indexing Configuration Card */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
-          title="Authoritative Origin"
+          title="Configured Canonical Host"
           value="qemlo.com"
-          subtitle="Strict 308 redirect from legacy domain"
+          subtitle="Verify live redirects separately"
           source="Middleware"
           badge={<StatusBadge status="success" label="Active" size="sm" />}
         />
         <KpiCard
           title="XML Sitemap"
-          value="Active"
+          value="Configured"
           subtitle={`${SITE_URL}/sitemap.xml`}
           source="Sitemap"
-          badge={<StatusBadge status="success" label="Indexed" size="sm" />}
+          badge={<StatusBadge status="neutral" label="Not an Indexing Check" size="sm" />}
         />
         <KpiCard
-          title="Admin Disallow"
-          value="Enforced"
-          subtitle="robots.txt disallows /admin/ & /api/"
+          title="Crawler Exclusion"
+          value="Configured"
+          subtitle="robots.txt rule; authorization is separate"
           source="Robots.txt"
           highlight={true}
-          badge={<StatusBadge status="live" label="Protected" size="sm" />}
+          badge={<StatusBadge status="neutral" label="Crawler Rule" size="sm" />}
         />
         <KpiCard
           title="GSC API Status"
-          value={isGscConfigured ? "Connected" : "Disconnected"}
+          value={isGscConfigured ? "Credentials Present" : "Not Configured"}
           subtitle="Google Cloud Service Account"
           source="GSC"
           badge={
             <StatusBadge
-              status={isGscConfigured ? "success" : "disconnected"}
-              label={isGscConfigured ? "Authorized" : "Setup Required"}
+              status="disconnected"
+              label={isGscConfigured ? "API Unverified" : "Setup Required"}
               size="sm"
             />
           }
@@ -61,8 +61,8 @@ export default function SeoPage() {
       {/* Google Search Console Live Integration Panel */}
       {!isGscConfigured ? (
         <EmptyState
-          title="Google Search Console API Integration Pending"
-          description="Direct Search Analytics reporting requires a Google Cloud Service Account with Search Console read permissions. Once credentials are provided, real-time clicks, impressions, average CTR, average search ranking, and top Arabic queries will populate automatically."
+          title="Google Search Console Integration Not Verified"
+          description="Direct Search Analytics reporting requires a Google Cloud Service Account with Search Console read permissions. Credentials alone do not establish a working integration. Search Console data is delayed; an authenticated API query and permission checks are required before displaying real metrics."
           requiredEnv={[
             "GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL",
             "GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY",
@@ -72,7 +72,7 @@ export default function SeoPage() {
         />
       ) : (
         <div className="rounded-xl border border-[#262626] bg-[#161616] p-6 text-sm text-[#F5F5F2]">
-          Authorized GSC reporting active.
+          Credentials are present, but the GSC reporting API has not been called or verified. Reporting is not active.
         </div>
       )}
 
@@ -82,7 +82,7 @@ export default function SeoPage() {
           Robots.txt & Sitemap Diagnostic Status
         </h3>
         <p className="mt-0.5 text-xs text-[#A3A39E]">
-          Verified crawler rules protecting private operations and indexing public Arabic tools.
+          Configured crawler directives. They do not prove that pages are indexed or that private routes are authorized.
         </p>
 
         <div className="mt-4 overflow-x-auto rounded-lg border border-[#262626] bg-[#0D0D0D] p-4 font-mono text-xs text-[#A3A39E]">
