@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Eye, EyeOff, AlertTriangle } from "@/components/admin/Icons";
 
@@ -12,6 +12,23 @@ export default function AdminLoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const passwordRef = useRef(null);
+  const totpRef = useRef(null);
+
+  // Never preserve password or OTP in SPA/back-forward-cache form state.
+  // A browser password manager may still override autocomplete hints.
+  useEffect(() => {
+    const clearSensitiveFields = () => {
+      setPassword("");
+      setTotp("");
+      setShowPassword(false);
+      if (passwordRef.current) passwordRef.current.value = "";
+      if (totpRef.current) totpRef.current.value = "";
+    };
+    clearSensitiveFields();
+    window.addEventListener("pageshow", clearSensitiveFields);
+    return () => window.removeEventListener("pageshow", clearSensitiveFields);
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -53,7 +70,7 @@ export default function AdminLoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5" dir="ltr">
+    <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5" dir="ltr">
       <div>
         <label htmlFor="admin-email" className="block text-xs font-semibold uppercase tracking-wider text-[#A3A39E]">
           Owner Email
@@ -64,7 +81,7 @@ export default function AdminLoginForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          autoComplete="username"
+          autoComplete="off"
           maxLength={320}
           required
           spellCheck={false}
@@ -81,13 +98,14 @@ export default function AdminLoginForm() {
           <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#73736C]"><Lock className="h-4 w-4" /></span>
           <input
             id="admin-password"
+            ref={passwordRef}
             name="password"
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             maxLength={256}
-            autoComplete="current-password"
+            autoComplete="off"
             placeholder="Enter your private password"
             className="w-full rounded-xl border border-[#262626] bg-[#0D0D0D] py-3 pl-10 pr-10 text-sm text-[#F5F5F2] placeholder:text-[#73736C] focus:border-[#FF5B04] focus:outline-none focus:ring-1 focus:ring-[#FF5B04]"
           />
@@ -109,6 +127,7 @@ export default function AdminLoginForm() {
         </label>
         <input
           id="admin-totp"
+          ref={totpRef}
           name="one-time-code"
           type="text"
           value={totp}
