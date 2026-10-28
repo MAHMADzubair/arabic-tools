@@ -54,6 +54,22 @@ jobs:
             tail -80 /tmp/qemlo-next.log
             exit 1
           fi
+          login_code=$(curl --silent --max-time 15 -o /tmp/qemlo-admin-login.html -w '%{http_code}' http://127.0.0.1:3000/admin/login)
+          if [ "$login_code" != "200" ]; then
+            echo "Admin sign-in route should render safely: HTTP $login_code"
+            tail -80 /tmp/qemlo-next.log
+            exit 1
+          fi
+          grep -q 'Admin access is being configured' /tmp/qemlo-admin-login.html
+          protected_code=$(curl --silent --max-time 15 -o /tmp/qemlo-protected.html -w '%{http_code}' http://127.0.0.1:3000/admin)
+          if grep -q 'Overview Dashboard' /tmp/qemlo-protected.html; then
+            echo "Protected dashboard content leaked while MFA configuration is absent."
+            exit 1
+          fi
+          if [ "$protected_code" != "404" ] && [ "$protected_code" != "200" ]; then
+            echo "Unexpected protected dashboard response: $protected_code"
+            exit 1
+          fi
           admin_auth_code=$(curl --silent --max-time 15 -X POST -H 'Content-Type: application/json' -d '{"password":"invalid"}' -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/admin/auth)
           if [ "$admin_auth_code" != "503" ]; then
             echo "Production admin API must be disabled until MFA: HTTP $admin_auth_code"
