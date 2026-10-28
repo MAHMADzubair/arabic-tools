@@ -23,6 +23,7 @@ export default function AdminHeader({
   const [profileOpen, setProfileOpen] = useState(false);
   const [riyadhTime, setRiyadhTime] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
 
   // Live Gulf clock update
   useEffect(() => {
@@ -48,16 +49,19 @@ export default function AdminHeader({
 
   const handleLogout = async () => {
     setLoggingOut(true);
+    setLogoutError("");
     try {
-      await fetch("/api/admin/auth", {
+      const response = await fetch("/api/admin/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "logout" }),
       });
-      router.push("/admin/login");
+      if (!response.ok) throw new Error("Session revocation could not be verified.");
+      router.replace("/admin/login");
       router.refresh();
     } catch {
-      window.location.href = "/admin/login";
+      setLogoutError("Sign-out could not be confirmed. Please retry.");
+      setLoggingOut(false);
     }
   };
 
@@ -163,10 +167,13 @@ export default function AdminHeader({
                     Website Administrator
                   </p>
                   <p className="text-[10px] text-emerald-400 font-mono">
-                    Session: Active (8h)
+                    Session: Maximum 8h
                   </p>
                 </div>
 
+                {logoutError && (
+                  <p role="alert" className="px-3 py-2 text-[11px] text-rose-400">{logoutError}</p>
+                )}
                 <button
                   onClick={handleLogout}
                   disabled={loggingOut}

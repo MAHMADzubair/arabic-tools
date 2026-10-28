@@ -16,7 +16,7 @@ export default function SettingsPage() {
     { name: "SUPABASE_URL", desc: "PostgreSQL project endpoint", configured: Boolean(process.env.SUPABASE_URL), critical: true },
     { name: "SUPABASE_SERVICE_ROLE_KEY", desc: "Server-only database service key", configured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY), critical: true },
     { name: "NEXT_PUBLIC_ADSENSE_PUB_ID", desc: "Public AdSense publisher ID", configured: Boolean(process.env.NEXT_PUBLIC_ADSENSE_PUB_ID), critical: false },
-    { name: "MFA_ENCRYPTION_KEY", desc: "AES-256-GCM TOTP secret encryption", configured: Boolean(process.env.MFA_ENCRYPTION_KEY), critical: true },
+    { name: "MFA_ENCRYPTION_KEY", desc: "Planned MFA encryption key (no MFA implementation yet)", configured: Boolean(process.env.MFA_ENCRYPTION_KEY), critical: true },
     { name: "GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL", desc: "GSC service account email", configured: Boolean(process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL), critical: false },
     { name: "GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY", desc: "GSC service account key", configured: Boolean(process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY), critical: false },
     { name: "ADSENSE_CLIENT_ID", desc: "Google AdSense OAuth client ID", configured: Boolean(process.env.ADSENSE_CLIENT_ID), critical: false },
@@ -29,25 +29,25 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <KpiCard
           title="MFA Policy"
-          value="Mandatory"
-          subtitle="Enforced for production administrative account"
+          value="Not Implemented"
+          subtitle="Production admin access blocked until independently verified"
           source="Security Policy"
           highlight={true}
-          badge={<StatusBadge status="warning" label="Enforced in Prod" size="sm" />}
+          badge={<StatusBadge status="error" label="Release Blocker" size="sm" />}
         />
         <KpiCard
           title="Data Retention"
-          value="30 Days"
-          subtitle="Rolling purge of raw telemetry events"
+          value="Not Configured"
+          subtitle="Public telemetry not enabled; no retention job claimed"
           source="Database"
-          badge={<StatusBadge status="success" label="Scheduled" size="sm" />}
+          badge={<StatusBadge status="disconnected" label="Pending Policy" size="sm" />}
         />
         <KpiCard
           title="Audit Log Retention"
-          value="Permanent"
-          subtitle="Administrative login & auth trail preserved"
+          value="Database-Dependent"
+          subtitle="Attempt data retention requires a verified cleanup schedule"
           source="Security Log"
-          badge={<StatusBadge status="live" label="Preserved" size="sm" />}
+          badge={<StatusBadge status="warning" label="Verify Database" size="sm" />}
         />
       </div>
 
@@ -98,7 +98,7 @@ export default function SettingsPage() {
                   <td className="py-3 text-right">
                     <StatusBadge
                       status={item.configured ? "success" : item.critical ? "error" : "disconnected"}
-                      label={item.configured ? "Configured" : "Missing"}
+                      label={item.configured ? "Present" : "Missing"}
                       size="sm"
                     />
                   </td>
@@ -121,15 +121,15 @@ export default function SettingsPage() {
         <ul className="mt-4 space-y-2.5 text-xs text-[#A3A39E]">
           <li className="flex items-start gap-2">
             <span className="font-bold text-[#FF5B04]">✓</span>
-            <span>Single-admin account architecture: public registrations are permanently disallowed.</span>
+            <span>This admin interface has no public registration flow; external identity controls must be verified separately.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold text-[#FF5B04]">✓</span>
-            <span>All administrative queries execute strictly via server-side service-role; no client keys are exposed.</span>
+            <span>Server-side database reads use service-role credentials; production access remains gated pending MFA.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold text-[#FF5B04]">✓</span>
-            <span>Search crawlers are forbidden from indexing any route matching <code className="text-[#FF5B04]">/admin/*</code> or <code className="text-[#FF5B04]">/api/*</code>.</span>
+            <span>robots.txt requests crawlers not to index routes matching <code className="text-[#FF5B04]">/admin/*</code> or <code className="text-[#FF5B04]">/api/*</code>; it is not an access control mechanism.</span>
           </li>
         </ul>
       </div>

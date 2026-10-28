@@ -22,7 +22,7 @@ import {
 
 export const NAV_ITEMS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/live", label: "Live Activity", icon: Activity, badge: "Live" },
+  { href: "/admin/live", label: "Live Activity", icon: Activity },
   { href: "/admin/visitors", label: "Visitors", icon: Users },
   { href: "/admin/tools", label: "Tool Analytics", icon: Wrench },
   { href: "/admin/seo", label: "SEO & Search", icon: Search },
@@ -46,7 +46,9 @@ export default function AdminSidebar({
     <>
       {/* Mobile backdrop scrim */}
       {mobileOpen && (
-        <div
+        <button
+          type="button"
+          aria-label="Close navigation menu"
           onClick={onCloseMobile}
           className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
         />
@@ -55,7 +57,7 @@ export default function AdminSidebar({
       {/* Sidebar aside element */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-[#222222] bg-[#0D0D0D] transition-all duration-200 lg:static ${
-          collapsed ? "w-[72px]" : "w-64"
+          collapsed && !mobileOpen ? "w-[72px]" : "w-64"
         } ${
           mobileOpen
             ? "translate-x-0"
@@ -72,7 +74,7 @@ export default function AdminSidebar({
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FF5B04] text-xs font-black text-[#0D0D0D] shadow-md shadow-[#FF5B04]/20">
               Q
             </div>
-            {!collapsed && (
+            {(!collapsed || mobileOpen) && (
               <div className="flex flex-col">
                 <span className="text-sm font-bold tracking-tight text-[#F5F5F2]">
                   QEMLO
@@ -101,7 +103,7 @@ export default function AdminSidebar({
         {/* Navigation items */}
         <div className="flex-1 overflow-y-auto px-3 py-4">
           <div className="mb-2 px-2 text-[10px] font-bold uppercase tracking-wider text-[#73736C]">
-            {!collapsed && "Platform Operations"}
+            {(!collapsed || mobileOpen) && "Platform Operations"}
           </div>
 
           <nav className="space-y-1">
@@ -117,7 +119,8 @@ export default function AdminSidebar({
                   key={item.href}
                   href={item.href}
                   onClick={onCloseMobile}
-                  title={collapsed ? item.label : undefined}
+                  aria-current={isActive ? "page" : undefined}
+                  title={collapsed && !mobileOpen ? item.label : undefined}
                   className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium transition-all duration-150 ${
                     isActive
                       ? "bg-[#1A1A1A] font-semibold text-[#F5F5F2]"
@@ -141,7 +144,7 @@ export default function AdminSidebar({
                     <span className="flex-1 truncate">{item.label}</span>
                   )}
 
-                  {!collapsed && item.badge && (
+                  {(!collapsed || mobileOpen) && item.badge && (
                     <span className="flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">
                       <span className="h-1 w-1 rounded-full bg-emerald-400 animate-pulse" />
                       {item.badge}

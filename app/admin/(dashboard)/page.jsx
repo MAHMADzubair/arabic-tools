@@ -5,7 +5,7 @@ import KpiCard from "@/components/admin/KpiCard";
 import ChartCard from "@/components/admin/ChartCard";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { getActiveTools, CATEGORIES } from "@/lib/registry";
-import { getSupabaseAdmin } from "@/lib/sessionAuth";
+import { getAdminOperationalSnapshot } from "@/lib/adminOperationalSnapshot";
 import {
   Wrench,
   Server,
@@ -25,33 +25,8 @@ export default async function AdminOverviewPage() {
   const activeTools = getActiveTools();
   const categories = CATEGORIES;
 
-  // Real-time Supabase connection check
-  const startPing = Date.now();
-  let dbStatus = "healthy";
-  let dbLatency = 0;
-  let sessionCount = 0;
-  let attemptCount = 0;
-
-  try {
-    const sb = await getSupabaseAdmin();
-    if (sb) {
-      const { count: sCount } = await sb
-        .from("admin_sessions")
-        .select("*", { count: "exact", head: true });
-      const { count: aCount } = await sb
-        .from("admin_login_attempts")
-        .select("*", { count: "exact", head: true });
-
-      sessionCount = sCount || 0;
-      attemptCount = aCount || 0;
-      dbLatency = Date.now() - startPing;
-    } else {
-      dbStatus = "disconnected";
-    }
-  } catch {
-    dbStatus = "error";
-    dbLatency = Date.now() - startPing;
-  }
+  // Operational database status, never invented public-visitor metrics.
+  const snapshot = await getAdminOperationalSnapshot();
 
   // Tool categories aggregation from dynamic registry
   const categoryStats = categories.map((c) => {
@@ -91,9 +66,9 @@ export default async function AdminOverviewPage() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold text-[#F5F5F2]">
-                QEMLO Production Status
+                QEMLO Deployment Context
               </span>
-              <StatusBadge status="live" label="Live & Operational" size="sm" />
+              <StatusBadge status="warning" label="Verify Live Deployment" size="sm" />
             </div>
             <p className="text-xs text-[#A3A39E]">
               Primary Domain: <span className="font-mono text-[#F5F5F2]">qemlo.com</span> · Arabic RTL Public Interface
@@ -124,31 +99,31 @@ export default async function AdminOverviewPage() {
         />
 
         <KpiCard
-          title="Database Latency"
-          value={`${dbLatency} ms`}
-          subtitle="Direct PostgreSQL server round-trip"
+          title="Database Query Latency"
+          value={snapshot.latencyMs === null ? "Unavailable" : `${snapshot.latencyMs} ms`}
+          subtitle="Observed admin database query duration"
           source="Supabase"
           badge={
             <StatusBadge
-              status={dbStatus === "healthy" ? "success" : "warning"}
-              label={dbStatus === "healthy" ? "Connected" : "Degraded"}
+              status={snapshot.status === "healthy" ? "success" : "warning"}
+              label={snapshot.status === "healthy" ? "Verified" : snapshot.status}
               size="sm"
             />
           }
         />
 
         <KpiCard
-          title="Security Sessions"
-          value={sessionCount}
-          subtitle="Active admin sessions in DB"
+          title="Active Admin Sessions"
+          value={snapshot.activeSessions ?? "Unavailable"}
+          subtitle="Unexpired, non-revoked sessions"
           source="Auth"
-          badge={<StatusBadge status="info" label="Secured" size="sm" />}
+          badge={<StatusBadge status={snapshot.activeSessions === null ? "warning" : "info"} label={snapshot.activeSessions === null ? "Not Connected" : "DB Result"} size="sm" />}
         />
 
         <KpiCard
-          title="Rate-Limit Events"
-          value={attemptCount}
-          subtitle="Logged login attempts (24h)"
+          title="Login Attempts (24h)"
+          value={snapshot.loginAttempts24h ?? "Unavailable"}
+          subtitle="Recorded attempts, not necessarily blocked events"
           source="Atomic RL"
           badge={<StatusBadge status="neutral" label="Monitored" size="sm" />}
         />
@@ -174,18 +149,18 @@ export default async function AdminOverviewPage() {
 
         <KpiCard
           title="Core Web Vitals"
-          value="Ready"
-          subtitle="Vercel Analytics tag mounted"
+          value="Setup Required"
+          subtitle="Verified field measurements not connected"
           source="Telemetry"
-          badge={<StatusBadge status="info" label="Telemetry Ready" size="sm" />}
+          badge={<StatusBadge status="disconnected" label="Not Connected" size="sm" />}
         />
 
         <KpiCard
           title="Index Protection"
-          value="Active"
-          subtitle="robots.txt disallow: /admin/"
+          value="Configured"
+          subtitle="robots.txt exclusion; server auth remains essential"
           source="Robots"
-          badge={<StatusBadge status="success" label="Noindex" size="sm" />}
+          badge={<StatusBadge status="neutral" label="Crawler Directive" size="sm" />}
         />
       </div>
 

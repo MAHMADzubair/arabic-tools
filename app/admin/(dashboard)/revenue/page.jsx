@@ -22,26 +22,26 @@ export default function RevenuePage() {
         <KpiCard
           title="AdSense Publisher ID"
           value="ca-pub-4706954030329423"
-          subtitle="Mounted in public <head> verification"
+          subtitle="Publisher identifier configured in source"
           source="AdSense Tag"
-          badge={<StatusBadge status="success" label="Verified" size="sm" />}
+          badge={<StatusBadge status="neutral" label="Source Configuration" size="sm" />}
         />
         <KpiCard
           title="Ad Units Deployed"
-          value="Pending Review"
-          subtitle="Site monetization approval status"
+          value="Unknown"
+          subtitle="Check current status in the AdSense account"
           source="Google AdSense"
-          badge={<StatusBadge status="pending" label="Pending" size="sm" />}
+          badge={<StatusBadge status="disconnected" label="Not Verified" size="sm" />}
         />
         <KpiCard
           title="Management API"
-          value={isAdSenseApiConfigured ? "Connected" : "Disconnected"}
+          value={isAdSenseApiConfigured ? "Credentials Present" : "Not Configured"}
           subtitle="OAuth2 programmatic reporting"
           source="AdSense API"
           badge={
             <StatusBadge
-              status={isAdSenseApiConfigured ? "success" : "disconnected"}
-              label={isAdSenseApiConfigured ? "Authorized" : "Setup Required"}
+              status="disconnected"
+              label={isAdSenseApiConfigured ? "API Unverified" : "Setup Required"}
               size="sm"
             />
           }
@@ -61,14 +61,14 @@ export default function RevenuePage() {
         {!isAdSenseApiConfigured ? (
           <EmptyState
             title="Google AdSense Management API Disconnected"
-            description="To securely display real-time earnings, daily revenue trends, page RPM, impressions, and ad CTR directly inside the QEMLO Command Center, connect the Google AdSense Management API OAuth2 credentials. We never fabricate revenue figures."
+            description="Real revenue metrics require an authorized OAuth token, account permissions, and a successful AdSense reporting API request. Client ID and secret alone are insufficient. No estimated earnings are displayed."
             requiredEnv={["ADSENSE_CLIENT_ID", "ADSENSE_CLIENT_SECRET"]}
             actionText="AdSense Management API Docs"
             actionHref="https://developers.google.com/adsense/management"
           />
         ) : (
           <div className="rounded-xl border border-[#262626] bg-[#161616] p-6 text-sm text-[#F5F5F2]">
-            Authorized AdSense revenue reporting active.
+            API credentials are present, but an authorized AdSense reporting request has not been verified. Revenue reporting is not connected.
           </div>
         )}
       </div>
@@ -93,7 +93,7 @@ export default function RevenuePage() {
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold text-[#FF5B04]">3.</span>
-            <span>Admin center routes are completely excluded from ad script execution.</span>
+            <span>Keep admin pages free of advertisements before enabling production access.</span>
           </li>
         </ul>
       </div>
