@@ -10,7 +10,7 @@ test("Homepage Header & Hero: private owner login available without a public acc
     path.join(rootDir, "components/home/HomeHeader.jsx"),
     "utf8"
   );
-  const ownerLinks = homeHeaderCode.match(/href="\\/admin\\/login"/g) || [];
+  const ownerLinks = homeHeaderCode.split('href="/admin/login"').length - 1;
   assert.equal(ownerLinks.length, 2, "desktop profile and mobile drawer must link to owner login");
   assert.ok(homeHeaderCode.includes("كل الأدوات متاحة بلا تسجيل"), "public tools must remain registration-free");
 });
