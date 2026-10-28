@@ -88,5 +88,5 @@ test("Admin integrity: production stays fail-closed until separately verified MF
   }
   const header = get("components/admin/AdminHeader.jsx");
   assert.ok(header.includes('if (!response.ok) throw'));
-  assert.ok(header.includes('router.replace("/admin/login")'));
+  assert.ok(header.includes('router.replace("/owner-access")'));
 });
