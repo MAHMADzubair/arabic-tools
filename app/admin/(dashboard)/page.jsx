@@ -6,6 +6,10 @@ import ChartCard from "@/components/admin/ChartCard";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { getActiveTools, CATEGORIES } from "@/lib/registry";
 import { getAdminOperationalSnapshot } from "@/lib/adminOperationalSnapshot";
+import { getGscConfig } from "@/lib/integrations/gsc";
+import { getAdSenseConfig } from "@/lib/integrations/adsense";
+import { getCruxConfig } from "@/lib/integrations/crux";
+import { getGa4Config } from "@/lib/integrations/ga4";
 import {
   Wrench,
   Server,
@@ -27,6 +31,11 @@ export default async function AdminOverviewPage() {
 
   // Operational database status, never invented public-visitor metrics.
   const snapshot = await getAdminOperationalSnapshot();
+
+  const gscConfig = getGscConfig();
+  const adsenseConfig = getAdSenseConfig();
+  const cruxConfig = getCruxConfig();
+  const ga4Config = getGa4Config();
 
   // Tool categories aggregation from dynamic registry
   const categoryStats = categories.map((c) => {
@@ -117,7 +126,13 @@ export default async function AdminOverviewPage() {
           value={snapshot.activeSessions ?? "Unavailable"}
           subtitle="Unexpired, non-revoked sessions"
           source="Auth"
-          badge={<StatusBadge status={snapshot.activeSessions === null ? "warning" : "info"} label={snapshot.activeSessions === null ? "Not Connected" : "DB Result"} size="sm" />}
+          badge={
+            <StatusBadge
+              status={snapshot.activeSessions === null ? "warning" : "info"}
+              label={snapshot.activeSessions === null ? "Not Connected" : "DB Result"}
+              size="sm"
+            />
+          }
         />
 
         <KpiCard
@@ -133,26 +148,52 @@ export default async function AdminOverviewPage() {
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           title="Google Search Console"
-          value="Pending"
-          subtitle="Awaiting GSC service account credentials"
+          value={gscConfig.isConfigured ? "Configured" : "Pending"}
+          subtitle={
+            gscConfig.isConfigured
+              ? "Service account configured"
+              : "Awaiting GSC service account credentials"
+          }
           source="GSC API"
-          badge={<StatusBadge status="disconnected" label="Setup Required" size="sm" />}
+          badge={
+            <StatusBadge
+              status={gscConfig.isConfigured ? "info" : "disconnected"}
+              label={gscConfig.isConfigured ? "Adapter Ready" : "Setup Required"}
+              size="sm"
+            />
+          }
         />
 
         <KpiCard
           title="AdSense Revenue"
-          value="Pending"
+          value={adsenseConfig.isConfigured ? "Configured" : "Pending"}
           subtitle="ca-pub-4706954030329423 tag active"
           source="AdSense"
-          badge={<StatusBadge status="disconnected" label="Setup Required" size="sm" />}
+          badge={
+            <StatusBadge
+              status={adsenseConfig.isConfigured ? "info" : "disconnected"}
+              label={adsenseConfig.isConfigured ? "Adapter Ready" : "Setup Required"}
+              size="sm"
+            />
+          }
         />
 
         <KpiCard
           title="Core Web Vitals"
-          value="Setup Required"
-          subtitle="Verified field measurements not connected"
+          value={cruxConfig.isConfigured ? "Configured" : "Setup Required"}
+          subtitle={
+            cruxConfig.isConfigured
+              ? "Chrome UX API adapter active"
+              : "Verified field measurements not connected"
+          }
           source="Telemetry"
-          badge={<StatusBadge status="disconnected" label="Not Connected" size="sm" />}
+          badge={
+            <StatusBadge
+              status={cruxConfig.isConfigured ? "info" : "disconnected"}
+              label={cruxConfig.isConfigured ? "Adapter Ready" : "Not Connected"}
+              size="sm"
+            />
+          }
         />
 
         <KpiCard
