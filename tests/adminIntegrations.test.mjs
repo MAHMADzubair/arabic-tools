@@ -19,7 +19,11 @@ import {
   getAdSenseRevenueReport,
   formatAdSenseCurrency,
 } from "../lib/integrations/adsense.js";
-import { getCruxConfig, getCruxPerformanceMetrics } from "../lib/integrations/crux.js";
+import {
+  getCruxConfig,
+  getCruxPerformanceMetrics,
+  buildCruxRequestBody,
+} from "../lib/integrations/crux.js";
 import { getToolUsageReport, getFunnelAnalytics } from "../lib/integrations/toolEvents.js";
 
 function generateTestPemRsaKeys() {
@@ -192,7 +196,6 @@ test("GA4 Data API: correctly requests period-level distinct users and does NOT 
       if (urlStr.includes("properties/999999999:runReport")) {
         const body = JSON.parse(options.body);
         if (!body.dimensions) {
-          // Aggregate query (no dimensions -> GA4 deduplicated total)
           aggregateBody = body;
           return {
             ok: true,
@@ -200,11 +203,11 @@ test("GA4 Data API: correctly requests period-level distinct users and does NOT 
               rows: [
                 {
                   metricValues: [
-                    { value: "5420" }, // period unique activeUsers
-                    { value: "7100" }, // sessions
-                    { value: "14200" }, // views
-                    { value: "0.32" }, // bounceRate
-                    { value: "145" }, // duration
+                    { value: "5420" },
+                    { value: "7100" },
+                    { value: "14200" },
+                    { value: "0.32" },
+                    { value: "145" },
                   ],
                 },
               ],
@@ -263,8 +266,7 @@ test("GA4 Data API: correctly requests period-level distinct users and does NOT 
     assert.equal(oauthRequested, true);
     assert.ok(aggregateBody, "Aggregate query must be sent without dimensions");
 
-    // CRITICAL: activeUsers must be the GA4 deduplicated period total (5,420),
-    // NOT the sum of daily rows (3000 + 3000 = 6,000)!
+    // activeUsers must be GA4 deduplicated period total (5,420), NOT sum of daily rows (6,000)
     assert.equal(report.data.kpis.activeUsers, 5420);
     assert.notEqual(report.data.kpis.activeUsers, 6000, "Must not sum daily unique users");
     assert.equal(report.data.kpis.sessions, 7100);
@@ -282,8 +284,8 @@ test("GA4 Data API: correctly requests period-level distinct users and does NOT 
   }
 });
 
-// ── Test 11: Mocked GA4 Realtime Provider Response (Overall Dedup) ────
-test("GA4 Realtime API: correctly requests independent overall active users without row summation", async () => {
+// ── Test 11: Mocked GA4 Realtime Schema Compliance (No pagePath) ──────
+test("GA4 Realtime API: requests ONLY verified schema dimensions and never requests pagePath", async () => {
   const originalFetch = globalThis.fetch;
   try {
     const { privateKey } = generateTestPemRsaKeys();
@@ -291,7 +293,7 @@ test("GA4 Realtime API: correctly requests independent overall active users with
     process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL = "mock-sa@qemlo.iam.gserviceaccount.com";
     process.env.GOOGLE_ANALYTICS_PRIVATE_KEY = privateKey;
 
-    let overallQueriedWithoutDimensions = false;
+    const requestedDimensions = [];
 
     globalThis.fetch = async (url, options) => {
       const urlStr = String(url);
@@ -304,21 +306,24 @@ test("GA4 Realtime API: correctly requests independent overall active users with
 
       if (urlStr.includes("runRealtimeReport")) {
         const body = JSON.parse(options.body);
+        if (body.dimensions) {
+          body.dimensions.forEach((d) => requestedDimensions.push(d.name));
+        }
+
         if (!body.dimensions) {
-          overallQueriedWithoutDimensions = true;
           return {
             ok: true,
             json: async () => ({
-              rows: [{ metricValues: [{ value: "42" }] }], // 42 distinct users across whole site
+              rows: [{ metricValues: [{ value: "42" }] }],
             }),
           };
-        } else if (body.dimensions[0]?.name === "pagePath") {
+        } else if (body.dimensions[0]?.name === "unifiedScreenName") {
           return {
             ok: true,
             json: async () => ({
               rows: [
-                { dimensionValues: [{ value: "/ar/sa/final-settlement-calculator" }, { value: "Saudi Final Settlement" }], metricValues: [{ value: "25" }] },
-                { dimensionValues: [{ value: "/ar/ae/vat-invoice-generator" }, { value: "UAE VAT Invoice" }], metricValues: [{ value: "25" }] },
+                { dimensionValues: [{ value: "حاسبة مكافأة نهاية الخدمة في السعودية" }], metricValues: [{ value: "25" }] },
+                { dimensionValues: [{ value: "حاسبة ضريبة القيمة المضافة في الإمارات" }], metricValues: [{ value: "17" }] },
               ],
             }),
           };
@@ -328,7 +333,7 @@ test("GA4 Realtime API: correctly requests independent overall active users with
             json: async () => ({
               rows: [
                 { dimensionValues: [{ value: "Saudi Arabia" }], metricValues: [{ value: "30" }] },
-                { dimensionValues: [{ value: "UAE" }], metricValues: [{ value: "12" }] },
+                { dimensionValues: [{ value: "United Arab Emirates" }], metricValues: [{ value: "12" }] },
               ],
             }),
           };
@@ -339,14 +344,17 @@ test("GA4 Realtime API: correctly requests independent overall active users with
 
     const realtime = await getGa4RealtimeReport();
     assert.equal(realtime.status, "connected");
-    assert.equal(overallQueriedWithoutDimensions, true);
 
-    // CRITICAL: activeUsers must be the overall distinct count (42),
-    // NOT the sum of page rows (25 + 25 = 50)!
+    // SCHEMA COMPLIANCE INVARIANT:
+    // pagePath is not supported by GA4 Realtime API. Must only request unifiedScreenName and country.
+    assert.equal(requestedDimensions.includes("pagePath"), false, "pagePath must never be requested in realtime report");
+    assert.ok(requestedDimensions.includes("unifiedScreenName"), "Must request supported unifiedScreenName dimension");
+    assert.ok(requestedDimensions.includes("country"), "Must request supported country dimension");
+
+    // Independent distinct active users check
     assert.equal(realtime.data.activeUsers, 42);
-    assert.notEqual(realtime.data.activeUsers, 50, "Must not sum active users across pages");
-    assert.equal(realtime.data.topPages[0].path, "/ar/sa/final-settlement-calculator");
-    assert.equal(realtime.data.topPages[0].title, "Saudi Final Settlement");
+    assert.equal(realtime.data.topScreens[0].screen, "حاسبة مكافأة نهاية الخدمة في السعودية");
+    assert.equal(realtime.data.topScreens[0].users, 25);
   } finally {
     globalThis.fetch = originalFetch;
     delete process.env.GA4_PROPERTY_ID;
@@ -480,5 +488,63 @@ test("Security Invariant: error messages never expose private keys or raw tokens
     delete process.env.GA4_PROPERTY_ID;
     delete process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL;
     delete process.env.GOOGLE_ANALYTICS_PRIVATE_KEY;
+  }
+});
+
+// ── Test 15: Chrome UX Report API Request Body Validation ─────────────
+test("CrUX API Schema: omits formFactor for aggregate all-device queries per API spec", async () => {
+  // Test 1: Combined all-device query must omit formFactor entirely
+  const defaultBody = buildCruxRequestBody("https://qemlo.com");
+  assert.equal(defaultBody.origin, "https://qemlo.com");
+  assert.equal("formFactor" in defaultBody, false, "formFactor must be omitted for combined data");
+
+  const explicitAllBody = buildCruxRequestBody("https://qemlo.com", "ALL");
+  assert.equal("formFactor" in explicitAllBody, false, "formFactor 'ALL' is invalid and must be omitted");
+
+  // Test 2: Explicit device-specific queries must include PHONE, DESKTOP, or TABLET
+  const phoneBody = buildCruxRequestBody("https://qemlo.com", "PHONE");
+  assert.equal(phoneBody.formFactor, "PHONE");
+
+  const desktopBody = buildCruxRequestBody("https://qemlo.com", "desktop");
+  assert.equal(desktopBody.formFactor, "DESKTOP");
+
+  const tabletBody = buildCruxRequestBody("https://qemlo.com", "tablet");
+  assert.equal(tabletBody.formFactor, "TABLET");
+
+  // Test 3: Verify the actual fetch request body sent to CrUX API
+  const originalFetch = globalThis.fetch;
+  try {
+    process.env.GOOGLE_CRUX_API_KEY = "mock_crux_api_key_test";
+    let sentBody = null;
+
+    globalThis.fetch = async (url, options) => {
+      sentBody = JSON.parse(options.body);
+      return {
+        ok: true,
+        json: async () => ({
+          record: {
+            metrics: {
+              largest_contentful_paint: { percentiles: { p75: 1850 } },
+              interaction_to_next_paint: { percentiles: { p75: 95 } },
+              cumulative_layout_shift: { percentiles: { p75: "0.02" } },
+              first_contentful_paint: { percentiles: { p75: 1200 } },
+              experimental_time_to_first_byte: { percentiles: { p75: 450 } },
+            },
+          },
+        }),
+      };
+    };
+
+    const cwv = await getCruxPerformanceMetrics();
+    assert.equal(cwv.status, "connected");
+    assert.ok(sentBody, "Must send request body");
+    assert.equal(sentBody.origin, "https://qemlo.com");
+    assert.equal("formFactor" in sentBody, false, "formFactor must be omitted in actual API request");
+    assert.equal(cwv.data.lcp.rating, "good");
+    assert.equal(cwv.data.inp.rating, "good");
+    assert.equal(cwv.data.cls.rating, "good");
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.GOOGLE_CRUX_API_KEY;
   }
 });

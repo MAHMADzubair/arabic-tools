@@ -18,9 +18,8 @@ export default async function LiveActivityPage() {
   const realtime = await getGa4RealtimeReport();
   const isConnected = realtime.status === "connected";
 
-  const pageColumns = [
-    { key: "path", label: "Active Page Path", sortable: true },
-    { key: "title", label: "Page Title", sortable: true },
+  const screenColumns = [
+    { key: "screen", label: "Active Page / Screen (unifiedScreenName)", sortable: true },
     { key: "users", label: "Realtime Active Visitors", sortable: true },
   ];
 
@@ -31,20 +30,20 @@ export default async function LiveActivityPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FF5B04]/10 text-[#FF5B04]">
-              <Radio className="h-5 w-5 animate-pulse" />
+              <Radio className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-sm font-bold text-[#F5F5F2]">Realtime Telemetry</h2>
               <p className="mt-0.5 text-xs text-[#A3A39E]">
                 {isConnected
-                  ? "Streaming verified property-wide distinct active visitors from Google Analytics Realtime API."
+                  ? "Verified active visitors snapshot from Google Analytics Realtime API (last 30 minutes). Distinct property-wide active users."
                   : "No live event provider or approved ingestion endpoint is connected to this dashboard. An empty feed does not mean there are zero visitors."}
               </p>
             </div>
           </div>
           <StatusBadge
             status={isConnected ? "live" : "disconnected"}
-            label={isConnected ? "Live Stream Active" : "Ingestion Not Enabled"}
+            label={isConnected ? "Realtime Snapshot Verified" : "Ingestion Not Enabled"}
             size="sm"
           />
         </div>
@@ -65,18 +64,18 @@ export default async function LiveActivityPage() {
           badge={
             <StatusBadge
               status={isConnected ? "live" : "disconnected"}
-              label={isConnected ? "Distinct Stream" : "Setup Required"}
+              label={isConnected ? "Realtime Snapshot" : "Setup Required"}
               size="sm"
             />
           }
         />
 
         <KpiCard
-          title="Active Pages Monitored"
-          value={isConnected ? realtime.data?.topPages?.length : "Unavailable"}
+          title="Active Screens Monitored"
+          value={isConnected ? realtime.data?.topScreens?.length : "Unavailable"}
           subtitle={
             isConnected
-              ? "Individual calculator URLs currently receiving traffic"
+              ? "Distinct calculator screens currently receiving traffic"
               : "Ingestion has not been activated"
           }
           source={isConnected ? "GA4 Realtime" : "Not Connected"}
@@ -104,13 +103,13 @@ export default async function LiveActivityPage() {
         />
       </div>
 
-      {/* Connected Stream View vs Disconnected View */}
+      {/* Connected Snapshot View vs Disconnected View */}
       {isConnected && realtime.data ? (
         <div className="space-y-6">
           {realtime.data.countries?.length > 0 && (
             <ChartCard
               title="Realtime Visitors by Country"
-              subtitle="Current active countries streaming to QEMLO"
+              subtitle="Current active countries observed on QEMLO"
               data={realtime.data.countries}
               type="bar"
               color="#FF5B04"
@@ -119,14 +118,17 @@ export default async function LiveActivityPage() {
           )}
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold text-[#F5F5F2]">
-              Currently Active Calculator Pages (Last 30 Min)
+            <h3 className="mb-1 text-sm font-semibold text-[#F5F5F2]">
+              Active Calculator Screens (Last 30 Min)
             </h3>
+            <p className="mb-3 text-xs text-[#A3A39E]">
+              Reported directly by GA4 Realtime API using the verified <code className="text-[#FF5B04]">unifiedScreenName</code> dimension.
+            </p>
             <DataTable
-              columns={pageColumns}
-              data={realtime.data.topPages || []}
-              emptyMessage="No active visitors recorded on calculator pages in the last 30 minutes."
-              searchPlaceholder="Filter active paths or titles..."
+              columns={screenColumns}
+              data={realtime.data.topScreens || []}
+              emptyMessage="No active visitors recorded on calculator screens in the last 30 minutes."
+              searchPlaceholder="Filter active screens or page titles..."
             />
           </div>
         </div>
