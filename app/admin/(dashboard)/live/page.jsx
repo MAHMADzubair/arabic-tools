@@ -19,7 +19,8 @@ export default async function LiveActivityPage() {
   const isConnected = realtime.status === "connected";
 
   const pageColumns = [
-    { key: "page", label: "Active Page / Screen", sortable: true },
+    { key: "path", label: "Active Page Path", sortable: true },
+    { key: "title", label: "Page Title", sortable: true },
     { key: "users", label: "Realtime Active Visitors", sortable: true },
   ];
 
@@ -36,7 +37,7 @@ export default async function LiveActivityPage() {
               <h2 className="text-sm font-bold text-[#F5F5F2]">Realtime Telemetry</h2>
               <p className="mt-0.5 text-xs text-[#A3A39E]">
                 {isConnected
-                  ? "Streaming active public visitors from Google Analytics Realtime API."
+                  ? "Streaming verified property-wide distinct active visitors from Google Analytics Realtime API."
                   : "No live event provider or approved ingestion endpoint is connected to this dashboard. An empty feed does not mean there are zero visitors."}
               </p>
             </div>
@@ -56,7 +57,7 @@ export default async function LiveActivityPage() {
           value={isConnected ? realtime.data?.activeUsers : "Unavailable"}
           subtitle={
             isConnected
-              ? "Observed active in the last 30 minutes"
+              ? "Property-wide distinct active users (last 30m, unsummed)"
               : "Requires a verified real-time data source"
           }
           source={isConnected ? "GA4 Realtime API" : "Not Connected"}
@@ -64,7 +65,7 @@ export default async function LiveActivityPage() {
           badge={
             <StatusBadge
               status={isConnected ? "live" : "disconnected"}
-              label={isConnected ? "Realtime" : "Setup Required"}
+              label={isConnected ? "Distinct Stream" : "Setup Required"}
               size="sm"
             />
           }
@@ -75,7 +76,7 @@ export default async function LiveActivityPage() {
           value={isConnected ? realtime.data?.topPages?.length : "Unavailable"}
           subtitle={
             isConnected
-              ? "Calculators currently receiving traffic"
+              ? "Individual calculator URLs currently receiving traffic"
               : "Ingestion has not been activated"
           }
           source={isConnected ? "GA4 Realtime" : "Not Connected"}
@@ -125,7 +126,7 @@ export default async function LiveActivityPage() {
               columns={pageColumns}
               data={realtime.data.topPages || []}
               emptyMessage="No active visitors recorded on calculator pages in the last 30 minutes."
-              searchPlaceholder="Filter active paths..."
+              searchPlaceholder="Filter active paths or titles..."
             />
           </div>
         </div>

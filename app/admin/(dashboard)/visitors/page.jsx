@@ -5,7 +5,7 @@ import ChartCard from "@/components/admin/ChartCard";
 import StatusBadge from "@/components/admin/StatusBadge";
 import EmptyState from "@/components/admin/EmptyState";
 import DataTable from "@/components/admin/DataTable";
-import { getGa4VisitorsReport, getGa4Config } from "@/lib/integrations/ga4";
+import { getGa4VisitorsReport, getGa4Config, parseDateRange } from "@/lib/integrations/ga4";
 import { Users, Eye, Clock, Activity, ExternalLink } from "@/components/admin/Icons";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +17,7 @@ export const metadata = {
 export default async function VisitorsPage({ searchParams }) {
   const resolvedParams = searchParams ? await searchParams : {};
   const selectedRange = resolvedParams.range || "7d";
+  const { periodLabel } = parseDateRange(selectedRange);
 
   const config = getGa4Config();
   const report = await getGa4VisitorsReport(selectedRange);
@@ -24,8 +25,9 @@ export default async function VisitorsPage({ searchParams }) {
 
   const pageColumns = [
     { key: "path", label: "Page Path", sortable: true },
+    { key: "title", label: "Page Title", sortable: true },
     { key: "views", label: "Page Views", sortable: true },
-    { key: "users", label: "Active Users", sortable: true },
+    { key: "users", label: "Unique Users", sortable: true },
   ];
 
   return (
@@ -49,7 +51,7 @@ export default async function VisitorsPage({ searchParams }) {
             </div>
             <p className="text-xs text-[#A3A39E]">
               {isConnected
-                ? "Live audience reports queried directly from GA4 Data API v1beta."
+                ? `Reporting Period: ${report.data?.periodLabel || periodLabel} (deduplicated by GA4)`
                 : "Audience analytics requires GA4 Property ID and Google Service Account credentials."}
             </p>
           </div>
@@ -57,17 +59,22 @@ export default async function VisitorsPage({ searchParams }) {
 
         {/* Date Filter Badges */}
         <div className="flex items-center gap-1.5">
-          {["24h", "7d", "30d", "90d"].map((r) => (
+          {[
+            { id: "24h", label: "24-48H" },
+            { id: "7d", label: "7D" },
+            { id: "30d", label: "30D" },
+            { id: "90d", label: "90D" },
+          ].map((r) => (
             <a
-              key={r}
-              href={`/admin/visitors?range=${r}`}
+              key={r.id}
+              href={`/admin/visitors?range=${r.id}`}
               className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
-                selectedRange === r
+                selectedRange === r.id
                   ? "bg-[#FF5B04] text-[#0D0D0D]"
                   : "border border-[#262626] bg-[#1A1A1A] text-[#A3A39E] hover:text-[#F5F5F2]"
               }`}
             >
-              {r.toUpperCase()}
+              {r.label}
             </a>
           ))}
         </div>
@@ -76,15 +83,19 @@ export default async function VisitorsPage({ searchParams }) {
       {/* KPI Metrics Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
-          title="Active Visitors"
+          title="Period Unique Visitors"
           value={isConnected ? report.data?.kpis?.activeUsers?.toLocaleString() : "Unavailable"}
-          subtitle={isConnected ? `Unique active users (${selectedRange})` : "Requires connected GA4 Property"}
+          subtitle={
+            isConnected
+              ? `Deduplicated distinct visitors (${report.data?.shortLabel || selectedRange})`
+              : "Requires connected GA4 Property"
+          }
           source="GA4 Data API"
           highlight={isConnected}
           badge={
             <StatusBadge
               status={isConnected ? "success" : "disconnected"}
-              label={isConnected ? "Verified" : "Setup Required"}
+              label={isConnected ? "Deduplicated" : "Setup Required"}
               size="sm"
             />
           }
@@ -147,8 +158,8 @@ export default async function VisitorsPage({ searchParams }) {
           {/* Charts Row */}
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <ChartCard
-              title="Daily Active Visitors"
-              subtitle={`Audience traffic over the past ${selectedRange}`}
+              title="Daily Active Visitors Trend"
+              subtitle={`Audience traffic over ${report.data.periodLabel}`}
               data={report.data.dailyTrends || []}
               type="area"
               color="#FF5B04"
@@ -171,13 +182,13 @@ export default async function VisitorsPage({ searchParams }) {
           {/* Top Visited Calculator Pages Table */}
           <div className="mt-6">
             <h3 className="mb-3 text-sm font-semibold text-[#F5F5F2]">
-              Top Visited Calculator Paths ({selectedRange})
+              Top Visited Calculator Paths ({report.data.periodLabel})
             </h3>
             <DataTable
               columns={pageColumns}
               data={report.data.topPages || []}
               emptyMessage="No page views recorded in the selected period."
-              searchPlaceholder="Filter paths..."
+              searchPlaceholder="Filter paths or page titles..."
             />
           </div>
         </>

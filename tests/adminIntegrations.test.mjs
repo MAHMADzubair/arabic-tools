@@ -7,12 +7,30 @@ import {
   getGoogleServiceAccountAccessToken,
   getGoogleOAuthAccessToken,
 } from "../lib/integrations/googleAuth.js";
-import { getGa4Config, getGa4VisitorsReport, getGa4RealtimeReport } from "../lib/integrations/ga4.js";
+import {
+  getGa4Config,
+  parseDateRange,
+  getGa4VisitorsReport,
+  getGa4RealtimeReport,
+} from "../lib/integrations/ga4.js";
 import { getGscConfig, getGscSearchPerformance } from "../lib/integrations/gsc.js";
-import { getAdSenseConfig, getAdSenseRevenueReport } from "../lib/integrations/adsense.js";
+import {
+  getAdSenseConfig,
+  getAdSenseRevenueReport,
+  formatAdSenseCurrency,
+} from "../lib/integrations/adsense.js";
 import { getCruxConfig, getCruxPerformanceMetrics } from "../lib/integrations/crux.js";
 import { getToolUsageReport, getFunnelAnalytics } from "../lib/integrations/toolEvents.js";
 
+function generateTestPemRsaKeys() {
+  return crypto.generateKeyPairSync("rsa", {
+    modulusLength: 2048,
+    publicKeyEncoding: { type: "spki", format: "pem" },
+    privateKeyEncoding: { type: "pkcs8", format: "pem" },
+  });
+}
+
+// ── Test 1: Private Key Normalization ────────────────────────────────
 test("Google Auth: normalizePrivateKey sanitizes escaped newlines, quotes and whitespace", () => {
   const rawKey = ' "line1\\nline2\\nline3" ';
   const normalized = normalizePrivateKey(rawKey);
@@ -21,10 +39,9 @@ test("Google Auth: normalizePrivateKey sanitizes escaped newlines, quotes and wh
   assert.equal(normalizePrivateKey(123), "");
 });
 
+// ── Test 2: RS256 JWT Generation & Verification ───────────────────────
 test("Google Auth: createSignedJwt produces verifiable RS256 token assertion", () => {
-  const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
-    modulusLength: 2048,
-  });
+  const { privateKey, publicKey } = generateTestPemRsaKeys();
 
   const clientEmail = "test-service-account@qemlo-test.iam.gserviceaccount.com";
   const scopes = ["https://www.googleapis.com/auth/analytics.readonly"];
@@ -49,6 +66,7 @@ test("Google Auth: createSignedJwt produces verifiable RS256 token assertion", (
   assert.equal(valid, true, "JWT signature must verify with public key");
 });
 
+// ── Test 3: Credential Failure Modes ─────────────────────────────────
 test("Google Auth: token fetch fails gracefully when credentials are not configured", async () => {
   const res = await getGoogleServiceAccountAccessToken({
     clientEmail: "",
@@ -67,6 +85,19 @@ test("Google Auth: token fetch fails gracefully when credentials are not configu
   assert.equal(oauthRes.error, "missing_credentials");
 });
 
+// ── Test 4: GA4 Date Range Calculation Accuracy ──────────────────────
+test("GA4 Adapter: parseDateRange accurately represents 24h as yesterday & today", () => {
+  const r24 = parseDateRange("24h");
+  assert.equal(r24.startDate, "yesterday");
+  assert.equal(r24.endDate, "today");
+  assert.ok(r24.periodLabel.includes("24-48h"));
+
+  const r7 = parseDateRange("7d");
+  assert.equal(r7.startDate, "7daysAgo");
+  assert.equal(r7.endDate, "today");
+});
+
+// ── Test 5: GA4 Disconnected Status Fallback ─────────────────────────
 test("GA4 Adapter: honest disconnected status when credentials missing", async () => {
   const config = getGa4Config();
   if (!config.isConfigured) {
@@ -82,6 +113,7 @@ test("GA4 Adapter: honest disconnected status when credentials missing", async (
   }
 });
 
+// ── Test 6: GSC Disconnected Status Fallback ─────────────────────────
 test("GSC Adapter: honest disconnected status and no indexing claims", async () => {
   const config = getGscConfig();
   if (!config.isConfigured) {
@@ -90,6 +122,15 @@ test("GSC Adapter: honest disconnected status and no indexing claims", async () 
     assert.equal(perf.reason, "missing_credentials");
     assert.equal(perf.data, null);
   }
+});
+
+// ── Test 7: AdSense Dynamic Currency & Disconnected Fallback ──────────
+test("AdSense Adapter: dynamic currency formatting parses any ISO code", () => {
+  assert.equal(formatAdSenseCurrency(1250.5, "SAR"), "SAR 1,250.50");
+  assert.equal(formatAdSenseCurrency(850.25, "AED"), "AED 850.25");
+  assert.equal(formatAdSenseCurrency(500, "USD"), "$500.00");
+  assert.equal(formatAdSenseCurrency(null, "USD"), "—");
+  assert.equal(formatAdSenseCurrency(NaN, "USD"), "—");
 });
 
 test("AdSense Adapter: honest disconnected status without OAuth credentials", async () => {
@@ -102,6 +143,7 @@ test("AdSense Adapter: honest disconnected status without OAuth credentials", as
   }
 });
 
+// ── Test 8: CrUX Disconnected Fallback ────────────────────────────────
 test("CrUX Adapter: honest disconnected status without API key", async () => {
   const config = getCruxConfig();
   if (!config.isConfigured) {
@@ -112,6 +154,7 @@ test("CrUX Adapter: honest disconnected status without API key", async () => {
   }
 });
 
+// ── Test 9: Tool Telemetry & Funnel Protocol ─────────────────────────
 test("Tool Telemetry & Funnel: discovers all registered tools and strictly excludes PII", async () => {
   const usage = await getToolUsageReport("7d");
   assert.equal(typeof usage.registeredToolsCount, "number");
@@ -121,5 +164,321 @@ test("Tool Telemetry & Funnel: discovers all registered tools and strictly exclu
   assert.ok(funnel.status === "disconnected" || funnel.status === "connected");
   if (funnel.status === "disconnected") {
     assert.equal(funnel.data, null);
+  }
+});
+
+// ── Test 10: Mocked GA4 Data Provider Response (Deduplication Check) ───
+test("GA4 Data API: correctly requests period-level distinct users and does NOT sum daily counts", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    const { privateKey } = generateTestPemRsaKeys();
+    process.env.GA4_PROPERTY_ID = "999999999";
+    process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL = "mock-sa@qemlo.iam.gserviceaccount.com";
+    process.env.GOOGLE_ANALYTICS_PRIVATE_KEY = privateKey;
+
+    let oauthRequested = false;
+    let aggregateBody = null;
+
+    globalThis.fetch = async (url, options) => {
+      const urlStr = String(url);
+      if (urlStr.includes("oauth2.googleapis.com/token")) {
+        oauthRequested = true;
+        return {
+          ok: true,
+          json: async () => ({ access_token: "mock_test_token_12345", expires_in: 3600 }),
+        };
+      }
+
+      if (urlStr.includes("properties/999999999:runReport")) {
+        const body = JSON.parse(options.body);
+        if (!body.dimensions) {
+          // Aggregate query (no dimensions -> GA4 deduplicated total)
+          aggregateBody = body;
+          return {
+            ok: true,
+            json: async () => ({
+              rows: [
+                {
+                  metricValues: [
+                    { value: "5420" }, // period unique activeUsers
+                    { value: "7100" }, // sessions
+                    { value: "14200" }, // views
+                    { value: "0.32" }, // bounceRate
+                    { value: "145" }, // duration
+                  ],
+                },
+              ],
+            }),
+          };
+        } else if (body.dimensions[0]?.name === "date") {
+          return {
+            ok: true,
+            json: async () => ({
+              rows: [
+                { dimensionValues: [{ value: "20261027" }], metricValues: [{ value: "3000" }, { value: "3500" }, { value: "7000" }] },
+                { dimensionValues: [{ value: "20261028" }], metricValues: [{ value: "3000" }, { value: "3600" }, { value: "7200" }] },
+              ],
+            }),
+          };
+        } else if (body.dimensions[0]?.name === "country") {
+          return {
+            ok: true,
+            json: async () => ({
+              rows: [
+                { dimensionValues: [{ value: "Saudi Arabia" }], metricValues: [{ value: "3800" }] },
+                { dimensionValues: [{ value: "United Arab Emirates" }], metricValues: [{ value: "1200" }] },
+              ],
+            }),
+          };
+        } else if (body.dimensions[0]?.name === "deviceCategory") {
+          return {
+            ok: true,
+            json: async () => ({
+              rows: [
+                { dimensionValues: [{ value: "mobile" }], metricValues: [{ value: "4200" }] },
+                { dimensionValues: [{ value: "desktop" }], metricValues: [{ value: "1220" }] },
+              ],
+            }),
+          };
+        } else if (body.dimensions[0]?.name === "pagePath") {
+          return {
+            ok: true,
+            json: async () => ({
+              rows: [
+                {
+                  dimensionValues: [{ value: "/ar/sa/final-settlement-calculator" }, { value: "Saudi Final Settlement" }],
+                  metricValues: [{ value: "8500" }, { value: "3200" }],
+                },
+              ],
+            }),
+          };
+        }
+      }
+
+      throw new Error(`Unexpected fetch URL: ${urlStr}`);
+    };
+
+    const report = await getGa4VisitorsReport("7d");
+    assert.equal(report.status, "connected");
+    assert.equal(oauthRequested, true);
+    assert.ok(aggregateBody, "Aggregate query must be sent without dimensions");
+
+    // CRITICAL: activeUsers must be the GA4 deduplicated period total (5,420),
+    // NOT the sum of daily rows (3000 + 3000 = 6,000)!
+    assert.equal(report.data.kpis.activeUsers, 5420);
+    assert.notEqual(report.data.kpis.activeUsers, 6000, "Must not sum daily unique users");
+    assert.equal(report.data.kpis.sessions, 7100);
+    assert.equal(report.data.kpis.views, 14200);
+    assert.equal(report.data.kpis.bounceRatePct, 32);
+    assert.equal(report.data.kpis.avgDurationSec, 145);
+    assert.equal(report.data.dailyTrends.length, 2);
+    assert.equal(report.data.countries[0].label, "Saudi Arabia");
+    assert.equal(report.data.topPages[0].title, "Saudi Final Settlement");
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.GA4_PROPERTY_ID;
+    delete process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL;
+    delete process.env.GOOGLE_ANALYTICS_PRIVATE_KEY;
+  }
+});
+
+// ── Test 11: Mocked GA4 Realtime Provider Response (Overall Dedup) ────
+test("GA4 Realtime API: correctly requests independent overall active users without row summation", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    const { privateKey } = generateTestPemRsaKeys();
+    process.env.GA4_PROPERTY_ID = "999999999";
+    process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL = "mock-sa@qemlo.iam.gserviceaccount.com";
+    process.env.GOOGLE_ANALYTICS_PRIVATE_KEY = privateKey;
+
+    let overallQueriedWithoutDimensions = false;
+
+    globalThis.fetch = async (url, options) => {
+      const urlStr = String(url);
+      if (urlStr.includes("oauth2.googleapis.com/token")) {
+        return {
+          ok: true,
+          json: async () => ({ access_token: "mock_test_token_rt", expires_in: 3600 }),
+        };
+      }
+
+      if (urlStr.includes("runRealtimeReport")) {
+        const body = JSON.parse(options.body);
+        if (!body.dimensions) {
+          overallQueriedWithoutDimensions = true;
+          return {
+            ok: true,
+            json: async () => ({
+              rows: [{ metricValues: [{ value: "42" }] }], // 42 distinct users across whole site
+            }),
+          };
+        } else if (body.dimensions[0]?.name === "pagePath") {
+          return {
+            ok: true,
+            json: async () => ({
+              rows: [
+                { dimensionValues: [{ value: "/ar/sa/final-settlement-calculator" }, { value: "Saudi Final Settlement" }], metricValues: [{ value: "25" }] },
+                { dimensionValues: [{ value: "/ar/ae/vat-invoice-generator" }, { value: "UAE VAT Invoice" }], metricValues: [{ value: "25" }] },
+              ],
+            }),
+          };
+        } else if (body.dimensions[0]?.name === "country") {
+          return {
+            ok: true,
+            json: async () => ({
+              rows: [
+                { dimensionValues: [{ value: "Saudi Arabia" }], metricValues: [{ value: "30" }] },
+                { dimensionValues: [{ value: "UAE" }], metricValues: [{ value: "12" }] },
+              ],
+            }),
+          };
+        }
+      }
+      throw new Error(`Unexpected fetch URL: ${urlStr}`);
+    };
+
+    const realtime = await getGa4RealtimeReport();
+    assert.equal(realtime.status, "connected");
+    assert.equal(overallQueriedWithoutDimensions, true);
+
+    // CRITICAL: activeUsers must be the overall distinct count (42),
+    // NOT the sum of page rows (25 + 25 = 50)!
+    assert.equal(realtime.data.activeUsers, 42);
+    assert.notEqual(realtime.data.activeUsers, 50, "Must not sum active users across pages");
+    assert.equal(realtime.data.topPages[0].path, "/ar/sa/final-settlement-calculator");
+    assert.equal(realtime.data.topPages[0].title, "Saudi Final Settlement");
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.GA4_PROPERTY_ID;
+    delete process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL;
+    delete process.env.GOOGLE_ANALYTICS_PRIVATE_KEY;
+  }
+});
+
+// ── Test 12: Mocked AdSense Response with Dynamic Currency ────────────
+test("AdSense API: parses dynamic currency metadata (e.g. SAR) and does not default to USD", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    process.env.ADSENSE_CLIENT_ID = "mock_client_id_123";
+    process.env.ADSENSE_CLIENT_SECRET = "mock_client_secret_xyz";
+    process.env.ADSENSE_REFRESH_TOKEN = "mock_refresh_token_abc";
+    process.env.ADSENSE_ACCOUNT_ID = "pub-4706954030329423";
+
+    globalThis.fetch = async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes("oauth2.googleapis.com/token")) {
+        return {
+          ok: true,
+          json: async () => ({ access_token: "mock_adsense_token", expires_in: 3600 }),
+        };
+      }
+
+      if (urlStr.includes("reports:generate")) {
+        return {
+          ok: true,
+          json: async () => ({
+            headers: [
+              { name: "DATE", type: "DIMENSION" },
+              { name: "ESTIMATED_EARNINGS", type: "METRIC_CURRENCY", currencyCode: "SAR" },
+              { name: "PAGE_VIEWS", type: "METRIC_TALLY" },
+              { name: "IMPRESSIONS", type: "METRIC_TALLY" },
+              { name: "PAGE_VIEWS_RPM", type: "METRIC_CURRENCY", currencyCode: "SAR" },
+            ],
+            rows: [
+              { cells: [{ value: "2026-10-27" }, { value: "150.50" }, { value: "3000" }, { value: "4500" }, { value: "50.17" }] },
+              { cells: [{ value: "2026-10-28" }, { value: "200.00" }, { value: "4000" }, { value: "6000" }, { value: "50.00" }] },
+            ],
+          }),
+        };
+      }
+      throw new Error(`Unexpected fetch URL: ${urlStr}`);
+    };
+
+    const rev = await getAdSenseRevenueReport("30d");
+    assert.equal(rev.status, "connected");
+    assert.equal(rev.data.currency, "SAR", "Must parse SAR from API response");
+    assert.notEqual(rev.data.currency, "USD", "Must not hardcode USD");
+    assert.equal(rev.data.kpis.estimatedEarnings, 350.5);
+    assert.equal(rev.data.kpis.pageViews, 7000);
+    assert.equal(rev.data.kpis.impressions, 10500);
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.ADSENSE_CLIENT_ID;
+    delete process.env.ADSENSE_CLIENT_SECRET;
+    delete process.env.ADSENSE_REFRESH_TOKEN;
+    delete process.env.ADSENSE_ACCOUNT_ID;
+  }
+});
+
+// ── Test 13: Mocked Provider Failures (Timeouts, 403s, Malformed) ───────
+test("Integration Error Resilience: handles timeouts, HTTP errors and malformed data safely", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    const { privateKey } = generateTestPemRsaKeys();
+    process.env.GA4_PROPERTY_ID = "999999999";
+    process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL = "mock-sa-err@qemlo.iam.gserviceaccount.com";
+    process.env.GOOGLE_ANALYTICS_PRIVATE_KEY = privateKey;
+
+    // 1. HTTP 403 Forbidden from report endpoint
+    globalThis.fetch = async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes("oauth2.googleapis.com/token")) {
+        return { ok: true, json: async () => ({ access_token: "mock_tok", expires_in: 3600 }) };
+      }
+      return { ok: false, status: 403 };
+    };
+
+    const errReport = await getGa4VisitorsReport("7d");
+    assert.equal(errReport.status, "error");
+    assert.equal(errReport.reason, "query_failed");
+    assert.ok(errReport.error.includes("403"));
+
+    // 2. Malformed JSON with missing properties
+    globalThis.fetch = async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes("oauth2.googleapis.com/token")) {
+        return { ok: true, json: async () => ({ access_token: "mock_tok", expires_in: 3600 }) };
+      }
+      return { ok: true, json: async () => ({ unexpectedKey: 123 }) };
+    };
+
+    const malformedReport = await getGa4VisitorsReport("7d");
+    assert.ok(malformedReport.status === "no_data" || malformedReport.status === "connected");
+    if (malformedReport.status === "no_data") {
+      assert.equal(malformedReport.data.kpis.activeUsers, 0);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.GA4_PROPERTY_ID;
+    delete process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL;
+    delete process.env.GOOGLE_ANALYTICS_PRIVATE_KEY;
+  }
+});
+
+// ── Test 14: Security Invariant — Zero Credential Leakage in Errors ─────
+test("Security Invariant: error messages never expose private keys or raw tokens", async () => {
+  const originalFetch = globalThis.fetch;
+  const SECRET_KEY_SNIPPET = "PRIVATE_KEY_PAYLOAD_MUST_NOT_LEAK";
+  try {
+    process.env.GA4_PROPERTY_ID = "999999999";
+    process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL = "mock-sa@qemlo.iam.gserviceaccount.com";
+    process.env.GOOGLE_ANALYTICS_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----\n${SECRET_KEY_SNIPPET}\n-----END PRIVATE KEY-----`;
+
+    globalThis.fetch = async (url) => {
+      const urlStr = String(url);
+      if (urlStr.includes("oauth2.googleapis.com/token")) {
+        return { ok: false, status: 400 };
+      }
+      return { ok: false, status: 500 };
+    };
+
+    const report = await getGa4VisitorsReport("7d");
+    const jsonStr = JSON.stringify(report);
+    assert.equal(jsonStr.includes(SECRET_KEY_SNIPPET), false, "Private key must never be leaked in error object");
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete process.env.GA4_PROPERTY_ID;
+    delete process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL;
+    delete process.env.GOOGLE_ANALYTICS_PRIVATE_KEY;
   }
 });

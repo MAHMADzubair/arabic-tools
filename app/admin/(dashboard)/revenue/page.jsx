@@ -4,7 +4,11 @@ import KpiCard from "@/components/admin/KpiCard";
 import ChartCard from "@/components/admin/ChartCard";
 import StatusBadge from "@/components/admin/StatusBadge";
 import EmptyState from "@/components/admin/EmptyState";
-import { getAdSenseRevenueReport, getAdSenseConfig } from "@/lib/integrations/adsense";
+import {
+  getAdSenseRevenueReport,
+  getAdSenseConfig,
+  formatAdSenseCurrency,
+} from "@/lib/integrations/adsense";
 import { DollarSign, Shield, Eye, BarChart2 } from "@/components/admin/Icons";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +24,7 @@ export default async function RevenuePage({ searchParams }) {
   const config = getAdSenseConfig();
   const report = await getAdSenseRevenueReport(selectedRange);
   const isConnected = report.status === "connected";
+  const currency = report.data?.currency || "USD";
 
   return (
     <AdminShell title="Google AdSense & Revenue Analytics">
@@ -89,11 +94,11 @@ export default async function RevenuePage({ searchParams }) {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard
               title="Estimated Earnings"
-              value={`$${report.data.kpis.estimatedEarningsUsd?.toFixed(2)}`}
-              subtitle={`Net verified revenue (${selectedRange})`}
+              value={formatAdSenseCurrency(report.data.kpis.estimatedEarnings, currency)}
+              subtitle={`Net verified revenue (${selectedRange}, in ${currency})`}
               source="AdSense API"
               highlight={true}
-              badge={<StatusBadge status="success" label="Verified" size="sm" />}
+              badge={<StatusBadge status="success" label={`Verified (${currency})`} size="sm" />}
             />
 
             <KpiCard
@@ -114,16 +119,16 @@ export default async function RevenuePage({ searchParams }) {
 
             <KpiCard
               title="Page RPM"
-              value={`$${report.data.kpis.pageRpmUsd?.toFixed(2)}`}
-              subtitle="Revenue per thousand page views"
+              value={formatAdSenseCurrency(report.data.kpis.pageRpm, currency)}
+              subtitle={`Revenue per thousand views (${currency})`}
               source="AdSense API"
-              badge={<StatusBadge status="live" label="RPM" size="sm" />}
+              badge={<StatusBadge status="live" label={`RPM (${currency})`} size="sm" />}
             />
           </div>
 
           {report.data.dailyTrends?.length > 0 && (
             <ChartCard
-              title="Daily AdSense Earnings Trend"
+              title={`Daily AdSense Earnings Trend (${currency})`}
               subtitle={`Revenue trend over the past ${selectedRange}`}
               data={report.data.dailyTrends}
               type="area"

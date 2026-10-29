@@ -32,7 +32,7 @@ export default async function SeoPage({ searchParams }) {
   ];
 
   const pageColumns = [
-    { key: "page", label: "Indexed Landing Page", sortable: true },
+    { key: "page", label: "Search Landing Page", sortable: true },
     { key: "clicks", label: "Clicks", sortable: true },
     { key: "impressions", label: "Impressions", sortable: true },
     { key: "ctr", label: "CTR (%)", sortable: true },
@@ -159,16 +159,19 @@ export default async function SeoPage({ searchParams }) {
             />
           </div>
 
-          {/* Top Indexed Pages Table */}
+          {/* Top Search Landing Pages Table */}
           <div>
             <h3 className="mb-3 text-sm font-semibold text-[#F5F5F2]">
-              Top Performing Calculator Landing Pages
+              Top Performing Search Landing Pages
             </h3>
+            <p className="mb-2 text-xs text-[#A3A39E]">
+              URLs receiving Google Search traffic. Search Analytics is not an indexing verification tool and does not measure URL indexation status.
+            </p>
             <DataTable
               columns={pageColumns}
               data={perf.data.topPages || []}
-              emptyMessage="No landing pages recorded."
-              searchPlaceholder="Filter landing pages..."
+              emptyMessage="No search landing pages recorded."
+              searchPlaceholder="Filter search landing pages..."
             />
           </div>
         </div>
