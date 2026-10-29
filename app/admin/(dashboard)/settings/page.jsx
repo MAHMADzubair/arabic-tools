@@ -13,6 +13,7 @@ export const metadata = {
 export default function SettingsPage() {
   const ownerMfaReady = isAdminAuthConfigured();
   const mfaConfigStatus = getAdminAuthConfigStatus();
+
   // Configuration validates format/presence only; it is not a successful
   // database API call or proof of a live owner sign-in or logout.
   const envChecklist = [
@@ -22,11 +23,16 @@ export default function SettingsPage() {
     { name: "ADMIN_MFA_ENABLED", desc: "Explicit TOTP enforcement flag", configured: mfaConfigStatus.ADMIN_MFA_ENABLED === "PASS", critical: true },
     { name: "SUPABASE_URL", desc: "Server-side database project endpoint", configured: mfaConfigStatus.SUPABASE_URL === "PASS", critical: true },
     { name: "SUPABASE_SERVICE_ROLE_KEY", desc: "Server-only database key; presence checked, API access unverified", configured: mfaConfigStatus.SUPABASE_SERVICE_ROLE_KEY === "PASS", critical: true },
-    { name: "NEXT_PUBLIC_ADSENSE_PUB_ID", desc: "Public AdSense publisher ID", configured: Boolean(process.env.NEXT_PUBLIC_ADSENSE_PUB_ID), critical: false },
+    { name: "NEXT_PUBLIC_ADSENSE_PUB_ID", desc: "Public AdSense publisher ID tag", configured: Boolean(process.env.NEXT_PUBLIC_ADSENSE_PUB_ID), critical: false },
+    { name: "GA4_PROPERTY_ID", desc: "Google Analytics 4 Property ID for Data & Realtime APIs", configured: Boolean(process.env.GA4_PROPERTY_ID), critical: false },
+    { name: "GOOGLE_ANALYTICS_CLIENT_EMAIL", desc: "Google Analytics service account email", configured: Boolean(process.env.GOOGLE_ANALYTICS_CLIENT_EMAIL), critical: false },
+    { name: "GOOGLE_ANALYTICS_PRIVATE_KEY", desc: "Google Analytics service account key", configured: Boolean(process.env.GOOGLE_ANALYTICS_PRIVATE_KEY), critical: false },
     { name: "GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL", desc: "GSC service account email", configured: Boolean(process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL), critical: false },
     { name: "GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY", desc: "GSC service account key", configured: Boolean(process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY), critical: false },
     { name: "ADSENSE_CLIENT_ID", desc: "Google AdSense OAuth client ID", configured: Boolean(process.env.ADSENSE_CLIENT_ID), critical: false },
     { name: "ADSENSE_CLIENT_SECRET", desc: "Google AdSense OAuth secret", configured: Boolean(process.env.ADSENSE_CLIENT_SECRET), critical: false },
+    { name: "ADSENSE_REFRESH_TOKEN", desc: "Google AdSense OAuth refresh token", configured: Boolean(process.env.ADSENSE_REFRESH_TOKEN), critical: false },
+    { name: "GOOGLE_CRUX_API_KEY", desc: "Google Chrome UX Report API key for field CWV", configured: Boolean(process.env.GOOGLE_CRUX_API_KEY || process.env.GOOGLE_API_KEY), critical: false },
   ];
 
   return (
