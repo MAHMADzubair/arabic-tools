@@ -135,7 +135,7 @@ export default function SaudiAnnualLeavePage() {
               الرئيسية
             </Link>
             <span>›</span>
-            <Link href="/ar/sa/" className="hover:text-brand transition-colors">
+            <Link href="/ar/sa" className="hover:text-brand transition-colors">
               🇸🇦 أدوات السعودية
             </Link>
             <span>›</span>
@@ -293,6 +293,20 @@ export default function SaudiAnnualLeavePage() {
                   <div>
                     <p className="text-sm font-bold text-ink group-hover:text-brand">حاسبة العمل الإضافي</p>
                     <p className="text-[11px] text-ink-muted">أجر ساعات الأوفر تايم بنسبة 150% (م/107)</p>
+                  </div>
+                </div>
+                <span className="text-brand font-bold">←</span>
+              </Link>
+
+              <Link
+                href="/annual-leave-calculator"
+                className="group flex items-center justify-between rounded-xl border border-brand-border p-3.5 hover:border-brand hover:bg-brand-surface/30 transition-all sm:col-span-2"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl">🌐</span>
+                  <div>
+                    <p className="text-sm font-bold text-ink group-hover:text-brand">حاسبة بدل الإجازات لعدة دول</p>
+                    <p className="text-[11px] text-ink-muted">احسب رصيد الإجازات السنوية لموظفي الإمارات والكويت ومصر</p>
                   </div>
                 </div>
                 <span className="text-brand font-bold">←</span>
