@@ -79,6 +79,14 @@ describe("SEO Day 1: Country Hub Priority Tools Coverage", () => {
       content.includes('href: "/ar/ae/purchase-order-generator"'),
       "UAE hub primaryTools must link to /ar/ae/purchase-order-generator"
     );
+    assert.ok(
+      !content.includes("أمر شراء رسمي ومعتمد"),
+      "UAE purchase order description must not claim official approval or certification"
+    );
+    assert.ok(
+      content.includes("نموذج أمر شراء احترافي قابل للتخصيص"),
+      "UAE purchase order description must use neutral, professional phrasing"
+    );
   });
 });
 
@@ -101,12 +109,20 @@ describe("SEO Day 1: Contextual Interlinking", () => {
     );
   });
 
-  test("UAE salary calculator includes link to UAE country tools hub /ar/ae", () => {
+  test("UAE salary calculator includes link to UAE country tools hub /ar/ae with accessible brand-orange styling", () => {
     const file = path.join(process.cwd(), "app/salary-calculator/uae/page.js");
     const content = fs.readFileSync(file, "utf8");
     assert.ok(
       content.includes('href="/ar/ae"'),
       "UAE salary calculator must link to /ar/ae"
+    );
+    assert.ok(
+      !content.includes("text-blue-600"),
+      "UAE salary calculator link must not use generic blue styling"
+    );
+    assert.ok(
+      content.includes("text-orange-700"),
+      "UAE salary calculator link must use accessible brand-orange styling"
     );
   });
 });
