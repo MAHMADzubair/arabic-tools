@@ -177,6 +177,22 @@ const COUNTRY_HUBS = {
           "نموذج قابل للطباعة — إرشادي وليس معتمداً رسمياً",
         ],
       },
+      {
+        id: "saudi-quotation-generator",
+        nameAr: "مولد عرض السعر في السعودية",
+        nameEn: "Saudi Quotation Generator",
+        icon: "📋",
+        badge: "Business 2026",
+        badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200 font-bold",
+        href: "/ar/sa/quotation-generator",
+        desc: "أنشئ عرض سعر احترافي بالعربية والإنجليزية مع إضافة المنتجات والخدمات والخصومات وضريبة القيمة المضافة 15% وشروط الدفع للطباعة المباشرة.",
+        highlights: [
+          "توليد عروض أسعار بالعربية والإنجليزية",
+          "احتساب ضريبة القيمة المضافة 15% ZATCA",
+          "شروط الدفع والتسليم وفترة الصلاحية",
+          "تصدير وطباعة نموذج عرض سعر جاهز للعميل",
+        ],
+      },
     ],
     upcomingTool: {
       tag: "أداة مقبلة — قيد التطوير",
@@ -435,6 +451,54 @@ const COUNTRY_HUBS = {
           "مبني على قرارات وزارة المالية والهيئة الاتحادية للضرائب المحدثة",
         ],
       },
+      {
+        id: "uae-quotation-generator",
+        nameAr: "مولد عرض السعر في الإمارات",
+        nameEn: "UAE Quotation Generator",
+        icon: "📋",
+        badge: "Business 2026",
+        badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200 font-bold",
+        href: "/ar/ae/quotation-generator",
+        desc: "أنشئ عرض سعر احترافي بالعربية والإنجليزية في الإمارات مع حساب VAT 5% وخصومات وشروط دفع للطباعة المباشرة.",
+        highlights: [
+          "توليد عروض أسعار ثنائية اللغة (عربي / إنجليزي)",
+          "احتساب ضريبة القيمة المضافة 5% الرسمية FTA",
+          "تحديد شروط الدفع والتحويل البنكي والتسليم",
+          "نموذج احترافي قابل للطباعة والحفظ PDF",
+        ],
+      },
+      {
+        id: "uae-vat-invoice-generator",
+        nameAr: "مولد الفاتورة الضريبية في الإمارات",
+        nameEn: "UAE VAT Tax Invoice Generator",
+        icon: "🧾",
+        badge: "FTA VAT 5%",
+        badgeColor: "bg-purple-50 text-purple-700 border-purple-200 font-bold",
+        href: "/ar/ae/vat-invoice-generator",
+        desc: "أنشئ نموذج فاتورة ضريبية إماراتية قابل للطباعة: فاتورة كاملة أو مبسطة مع احتساب 5% VAT وحقول TRN وفق متطلبات FTA.",
+        highlights: [
+          "دعم الفاتورة الضريبية الكاملة والمبسطة",
+          "احتساب ضريبة القيمة المضافة 5% والأصناف الصفرية",
+          "حقول الرقم الضريبي TRN وبيانات المورد والمشتري",
+          "نموذج جاهز للطباعة والحفظ بصيغة PDF",
+        ],
+      },
+      {
+        id: "uae-purchase-order-generator",
+        nameAr: "مولد أمر الشراء في الإمارات (PO)",
+        nameEn: "UAE Purchase Order Generator",
+        icon: "📦",
+        badge: "Business PO",
+        badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200 font-bold",
+        href: "/ar/ae/purchase-order-generator",
+        desc: "أنشئ أمر شراء رسمي ومعتمد بالعربية والإنجليزية مع بيانات المورد والبنود والكميات والأسعار وضريبة VAT وشروط التسليم.",
+        highlights: [
+          "أمر شراء ثنائي اللغة PO بالعربية والإنجليزية",
+          "جدول بنود تفصيلي مع احتساب VAT 5% التقديرية",
+          "شروط التوريد ومكان التسليم والدفع",
+          "نموذج معتمد وقابل للطباعة أو الحفظ كملف PDF",
+        ],
+      },
     ],
     upcomingTool: {
       tag: "أداة مقبلة — قيد التطوير",
@@ -662,7 +726,7 @@ export default async function CountryPage({ params }) {
               return (
                 <a
                   key={code}
-                  href={`/ar/${code}/`}
+                  href={`/ar/${code}`}
                   className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold transition-all ${
                     isActive
                       ? "border-brand bg-brand text-white shadow-sm"

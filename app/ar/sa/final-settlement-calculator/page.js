@@ -231,7 +231,7 @@ export default function FinalSettlementPage() {
         <nav className="fp-wrap fp-crumb" aria-label="مسار التنقل">
           <ol>
             <li><Link href="/">الرئيسية</Link></li>
-            <li><Link href="/ar/sa/">أدوات السعودية</Link></li>
+            <li><Link href="/ar/sa">أدوات السعودية</Link></li>
             <li aria-current="page">حاسبة المخالصة النهائية</li>
           </ol>
         </nav>
