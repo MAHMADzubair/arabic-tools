@@ -59,7 +59,29 @@ const uaeCuratedTools = [
   { href: "/ar/ae/notice-period-calculator", title: "حاسبة فترة الإنذار وبدل الإشعار", desc: "احسب مدة الإنذار وتاريخ آخر يوم عمل والأيام غير المنفذة وبدل الإنذار التقديري وفق المادة (43) من قانون العمل الإماراتي." },
 ];
 
+// Focus-15 SEO sprint: contextual links on the two multi-country labour pages.
+// Regional calculator pages retain their existing Saudi/UAE curated clusters.
+// All of these URLs belong to the selected 15-tool homepage catalog.
+const salaryFocus15Tools = [
+  { href: "/ar/sa/final-settlement-calculator", title: "حاسبة المخالصة النهائية في السعودية", desc: "قدّر مستحقات نهاية العمل في السعودية: آخر راتب، مكافأة الخدمة، رصيد الإجازات والتسوية النهائية." },
+  { href: "/ar/sa/annual-leave-calculator", title: "حاسبة بدل الإجازة السنوية في السعودية", desc: "احسب رصيد الإجازات غير المستنفدة والتعويض التقديري عنها وفق بيانات عملك." },
+  { href: "/annual-leave-calculator", title: "حاسبة رصيد الإجازات السنوية", desc: "قارن خيارات احتساب الإجازات والبدلات عبر الدول المدعومة في الحاسبة." },
+  { href: "/ar/ae/notice-period-calculator", title: "حاسبة فترة الإنذار في الإمارات", desc: "اعرف تاريخ آخر يوم عمل وبدل الإنذار التقديري عند إنهاء العقد في الإمارات." },
+  { href: "/overtime-calculator", title: "حاسبة العمل الإضافي", desc: "قدّر أجر الساعات الإضافية حسب دولة العمل ونوع ساعات العمل." },
+  { href: "/vat-calculator", title: "حاسبة ضريبة القيمة المضافة", desc: "أضف ضريبة 15% أو 5% إلى السعر، أو استخرجها من المبلغ الإجمالي." },
+];
+
+const overtimeFocus15Tools = [
+  { href: "/salary-calculator", title: "حاسبة الراتب الصافي", desc: "احسب راتبك بعد البدلات والخصومات المرتبطة بدولة العمل." },
+  { href: "/ar/sa/final-settlement-calculator", title: "حاسبة المخالصة النهائية في السعودية", desc: "راجع مستحقات نهاية العمل السعودية بجانب الأجور والمدفوعات الأخرى." },
+  { href: "/ar/sa/annual-leave-calculator", title: "حاسبة بدل الإجازات السنوية بالسعودية", desc: "قدّر تعويض رصيد الإجازات غير المستنفدة في السعودية." },
+  { href: "/annual-leave-calculator", title: "حاسبة بدل الإجازات لعدة دول", desc: "استخدم حاسبة الإجازة العامة بدلاً من حاسبة العمل الإضافي عند حساب الرصيد السنوي." },
+  { href: "/ar/ae/notice-period-calculator", title: "حاسبة فترة الإنذار في الإمارات", desc: "احسب آخر يوم عمل وبدل الإنذار في الإمارات بصورة منفصلة عن أجر العمل الإضافي." },
+];
+
 export const TARGETED_GULF_ROUTES = {
+  "/salary-calculator": salaryFocus15Tools,
+  "/overtime-calculator": overtimeFocus15Tools,
   "/salary-calculator/saudi": saudiCuratedTools,
   "/gratuity-calculator/saudi": saudiCuratedTools,
   "/overtime-calculator/saudi": saudiCuratedTools,
