@@ -4,20 +4,20 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { CATEGORIES, getActiveTools } from "@/lib/registry";
-
-// Top quick tools
+import { CATEGORIES, getCatalogTools } from "@/lib/registry";
+// Quick navigation only advertises the GSC-backed focus catalog.
 const TOP_TOOLS = [
   { href: "/salary-calculator", label: "الراتب" },
-  { href: "/gratuity-calculator", label: "نهاية الخدمة" },
-  { href: "/zakat-calculator", label: "الزكاة" },
-  { href: "/loan-calculator", label: "القروض" },
-  { href: "/hijri-age-calculator", label: "العمر" },
-  { href: "/date-converter", label: "تحويل التاريخ" },
+  { href: "/ar/sa/final-settlement-calculator", label: "المخالصة" },
+  { href: "/ar/ae/notice-period-calculator", label: "فترة الإنذار" },
+  { href: "/ar/ae/purchase-order-generator", label: "أمر الشراء" },
+  { href: "/umrah-calculator", label: "العمرة" },
+  { href: "/inheritance-calculator", label: "الميراث" },
   { href: "/bmi-calculator", label: "BMI" },
-  { href: "/profit-margin-calculator", label: "هامش الربح" },
+  { href: "/vat-calculator", label: "ضريبة VAT" },
   { href: "/unit-converter", label: "محول الوحدات" },
 ];
+
 
 const COUNTRIES = [
   { href: "/ar/sa", id: "sa", label: "السعودية", flag: "🇸🇦" },
@@ -165,7 +165,7 @@ export default function Header() {
   const mobSearchRef = useRef(null);
   const listRef = useRef(null);
 
-  const activeTools = useMemo(() => getActiveTools(), []);
+  const activeTools = useMemo(() => getCatalogTools(), []);
   const count = activeTools.length.toLocaleString("en-US");
 
   const activeCategories = useMemo(
