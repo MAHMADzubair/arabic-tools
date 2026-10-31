@@ -2,9 +2,9 @@ import InheritanceCalculator from "@/components/InheritanceCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 
 export const metadata = {
-  title: "حاسبة الميراث الشرعية 2026 | تقسيم التركة وحالات العول والرد والتعصيب",
+  title: "حاسبة الميراث الشرعية 2026 | حساب نصيب الورثة وتقسيم التركة",
   description:
-    "احسب توزيع التركة الشرعية والأنصبة بدقة فائقة وفق أحكام القرآن الكريم وإجماع المذاهب الأربعة ونظام الأحوال الشخصية مع تفصيل العول والرد والحجب بالأرقام.",
+    "احسب نصيب كل وارث وتقسيم التركة وفق مسائل الفرائض والعول والرد والحجب. أدخل بيانات الأسرة والورثة للحصول على نتائج إرشادية، وراجع المختص في الحالات المعقدة.",
   alternates: { canonical: "/inheritance-calculator" },
 };
 
