@@ -1,4 +1,5 @@
 import OvertimeCalculator from "@/components/OvertimeCalculator";
+import Link from "next/link";
 import ToolGuideSection from "@/components/ToolGuideSection";
 
 export const metadata = {
@@ -95,6 +96,23 @@ export default function OvertimeCalculatorPage() {
         <OvertimeCalculator />
       <p className="mt-4"><a href="/overtime-calculator/saudi" className="text-blue-600 hover:underline">حساب الأوفر تايم في القطاع الخاص السعودي</a></p>
 </div>
+      {/* Focus-15: contextual next steps; keep the existing global guide unchanged. */}
+      <nav aria-labelledby="overtime-focus-links" className="mx-auto max-w-5xl px-4 py-5" dir="rtl">
+        <h2 id="overtime-focus-links" className="mb-3 text-lg font-bold text-[var(--text)]">
+          بعد حساب الأوفر تايم: حاسبات مستحقات العمل ذات الصلة
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Link href="/salary-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+            حاسبة الراتب الصافي — راجع الراتب بعد البدلات والخصومات
+          </Link>
+          <Link href="/ar/sa/final-settlement-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+            المخالصة النهائية في السعودية — قدّر مستحقات نهاية العمل
+          </Link>
+          <Link href="/ar/ae/notice-period-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+            فترة الإنذار في الإمارات — اعرف مهلة الإشعار وبدلها التقديري
+          </Link>
+        </div>
+      </nav>
       <ToolGuideSection {...guideData} />
     </div>
   );
