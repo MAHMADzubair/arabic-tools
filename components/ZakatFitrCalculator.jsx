@@ -159,17 +159,17 @@ export default function ZakatFitrCalculator() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12" dir="rtl">
       {/* Header */}
       <div className="mb-8 text-center sm:mb-12">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#FED7AA] bg-[#FFF7ED] px-4 py-1.5 text-xs font-bold text-[#9A3412]">
           <span>🌾</span>
           <span>طهور للصائم وطعمة للمساكين</span>
         </div>
-        <h1 className="mb-3 text-3xl font-bold text-ink sm:text-5xl">
+        <h1 className="mb-3 text-3xl font-extrabold text-[#0D0D0D] sm:text-5xl">
           حاسبة زكاة الفطر المباركة
         </h1>
-        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
+        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-[#555555] sm:text-base">
           احسب زكاة الفطر بدقة عنك وعن جميع أفراد أسرتك، سواء عيناً بالطعام والأرز (بالصاع والكيلوجرام)
           أو نقداً بالقيمة المعتمدة في الفتوى الرسمية لكل دولة.
         </p>
@@ -180,22 +180,22 @@ export default function ZakatFitrCalculator() {
         {/* Left Inputs (6 cols) */}
         <div className="space-y-6 lg:col-span-6">
           {/* Output Mode Switcher */}
-          <div className="rounded-3xl border border-brand-border bg-white p-5 shadow-card sm:p-6">
-            <label className="mb-2 block text-xs font-bold text-ink-secondary">
+          <div className="rounded-2xl border border-[#D4D4CE] bg-white p-5 shadow-sm sm:p-6">
+            <label className="mb-2 block text-xs font-bold text-[#555555]">
               كيف تفضل إخراج زكاة الفطر؟
             </label>
-            <div className="grid grid-cols-2 gap-2 rounded-2xl bg-brand-surface p-1.5 border border-brand-border">
+            <div className="grid grid-cols-2 gap-2 rounded-2xl bg-[#F5F5F2] p-1.5 border border-[#D4D4CE]">
               <button
                 type="button"
                 onClick={() => setOutputMode("cash")}
                 className={`flex flex-col items-center justify-center rounded-xl py-2.5 px-3 text-xs font-bold transition ${
                   outputMode === "cash"
-                    ? "bg-white text-brand shadow-sm"
-                    : "text-ink-secondary hover:text-ink"
+                    ? "bg-[#FF5B04] text-[#0D0D0D] shadow-sm font-extrabold"
+                    : "text-[#555555] hover:text-[#0D0D0D]"
                 }`}
               >
                 <span className="text-sm">💵 نقداً بالقيمة المالية</span>
-                <span className="text-[10px] font-normal text-ink-muted">
+                <span className={`text-[10px] font-normal ${outputMode === "cash" ? "text-[#0D0D0D]/80" : "text-[#6B6B66]"}`}>
                   (مذهب الحنفية ودور الإفتاء المعاصرة)
                 </span>
               </button>
@@ -204,12 +204,12 @@ export default function ZakatFitrCalculator() {
                 onClick={() => setOutputMode("food")}
                 className={`flex flex-col items-center justify-center rounded-xl py-2.5 px-3 text-xs font-bold transition ${
                   outputMode === "food"
-                    ? "bg-white text-brand shadow-sm"
-                    : "text-ink-secondary hover:text-ink"
+                    ? "bg-[#FF5B04] text-[#0D0D0D] shadow-sm font-extrabold"
+                    : "text-[#555555] hover:text-[#0D0D0D]"
                 }`}
               >
                 <span className="text-sm">🌾 طعاماً عيناً (حبوب وأرز)</span>
-                <span className="text-[10px] font-normal text-ink-muted">
+                <span className={`text-[10px] font-normal ${outputMode === "food" ? "text-[#0D0D0D]/80" : "text-[#6B6B66]"}`}>
                   (مذهب الجمهور وفتوى السعودية)
                 </span>
               </button>
@@ -217,9 +217,9 @@ export default function ZakatFitrCalculator() {
 
             {/* Mode-specific settings */}
             {outputMode === "cash" ? (
-              <div className="mt-5 space-y-4 border-t border-brand-border/60 pt-4">
+              <div className="mt-5 space-y-4 border-t border-[#D4D4CE] pt-4">
                 <div>
-                  <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
+                  <label className="mb-1.5 block text-xs font-bold text-[#555555]">
                     اختر الدولة أو الفتوى المعتمدة لقيمة الصاع:
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -230,14 +230,14 @@ export default function ZakatFitrCalculator() {
                         onClick={() => handleCountryChange(c)}
                         className={`flex items-center gap-1.5 rounded-xl border p-2 text-xs font-bold transition text-right ${
                           selectedCountryCode === c.code && !isCustomCashRate
-                            ? "border-brand bg-brand text-white shadow-sm ring-2 ring-brand/20"
-                            : "border-brand-border bg-white text-ink hover:bg-brand-surface"
+                            ? "border-[#FF5B04] bg-[#FF5B04] text-[#0D0D0D] shadow-sm ring-2 ring-orange-500/20 font-extrabold"
+                            : "border-[#D4D4CE] bg-white text-[#0D0D0D] hover:bg-[#F5F5F2]"
                         }`}
                       >
                         <span className="text-base">{c.flag}</span>
                         <div className="flex-1 overflow-hidden">
                           <p className="truncate">{c.country}</p>
-                          <p className={`text-[10px] ${selectedCountryCode === c.code && !isCustomCashRate ? "text-accent" : "text-brand"}`}>
+                          <p className={`text-[10px] ${selectedCountryCode === c.code && !isCustomCashRate ? "text-[#0D0D0D]" : "text-[#C2410C]"}`}>
                             {c.value} {c.currency}
                           </p>
                         </div>
@@ -249,13 +249,13 @@ export default function ZakatFitrCalculator() {
                 {/* Custom Cash rate input */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-bold text-ink-secondary">
+                    <label className="text-xs font-bold text-[#555555]">
                       قيمة الفرد الواحد ({currency}):
                     </label>
                     <button
                       type="button"
                       onClick={() => setIsCustomCashRate(!isCustomCashRate)}
-                      className="text-[11px] font-bold text-brand hover:underline"
+                      className="text-[11px] font-bold text-[#C2410C] hover:underline"
                     >
                       {isCustomCashRate ? "استعادة القيم المعتمدة" : "تعديل القيمة يدوياً"}
                     </button>
@@ -269,16 +269,16 @@ export default function ZakatFitrCalculator() {
                       setIsCustomCashRate(true);
                       setCustomCashInput(e.target.value);
                     }}
-                    className="w-full rounded-xl border border-brand-border px-3 py-2 text-sm font-bold text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    className="w-full rounded-xl border border-[#D4D4CE] bg-white px-3 py-2 text-sm font-bold text-[#0D0D0D] focus:border-[#FF5B04] focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
-                  <p className="mt-1 text-[11px] text-ink-muted">
+                  <p className="mt-1 text-[11px] text-[#6B6B66]">
                     {activeCountry.note}
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="mt-5 space-y-3 border-t border-brand-border/60 pt-4">
-                <label className="block text-xs font-bold text-ink-secondary">
+              <div className="mt-5 space-y-3 border-t border-[#D4D4CE] pt-4">
+                <label className="block text-xs font-bold text-[#555555]">
                   اختر نوع طعام القوت لإخراج الصاع عيناً:
                 </label>
                 <div className="space-y-2">
@@ -287,8 +287,8 @@ export default function ZakatFitrCalculator() {
                       key={food.id}
                       className={`flex items-center justify-between rounded-xl border p-3 text-xs font-bold cursor-pointer transition ${
                         selectedFoodId === food.id
-                          ? "border-brand bg-brand-light/60 text-brand-dark ring-2 ring-brand/20"
-                          : "border-brand-border bg-white text-ink hover:bg-brand-surface"
+                          ? "border-[#FF5B04] bg-[#FFF7ED] text-[#9A3412] ring-2 ring-orange-500/20"
+                          : "border-[#D4D4CE] bg-white text-[#0D0D0D] hover:bg-[#F5F5F2]"
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -297,11 +297,11 @@ export default function ZakatFitrCalculator() {
                           name="foodType"
                           checked={selectedFoodId === food.id}
                           onChange={() => setSelectedFoodId(food.id)}
-                          className="h-4 w-4 text-brand focus:ring-brand"
+                          className="h-4 w-4 text-[#FF5B04] focus:ring-[#FF5B04]"
                         />
                         <span>{food.name}</span>
                       </div>
-                      <span className="rounded-lg bg-white px-2 py-0.5 text-xs text-brand font-bold shadow-sm">
+                      <span className="rounded-lg border border-[#D4D4CE] bg-white px-2 py-0.5 text-xs text-[#0D0D0D] font-bold shadow-sm">
                         الصاع ≈ {food.saWeightKg} كجم
                       </span>
                     </label>
@@ -312,9 +312,9 @@ export default function ZakatFitrCalculator() {
           </div>
 
           {/* Family Members Count Card */}
-          <div className="rounded-3xl border border-brand-border bg-white p-5 shadow-card sm:p-6 space-y-4">
-            <h2 className="flex items-center gap-2 text-base font-bold text-ink sm:text-lg">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand text-sm">
+          <div className="rounded-2xl border border-[#D4D4CE] bg-white p-5 shadow-sm sm:p-6 space-y-4">
+            <h2 className="flex items-center gap-2 text-base font-bold text-[#0D0D0D] sm:text-lg">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#D4D4CE] bg-[#F5F5F2] text-[#0D0D0D] text-sm">
                 👨‍👩‍👧‍👦
               </span>
               <span>تحديد أفراد الأسرة والمُعالين</span>
@@ -396,44 +396,44 @@ export default function ZakatFitrCalculator() {
 
         {/* Right Output Card (6 cols) */}
         <div className="space-y-6 lg:col-span-6">
-          <div className="rounded-3xl border border-brand-border bg-white p-6 shadow-card sm:p-8">
+          <div className="rounded-2xl border border-[#D4D4CE] bg-white p-6 shadow-sm sm:p-8">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <span className="inline-block rounded-full bg-brand-light px-3 py-1 text-xs font-bold text-brand-dark">
+                <span className="inline-block rounded-full bg-[#0D0D0D] px-3 py-1 text-xs font-bold text-white">
                   النتيجة الشرعية
                 </span>
-                <h2 className="mt-1 text-2xl font-bold text-ink">
+                <h2 className="mt-1 text-2xl font-bold text-[#0D0D0D]">
                   إجمالي زكاة الفطر الواجبة
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand transition hover:bg-brand-100"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[#D4D4CE] bg-[#F5F5F2] px-3.5 py-1.5 text-xs font-bold text-[#0D0D0D] transition hover:bg-[#EAEAE5]"
               >
                 <span>{copied ? "✓ تم النسخ!" : "📋 نسخ التقرير"}</span>
               </button>
             </div>
 
             {/* Main Result Hero Box */}
-            <div className="mb-6 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-surface via-white to-brand-light/30 p-6 text-center">
-              <p className="text-xs font-bold text-ink-muted">
+            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[#FF7A29] to-[#FF5B04] p-6 text-center text-[#0D0D0D] shadow-md shadow-orange-500/20 border border-orange-500/20">
+              <p className="text-xs font-bold text-[#0D0D0D]/90">
                 {outputMode === "cash" ? "المبلغ الإجمالي الواجب إخراجه نقداً" : `إجمالي وزن الحبوب المطلوبة (${activeFood.name})`}
               </p>
 
-              <p className="mt-2 text-3xl font-bold text-brand-dark sm:text-4xl">
+              <p className="mt-2 text-3xl font-extrabold text-[#0D0D0D] sm:text-4xl">
                 {outputMode === "cash"
                   ? `${formatNumber(calculation.totalCashObligatory, 2)} ${currency}`
                   : `${formatNumber(calculation.totalKgObligatory)} كيلوجرام`}
               </p>
 
-              <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-800">
+              <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#0D0D0D] px-3 py-1 text-xs font-bold text-white">
                 <span>⚖️ المقدار الشرعي:</span>
                 <span>{calculation.totalSaObligatory} صاع نبوي ({calculation.obligIndividuals} أفراد)</span>
               </div>
 
               {calculation.voluntaryIndividuals > 0 && (
-                <p className="mt-3 text-xs font-semibold text-accent">
+                <p className="mt-3 text-xs font-bold text-[#0D0D0D]">
                   + يشمل إضافة الجنين استحباباً:{" "}
                   {outputMode === "cash"
                     ? `${formatNumber(calculation.totalCashWithVoluntary, 2)} ${currency}`
@@ -443,21 +443,21 @@ export default function ZakatFitrCalculator() {
             </div>
 
             {/* Breakdown List */}
-            <div className="space-y-3 rounded-2xl border border-brand-border bg-brand-surface/40 p-4 text-xs font-mono">
-              <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                <span className="font-sans font-bold text-ink-secondary">
+            <div className="space-y-3 rounded-2xl border border-[#D4D4CE] bg-[#F5F5F2]/70 p-4 text-xs font-mono text-[#0D0D0D]">
+              <div className="flex items-center justify-between border-b border-[#D4D4CE] pb-2">
+                <span className="font-sans font-bold text-[#555555]">
                   عدد الأفراد الواجب إخراجها عنهم:
                 </span>
-                <span className="font-bold text-ink text-sm">
+                <span className="font-bold text-[#0D0D0D] text-sm">
                   {calculation.obligIndividuals} أفراد
                 </span>
               </div>
 
-              <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                <span className="font-sans font-bold text-ink-secondary">
+              <div className="flex items-center justify-between border-b border-[#D4D4CE] pb-2">
+                <span className="font-sans font-bold text-[#555555]">
                   المقدار الواجب للشخص الواحد:
                 </span>
-                <span className="font-bold text-brand text-sm">
+                <span className="font-bold text-[#C2410C] text-sm">
                   {outputMode === "cash"
                     ? `${calculation.rate} ${currency} (صاع)`
                     : `صاع نبوي (≈ ${calculation.kgPerPerson} كجم ${activeFood.name})`}
@@ -465,36 +465,36 @@ export default function ZakatFitrCalculator() {
               </div>
 
               {calculation.voluntaryIndividuals > 0 && (
-                <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                  <span className="font-sans font-bold text-ink-secondary">
+                <div className="flex items-center justify-between border-b border-[#D4D4CE] pb-2">
+                  <span className="font-sans font-bold text-[#555555]">
                     الأجنة في البطن (مستحبة كفعل عثمان رضي الله عنه):
                   </span>
-                  <span className="font-bold text-accent text-sm">
+                  <span className="font-bold text-[#C2410C] text-sm">
                     {calculation.voluntaryIndividuals} أجنة ({calculation.voluntaryIndividuals} صاع)
                   </span>
                 </div>
               )}
 
               <div className="flex items-center justify-between pt-1">
-                <span className="font-sans font-bold text-ink">
+                <span className="font-sans font-bold text-[#0D0D0D]">
                   إجمالي الأصوع النبوية الواجبة:
                 </span>
-                <span className="font-bold text-brand text-base">
+                <span className="font-bold text-[#0D0D0D] text-base">
                   {calculation.totalSaObligatory} صاع
                 </span>
               </div>
             </div>
 
             {/* Quick Jurisprudence Tip Banner */}
-            <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-xs leading-relaxed text-emerald-900">
-              <h4 className="font-bold mb-1 flex items-center gap-1.5 text-emerald-950">
+            <div className="mt-6 rounded-2xl border border-[#D4D4CE] bg-[#F5F5F2] p-4 text-xs leading-relaxed text-[#0D0D0D]">
+              <h4 className="font-bold mb-1 flex items-center gap-1.5 text-[#0D0D0D]">
                 <span>⏰</span>
                 <span>توقيت إخراج زكاة الفطر المشروع:</span>
               </h4>
-              <p>
-                <strong>أفضل وقت:</strong> صباح يوم العيد قبل الخروج لصلاة العيد.
+              <p className="text-[#555555]">
+                <strong className="text-[#0D0D0D]">أفضل وقت:</strong> صباح يوم العيد قبل الخروج لصلاة العيد.
                 <br />
-                <strong>وقت الجواز:</strong> يجوز إخراجها قبل العيد بيوم أو يومين (يوم 28 أو 29 رمضان) لتصل إلى الفقراء في وقتها المناسب.
+                <strong className="text-[#0D0D0D]">وقت الجواز:</strong> يجوز إخراجها قبل العيد بيوم أو يومين (يوم 28 أو 29 رمضان) لتصل إلى الفقراء في وقتها المناسب.
               </p>
             </div>
           </div>

@@ -125,4 +125,99 @@ describe("SEO Day 1: Contextual Interlinking", () => {
       "UAE salary calculator link must use accessible brand-orange styling"
     );
   });
+
+  test("Saudi salary calculator includes link to Saudi country tools hub /ar/sa with accessible brand-orange styling", () => {
+    const file = path.join(process.cwd(), "app/salary-calculator/saudi/page.js");
+    const content = fs.readFileSync(file, "utf8");
+    assert.ok(
+      content.includes('href="/ar/sa"'),
+      "Saudi salary calculator must link to /ar/sa"
+    );
+    assert.ok(
+      !content.includes("text-blue-600"),
+      "Saudi salary calculator link must not use generic blue styling"
+    );
+    assert.ok(
+      content.includes("text-orange-700"),
+      "Saudi salary calculator link must use accessible brand-orange styling"
+    );
+  });
+
+  test("Overtime calculator page links to Saudi overtime with accessible brand-orange styling", () => {
+    const file = path.join(process.cwd(), "app/overtime-calculator/page.js");
+    const content = fs.readFileSync(file, "utf8");
+    assert.ok(
+      content.includes('href="/overtime-calculator/saudi"'),
+      "Overtime calculator must link to /overtime-calculator/saudi"
+    );
+    assert.ok(
+      !content.includes("text-blue-600"),
+      "Overtime calculator link must not use generic blue styling"
+    );
+    assert.ok(
+      content.includes("text-orange-700"),
+      "Overtime calculator link must use accessible brand-orange styling"
+    );
+  });
+
+  test("VAT calculator country pages include hub links with accessible brand-orange styling", () => {
+    const saudiFile = path.join(process.cwd(), "app/vat-calculator/saudi/page.js");
+    const saudiContent = fs.readFileSync(saudiFile, "utf8");
+    assert.ok(
+      saudiContent.includes('href="/ar/sa"'),
+      "Saudi VAT calculator must link to /ar/sa"
+    );
+    assert.ok(
+      saudiContent.includes("text-orange-700"),
+      "Saudi VAT calculator link must use accessible brand-orange styling"
+    );
+
+    const uaeFile = path.join(process.cwd(), "app/vat-calculator/uae/page.js");
+    const uaeContent = fs.readFileSync(uaeFile, "utf8");
+    assert.ok(
+      uaeContent.includes('href="/ar/ae"'),
+      "UAE VAT calculator must link to /ar/ae"
+    );
+    assert.ok(
+      uaeContent.includes("text-orange-700"),
+      "UAE VAT calculator link must use accessible brand-orange styling"
+    );
+  });
+});
+
+describe("Theme & Brand Color Consistency", () => {
+  test("tailwind.config.js primary brand color matches QEMLO brand orange (#FF5B04)", () => {
+    const configFile = path.join(process.cwd(), "tailwind.config.js");
+    const content = fs.readFileSync(configFile, "utf8");
+    assert.ok(
+      content.includes('DEFAULT: "#FF5B04"'),
+      "tailwind.config.js brand.DEFAULT must be #FF5B04"
+    );
+  });
+
+  test("VatCalculator uses QEMLO orange accent and clean border tokens", () => {
+    const file = path.join(process.cwd(), "components/VatCalculator.jsx");
+    const content = fs.readFileSync(file, "utf8");
+    assert.ok(
+      content.includes("#FF5B04"),
+      "VatCalculator must use QEMLO orange accent"
+    );
+    assert.ok(
+      !content.includes("bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark"),
+      "VatCalculator must not use legacy blue brand badge"
+    );
+  });
+
+  test("ZakatCalculator uses QEMLO orange accent and dark ink header", () => {
+    const file = path.join(process.cwd(), "components/ZakatCalculator.jsx");
+    const content = fs.readFileSync(file, "utf8");
+    assert.ok(
+      content.includes("#FF5B04"),
+      "ZakatCalculator must use QEMLO orange accent"
+    );
+    assert.ok(
+      !content.includes("bg-hero-gradient p-6 text-white shadow-result"),
+      "ZakatCalculator must not use legacy purple hero-gradient"
+    );
+  });
 });
