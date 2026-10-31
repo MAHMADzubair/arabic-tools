@@ -1,6 +1,7 @@
 import VatCalculator from "@/components/VatCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 import GeoSummary from "@/components/business/GeoSummary";
+import Link from "next/link";
 
 export const metadata = {
   title: "حاسبة ضريبة القيمة المضافة | السعودية 15% والإمارات 5%",
@@ -100,6 +101,45 @@ export default function VatCalculatorPage() {
         lastReviewed="سبتمبر 2026"
         disclaimer="هذه الأداة استرشادية — تحقق مع مستشارك الضريبي أو الهيئة المختصة في بلدك لأي التزام رسمي."
       />
+
+      {/* Country-specific search intent: visible, crawlable links to existing canonical VAT pages. */}
+      <section
+        aria-labelledby="vat-country-guides-heading"
+        className="mx-auto max-w-5xl px-4 py-6 sm:px-6"
+        dir="rtl"
+      >
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <h2 id="vat-country-guides-heading" className="text-xl font-bold leading-relaxed text-slate-950">
+            حاسبة الضريبة 15% في السعودية وحاسبة VAT بنسبة 5% في الإمارات
+          </h2>
+          <p className="mt-2 text-sm leading-7 text-slate-700">
+            إذا كنت تريد حساب ضريبة القيمة المضافة لدولة محددة، اختر الحاسبة المخصصة أدناه.
+            كل أداة تساعدك على إضافة الضريبة إلى السعر أو استخراجها من مبلغ شامل الضريبة.
+          </p>
+          <nav aria-label="حاسبات ضريبة القيمة المضافة حسب الدولة" className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Link
+              href="/vat-calculator/saudi"
+              className="block rounded-xl border border-slate-200 p-4 transition-colors hover:border-orange-600 hover:bg-orange-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-700"
+            >
+              <h3 className="font-bold text-slate-950">🇸🇦 حاسبة ضريبة القيمة المضافة السعودية 15%</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                احسب الضريبة بالريال السعودي: سعر 100 ريال قبل الضريبة يصبح 115 ريالاً عند إضافة 15%.
+              </p>
+              <span className="mt-2 inline-block text-sm font-semibold text-orange-700">افتح حاسبة الضريبة السعودية ←</span>
+            </Link>
+            <Link
+              href="/vat-calculator/uae"
+              className="block rounded-xl border border-slate-200 p-4 transition-colors hover:border-orange-600 hover:bg-orange-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-700"
+            >
+              <h3 className="font-bold text-slate-950">🇦🇪 حاسبة ضريبة القيمة المضافة الإمارات 5%</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                احسب الضريبة بالدرهم الإماراتي: سعر 100 درهم قبل الضريبة يصبح 105 دراهم عند إضافة 5%.
+              </p>
+              <span className="mt-2 inline-block text-sm font-semibold text-orange-700">افتح حاسبة الضريبة الإماراتية ←</span>
+            </Link>
+          </nav>
+        </div>
+      </section>
 
       {/* 2. Standardized Guide, FAQs, and Related Tools */}
       <ToolGuideSection {...guideData} />
