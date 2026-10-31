@@ -143,17 +143,17 @@ export default function SalaryCalculatorPage() {
       />
       {/* Focus-15: next steps for salary users; preserve the shared global related-tools list. */}
       <nav aria-labelledby="salary-focus-links" className="mx-auto max-w-5xl px-4 py-5" dir="rtl">
-        <h2 id="salary-focus-links" className="mb-3 text-lg font-bold text-[var(--text)]">
+        <h2 id="salary-focus-links" className="mb-3 text-lg font-bold text-[var(--text,#0D0D0D)]">
           بعد حساب الراتب: أدوات مستحقات الموظف ذات الصلة
         </h2>
         <div className="grid gap-3 sm:grid-cols-3">
-          <Link href="/ar/sa/final-settlement-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+          <Link href="/ar/sa/final-settlement-calculator" className="rounded-xl border border-[var(--border,#D4D4CE)] bg-[var(--surface,#FFFFFF)] p-4 text-sm font-semibold text-[var(--text,#0D0D0D)] hover:border-[var(--orange,#FF5B04)] hover:underline">
             المخالصة النهائية في السعودية — احسب مستحقات نهاية العمل
           </Link>
-          <Link href="/ar/sa/annual-leave-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+          <Link href="/ar/sa/annual-leave-calculator" className="rounded-xl border border-[var(--border,#D4D4CE)] bg-[var(--surface,#FFFFFF)] p-4 text-sm font-semibold text-[var(--text,#0D0D0D)] hover:border-[var(--orange,#FF5B04)] hover:underline">
             الإجازات السنوية في السعودية — احسب رصيد الإجازات المتبقية
           </Link>
-          <Link href="/ar/ae/notice-period-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+          <Link href="/ar/ae/notice-period-calculator" className="rounded-xl border border-[var(--border,#D4D4CE)] bg-[var(--surface,#FFFFFF)] p-4 text-sm font-semibold text-[var(--text,#0D0D0D)] hover:border-[var(--orange,#FF5B04)] hover:underline">
             فترة الإنذار في الإمارات — احسب آخر يوم عمل وبدل الإنذار
           </Link>
         </div>
