@@ -60,3 +60,15 @@ test("mobile menu focus links and category anchor are current", () => {
   assert.match(header, /href="#gulf"/);
   assert.match(header, /href="\/ar\/ae\/purchase-order-generator"/);
 });
+
+
+test("two page-specific CTR experiments remain descriptive, non-spammy and canonical", () => {
+  const umrah = read("app/umrah-calculator/page.js");
+  const vat = read("app/vat-calculator/page.js");
+  assert.match(umrah, /حاسبة تكلفة العمرة 2026 \| الطيران والفندق والتأشيرة/);
+  assert.match(umrah, /النتائج تقديرية/);
+  assert.match(umrah, /canonical: "\/umrah-calculator"/);
+  assert.match(vat, /حاسبة ضريبة القيمة المضافة \| السعودية 15% والإمارات 5%/);
+  assert.match(vat, /استخرج قيمتها من الإجمالي الشامل/);
+  assert.match(vat, /canonical: "\/vat-calculator"/);
+});
