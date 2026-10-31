@@ -18,6 +18,41 @@ export const metadata = {
   ],
 };
 
+// Search-friendly, server-rendered examples matched to the live converter's unit definitions.
+// These are reference answers, not separate interactive calculators.
+const quickConversions = [
+  {
+    label: "تحويل البوصة إلى سنتيمتر",
+    result: "1 in = 2.54 cm",
+    explanation: "البوصة الواحدة تساوي 2.54 سنتيمتر تماماً.",
+  },
+  {
+    label: "تحويل الميل إلى كيلومتر",
+    result: "1 mi = 1.609344 km",
+    explanation: "الميل الواحد يساوي 1.609344 كيلومتر.",
+  },
+  {
+    label: "تحويل الباوند إلى كيلوجرام",
+    result: "1 lb ≈ 0.4536 kg",
+    explanation: "الرطل أو الباوند الواحد يعادل حوالي 0.4536 كيلوجرام.",
+  },
+  {
+    label: "تحويل فهرنهايت إلى مئوية",
+    result: "32°F = 0°C",
+    explanation: "درجة تجمد الماء 32 فهرنهايت تعادل صفر درجة مئوية.",
+  },
+  {
+    label: "تحويل الهكتار إلى متر مربع",
+    result: "1 ha = 10,000 m²",
+    explanation: "الهكتار الواحد يعادل عشرة آلاف متر مربع.",
+  },
+  {
+    label: "تحويل الجالون الأمريكي إلى لتر",
+    result: "1 US gal ≈ 3.78541 L",
+    explanation: "الجالون الأمريكي السائل يعادل حوالي 3.78541 لتر.",
+  },
+];
+
 const guideData = {
   currentPath: "/unit-converter",
   aboutTitle: "ما هو محول الوحدات الشامل ولماذا نحتاج للتحويل بين أنظمة القياس؟",
@@ -91,6 +126,35 @@ export default function UnitConverterPage() {
   return (
     <>
       <UnitConverter />
+      {/* Static answers for common search intents; keep the interactive converter and full guide unchanged. */}
+      <section
+        aria-labelledby="unit-quick-answers-title"
+        className="mx-auto max-w-5xl px-4 pb-8 sm:pb-12"
+        dir="rtl"
+      >
+        <h2 id="unit-quick-answers-title" className="mb-2 text-xl font-bold text-[var(--text,#0D0D0D)]">
+          تحويلات الوحدات الشائعة بالأرقام
+        </h2>
+        <p className="mb-4 text-sm leading-relaxed text-[var(--text-2,#55554F)]">
+          إجابات سريعة لتحويل الطول والوزن ودرجة الحرارة والمساحة والحجم. استخدم المحول بالأعلى لأي قيمة أخرى.
+        </p>
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {quickConversions.map((item) => (
+            <li
+              key={item.label}
+              className="rounded-xl border border-[var(--border,#D4D4CE)] bg-[var(--surface,#FFFFFF)] p-4"
+            >
+              <h3 className="text-sm font-bold text-[var(--text,#0D0D0D)]">{item.label}</h3>
+              <p className="mt-2 text-lg font-semibold text-[var(--text,#0D0D0D)]" dir="ltr">
+                {item.result}
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-[var(--text-2,#55554F)]">
+                {item.explanation}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
       <ToolGuideSection {...guideData} />
     </>
   );
