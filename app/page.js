@@ -1,5 +1,5 @@
 import Script from "next/script";
-import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
+import { CATEGORIES, getToolsByCategory, getCatalogToolsByCategory, getCatalogToolCount } from "@/lib/registry";
 import HomeHero from "@/components/home/HomeHero";
 import CategoryBrowseShowcase from "@/components/home/CategoryBrowseShowcase";
 import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
@@ -193,11 +193,11 @@ function Pill({ item, dup }) {
 }
 
 export default function HomePage() {
-  const totalTools = getToolCount();
+  const totalTools = getCatalogToolCount();
 
   const activeCategories = CATEGORIES.map((cat) => ({
     ...cat,
-    tools: getToolsByCategory(cat.id),
+    tools: getCatalogToolsByCategory(cat.id),
   })).filter((cat) => cat.tools.length > 0);
 
   const upcomingCategories = CATEGORIES.filter(
