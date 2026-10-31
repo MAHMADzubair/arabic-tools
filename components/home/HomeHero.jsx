@@ -6,7 +6,7 @@ import HomeHeader from "./HomeHeader";
 import BrandValueGrid from "./BrandValueGrid";
 import HomeSearchDialog from "./HomeSearchDialog";
 
-export default function HomeHero({ toolCount = 36 }) {
+export default function HomeHero({ toolCount = 15 }) {
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
@@ -61,8 +61,8 @@ export default function HomeHero({ toolCount = 36 }) {
 
               {/* Subtitle */}
               <p className="qemlo-hero-subtitle mt-6 text-base font-normal leading-relaxed text-[#B5B5B0] sm:text-lg sm:leading-8 max-w-xl mx-auto lg:mx-0 transition-colors">
-                حاسبة الراتب ونهاية الخدمة والزكاة وضريبة القيمة المضافة والقروض
-                لدول الخليج، مجانًا وبدون تسجيل.
+                حاسبة الراتب والمخالصة النهائية وفترة الإنذار وتكلفة العمرة وأوامر الشراء،
+                مجانًا وبدون تسجيل.
               </p>
 
               {/* CTAs */}
@@ -163,16 +163,16 @@ export default function HomeHero({ toolCount = 36 }) {
                     الراتب
                   </Link>
                   <Link
-                    href="/zakat-calculator"
+                    href="/kaffara-calculator"
                     className="qemlo-chip rounded-full px-3.5 py-1 font-semibold transition-colors bg-[#EAEAE5] text-[#444] lg:border lg:border-white/15 lg:bg-white/5 lg:text-[#DDD] hover:border-[#FF5B04] hover:text-[#FF5B04]"
                   >
-                    الزكاة
+                    الكفارات
                   </Link>
                   <Link
-                    href="/gratuity-calculator"
+                    href="/ar/sa/final-settlement-calculator"
                     className="qemlo-chip rounded-full px-3.5 py-1 font-semibold transition-colors bg-[#EAEAE5] text-[#444] lg:border lg:border-white/15 lg:bg-white/5 lg:text-[#DDD] hover:border-[#FF5B04] hover:text-[#FF5B04]"
                   >
-                    نهاية الخدمة
+                    المخالصة
                   </Link>
                 </div>
 
@@ -191,14 +191,14 @@ export default function HomeHero({ toolCount = 36 }) {
                         حاسبات
                       </h3>
                       <p className="mt-0.5 text-[11px] truncate font-semibold">
-                        رواتب وضرائب وزكاة
+                        رواتب وضرائب وإجازات
                       </p>
                     </div>
                   </Link>
 
                   {/* Card 2: فواتير وعروض (جاهزة للطباعة) */}
                   <Link
-                    href="/ar/sa/e-invoice-generator"
+                    href="/ar/ae/purchase-order-generator"
                     className="qemlo-mobile-tool-card group relative flex flex-col items-center justify-center rounded-[20px] p-4 text-center transition-all hover:scale-[1.02] lg:flex-row lg:items-center lg:justify-start lg:text-start lg:p-3 lg:hover:bg-white/10"
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#1A1A1A] text-white shadow-sm mb-2 lg:mb-0 lg:me-2.5 lg:h-10 lg:w-10 lg:rounded-xl lg:border lg:border-white/10">
@@ -206,17 +206,17 @@ export default function HomeHero({ toolCount = 36 }) {
                     </span>
                     <div className="min-w-0 flex-1 text-center lg:text-start">
                       <h3 className="text-sm font-bold leading-tight">
-                        فواتير وعروض
+                        أوامر الشراء
                       </h3>
                       <p className="mt-0.5 text-[11px] truncate font-semibold">
-                        جاهزة للطباعة
+                        نموذج LPO للطباعة
                       </p>
                     </div>
                   </Link>
 
                   {/* Card 3: محولات (عملات ووحدات) */}
                   <Link
-                    href="/currency-converter"
+                    href="/unit-converter"
                     className="qemlo-mobile-tool-card group relative flex flex-col items-center justify-center rounded-[20px] p-4 text-center transition-all hover:scale-[1.02] lg:flex-row lg:items-center lg:justify-start lg:text-start lg:p-3 lg:hover:bg-white/10"
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#1A1A1A] text-white shadow-sm mb-2 lg:mb-0 lg:me-2.5 lg:h-10 lg:w-10 lg:rounded-xl lg:border lg:border-white/10">
@@ -227,43 +227,43 @@ export default function HomeHero({ toolCount = 36 }) {
                         محولات
                       </h3>
                       <p className="mt-0.5 text-[11px] truncate font-semibold">
-                        عملات ووحدات
+                        أطوال وأوزان
                       </p>
                     </div>
                   </Link>
 
                   {/* Card 4: مساعد ذكي (لمتاجر واتساب) */}
                   <Link
-                    href="/ar/business/ai-sales-closer"
+                    href="/ar/ae/notice-period-calculator"
                     className="qemlo-mobile-tool-card group relative flex flex-col items-center justify-center rounded-[20px] p-4 text-center transition-all hover:scale-[1.02] lg:flex-row lg:items-center lg:justify-start lg:text-start lg:p-3 lg:hover:bg-white/10"
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FF5B04] text-white shadow-md shadow-orange-500/25 mb-2 lg:mb-0 lg:me-2.5 lg:h-10 lg:w-10 lg:rounded-xl">
-                      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" /></svg>
+                      <span aria-hidden="true" className="text-xl">⏳</span>
                     </span>
                     <div className="min-w-0 flex-1 text-center lg:text-start">
                       <h3 className="text-sm font-bold leading-tight">
-                        مساعد ذكي
+                        فترة الإنذار
                       </h3>
                       <p className="mt-0.5 text-[11px] truncate font-semibold">
-                        لمتاجر واتساب
+                        قانون العمل الإماراتي
                       </p>
                     </div>
                   </Link>
 
                   {/* Card 5: التواريخ (هجري وميلادي) */}
                   <Link
-                    href="/date-converter"
+                    href="/umrah-calculator"
                     className="qemlo-mobile-tool-card group relative flex flex-col items-center justify-center rounded-[20px] p-4 text-center transition-all hover:scale-[1.02] lg:flex-row lg:items-center lg:justify-start lg:text-start lg:p-3 lg:hover:bg-white/10"
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FF5B04] text-white shadow-md shadow-orange-500/25 mb-2 lg:mb-0 lg:me-2.5 lg:h-10 lg:w-10 lg:rounded-xl">
-                      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                      <span aria-hidden="true" className="text-xl">🕋</span>
                     </span>
                     <div className="min-w-0 flex-1 text-center lg:text-start">
                       <h3 className="text-sm font-bold leading-tight">
-                        التواريخ
+                        تكلفة العمرة
                       </h3>
                       <p className="mt-0.5 text-[11px] truncate font-semibold">
-                        هجري وميلادي
+                        ميزانية الرحلة
                       </p>
                     </div>
                   </Link>

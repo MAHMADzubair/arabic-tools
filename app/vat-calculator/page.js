@@ -3,9 +3,9 @@ import ToolGuideSection from "@/components/ToolGuideSection";
 import GeoSummary from "@/components/business/GeoSummary";
 
 export const metadata = {
-  title: "حاسبة ضريبة القيمة المضافة متعددة الدول | ١٥٪ و٥٪ والدول العربية",
+  title: "حاسبة ضريبة القيمة المضافة | السعودية 15% والإمارات 5%",
   description:
-    "احسب ضريبة القيمة المضافة للسعودية (١٥٪)، الإمارات (٥٪)، البحرين (١٠٪)، مصر (١٤٪)، الأردن (١٦٪) — أضف الضريبة أو استخرجها من السعر الشامل في ثوانٍ.",
+    "احسب ضريبة القيمة المضافة VAT للسعودية 15% والإمارات 5% مع خيارات لدول عربية أخرى. أضف الضريبة إلى السعر أو استخرج قيمتها من الإجمالي الشامل فوراً.",
   alternates: {
     canonical: "/vat-calculator",
   },

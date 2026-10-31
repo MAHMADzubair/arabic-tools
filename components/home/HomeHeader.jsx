@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import QemloMark from "./QemloMark";
 import HomeSearchDialog from "./HomeSearchDialog";
+import { getCatalogToolCount } from "@/lib/registry";
 
 const GCC_COUNTRIES = [
   { code: "sa", name: "السعودية", currency: "SAR", currencyName: "ريال سعودي", flag: "🇸🇦", href: "/ar/sa" },
@@ -15,6 +16,7 @@ const GCC_COUNTRIES = [
 ];
 
 export default function HomeHeader() {
+  const catalogToolCount = getCatalogToolCount();
   const [mobileCountryOpen, setMobileCountryOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -505,7 +507,7 @@ export default function HomeHeader() {
                 }}
                 className="flex w-full items-center justify-between rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-[#888]"
               >
-                <span>ابحث في 36 أداة...</span>
+                <span>ابحث في {catalogToolCount} أداة...</span>
                 <svg
                   className="h-4 w-4 text-[#888]"
                   viewBox="0 0 24 24"
@@ -597,11 +599,11 @@ export default function HomeHeader() {
             <div className="mt-4 flex flex-col gap-2">
               <p className="mb-1 text-xs font-bold text-[#8E8E89]">التصنيفات</p>
               <a
-                href="#finance"
+                href="#gulf"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-between rounded-xl bg-white/5 p-3 text-sm font-semibold hover:bg-white/10"
               >
-                <span>المال والاستثمار</span>
+                <span>حاسبات الخليج</span>
                 <span>💰</span>
               </a>
               <a
@@ -621,17 +623,17 @@ export default function HomeHeader() {
                 <span>💼</span>
               </a>
               <Link
-                href="/ar/business/ai-sales-closer"
+                href="/ar/ae/purchase-order-generator"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-between rounded-xl bg-white/5 p-3 text-sm font-semibold hover:bg-white/10"
               >
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-[#FF5B04] px-1.5 py-0.2 text-[10px] font-bold text-[#0D0D0D]">
-                    جديد
+                    أعمال
                   </span>
-                  <span>الذكاء الاصطناعي</span>
+                  <span>أمر الشراء للإمارات</span>
                 </div>
-                <span>🤖</span>
+                <span>📦</span>
               </Link>
             </div>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
-import { getActiveTools } from "@/lib/registry";
+import { getCatalogTools } from "@/lib/registry";
 
 export default function HomeSearchDialog({ isOpen, onClose }) {
   const [query, setQuery] = useState("");
@@ -10,7 +10,7 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
   const inputRef = useRef(null);
   const resultsRef = useRef(null);
 
-  const tools = useMemo(() => getActiveTools(), []);
+  const tools = useMemo(() => getCatalogTools(), []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -95,7 +95,7 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder={`ابحث بين ${tools.length} أداة وحاسبة: الراتب، الزكاة، نهاية الخدمة...`}
+            placeholder={`ابحث بين ${tools.length} أداة وحاسبة: الراتب، العمرة، فترة الإنذار...`}
             className="w-full bg-transparent text-base sm:text-lg text-[#F5F5F2] placeholder-[#666] outline-none"
             aria-label="ابحث في الأدوات"
           />
