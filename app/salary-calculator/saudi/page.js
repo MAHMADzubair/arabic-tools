@@ -144,7 +144,15 @@ export default function SaudiSalaryPage() {
         disclaimer="هذه الأداة استرشادية — نتائجها تقديرية ولا تُعدّ مسيراً رسمياً. راجع قسم الموارد البشرية أو بوابة GOSI لأرقام دقيقة."
       />
       <ToolGuideSection {...guideData} />
-      <a href="/ar/sa" className="text-blue-600 hover:underline" title="أدوات السعودية">أدوات السعودية</a>
+      <div className="mx-auto max-w-2xl px-4 mt-4 text-center">
+        <a
+          href="/ar/sa"
+          className="text-orange-700 hover:text-orange-800 hover:underline text-sm font-semibold"
+          title="أدوات وحاسبات السعودية"
+        >
+          🇸🇦 تصفح جميع حاسبات وأدوات السعودية 2026 ←
+        </a>
+      </div>
     </div>
   );
 }

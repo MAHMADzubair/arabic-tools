@@ -113,17 +113,17 @@ export default function VatCalculator({
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12" dir="rtl">
       {/* Header */}
       <div className="mb-8 text-center sm:mb-12">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-brand-light px-4 py-1.5 text-sm font-bold text-brand-dark">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#FED7AA] bg-[#FFF7ED] px-4 py-1.5 text-xs font-bold text-[#9A3412]">
           <span>🧾</span>
           <span>{pageBadge || "أداة حساب ضريبة القيمة المضافة"}</span>
         </div>
-        <h1 className="mb-3 text-3xl font-bold text-ink sm:text-5xl">
+        <h1 className="mb-3 text-3xl font-extrabold text-[#0D0D0D] sm:text-5xl">
           {pageTitle || "حاسبة ضريبة القيمة المضافة (VAT)"}
         </h1>
-        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-ink-secondary sm:text-base">
+        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-[#555555] sm:text-base">
           {pageDesc || (
             <>
               أضف ضريبة القيمة المضافة إلى السعر أو استخرجها من السعر الشامل — اختر الدولة
@@ -134,7 +134,7 @@ export default function VatCalculator({
 
         {/* Country Quick Presets */}
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-xs font-bold text-ink-muted">نسبة الضريبة حسب الدولة:</span>
+          <span className="text-xs font-bold text-[#6B6B66]">نسبة الضريبة حسب الدولة:</span>
           {countryPresets.map((c) => (
             <button
               key={c.code}
@@ -142,13 +142,13 @@ export default function VatCalculator({
               onClick={() => handleCountrySelect(c)}
               className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition ${
                 selectedCountry === c.code && !isCustomRate
-                  ? "border-brand bg-brand text-white shadow-sm ring-2 ring-brand/20"
-                  : "border-brand-border bg-white text-ink hover:border-brand/50 hover:bg-brand-surface"
+                  ? "border-[#FF5B04] bg-[#FF5B04] text-[#0D0D0D] shadow-sm ring-2 ring-orange-500/30"
+                  : "border-[#D4D4CE] bg-white text-[#0D0D0D] hover:border-[#FF5B04]/50 hover:bg-[#F5F5F2]"
               }`}
             >
               <span>{c.flag}</span>
               <span>{c.country}</span>
-              <span className={selectedCountry === c.code && !isCustomRate ? "text-accent" : "text-brand"}>
+              <span className={selectedCountry === c.code && !isCustomRate ? "text-[#0D0D0D] font-extrabold" : "text-[#C2410C]"}>
                 ({c.rate}%)
               </span>
             </button>
@@ -161,8 +161,8 @@ export default function VatCalculator({
             }}
             className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition ${
               isCustomRate
-                ? "border-brand bg-brand text-white shadow-sm ring-2 ring-brand/20"
-                : "border-brand-border bg-white text-ink hover:border-brand/50 hover:bg-brand-surface"
+                ? "border-[#FF5B04] bg-[#FF5B04] text-[#0D0D0D] shadow-sm ring-2 ring-orange-500/30"
+                : "border-[#D4D4CE] bg-white text-[#0D0D0D] hover:border-[#FF5B04]/50 hover:bg-[#F5F5F2]"
             }`}
           >
             ⚙️ نسبة مخصصة
@@ -174,9 +174,9 @@ export default function VatCalculator({
       <div className="grid gap-8 lg:grid-cols-12">
         {/* Left Inputs (6 cols) */}
         <div className="space-y-6 lg:col-span-6">
-          <div className="rounded-3xl border border-brand-border bg-white p-6 shadow-card sm:p-8">
-            <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-ink sm:text-lg">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-light text-brand text-sm">
+          <div className="rounded-2xl border border-[#D4D4CE] bg-white p-6 shadow-sm sm:p-8">
+            <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-[#0D0D0D] sm:text-lg">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#D4D4CE] bg-[#F5F5F2] text-sm text-[#0D0D0D]">
                 ⚙️
               </span>
               <span>خيارات حساب الضريبة</span>
@@ -184,21 +184,21 @@ export default function VatCalculator({
 
             {/* Mode Switcher Tabs */}
             <div className="mb-6">
-              <label className="mb-2 block text-xs font-bold text-ink-secondary">
+              <label className="mb-2 block text-xs font-bold text-[#555555]">
                 طريقة الحساب المطلوبة:
               </label>
-              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-brand-surface p-1.5 border border-brand-border">
+              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-[#F5F5F2] p-1.5 border border-[#D4D4CE]">
                 <button
                   type="button"
                   onClick={() => setCalcMode("add")}
                   className={`flex flex-col items-center justify-center rounded-xl py-2.5 px-3 text-xs font-bold transition ${
                     calcMode === "add"
-                      ? "bg-white text-brand shadow-sm"
-                      : "text-ink-secondary hover:text-ink"
+                      ? "bg-[#FF5B04] text-[#0D0D0D] shadow-sm font-extrabold"
+                      : "text-[#555555] hover:text-[#0D0D0D]"
                   }`}
                 >
                   <span className="text-sm">➕ إضافة الضريبة</span>
-                  <span className="text-[10px] font-normal text-ink-muted">
+                  <span className={`text-[10px] font-normal ${calcMode === "add" ? "text-[#0D0D0D]/80" : "text-[#6B6B66]"}`}>
                     (السعر الأصلي غير شامل)
                   </span>
                 </button>
@@ -207,12 +207,12 @@ export default function VatCalculator({
                   onClick={() => setCalcMode("extract")}
                   className={`flex flex-col items-center justify-center rounded-xl py-2.5 px-3 text-xs font-bold transition ${
                     calcMode === "extract"
-                      ? "bg-white text-brand shadow-sm"
-                      : "text-ink-secondary hover:text-ink"
+                      ? "bg-[#FF5B04] text-[#0D0D0D] shadow-sm font-extrabold"
+                      : "text-[#555555] hover:text-[#0D0D0D]"
                   }`}
                 >
                   <span className="text-sm">➖ استخراج الضريبة</span>
-                  <span className="text-[10px] font-normal text-ink-muted">
+                  <span className={`text-[10px] font-normal ${calcMode === "extract" ? "text-[#0D0D0D]/80" : "text-[#6B6B66]"}`}>
                     (السعر النهائي شامل)
                   </span>
                 </button>
@@ -221,7 +221,7 @@ export default function VatCalculator({
 
             {/* Amount Input */}
             <div className="mb-5">
-              <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
+              <label className="mb-1.5 block text-xs font-bold text-[#555555]">
                 {calcMode === "add"
                   ? "المبلغ الأساسي (قبل الضريبة)"
                   : "المبلغ الإجمالي (شامل الضريبة)"}
@@ -234,9 +234,9 @@ export default function VatCalculator({
                   value={amountInput}
                   onChange={(e) => setAmountInput(e.target.value)}
                   placeholder="مثال: 1000"
-                  className="w-full rounded-2xl border border-brand-border px-4 py-3 text-lg font-bold text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                  className="w-full rounded-2xl border border-[#D4D4CE] bg-white px-4 py-3 text-lg font-bold text-[#0D0D0D] focus:border-[#FF5B04] focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
-                <span className="absolute left-4 top-3.5 text-xs font-bold text-ink-muted">
+                <span className="absolute left-4 top-3.5 text-xs font-bold text-[#6B6B66]">
                   {currency}
                 </span>
               </div>
@@ -245,11 +245,11 @@ export default function VatCalculator({
             {/* VAT Rate setting */}
             <div className="mb-5">
               <div className="mb-1.5 flex items-center justify-between">
-                <label className="text-xs font-bold text-ink-secondary">
+                <label className="text-xs font-bold text-[#555555]">
                   نسبة الضريبة المطبقة (%)
                 </label>
                 {isCustomRate && (
-                  <span className="text-[11px] font-semibold text-brand">
+                  <span className="text-[11px] font-bold text-[#C2410C]">
                     نسبة مخصصة
                   </span>
                 )}
@@ -265,9 +265,9 @@ export default function VatCalculator({
                     value={customRateInput}
                     onChange={(e) => handleCustomRateChange(e.target.value)}
                     placeholder="أدخل النسبة مئوية (مثال: 15)"
-                    className="w-full rounded-xl border border-brand-border px-3 py-2 text-sm font-bold text-ink focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    className="w-full rounded-xl border border-[#D4D4CE] bg-white px-3 py-2 text-sm font-bold text-[#0D0D0D] focus:border-[#FF5B04] focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
-                  <span className="absolute left-3 top-2.5 text-xs font-bold text-ink-muted">
+                  <span className="absolute left-3 top-2.5 text-xs font-bold text-[#6B6B66]">
                     %
                   </span>
                 </div>
@@ -283,8 +283,8 @@ export default function VatCalculator({
                       }}
                       className={`rounded-xl border py-2 text-xs font-bold transition ${
                         vatRate === rate && !isCustomRate
-                          ? "border-brand bg-brand-light text-brand-dark ring-2 ring-brand/20"
-                          : "border-brand-border bg-white text-ink hover:bg-brand-surface"
+                          ? "border-[#FF5B04] bg-[#FFF7ED] text-[#9A3412] ring-2 ring-orange-500/20"
+                          : "border-[#D4D4CE] bg-white text-[#0D0D0D] hover:bg-[#F5F5F2]"
                       }`}
                     >
                       {rate}%
@@ -296,13 +296,13 @@ export default function VatCalculator({
 
             {/* Quick Currency selector */}
             <div>
-              <label className="mb-1.5 block text-xs font-bold text-ink-secondary">
+              <label className="mb-1.5 block text-xs font-bold text-[#555555]">
                 العملة المعروضة
               </label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full rounded-xl border border-brand-border bg-brand-surface px-3 py-2 text-xs font-semibold text-ink focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20"
+                className="w-full rounded-xl border border-[#D4D4CE] bg-[#F5F5F2] px-3 py-2 text-xs font-semibold text-[#0D0D0D] focus:border-[#FF5B04] focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
               >
                 <option value="SAR">ريال سعودي (SAR)</option>
                 <option value="AED">درهم إماراتي (AED)</option>
@@ -320,63 +320,63 @@ export default function VatCalculator({
 
         {/* Right Output Card (6 cols) */}
         <div className="space-y-6 lg:col-span-6">
-          <div className="rounded-3xl border border-brand-border bg-white p-6 shadow-card sm:p-8">
+          <div className="rounded-2xl border border-[#D4D4CE] bg-white p-6 shadow-sm sm:p-8">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <span className="inline-block rounded-full bg-brand-light px-3 py-1 text-xs font-bold text-brand-dark">
+                <span className="inline-block rounded-full bg-[#0D0D0D] px-3 py-1 text-xs font-bold text-white">
                   النتيجة الحسابية
                 </span>
-                <h2 className="mt-1 text-2xl font-bold text-ink">
+                <h2 className="mt-1 text-2xl font-bold text-[#0D0D0D]">
                   تفاصيل الفاتورة الضريبية
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand transition hover:bg-brand-100"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[#D4D4CE] bg-[#F5F5F2] px-3.5 py-1.5 text-xs font-bold text-[#0D0D0D] transition hover:bg-[#EAEAE5]"
               >
                 <span>{copied ? "✓ تم النسخ!" : "📋 نسخ الفاتورة"}</span>
               </button>
             </div>
 
             {/* Large Highlight Box: Total Amount */}
-            <div className="mb-6 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-surface via-white to-brand-light/30 p-5 text-center">
-              <p className="text-xs font-bold text-ink-muted">
+            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[#FF7A29] to-[#FF5B04] p-5 text-center text-[#0D0D0D] shadow-md shadow-orange-500/20 border border-orange-500/20">
+              <p className="text-xs font-bold text-[#0D0D0D]/90">
                 المبلغ النهائي المستحق (شامل الضريبة)
               </p>
-              <p className="mt-1 text-3xl font-bold text-brand-dark sm:text-4xl">
+              <p className="mt-1 text-3xl font-extrabold text-[#0D0D0D] sm:text-4xl">
                 {formatCurrency(result.totalAmount, currency)}
               </p>
-              <p className="mt-1 text-xs font-semibold text-brand">
+              <p className="mt-1 text-xs font-semibold text-[#0D0D0D]/80">
                 نسبة الضريبة المطبقة: {result.rate}%
               </p>
             </div>
 
             {/* Breakdown Invoice Mockup */}
-            <div className="space-y-3 rounded-2xl border border-brand-border bg-brand-surface/40 p-4 font-mono text-xs">
-              <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                <span className="font-sans font-bold text-ink-secondary">
+            <div className="space-y-3 rounded-2xl border border-[#D4D4CE] bg-[#F5F5F2]/70 p-4 font-mono text-xs text-[#0D0D0D]">
+              <div className="flex items-center justify-between border-b border-[#D4D4CE] pb-2">
+                <span className="font-sans font-bold text-[#555555]">
                   المبلغ قبل الضريبة (الأساسي):
                 </span>
-                <span className="font-bold text-ink text-sm">
+                <span className="font-bold text-[#0D0D0D] text-sm">
                   {formatCurrency(result.baseAmount, currency)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between border-b border-brand-border/60 pb-2">
-                <span className="font-sans font-bold text-ink-secondary flex items-center gap-1">
+              <div className="flex items-center justify-between border-b border-[#D4D4CE] pb-2">
+                <span className="font-sans font-bold text-[#555555] flex items-center gap-1">
                   <span>مبلغ الضريبة ({result.rate}%):</span>
                 </span>
-                <span className="font-bold text-rose-600 text-sm">
+                <span className="font-bold text-[#C2410C] text-sm">
                   +{formatCurrency(result.vatAmount, currency)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between pt-1">
-                <span className="font-sans font-bold text-ink">
+                <span className="font-sans font-bold text-[#0D0D0D]">
                   الإجمالي الكلي شامل الضريبة:
                 </span>
-                <span className="font-bold text-brand text-base">
+                <span className="font-bold text-[#0D0D0D] text-base">
                   {formatCurrency(result.totalAmount, currency)}
                 </span>
               </div>
@@ -384,34 +384,34 @@ export default function VatCalculator({
 
             {/* Visual breakdown bar */}
             <div className="mt-6">
-              <div className="mb-2 flex items-center justify-between text-xs font-bold text-ink-muted">
+              <div className="mb-2 flex items-center justify-between text-xs font-bold text-[#6B6B66]">
                 <span>نسبة أصل المبلغ: {((result.baseAmount / (result.totalAmount || 1)) * 100).toFixed(1)}%</span>
                 <span>نسبة الضريبة: {((result.vatAmount / (result.totalAmount || 1)) * 100).toFixed(1)}%</span>
               </div>
-              <div className="flex h-3.5 w-full overflow-hidden rounded-full bg-gray-100 shadow-inner">
+              <div className="flex h-3.5 w-full overflow-hidden rounded-full bg-[#EAEAE5] shadow-inner">
                 <div
                   style={{
                     width: `${Math.max(5, (result.baseAmount / (result.totalAmount || 1)) * 100)}%`,
                   }}
-                  className="bg-brand transition-all duration-300"
+                  className="bg-[#0D0D0D] transition-all duration-300"
                   title="المبلغ الأصلي"
                 />
                 <div
                   style={{
                     width: `${Math.max(2, (result.vatAmount / (result.totalAmount || 1)) * 100)}%`,
                   }}
-                  className="bg-accent transition-all duration-300"
+                  className="bg-[#FF5B04] transition-all duration-300"
                   title="الضريبة"
                 />
               </div>
               <div className="mt-2 flex items-center justify-center gap-6 text-[11px] font-bold">
                 <div className="flex items-center gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-full bg-brand" />
-                  <span className="text-ink-secondary">أصل المبلغ</span>
+                  <div className="h-2.5 w-2.5 rounded-full bg-[#0D0D0D]" />
+                  <span className="text-[#555555]">أصل المبلغ</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-full bg-accent" />
-                  <span className="text-ink-secondary">قيمة الضريبة</span>
+                  <div className="h-2.5 w-2.5 rounded-full bg-[#FF5B04]" />
+                  <span className="text-[#555555]">قيمة الضريبة</span>
                 </div>
               </div>
             </div>

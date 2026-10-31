@@ -176,15 +176,15 @@ export default function ZakatCalculator() {
   };
 
   return (
-    <div className="mx-auto max-w-lg">
+    <div className="mx-auto max-w-lg" dir="rtl">
       {/* Page header */}
-      <div className="mb-6 rounded-2xl bg-hero-gradient p-6 text-white shadow-result">
+      <div className="mb-6 rounded-2xl border border-[#2A2A2A] bg-gradient-to-br from-[#1C1917] via-[#0D0D0D] to-[#262626] p-6 text-white shadow-xl shadow-black/20">
         <div className="mb-1 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🕌</span>
             <h1 className="text-2xl font-bold">حاسبة الزكاة الشرعية</h1>
           </div>
-          <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">
+          <span className="rounded-full bg-[#FF5B04]/20 border border-[#FF5B04]/40 px-2.5 py-0.5 text-[11px] font-bold text-[#FF8A3D]">
             1447هـ / 2026م
           </span>
         </div>
@@ -193,7 +193,7 @@ export default function ZakatCalculator() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card sm:p-7">
+      <div className="rounded-2xl border border-[#D4D4CE] bg-white p-5 shadow-sm sm:p-7">
         {/* Nisab Standard Selection Toggle */}
         <SectionTitle>معيار النصاب الشرعي</SectionTitle>
         <div className="mb-4 grid grid-cols-2 gap-2">
@@ -202,15 +202,15 @@ export default function ZakatCalculator() {
             onClick={() => handleStandardChange("silver")}
             className={`rounded-xl border p-3 text-right transition-all ${
               nisabStandard === "silver"
-                ? "border-brand bg-brand-light font-bold text-brand-dark shadow-sm"
-                : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
+                ? "border-[#FF5B04] bg-[#FFF7ED] font-bold text-[#0D0D0D] shadow-sm ring-2 ring-orange-500/20"
+                : "border-[#D4D4CE] bg-white text-[#555555] hover:border-[#FF5B04]/50"
             }`}
           >
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-bold">🥈 نصاب الفضة</span>
-              <span className="text-[10px] text-ink-muted">595 جرام</span>
+              <span className="font-bold text-[#0D0D0D]">🥈 نصاب الفضة</span>
+              <span className="text-[10px] text-[#6B6B66]">595 جرام</span>
             </div>
-            <p className="text-[11px] leading-tight text-ink-secondary">
+            <p className="text-[11px] leading-tight text-[#555555]">
               الأحوط وأنفع للفقراء (دار الإفتاء المصرية، الأوقاف بالإمارات، جمهور المذاهب)
             </p>
           </button>
@@ -220,15 +220,15 @@ export default function ZakatCalculator() {
             onClick={() => handleStandardChange("gold")}
             className={`rounded-xl border p-3 text-right transition-all ${
               nisabStandard === "gold"
-                ? "border-amber-500 bg-amber-50/70 font-bold text-amber-950 shadow-sm"
-                : "border-brand-border bg-white text-ink-secondary hover:border-brand-200"
+                ? "border-[#FF5B04] bg-[#FFF7ED] font-bold text-[#0D0D0D] shadow-sm ring-2 ring-orange-500/20"
+                : "border-[#D4D4CE] bg-white text-[#555555] hover:border-[#FF5B04]/50"
             }`}
           >
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="font-bold">🥇 نصاب الذهب</span>
-              <span className="text-[10px] text-ink-muted">85 جرام (24K)</span>
+              <span className="font-bold text-[#0D0D0D]">🥇 نصاب الذهب</span>
+              <span className="text-[10px] text-[#6B6B66]">85 جرام (24K)</span>
             </div>
-            <p className="text-[11px] leading-tight text-ink-secondary">
+            <p className="text-[11px] leading-tight text-[#555555]">
               أثبت قيمة لواقع النقود (كبار العلماء واللجنة الدائمة بالسعودية، ومجمع الفقه)
             </p>
           </button>
@@ -335,10 +335,10 @@ export default function ZakatCalculator() {
         ))}
 
         {/* Results */}
-        <div className="mt-6 rounded-xl border border-brand-border bg-brand-light p-4 space-y-2">
+        <div className="mt-6 rounded-xl border border-[#D4D4CE] bg-[#F5F5F2] p-4 space-y-2">
           <ResultLine label="إجمالي الأصول الزكوية" value={`${fmt(totals.totalAssets)} ${currency}`} />
           <ResultLine label="إجمالي الالتزامات المخصومة" value={`${fmt(totals.totalLiabilities)} ${currency}`} />
-          <div className="border-t border-brand-border pt-2">
+          <div className="border-t border-[#D4D4CE] pt-2">
             <ResultLine label="صافي الوعاء الزكوي" value={`${fmt(totals.netWealth)} ${currency}`} bold />
           </div>
           <ResultLine
@@ -355,29 +355,31 @@ export default function ZakatCalculator() {
 
         {/* Verdict */}
         {totals.nisabThreshold > 0 && (
-          <div className={`mt-4 rounded-xl p-5 text-center ${totals.meetsNisab ? "bg-hero-gradient text-white shadow-result" : "bg-amber-50 border border-amber-200"}`}>
+          <div className="mt-4">
             {totals.meetsNisab ? (
-              <>
-                <p className="mb-1 text-sm opacity-80">✓ بلغ مالك النصاب الشرعي وحال عليه الحول — الزكاة واجبة</p>
-                <p className="text-3xl font-bold">
+              <div className="rounded-xl bg-gradient-to-r from-[#FF7A29] to-[#FF5B04] p-5 text-center text-[#0D0D0D] shadow-lg shadow-orange-500/20">
+                <p className="mb-1 text-sm font-bold text-[#0D0D0D]/90">✓ بلغ مالك النصاب الشرعي وحال عليه الحول — الزكاة واجبة</p>
+                <p className="text-3xl font-extrabold text-[#0D0D0D]">
                   {fmt(totals.zakatDue)} {currency}
                 </p>
-                <p className="mt-1 text-sm opacity-80">مقدار الزكاة الواجب إخراجها (2.5%)</p>
-              </>
+                <p className="mt-1 text-sm font-bold text-[#0D0D0D]/80">مقدار الزكاة الواجب إخراجها (2.5%)</p>
+              </div>
             ) : (
-              <p className="font-semibold text-amber-900">
-                ⚠️ لم يبلغ مالك حد النصاب ({fmt(totals.nisabThreshold)} {currency}) — لا زكاة واجبة عليك هذا الحول
-              </p>
+              <div className="rounded-xl border border-[#FED7AA] bg-[#FFF7ED] p-5 text-center">
+                <p className="font-bold text-[#9A3412]">
+                  ⚠️ لم يبلغ مالك حد النصاب ({fmt(totals.nisabThreshold)} {currency}) — لا زكاة واجبة عليك هذا الحول
+                </p>
+              </div>
             )}
           </div>
         )}
 
-        <div className="mt-5 rounded-xl border border-brand-border/60 bg-slate-50 p-3 text-[11px] leading-relaxed text-ink-muted space-y-1.5">
+        <div className="mt-5 rounded-xl border border-[#D4D4CE] bg-[#F5F5F2]/70 p-3 text-[11px] leading-relaxed text-[#6B6B66] space-y-1.5">
           <p>
-            <strong>تنويه شرعي معتمد (النصاب):</strong> الخلاف بين اعتبار نصاب الذهب أو الفضة خلاف فقهي معتبر بين كبار العلماء المعاصرين. اختيارك للفضة أحوط للفقراء، واختيارك للذهب أعدل لواقع التضخم المعاصر.
+            <strong className="text-[#0D0D0D]">تنويه شرعي معتمد (النصاب):</strong> الخلاف بين اعتبار نصاب الذهب أو الفضة خلاف فقهي معتبر بين كبار العلماء المعاصرين. اختيارك للفضة أحوط للفقراء، واختيارك للذهب أعدل لواقع التضخم المعاصر.
           </p>
           <p>
-            <strong>أساس الحول (القمري vs الشمسي):</strong> يُحسب هذا المقدار بنسبة 2.5٪ الافتراضية وفق الحول القمري (الهجري 354 يوماً) وهو الأصل الشرعي للزكاة. أما إذا كانت حساباتك الزكوية أو ميزانيات شركتك مبنية على السنة المالية الشمسية (الميلادية 365 يوماً)، فإن النسبة المعتمدة وفق معيار أيوفي الشرعي رقم (9) ومجمع الفقه الإسلامي الدولي هي <strong>2.577٪</strong> (أو 2.5٪ × 365 / 354) لجبر فارق الـ 11 يوماً بين السنتين.
+            <strong className="text-[#0D0D0D]">أساس الحول (القمري vs الشمسي):</strong> يُحسب هذا المقدار بنسبة 2.5٪ الافتراضية وفق الحول القمري (الهجري 354 يوماً) وهو الأصل الشرعي للزكاة. أما إذا كانت حساباتك الزكوية أو ميزانيات شركتك مبنية على السنة المالية الشمسية (الميلادية 365 يوماً)، فإن النسبة المعتمدة وفق معيار أيوفي الشرعي رقم (9) ومجمع الفقه الإسلامي الدولي هي <strong>2.577٪</strong> (أو 2.5٪ × 365 / 354) لجبر فارق الـ 11 يوماً بين السنتين.
           </p>
         </div>
       </div>
@@ -387,10 +389,10 @@ export default function ZakatCalculator() {
 
 function SectionTitle({ children, className = "" }) {
   return (
-    <h2 className={`mb-3 mt-5 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand ${className}`}>
-      <span className="flex-1 border-t border-brand-border" />
+    <h2 className={`mb-3 mt-5 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#0D0D0D] ${className}`}>
+      <span className="flex-1 border-t border-[#D4D4CE]" />
       {children}
-      <span className="flex-1 border-t border-brand-border" />
+      <span className="flex-1 border-t border-[#D4D4CE]" />
     </h2>
   );
 }
