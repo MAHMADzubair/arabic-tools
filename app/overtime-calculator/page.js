@@ -94,7 +94,15 @@ export default function OvertimeCalculatorPage() {
     <div className="py-6 sm:py-10">
       <div className="mx-auto max-w-2xl px-4">
         <OvertimeCalculator />
-      <p className="mt-4"><a href="/overtime-calculator/saudi" className="text-blue-600 hover:underline">حساب الأوفر تايم في القطاع الخاص السعودي</a></p>
+      <div className="mt-4 text-center">
+        <a
+          href="/overtime-calculator/saudi"
+          className="text-orange-700 hover:text-orange-800 hover:underline text-sm font-semibold"
+          title="حاسبة الأوفر تايم في السعودية"
+        >
+          🇸🇦 حساب الأوفر تايم وفق نظام العمل السعودي (المادة 107) ←
+        </a>
+      </div>
 </div>
       {/* Focus-15: contextual next steps; keep the existing global guide unchanged. */}
       <nav aria-labelledby="overtime-focus-links" className="mx-auto max-w-5xl px-4 py-5" dir="rtl">

@@ -106,22 +106,23 @@ export default function SaudiVatPage() {
           pageBadge="حاسبة VAT السعودية — ZATCA"
           pageDesc="احسب ضريبة القيمة المضافة 15% في المملكة العربية السعودية بالريال السعودي — أضف الضريبة إلى السعر أو استخرجها من الإجمالي وفق القواعد المنشورة من هيئة الزكاة والضريبة والجمارك (ZATCA)."
         />
-        <div className="mt-5 rounded-2xl border border-purple-200 bg-purple-50/80 p-4 shadow-sm">
+        {/* Contextual Link to VAT Registration Checker */}
+        <div className="mt-5 rounded-2xl border border-[#D4D4CE] bg-white p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">🏢</span>
               <div>
-                <p className="text-xs font-bold text-purple-950">
+                <p className="text-xs font-bold text-[#0D0D0D]">
                   هل تحتاج إلى معرفة ما إذا كان التسجيل في ضريبة القيمة المضافة مطلوباً؟
                 </p>
-                <p className="text-[11px] text-purple-800 mt-0.5">
+                <p className="text-[11px] text-[#555555] mt-0.5">
                   تحقق من حد الـ 375,000 ريال الإلزامي وحد الـ 187,500 ريال الاختياري وفق لوائح ZATCA
                 </p>
               </div>
             </div>
             <Link
               href="/ar/sa/vat-registration-checker"
-              className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-purple-700 px-3.5 py-2 text-xs font-bold text-white hover:bg-purple-800 transition-all shadow-sm"
+              className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-[#0D0D0D] hover:bg-[#262626] px-3.5 py-2 text-xs font-bold text-white transition-all shadow-sm"
             >
               <span>حاسبة أهلية التسجيل</span>
               <span>←</span>
@@ -130,22 +131,22 @@ export default function SaudiVatPage() {
         </div>
 
         {/* Contextual Link to E-Invoice Generator */}
-        <div className="mt-3 rounded-2xl border border-indigo-200 bg-indigo-50/80 p-4 shadow-sm">
+        <div className="mt-3 rounded-2xl border border-[#FED7AA] bg-[#FFF7ED] p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <span className="text-2xl">🧾</span>
               <div>
-                <p className="text-xs font-bold text-indigo-950">
+                <p className="text-xs font-bold text-[#9A3412]">
                   ترغب في إنشاء فاتورة ضريبية كاملة لبنودك؟
                 </p>
-                <p className="text-[11px] text-indigo-800 mt-0.5">
+                <p className="text-[11px] text-[#7C2D12] mt-0.5">
                   أنشئ نموذج فاتورة ضريبية B2B أو مبسطة B2C جاهزة للطباعة مع احتساب الضريبة والخصومات
                 </p>
               </div>
             </div>
             <Link
               href="/ar/sa/e-invoice-generator"
-              className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-indigo-700 px-3.5 py-2 text-xs font-bold text-white hover:bg-indigo-800 transition-all shadow-sm"
+              className="shrink-0 inline-flex items-center gap-1 rounded-xl bg-[#FF5B04] hover:bg-[#FF7A33] px-3.5 py-2 text-xs font-bold text-[#0D0D0D] transition-all shadow-sm"
             >
               <span>مولد الفاتورة الإلكترونية</span>
               <span>←</span>
@@ -163,6 +164,15 @@ export default function SaudiVatPage() {
         disclaimer="هذه الأداة استرشادية — للالتزام الضريبي الرسمي راجع بوابة ZATCA أو مستشارك الضريبي."
       />
       <ToolGuideSection {...guideData} />
+      <div className="mx-auto max-w-2xl px-4 mt-4 text-center">
+        <a
+          href="/ar/sa"
+          className="text-orange-700 hover:text-orange-800 hover:underline text-sm font-semibold"
+          title="أدوات وحاسبات السعودية"
+        >
+          🇸🇦 تصفح جميع حاسبات وأدوات السعودية 2026 ←
+        </a>
+      </div>
     </div>
   );
 }

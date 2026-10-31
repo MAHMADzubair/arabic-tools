@@ -92,6 +92,21 @@ export default function VatCalculatorPage() {
         pageDesc="أضف ضريبة القيمة المضافة إلى السعر أو استخرجها من السعر الشامل — يدعم السعودية (١٥٪)، الإمارات (٥٪)، البحرين (١٠٪)، مصر (١٤٪)، الأردن (١٦٪)."
       />
 
+      <div className="mx-auto max-w-2xl px-4 mt-4 flex flex-wrap items-center justify-center gap-3 text-center">
+        <a
+          href="/vat-calculator/saudi"
+          className="inline-flex items-center gap-1 rounded-xl border border-[#D4D4CE] bg-white px-3 py-1.5 text-xs font-semibold text-orange-700 hover:text-orange-800 hover:border-[#FF5B04]/50 hover:bg-[#FFF7ED] transition"
+        >
+          🇸🇦 حاسبة ضريبة القيمة المضافة السعودية 15% ←
+        </a>
+        <a
+          href="/vat-calculator/uae"
+          className="inline-flex items-center gap-1 rounded-xl border border-[#D4D4CE] bg-white px-3 py-1.5 text-xs font-semibold text-orange-700 hover:text-orange-800 hover:border-[#FF5B04]/50 hover:bg-[#FFF7ED] transition"
+        >
+          🇦🇪 حاسبة ضريبة القيمة المضافة الإمارات 5% ←
+        </a>
+      </div>
+
       {/* GEO / Answer-engine summary */}
       <GeoSummary
         whatItDoes="تحسب ضريبة القيمة المضافة وتستخرجها لأي دولة عربية — السعودية 15%، الإمارات وعُمان 5%، البحرين 10%، مصر 14%، الأردن 16%"
