@@ -1,4 +1,5 @@
 import SalaryCalculator from "../../components/SalaryCalculator";
+import Link from "next/link";
 import ToolGuideSection from "../../components/ToolGuideSection";
 import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
@@ -140,6 +141,23 @@ export default function SalaryCalculatorPage() {
         pageBadge="حاسبة الراتب الصافي"
         pageDesc="احسب راتبك الصافي بعد الضرائب والتأمينات الاجتماعية والبدلات — يدعم السعودية والإمارات ومصر وباكستان وبريطانيا وأمريكا."
       />
+      {/* Focus-15: next steps for salary users; preserve the shared global related-tools list. */}
+      <nav aria-labelledby="salary-focus-links" className="mx-auto max-w-5xl px-4 py-5" dir="rtl">
+        <h2 id="salary-focus-links" className="mb-3 text-lg font-bold text-[var(--text)]">
+          بعد حساب الراتب: أدوات مستحقات الموظف ذات الصلة
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Link href="/ar/sa/final-settlement-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+            المخالصة النهائية في السعودية — احسب مستحقات نهاية العمل
+          </Link>
+          <Link href="/ar/sa/annual-leave-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+            الإجازات السنوية في السعودية — احسب رصيد الإجازات المتبقية
+          </Link>
+          <Link href="/ar/ae/notice-period-calculator" className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm font-semibold text-[var(--text)] hover:border-[var(--orange)] hover:underline">
+            فترة الإنذار في الإمارات — احسب آخر يوم عمل وبدل الإنذار
+          </Link>
+        </div>
+      </nav>
       <ToolGuideSection {...guideData} />
     </div>
   );
