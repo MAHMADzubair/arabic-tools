@@ -277,7 +277,6 @@ const LEGAL = [
 function Footer() {
   const totalTools = getToolCount();
   const active = CATEGORIES.map((c) => ({ ...c, tools: getToolsByCategory(c.id) })).filter((c) => c.tools.length > 0);
-  const upcoming = CATEGORIES.filter((c) => getToolsByCategory(c.id).length === 0);
 
   return (
     <footer className="mt-16 border-t border-[var(--foot-line)] bg-[var(--foot-bg)] text-[var(--foot-text)] sm:mt-20">
@@ -320,19 +319,6 @@ function Footer() {
               </FooterGroup>
             );
           })}
-
-          {upcoming.length > 0 && (
-            <FooterGroup title="قريباً في المنصة">
-              <ul>
-                {upcoming.map((c) => (
-                  <li key={c.id} className="flex flex-wrap items-center gap-2 py-1.5 text-[15px] leading-6 text-[var(--foot-muted)]">
-                    <span>{c.nameAr}</span>
-                    <span className="rounded border border-[var(--foot-muted)] px-1.5 text-xs font-bold">قريباً</span>
-                  </li>
-                ))}
-              </ul>
-            </FooterGroup>
-          )}
 
           <FooterGroup title="معلومات وقانونية">
             <ul>
