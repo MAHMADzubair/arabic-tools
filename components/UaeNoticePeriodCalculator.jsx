@@ -118,11 +118,11 @@ function Row({ k, v, strong }) {
 // ─── Component ─────────────────────────────────────────────────────────────────
 export default function UaeNoticePeriodCalculator() {
   // Scope
-  const [isPrivateSector, setIsPrivateSector] = useState("yes");
-  const [isExcludedCategory, setIsExcludedCategory] = useState("no");
-  const [isDifcAdgm, setIsDifcAdgm] = useState("no");
+  const [isPrivateSector, setIsPrivateSector] = useState("unsure");
+  const [isExcludedCategory, setIsExcludedCategory] = useState("unsure");
+  const [isDifcAdgm, setIsDifcAdgm] = useState("unsure");
   // Probation
-  const [isProbation, setIsProbation] = useState("no");
+  const [isProbation, setIsProbation] = useState("unsure");
   // Core inputs
   const [terminationInitiator, setTerminationInitiator] = useState("unsure");
   const [nonCompliantParty, setNonCompliantParty] = useState("unsure");
@@ -206,16 +206,24 @@ export default function UaeNoticePeriodCalculator() {
 
   const calculationBlockReason = useMemo(() => {
     if (isPrivateSector !== "yes") {
-      return "هذه الحاسبة مخصصة لعقود القطاع الخاص الخاضعة لقانون العمل الاتحادي. لا تستخدم النتيجة للقطاع الحكومي أو عند عدم التأكد من جهة الاختصاص.";
+      return isPrivateSector === "no"
+        ? "هذه الحاسبة لا تشمل القطاع الحكومي أو الجهات التي لا تخضع لقانون العمل الاتحادي."
+        : "أكد أولاً أن عقد العمل في القطاع الخاص الخاضع لقانون العمل الاتحادي. لن تصدر الحاسبة نتيجة قبل تأكيد نطاق العمل.";
     }
     if (isExcludedCategory !== "no") {
-      return "لا تشمل هذه الحاسبة العمالة المنزلية أو العاملين في القوات المسلحة أو الشرطة أو الأمن؛ فهذه الفئات مستثناة من نطاق هذا القانون أو تخضع لتشريعات أخرى.";
+      return isExcludedCategory === "yes"
+        ? "لا تشمل هذه الحاسبة العمالة المنزلية أو العاملين في القوات المسلحة أو الشرطة أو الأمن؛ فهذه الفئات مستثناة من نطاق هذا القانون أو تخضع لتشريعات أخرى."
+        : "أكد أنك لا تعمل ضمن العمالة المنزلية أو القوات المسلحة أو الشرطة أو الأمن؛ هذه الفئات لا تستخدم هذه الحاسبة.";
     }
     if (isDifcAdgm !== "no") {
-      return "أنظمة DIFC وADGM مستقلة عن قانون العمل الاتحادي؛ لا يمكن لهذه الحاسبة تقدير فترة الإنذار الخاصة بهما.";
+      return isDifcAdgm === "yes"
+        ? "أنظمة DIFC وADGM مستقلة عن قانون العمل الاتحادي؛ لا يمكن لهذه الحاسبة تقدير فترة الإنذار الخاصة بهما."
+        : "أكد أنك لا تعمل في DIFC أو ADGM؛ لهاتين المنطقتين إطارا عمل مستقلان عن القانون الاتحادي.";
     }
-    if (isProbation === "yes") {
-      return "فترة التجربة تخضع للمادة (9) وليس للمادة (43). تختلف المهلة حسب الحالة: 14 يوماً لإنهاء صاحب العمل، أو شهراً للانتقال إلى صاحب عمل آخر داخل الدولة، أو 14 يوماً للعامل الأجنبي الذي يغادر الدولة. هذه الحاسبة لا تصدر نتيجة لفترة التجربة.";
+    if (isProbation !== "no") {
+      return isProbation === "yes"
+        ? "فترة التجربة تخضع للمادة (9) وليس للمادة (43). تختلف المهلة حسب الحالة: 14 يوماً لإنهاء صاحب العمل، أو شهراً للانتقال إلى صاحب عمل آخر داخل الدولة، أو 14 يوماً للعامل الأجنبي الذي يغادر الدولة. هذه الحاسبة لا تصدر نتيجة لفترة التجربة."
+        : "أكد أن فترة التجربة انتهت قبل استخدام حاسبة المادة (43). إذا لم تتأكد من حالة التجربة، لا تعتمد على هذا التقدير.";
     }
     if (isMutualWaiver) {
       return "عند الاتفاق الكتابي على الإعفاء أو تخفيض الإنذار، لا يعني ذلك تلقائياً أن بدل الإنذار يساوي صفراً؛ فالمادة (43/2) تشترط حفظ حقوق العامل. راجع نص الاتفاق وMOHRE، وهذه الحاسبة لا تحسب اتفاقات الإعفاء أو التسوية الخاصة.";
@@ -312,10 +320,10 @@ export default function UaeNoticePeriodCalculator() {
   };
 
   const handleReset = () => {
-    setIsPrivateSector("yes");
-    setIsExcludedCategory("no");
-    setIsDifcAdgm("no");
-    setIsProbation("no");
+    setIsPrivateSector("unsure");
+    setIsExcludedCategory("unsure");
+    setIsDifcAdgm("unsure");
+    setIsProbation("unsure");
     setTerminationInitiator("unsure");
     setNonCompliantParty("unsure");
     const today = getUaeDateString();
@@ -411,10 +419,10 @@ export default function UaeNoticePeriodCalculator() {
                 <Note title="تنبيه:">قد تختلف قواعد الإشعار في DIFC أو ADGM، لذلك لا ينبغي الاعتماد على هذه الحاسبة وحدها.</Note>
               )}
 
-              <Seg id="nc-prob" label="هل الموظف لا يزال في فترة التجربة؟" value={isProbation} onChange={setIsProbation}
-                options={[{ id: "no", label: "لا" }, { id: "yes", label: "نعم" }]} />
-              {isProbation === "yes" && (
-                <Note>هذه الحاسبة مخصصة أساساً لما بعد فترة التجربة، وقد تختلف قواعد الإشعار أثناء التجربة.</Note>
+              <Seg id="nc-prob" label="هل انتهت فترة التجربة؟" value={isProbation} onChange={setIsProbation}
+                options={[{ id: "no", label: "لم تنتهِ" }, { id: "yes", label: "نعم، انتهت" }, { id: "unsure", label: "غير متأكد" }]} />
+              {isProbation !== "no" && (
+                <Note>لا تصدر الحاسبة نتيجة إلا بعد تأكيد انتهاء فترة التجربة؛ فحالات التجربة تخضع للمادة (9) لا للمادة (43).</Note>
               )}
             </section>
 
