@@ -127,14 +127,12 @@ export default function UaeNoticePeriodCalculator() {
   const [terminationInitiator, setTerminationInitiator] = useState("unsure");
   const [nonCompliantParty, setNonCompliantParty] = useState("unsure");
   const [noticeStartDate, setNoticeStartDate] = useState(() => getUaeDateString());
-  const [contractNoticePreset, setContractNoticePreset] = useState("30");
-  const [customNoticeDays, setCustomNoticeDays] = useState("30");
+  const [contractNoticePreset, setContractNoticePreset] = useState("custom");
+  const [customNoticeDays, setCustomNoticeDays] = useState("");
   const [servedInputMode, setServedInputMode] = useState("days");
-  const [servedDaysInput, setServedDaysInput] = useState("30");
-  const [actualLastWorkingDate, setActualLastWorkingDate] = useState(() => {
-    return addDays(getUaeDateString(), 30);
-  });
-  const [lastWage, setLastWage] = useState("9000");
+  const [servedDaysInput, setServedDaysInput] = useState("");
+  const [actualLastWorkingDate, setActualLastWorkingDate] = useState("");
+  const [lastWage, setLastWage] = useState("");
   const [isMutualWaiver, setIsMutualWaiver] = useState(false);
 
   // UI
@@ -174,9 +172,6 @@ export default function UaeNoticePeriodCalculator() {
 
   const handleStartDateChange = (newDate) => {
     setNoticeStartDate(newDate);
-    if (servedInputMode === "date" && newDate && requiredNoticeDays > 0) {
-      setActualLastWorkingDate(addDays(newDate, requiredNoticeDays));
-    }
   };
 
   const servedNoticeDays = useMemo(() => {
@@ -236,6 +231,9 @@ export default function UaeNoticePeriodCalculator() {
       return "أدخل مدة إنذار كاملة بالأيام دون كسور.";
     }
     if (!noticeStartDate) return "أدخل تاريخ الإشعار قبل حساب آخر يوم عمل.";
+    if (servedInputMode === "days" && String(servedDaysInput ?? "").trim() === "") {
+      return "أدخل عدد الأيام التي نُفذت فعلياً من فترة الإنذار.";
+    }
     if (servedInputMode === "date" && !actualLastWorkingDate) {
       return "أدخل آخر يوم عمل فعلي أو بدّل طريقة الإدخال إلى عدد الأيام.";
     }
@@ -328,12 +326,12 @@ export default function UaeNoticePeriodCalculator() {
     setNonCompliantParty("unsure");
     const today = getUaeDateString();
     setNoticeStartDate(today);
-    setContractNoticePreset("30");
-    setCustomNoticeDays("30");
+    setContractNoticePreset("custom");
+    setCustomNoticeDays("");
     setServedInputMode("days");
-    setServedDaysInput("30");
-    setActualLastWorkingDate(addDays(today, 30));
-    setLastWage("9000");
+    setServedDaysInput("");
+    setActualLastWorkingDate("");
+    setLastWage("");
     setIsMutualWaiver(false);
     setEmployeeName("");
     setEmployerName("");
