@@ -507,7 +507,7 @@ export default function HomeHeader() {
                 }}
                 className="flex w-full items-center justify-between rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-[#888]"
               >
-                <span>ابحث في {catalogToolCount} أداة...</span>
+                <span>ابحث في {catalogToolCount} أداة مختارة...</span>
                 <svg
                   className="h-4 w-4 text-[#888]"
                   viewBox="0 0 24 24"
