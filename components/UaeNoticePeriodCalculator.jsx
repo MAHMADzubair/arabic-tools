@@ -25,17 +25,6 @@ function fmt(n) {
   });
 }
 
-function getUaeDateString(date = new Date()) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Dubai",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(date);
-  const part = (type) => parts.find((item) => item.type === type)?.value ?? "";
-  return `${part("year")}-${part("month")}-${part("day")}`;
-}
-
 function formatDateAr(dateStr) {
   if (!dateStr) return "—";
   const [year, month, day] = dateStr.split("-").map(Number);
@@ -126,7 +115,7 @@ export default function UaeNoticePeriodCalculator() {
   // Core inputs
   const [terminationInitiator, setTerminationInitiator] = useState("unsure");
   const [nonCompliantParty, setNonCompliantParty] = useState("unsure");
-  const [noticeStartDate, setNoticeStartDate] = useState(() => getUaeDateString());
+  const [noticeStartDate, setNoticeStartDate] = useState("");
   const [contractNoticePreset, setContractNoticePreset] = useState("custom");
   const [customNoticeDays, setCustomNoticeDays] = useState("");
   const [servedInputMode, setServedInputMode] = useState("days");
@@ -330,8 +319,7 @@ export default function UaeNoticePeriodCalculator() {
     setIsProbation("unsure");
     setTerminationInitiator("unsure");
     setNonCompliantParty("unsure");
-    const today = getUaeDateString();
-    setNoticeStartDate(today);
+    setNoticeStartDate("");
     setContractNoticePreset("custom");
     setCustomNoticeDays("");
     setServedInputMode("days");
