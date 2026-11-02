@@ -12,10 +12,12 @@ const noticeFaqs = noticeFaqMatch[1];
 test("UAE FAQ schema and visible content are built from one FAQ source", () => {
   assert.match(uae, /mainEntity: noticeFaqs\.map\(\(\{ q, a \}\) => \(\{/);
   assert.match(uae, /\{noticeFaqs\.map\(\(item, i\) => \(/);
-  assert.equal((noticeFaqs.match(/\bq: "/g) ?? []).length, 6);
+  assert.equal((noticeFaqs.match(/\bq: "/g) ?? []).length, 8);
   assert.match(noticeFaqs, /ما الفرق بين مدة الإنذار وبدل الإنذار في الإمارات/);
   assert.match(noticeFaqs, /noticeWaiverAnswer/);
   assert.match(noticeFaqs, /ما هي فترة الإنذار القانونية/);
+  assert.match(noticeFaqs, /هل تدعم الحاسبة الرواتب الأسبوعية أو اليومية/);
+  assert.match(noticeFaqs, /الطرف الذي لم يلتزم بمهلة الإنذار/);
 });
 
 test("UAE copy does not imply official government approval", () => {
