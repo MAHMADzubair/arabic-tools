@@ -154,7 +154,7 @@ export default function UaeNoticePeriodCalculator() {
     if (requiredNoticeDays < 30) {
       return {
         status: "warning",
-        msg: "المادة (43) تنص على ألا تقل مدة الإنذار عن 30 يوماً. أي مدة أقل قد تُعتبر مخالفة لقانون العمل الإماراتي ما لم تكن لمصلحة العامل بنص صريح.",
+        msg: "الأصل وفق المادة (43) أن تكون مدة الإنذار المتفق عليها بين 30 و90 يوماً. إذا كان هناك اتفاق كتابي على تخفيض المهلة أو الإعفاء منها، اختر خانة الاتفاق الكتابي أدناه؛ ستتوقف الحاسبة عن إصدار رقم آلي حتى تُراجع الحقوق المحفوظة في الاتفاق وفق المادة (43/2).",
       };
     }
     if (requiredNoticeDays > 90) {
@@ -304,7 +304,7 @@ export default function UaeNoticePeriodCalculator() {
     setIsDifcAdgm("no");
     setIsProbation("no");
     setTerminationInitiator("employee");
-      setNonCompliantParty("employee");
+    setNonCompliantParty("employee");
     const today = getUaeDateString();
     setNoticeStartDate(today);
     setContractNoticePreset("30");
@@ -629,7 +629,7 @@ export default function UaeNoticePeriodCalculator() {
         {/* Page disclaimer */}
         <aside className="nc-card nc-dash" aria-labelledby="nc-disc">
           <h3 id="nc-disc" className="nc-h3">إخلاء مسؤولية قانوني</h3>
-          <p className="nc-text">هذه الحاسبة تقديرية وتعتمد على البيانات التي يدخلها المستخدم. ولا تمثل قراراً رسمياً من وزارة الموارد البشرية والتوطين أو حكماً قانونياً نهائياً. قد تختلف النتيجة بحسب عقد العمل، حالة فترة التجربة، جهة الاختصاص أو ظروف إنهاء العلاقة العمالية.</p>
+          <p className="nc-text">هذه الحاسبة تقديرية للموظفين بأجر شهري في القطاع الخاص الخاضع للقانون الاتحادي بعد فترة التجربة فقط. لا تحسب حالات DIFC أو ADGM أو القطاع الحكومي أو الأجور غير الشهرية أو اتفاقات الإعفاء والتخفيض الخاصة، ولا تمثل قراراً رسمياً من MOHRE أو حكماً قانونياً نهائياً. راجع عقد العمل والجهة المختصة قبل اتخاذ قرار.</p>
         </aside>
       </div>
 
