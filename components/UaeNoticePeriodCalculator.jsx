@@ -119,6 +119,7 @@ function Row({ k, v, strong }) {
 export default function UaeNoticePeriodCalculator() {
   // Scope
   const [isPrivateSector, setIsPrivateSector] = useState("yes");
+  const [isExcludedCategory, setIsExcludedCategory] = useState("no");
   const [isDifcAdgm, setIsDifcAdgm] = useState("no");
   // Probation
   const [isProbation, setIsProbation] = useState("no");
@@ -207,6 +208,9 @@ export default function UaeNoticePeriodCalculator() {
     if (isPrivateSector !== "yes") {
       return "هذه الحاسبة مخصصة لعقود القطاع الخاص الخاضعة لقانون العمل الاتحادي. لا تستخدم النتيجة للقطاع الحكومي أو عند عدم التأكد من جهة الاختصاص.";
     }
+    if (isExcludedCategory !== "no") {
+      return "لا تشمل هذه الحاسبة العمالة المنزلية أو العاملين في القوات المسلحة أو الشرطة أو الأمن؛ فهذه الفئات مستثناة من نطاق هذا القانون أو تخضع لتشريعات أخرى.";
+    }
     if (isDifcAdgm !== "no") {
       return "أنظمة DIFC وADGM مستقلة عن قانون العمل الاتحادي؛ لا يمكن لهذه الحاسبة تقدير فترة الإنذار الخاصة بهما.";
     }
@@ -237,6 +241,7 @@ export default function UaeNoticePeriodCalculator() {
     return "";
   }, [
     isPrivateSector,
+    isExcludedCategory,
     isDifcAdgm,
     isProbation,
     noticeValidation.msg,
@@ -273,6 +278,7 @@ export default function UaeNoticePeriodCalculator() {
       setIsMutualWaiver(false);
       setIsProbation("no");
       setIsPrivateSector("yes");
+      setIsExcludedCategory("no");
       setIsDifcAdgm("no");
     } else if (presetNum === 2) {
       setTerminationInitiator("employee");
@@ -284,6 +290,7 @@ export default function UaeNoticePeriodCalculator() {
       setIsMutualWaiver(false);
       setIsProbation("no");
       setIsPrivateSector("yes");
+      setIsExcludedCategory("no");
       setIsDifcAdgm("no");
     } else if (presetNum === 3) {
       setTerminationInitiator("employer");
@@ -295,12 +302,14 @@ export default function UaeNoticePeriodCalculator() {
       setIsMutualWaiver(false);
       setIsProbation("no");
       setIsPrivateSector("yes");
+      setIsExcludedCategory("no");
       setIsDifcAdgm("no");
     }
   };
 
   const handleReset = () => {
     setIsPrivateSector("yes");
+    setIsExcludedCategory("no");
     setIsDifcAdgm("no");
     setIsProbation("no");
     setTerminationInitiator("employee");
@@ -386,6 +395,11 @@ export default function UaeNoticePeriodCalculator() {
               <Seg id="nc-private" label="هل تعمل في القطاع الخاص الخاضع لقانون العمل الإماراتي؟" value={isPrivateSector} onChange={setIsPrivateSector} options={yesNoUnsure(true)} />
               {isPrivateSector !== "yes" && (
                 <Note title="تنبيه:">قد تختلف التشريعات المنظمة للقطاعات الحكومية وشبه الحكومية والمناطق ذات الأنظمة المستقلة عن أحكام المادة (43) من قانون العمل الاتحادي.</Note>
+              )}
+
+              <Seg id="nc-excluded" label="هل تعمل في العمالة المنزلية أو القوات المسلحة أو الشرطة أو الأمن؟" value={isExcludedCategory} onChange={setIsExcludedCategory} options={yesNoUnsure(false)} />
+              {isExcludedCategory !== "no" && (
+                <Note title="تنبيه:">هذه الفئات مستثناة من نطاق قانون العمل الاتحادي العام أو تخضع لتشريعات منفصلة؛ لن تصدر الحاسبة نتيجة رقمية لها.</Note>
               )}
 
               <Seg id="nc-difc" label="هل تعمل في DIFC أو ADGM؟" value={isDifcAdgm} onChange={setIsDifcAdgm} options={yesNoUnsure(false)} />
