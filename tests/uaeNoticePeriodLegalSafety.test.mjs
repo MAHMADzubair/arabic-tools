@@ -44,6 +44,14 @@ test("the calculator declares its monthly-wage-only scope and official legal sou
   assert.match(page, /terminating-employment-contracts/);
 });
 
+test("the calculator does not prefill assumed salary, notice length, service days or actual last date", () => {
+  assert.match(calculator, /const \[contractNoticePreset, setContractNoticePreset\] = useState\("custom"\)/);
+  assert.match(calculator, /const \[customNoticeDays, setCustomNoticeDays\] = useState\(" "\)|const \[customNoticeDays, setCustomNoticeDays\] = useState\(" "\)/);
+  assert.match(calculator, /const \[servedDaysInput, setServedDaysInput\] = useState\(" "\)|const \[servedDaysInput, setServedDaysInput\] = useState\(" "\)/);
+  assert.match(calculator, /const \[lastWage, setLastWage\] = useState\(" "\)|const \[lastWage, setLastWage\] = useState\(" "\)/);
+  assert.doesNotMatch(calculator, /setActualLastWorkingDate\(addDays\(newDate/);
+});
+
 test("date calculations use UAE-local today and timezone-independent Gregorian day math", () => {
   assert.match(calculator, /timeZone: "Asia\/Dubai"/);
   assert.match(calculator, /Date\.UTC\(year, month - 1, day \+ Number\(days\)\)/);
