@@ -9,6 +9,7 @@ const layout = fs.readFileSync("app/layout.js", "utf8");
 test("UAE notice estimates stop for unsupported legal scopes", () => {
   assert.match(calculator, /isPrivateSector !== "yes"/);
   assert.match(calculator, /isDifcAdgm !== "no"/);
+  assert.match(calculator, /isExcludedCategory !== "no"/);
   assert.match(calculator, /isProbation === "yes"/);
   assert.match(calculator, /noticeValidation\.msg/);
   assert.match(calculator, /calculationBlockReason \? \(/);
@@ -31,7 +32,9 @@ test("the calculator declares its monthly-wage-only scope and official legal sou
   assert.match(calculator, /هذه النسخة تدعم الأجر الشهري فقط/);
   assert.match(page, /المادة \(43\/4\)/);
   assert.match(page, /المادة \(67\)/);
-  assert.match(page, /https:\/\/www\.uaelegislation\.gov\.ae\/en\/legislations\/1541\/download/);
+  assert.match(page, /https:\/\/www\.mohre\.gov\.ae\/assets\/download/);
+  assert.match(page, /https:\/\/uaelegislation\.gov\.ae\/en\/legislations\/1541/);
+  assert.match(page, /العمالة المنزلية/);
   assert.match(page, /terminating-employment-contracts/);
 });
 
