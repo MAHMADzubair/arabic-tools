@@ -155,7 +155,7 @@ export default function UaeNoticePeriodCalculatorPage() {
           authority="وزارة الموارد البشرية والتوطين (MOHRE)"
           authorityUrl="https://u.ae/en/information-and-services/jobs/employment-in-the-private-sector/job-offers-and-work-permits-and-contracts/terminating-employment-contracts"
           lastReviewed="نوفمبر 2026"
-          disclaimer="هذه الأداة تقديرية استرشادية — راجع عقد العمل أو MOHRE للتحقق من شروط الإنذار المتفق عليها."
+          disclaimer="تقدير إرشادي للموظفين بأجر شهري في القطاع الخاص الخاضع للقانون الاتحادي بعد فترة التجربة فقط. لا يحسب DIFC/ADGM أو الأجور غير الشهرية أو اتفاقات الإعفاء الخاصة."
         />
 
         {/* Contextual Link to Final Settlement Calculator */}
