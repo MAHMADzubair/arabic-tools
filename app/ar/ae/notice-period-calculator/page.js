@@ -57,8 +57,8 @@ const noticeFaqs = [
     a: "لا. هذه الحاسبة لا تحسب فترة التجربة. تخضع الحالات للمادة (9): إخطار صاحب العمل للعامل قبل 14 يوماً على الأقل؛ وإخطار العامل قبل شهر إذا انتقل إلى صاحب عمل آخر داخل الدولة؛ أو قبل 14 يوماً على الأقل إذا كان العامل الأجنبي سيغادر الدولة. وقد تترتب التزامات أخرى بحسب الحالة.",
   },
   {
-    q: "هل تنطبق الحاسبة على موظفي DIFC أو ADGM والقطاع الحكومي؟",
-    a: "لا. الحاسبة مخصصة لعقود القطاع الخاص الخاضعة لقانون العمل الاتحادي. قد تخضع الجهات الحكومية وDIFC وADGM لأطر قانونية مختلفة، ولذلك تتوقف الحاسبة عن إصدار تقدير عند اختيار هذه الحالات أو عدم التأكد من النطاق.",
+    q: "هل تنطبق الحاسبة على موظفي DIFC أو ADGM والقطاع الحكومي والعمالة المنزلية؟",
+    a: "لا. الحاسبة مخصصة لعقود القطاع الخاص الخاضعة لقانون العمل الاتحادي فقط. موظفو الجهات الحكومية، والعاملون في القوات المسلحة والشرطة والأمن، والعمالة المنزلية مستثنون من نطاق هذا القانون أو يخضعون لتشريعات أخرى؛ كما أن DIFC وADGM لهما أطر عمل مستقلة. تتوقف الحاسبة عند اختيار هذه الفئات أو عدم التأكد من النطاق.",
   },
   {
     q: "هل تدعم الحاسبة الرواتب الأسبوعية أو اليومية أو بالساعة أو بالقطعة؟",
@@ -150,12 +150,12 @@ export default function UaeNoticePeriodCalculatorPage() {
         {/* GEO Answer Summary */}
         <GeoAnswerSummary
           whatItDoes="تحسب مدة فترة الإنذار وتاريخ آخر يوم عمل وبدل الإنذار التقديري للموظف أو صاحب العمل"
-          appliesTo="القطاع الخاص الخاضع للقانون الاتحادي — الموظفون بأجر شهري بعد فترة التجربة، باستثناء DIFC وADGM"
+          appliesTo="القطاع الخاص الخاضع للقانون الاتحادي — موظفون بأجر شهري بعد التجربة، باستثناء الجهات الحكومية والعمالة المنزلية والقوات المسلحة والشرطة والأمن وDIFC وADGM"
           keyRule="تتراوح مدة الإنذار المتفق عليها في عقد العمل بين 30 و90 يوماً وفق المادة 43، ويجوز الاتفاق على الإعفاء منها أو تخفيضها مع حفظ حقوق العامل."
           authority="حكومة الإمارات — وزارة الموارد البشرية والتوطين (MOHRE)"
           authorityUrl="https://u.ae/en/information-and-services/jobs/employment-in-the-private-sector/job-offers-and-work-permits-and-contracts/terminating-employment-contracts"
           lastReviewed="نوفمبر 2026"
-          disclaimer="تقدير إرشادي للموظفين بأجر شهري في القطاع الخاص الخاضع للقانون الاتحادي بعد فترة التجربة فقط. لا يحسب DIFC/ADGM أو الأجور غير الشهرية أو اتفاقات الإعفاء الخاصة."
+          disclaimer="تقدير إرشادي للموظفين بأجر شهري في القطاع الخاص الخاضع للقانون الاتحادي بعد فترة التجربة فقط. لا يشمل الجهات الحكومية أو العمالة المنزلية أو القوات المسلحة أو الشرطة أو الأمن أو DIFC/ADGM أو الأجور غير الشهرية أو اتفاقات الإعفاء الخاصة."
         />
 
         {/* Contextual Link to Final Settlement Calculator */}
@@ -339,8 +339,13 @@ export default function UaeNoticePeriodCalculatorPage() {
               <h3 className="text-base font-bold text-ink mb-1.5">المصادر الرسمية</h3>
               <ul className="list-disc list-inside text-xs text-ink-secondary leading-relaxed space-y-1">
                 <li>
-                  <a href="https://www.uaelegislation.gov.ae/en/legislations/1541/download" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
-                    المرسوم بقانون اتحادي رقم (33) لسنة 2021 — بوابة التشريعات الإماراتية (المواد 1 و9 و43 و67)
+                  <a href="https://www.mohre.gov.ae/assets/download/e82f7872/Federal%20Decree-Law%20No.%2033%20of%202021%20Regarding%20the%20Regulation%20of%20Employment%20Relationship%20and%20its%20amendments_638990571068264034.pdf.aspx" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+                    النص الموحّد للمرسوم بقانون اتحادي رقم (33) لسنة 2021 وتعديلاته واللائحة التنفيذية — وزارة الموارد البشرية والتوطين (MOHRE)
+                  </a>
+                </li>
+                <li>
+                  <a href="https://uaelegislation.gov.ae/en/legislations/1541" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+                    بوابة التشريعات الإماراتية — النص التشريعي وحالة التحديث
                   </a>
                 </li>
                 <li>
@@ -354,7 +359,7 @@ export default function UaeNoticePeriodCalculatorPage() {
                   </a>
                 </li>
               </ul>
-              <p className="text-xs text-ink-muted mt-2">المادة (43/4) تميز بين الأجر الشهري والأسبوعي واليومي وبالساعة، وتحدد متوسط الأجر اليومي للعامل بالقطعة؛ الحاسبة الحالية لا تدعم إلا الأجر الشهري.</p>
+              <p className="text-xs text-ink-muted mt-2">المادة (43/4) تميز بين الأجر الشهري والأسبوعي واليومي وبالساعة، وتحدد متوسط الأجر اليومي للعامل بالقطعة؛ الحاسبة الحالية لا تدعم إلا الأجر الشهري. وعند اختلاف النص الإنجليزي عن العربي، يُعتد بالنص العربي وفق المادة (66).</p>
             </div>
 
             {/* 13. آخر تحديث */}
