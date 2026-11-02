@@ -25,34 +25,53 @@ function fmt(n) {
   });
 }
 
+function getUaeDateString(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Dubai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const part = (type) => parts.find((item) => item.type === type)?.value ?? "";
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
 function formatDateAr(dateStr) {
   if (!dateStr) return "—";
-  const d = new Date(dateStr);
+  const [year, month, day] = dateStr.split("-").map(Number);
+  if (!year || !month || !day) return "—";
+  const d = new Date(Date.UTC(year, month - 1, day, 12));
   if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("ar-AE", {
+    timeZone: "UTC",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 }
 
-/** Add calendar days to a date string (YYYY-MM-DD) */
+/** Add Gregorian calendar days to a date string without browser-timezone drift. */
 function addDays(dateStr, days) {
   if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "";
-  d.setDate(d.getDate() + Number(days));
-  return d.toISOString().split("T")[0];
+  const [year, month, day] = dateStr.split("-").map(Number);
+  if (!year || !month || !day || !Number.isFinite(Number(days))) return "";
+  const d = new Date(Date.UTC(year, month - 1, day + Number(days)));
+  return [
+    d.getUTCFullYear(),
+    String(d.getUTCMonth() + 1).padStart(2, "0"),
+    String(d.getUTCDate()).padStart(2, "0"),
+  ].join("-");
 }
 
-/** Calculate calendar day difference between two dates */
+/** Calculate Gregorian calendar day difference independent of browser timezone. */
 function getDaysDiff(startStr, endStr) {
   if (!startStr || !endStr) return 0;
-  const s = new Date(startStr);
-  const e = new Date(endStr);
-  if (isNaN(s.getTime()) || isNaN(e.getTime())) return 0;
-  const diffMs = e.getTime() - s.getTime();
-  return Math.round(diffMs / (1000 * 60 * 60 * 24));
+  const [sy, sm, sd] = startStr.split("-").map(Number);
+  const [ey, em, ed] = endStr.split("-").map(Number);
+  if (![sy, sm, sd, ey, em, ed].every(Number.isFinite)) return 0;
+  const start = Date.UTC(sy, sm - 1, sd);
+  const end = Date.UTC(ey, em - 1, ed);
+  return Math.round((end - start) / 86400000);
 }
 
 // ─── Small UI pieces ───────────────────────────────────────────────────────────
@@ -104,16 +123,15 @@ export default function UaeNoticePeriodCalculator() {
   // Probation
   const [isProbation, setIsProbation] = useState("no");
   // Core inputs
-  const [initiator, setInitiator] = useState("employee");
-  const [noticeStartDate, setNoticeStartDate] = useState(() => {
-    return new Date().toISOString().split("T")[0];
-  });
+  const [terminationInitiator, setTerminationInitiator] = useState("employee");
+  const [nonCompliantParty, setNonCompliantParty] = useState("employee");
+  const [noticeStartDate, setNoticeStartDate] = useState(() => getUaeDateString());
   const [contractNoticePreset, setContractNoticePreset] = useState("30");
   const [customNoticeDays, setCustomNoticeDays] = useState("30");
   const [servedInputMode, setServedInputMode] = useState("days");
   const [servedDaysInput, setServedDaysInput] = useState("30");
   const [actualLastWorkingDate, setActualLastWorkingDate] = useState(() => {
-    return addDays(new Date().toISOString().split("T")[0], 30);
+    return addDays(getUaeDateString(), 30);
   });
   const [lastWage, setLastWage] = useState("9000");
   const [isMutualWaiver, setIsMutualWaiver] = useState(false);
@@ -174,27 +192,68 @@ export default function UaeNoticePeriodCalculator() {
   const isActualDateInvalid = useMemo(() => {
     if (servedInputMode !== "date") return false;
     if (!noticeStartDate || !actualLastWorkingDate) return false;
-    return new Date(actualLastWorkingDate) < new Date(noticeStartDate);
+    return actualLastWorkingDate < noticeStartDate;
   }, [servedInputMode, noticeStartDate, actualLastWorkingDate]);
 
   const remainingNoticeDays = useMemo(() => {
-    if (isMutualWaiver) return 0;
     return Math.max(requiredNoticeDays - servedNoticeDays, 0);
-  }, [requiredNoticeDays, servedNoticeDays, isMutualWaiver]);
+  }, [requiredNoticeDays, servedNoticeDays]);
 
   const wage = toNum(lastWage);
   const dailyWage = wage / 30;
   const estimatedCompensation = remainingNoticeDays * dailyWage;
 
+  const calculationBlockReason = useMemo(() => {
+    if (isPrivateSector !== "yes") {
+      return "هذه الحاسبة مخصصة لعقود القطاع الخاص الخاضعة لقانون العمل الاتحادي. لا تستخدم النتيجة للقطاع الحكومي أو عند عدم التأكد من جهة الاختصاص.";
+    }
+    if (isDifcAdgm !== "no") {
+      return "أنظمة DIFC وADGM مستقلة عن قانون العمل الاتحادي؛ لا يمكن لهذه الحاسبة تقدير فترة الإنذار الخاصة بهما.";
+    }
+    if (isProbation === "yes") {
+      return "فترة التجربة تخضع للمادة (9) وليس للمادة (43). تختلف المهلة حسب الحالة: 14 يوماً لإنهاء صاحب العمل، أو شهراً للانتقال إلى صاحب عمل آخر داخل الدولة، أو 14 يوماً للعامل الأجنبي الذي يغادر الدولة. هذه الحاسبة لا تصدر نتيجة لفترة التجربة.";
+    }
+    if (noticeValidation.msg) return noticeValidation.msg;
+    if (!Number.isInteger(requiredNoticeDays)) {
+      return "أدخل مدة إنذار كاملة بالأيام دون كسور.";
+    }
+    if (!noticeStartDate) return "أدخل تاريخ الإشعار قبل حساب آخر يوم عمل.";
+    if (servedInputMode === "date" && !actualLastWorkingDate) {
+      return "أدخل آخر يوم عمل فعلي أو بدّل طريقة الإدخال إلى عدد الأيام.";
+    }
+    if (isActualDateInvalid) {
+      return "لا يمكن أن يكون آخر يوم عمل فعلي قبل تاريخ تقديم الإشعار.";
+    }
+    if (!Number.isInteger(servedNoticeDays)) {
+      return "أدخل عدد الأيام المنفذة كعدد صحيح دون كسور.";
+    }
+    if (servedNoticeDays > requiredNoticeDays) {
+      return "الأيام المنفذة لا يمكن أن تتجاوز مدة الإنذار المتفق عليها. راجع التاريخ أو عدد الأيام المدخل.";
+    }
+    if (wage <= 0) return "أدخل آخر أجر شهري إجمالي أكبر من صفر.";
+    if (isMutualWaiver) {
+      return "عند الاتفاق الكتابي على الإعفاء أو تخفيض الإنذار، لا يعني ذلك تلقائياً أن بدل الإنذار يساوي صفراً؛ فالمادة (43/2) تشترط حفظ حقوق العامل. راجع نص الاتفاق وMOHRE، وهذه الحاسبة لا تحسب اتفاقات الإعفاء أو التسوية الخاصة.";
+    }
+    return "";
+  }, [
+    isPrivateSector,
+    isDifcAdgm,
+    isProbation,
+    noticeValidation.msg,
+    requiredNoticeDays,
+    noticeStartDate,
+    servedInputMode,
+    actualLastWorkingDate,
+    isActualDateInvalid,
+    servedNoticeDays,
+    wage,
+    isMutualWaiver,
+  ]);
+
   const compensationDirection = useMemo(() => {
-    if (remainingNoticeDays <= 0 || isMutualWaiver || wage <= 0) {
-      return "none";
-    }
-    if (initiator === "employer") {
-      return "to_employee";
-    }
-    return "to_employer";
-  }, [remainingNoticeDays, isMutualWaiver, wage, initiator]);
+    if (remainingNoticeDays <= 0 || wage <= 0) return "none";
+    return nonCompliantParty === "employer" ? "to_employee" : "to_employer";
+  }, [remainingNoticeDays, wage, nonCompliantParty]);
 
   const timelineProgress = useMemo(() => {
     if (requiredNoticeDays <= 0) return 100;
@@ -205,7 +264,8 @@ export default function UaeNoticePeriodCalculator() {
   // ── Presets / reset (unchanged) ──────────────────────────────────────────────
   const applyPreset = (presetNum) => {
     if (presetNum === 1) {
-      setInitiator("employee");
+      setTerminationInitiator("employee");
+      setNonCompliantParty("employee");
       setContractNoticePreset("60");
       setServedInputMode("days");
       setServedDaysInput("60");
@@ -215,7 +275,8 @@ export default function UaeNoticePeriodCalculator() {
       setIsPrivateSector("yes");
       setIsDifcAdgm("no");
     } else if (presetNum === 2) {
-      setInitiator("employee");
+      setTerminationInitiator("employee");
+      setNonCompliantParty("employee");
       setContractNoticePreset("60");
       setServedInputMode("days");
       setServedDaysInput("40");
@@ -225,7 +286,8 @@ export default function UaeNoticePeriodCalculator() {
       setIsPrivateSector("yes");
       setIsDifcAdgm("no");
     } else if (presetNum === 3) {
-      setInitiator("employer");
+      setTerminationInitiator("employer");
+      setNonCompliantParty("employer");
       setContractNoticePreset("30");
       setServedInputMode("days");
       setServedDaysInput("10");
@@ -241,8 +303,9 @@ export default function UaeNoticePeriodCalculator() {
     setIsPrivateSector("yes");
     setIsDifcAdgm("no");
     setIsProbation("no");
-    setInitiator("employee");
-    const today = new Date().toISOString().split("T")[0];
+    setTerminationInitiator("employee");
+      setNonCompliantParty("employee");
+    const today = getUaeDateString();
     setNoticeStartDate(today);
     setContractNoticePreset("30");
     setCustomNoticeDays("30");
@@ -260,7 +323,6 @@ export default function UaeNoticePeriodCalculator() {
     compensationDirection === "to_employee" ? "بدل إنذار لصالح الموظف (+)"
     : compensationDirection === "to_employer" ? "بدل إنذار لصالح صاحب العمل (−)"
     : remainingNoticeDays === 0 ? "تم تنفيذ فترة الإنذار كاملة"
-    : isMutualWaiver ? "تم الإعفاء من الإنذار بالتراضي"
     : "لا يوجد بدل مستحق";
   const beneficiary =
     compensationDirection === "to_employee" ? "الموظف"
@@ -327,7 +389,7 @@ export default function UaeNoticePeriodCalculator() {
               )}
 
               <Seg id="nc-difc" label="هل تعمل في DIFC أو ADGM؟" value={isDifcAdgm} onChange={setIsDifcAdgm} options={yesNoUnsure(false)} />
-              {isDifcAdgm === "yes" && (
+              {isDifcAdgm !== "no" && (
                 <Note title="تنبيه:">قد تختلف قواعد الإشعار في DIFC أو ADGM، لذلك لا ينبغي الاعتماد على هذه الحاسبة وحدها.</Note>
               )}
 
@@ -342,8 +404,12 @@ export default function UaeNoticePeriodCalculator() {
             <section className="nc-card" aria-labelledby="nc-s2">
               <Step n="2" id="nc-s2">بيانات إشعار الإنهاء وعقد العمل</Step>
 
-              <Seg id="nc-init" label="من قام بإنهاء العلاقة / تقديم الاستقالة؟" value={initiator} onChange={setInitiator}
+              <Seg id="nc-init" label="من بدأ إنهاء عقد العمل؟" value={terminationInitiator} onChange={setTerminationInitiator}
                 options={[{ id: "employee", label: "الموظف" }, { id: "employer", label: "صاحب العمل" }]} />
+
+              <Seg id="nc-breach" label="من الطرف الذي لم يلتزم بإكمال فترة الإنذار؟" value={nonCompliantParty} onChange={setNonCompliantParty}
+                options={[{ id: "employee", label: "الموظف" }, { id: "employer", label: "صاحب العمل" }]} />
+              <Note>وفق المادة (43/3)، الطرف الذي لم يلتزم بمدة الإنذار هو الذي يدفع البدل للطرف الآخر؛ وليس بالضرورة الطرف الذي بدأ إنهاء العقد.</Note>
 
               <div className="nc-field">
                 <label htmlFor="nc-start" className="nc-label">تاريخ تقديم الإشعار / الاستقالة</label>
@@ -416,20 +482,21 @@ export default function UaeNoticePeriodCalculator() {
 
               <div className="nc-field">
                 <label htmlFor="nc-wage" className="nc-label">
-                  آخر أجر كان يتقاضاه العامل <span className="nc-hint">(الأجر المعتمد لبدل الإنذار)</span>
+                  آخر أجر شهري إجمالي <span className="nc-hint">(للعامل الذي يتقاضى راتباً شهرياً)</span>
                 </label>
                 <div className="nc-input-wrap">
                   <input id="nc-wage" type="number" min="0" step="100" dir="ltr" className="nc-input-bare"
                     value={lastWage} onChange={(e) => setLastWage(e.target.value)} placeholder="مثال: 9000" aria-describedby="nc-wage-h" />
                   <span className="nc-sym" aria-hidden="true">AED</span>
                 </div>
-                <p id="nc-wage-h" className="nc-small">يُعتمد الأجر الأخير الشامل (الأساسي والبدلات) في احتساب بدل الإنذار بموجب المادة (43).</p>
+                <p id="nc-wage-h" className="nc-small">أدخل آخر أجر شهري وفق تعريف «الأجر» في المادة (1): الأجر الأساسي مضافاً إليه البدلات النقدية والمزايا العينية المقررة كجزء من الأجر في العقد أو القانون.</p>
+                <p className="nc-small">هذه النسخة تدعم الأجر الشهري فقط. الأجر الأسبوعي أو اليومي أو بالساعة أو بالقطعة يحتاج أساس احتساب مختلفاً وفق المادة (43/4)، فلا تستخدم هذه النتيجة لهذه الحالات.</p>
               </div>
 
               <div className="nc-block">
                 <label className="nc-check">
                   <input type="checkbox" checked={isMutualWaiver} onChange={(e) => setIsMutualWaiver(e.target.checked)} />
-                  <span>تم الاتفاق كتابياً بين الطرفين على الإعفاء المتبادل من مهلة الإنذار مع حفظ الحقوق المقررة.</span>
+                  <span>يوجد اتفاق كتابي على الإعفاء من مهلة الإنذار أو تخفيضها مع حفظ الحقوق.</span>
                 </label>
               </div>
             </section>
@@ -443,40 +510,53 @@ export default function UaeNoticePeriodCalculator() {
                 <p className="nc-chip">المادة 43</p>
               </div>
 
-              <div className="nc-banner">
-                <p className="nc-banner-t">{dirTitle}</p>
-                <p className="nc-big"><span className="nc-ltr">{fmt(estimatedCompensation)} AED</span></p>
-                <p className="nc-banner-s">
-                  {remainingNoticeDays > 0
-                    ? `مقابل ${remainingNoticeDays} يوماً غير منفذة (الأجر اليومي ${fmt(dailyWage)} AED)`
-                    : "0 أيام متبقية: لا تعويض مالي مستحق"}
-                </p>
-              </div>
-
-              <dl className="nc-dl">
-                <Row k="تاريخ الإشعار" v={formatDateAr(noticeStartDate)} />
-                <Row k="فترة الإنذار" v={`${requiredNoticeDays} يوم`} />
-                <Row k="آخر يوم عمل المتوقع" v={formatDateAr(expectedLastWorkingDate)} strong />
-                <Row k="الأيام المنفذة" v={`${servedNoticeDays} يوم`} />
-                <Row k="الأيام غير المنفذة" v={`${remainingNoticeDays} يوم`} strong />
-                <Row k="آخر أجر" v={<span className="nc-ltr">{fmt(wage)} AED</span>} />
-                <Row k="الأجر اليومي" v={<span className="nc-ltr">{fmt(dailyWage)} AED</span>} />
-                <Row k="بدل الإنذار" v={<span className="nc-ltr">{fmt(estimatedCompensation)} AED</span>} strong />
-                <Row k="الطرف المستفيد" v={beneficiary} strong />
-              </dl>
-
-              {initiator === "employer" && (
-                <div className="nc-white">
-                  <p className="nc-small-b">ملاحظة (المادة 43 - البند 5)</p>
-                  <p className="nc-small">في حال قيام صاحب العمل بإنهاء العقد، يحق للعامل التغيب يوماً واحداً غير مدفوع الأجر أسبوعياً للبحث عن عمل، شريطة إخطار صاحب العمل مسبقاً بثلاثة أيام على الأقل.</p>
+              {calculationBlockReason ? (
+                <div className="nc-white" role="status">
+                  <p className="nc-small-b">لا يمكن إصدار نتيجة رقمية موثوقة بهذه البيانات</p>
+                  <p className="nc-small">{calculationBlockReason}</p>
+                  <p className="nc-small">راجع عقد العمل والمصدر الرسمي قبل اتخاذ قرار مالي أو قانوني.</p>
+                  <a href="https://u.ae/en/information-and-services/jobs/employment-in-the-private-sector/job-offers-and-work-permits-and-contracts/terminating-employment-contracts" target="_blank" rel="noopener noreferrer" className="nc-link">الاطلاع على إرشادات حكومة الإمارات الرسمية</a>
                 </div>
-              )}
+              ) : (
+                <>
+                  <div className="nc-banner">
+                    <p className="nc-banner-t">{dirTitle}</p>
+                    <p className="nc-big"><span className="nc-ltr">{fmt(estimatedCompensation)} AED</span></p>
+                    <p className="nc-banner-s">
+                      {remainingNoticeDays > 0
+                        ? `مقابل ${remainingNoticeDays} يوماً غير منفذة (الأجر اليومي ${fmt(dailyWage)} AED)`
+                        : "0 أيام متبقية: لا تعويض مالي مستحق"}
+                    </p>
+                  </div>
 
-              <button type="button" className="nc-btn nc-btn-ink" onClick={() => setShowPrintModal(true)}>
-                إنشاء ملخص فترة الإنذار قابل للطباعة
-              </button>
+                  <dl className="nc-dl">
+                    <Row k="تاريخ الإشعار" v={formatDateAr(noticeStartDate)} />
+                    <Row k="فترة الإنذار" v={`${requiredNoticeDays} يوم`} />
+                    <Row k="آخر يوم عمل المتوقع" v={formatDateAr(expectedLastWorkingDate)} strong />
+                    <Row k="الأيام المنفذة" v={`${servedNoticeDays} يوم`} />
+                    <Row k="الأيام غير المنفذة" v={`${remainingNoticeDays} يوم`} strong />
+                    <Row k="آخر أجر شهري" v={<span className="nc-ltr">{fmt(wage)} AED</span>} />
+                    <Row k="الأجر اليومي التقديري" v={<span className="nc-ltr">{fmt(dailyWage)} AED</span>} />
+                    <Row k="بدل الإنذار" v={<span className="nc-ltr">{fmt(estimatedCompensation)} AED</span>} strong />
+                    <Row k="الطرف المستفيد" v={beneficiary} strong />
+                  </dl>
+
+                  {terminationInitiator === "employer" && (
+                    <div className="nc-white">
+                      <p className="nc-small-b">ملاحظة (المادة 43 - البند 5)</p>
+                      <p className="nc-small">إذا أنهى صاحب العمل عقد العمل، يحق للعامل التغيب يوماً واحداً غير مدفوع الأجر أسبوعياً للبحث عن عمل، شريطة إخطار صاحب العمل قبل يوم الغياب بثلاثة أيام على الأقل.</p>
+                    </div>
+                  )}
+
+                  <button type="button" className="nc-btn nc-btn-ink" onClick={() => setShowPrintModal(true)}>
+                    إنشاء ملخص فترة الإنذار قابل للطباعة
+                  </button>
+                </>
+              )}
             </section>
 
+            {!calculationBlockReason && (
+            <>
             {/* Timeline */}
             <section className="nc-card" aria-labelledby="nc-tl">
               <h3 id="nc-tl" className="nc-h3">المخطط الزمني لفترة الإنذار</h3>
@@ -504,7 +584,7 @@ export default function UaeNoticePeriodCalculator() {
                     <p className="nc-small-b">فترة الإنذار المنفذة: {servedNoticeDays} يوماً</p>
                     <p className="nc-small">
                       {remainingNoticeDays > 0
-                        ? `توقفت خدمة الإنذار مع بقاء ${remainingNoticeDays} يوماً غير منفذة.`
+                        ? `لم تُستكمل مدة الإنذار، وبقي ${remainingNoticeDays} يوماً غير منفذة.`
                         : "تمت خدمة كامل فترة الإنذار المقررة في العقد."}
                     </p>
                   </div>
@@ -536,11 +616,13 @@ export default function UaeNoticePeriodCalculator() {
                   </div>
                   <div className="nc-stack-s">
                     <p className="nc-small-b">3. من يدفع التعويض؟</p>
-                    <p className="nc-small">يلتزم الطرف الذي أخل بمهلة الإنذار بتعويض الطرف الآخر؛ فإذا أنهى صاحب العمل العقد استحق الموظف البدل، وإذا غادر الموظف مبكراً التزم بسداد البدل لصاحب العمل.</p>
+                    <p className="nc-small">يلتزم الطرف الذي لم يلتزم بمهلة الإنذار بتعويض الطرف الآخر، بصرف النظر عمّن بدأ إنهاء العقد. اختر الطرف المسؤول في خانة «من لم يلتزم بإكمال فترة الإنذار؟».</p>
                   </div>
                 </div>
               )}
             </section>
+            </>
+            )}
           </div>
         </div>
 
@@ -552,7 +634,7 @@ export default function UaeNoticePeriodCalculator() {
       </div>
 
       {/* ── Print summary dialog ── */}
-      {showPrintModal && (
+      {showPrintModal && !calculationBlockReason && (
         <div className="nc-overlay" onKeyDown={onModalKey}>
           <div className="nc-modal" role="dialog" aria-modal="true" aria-labelledby="nc-modal-t">
             <div className="nc-modal-ctl">
@@ -590,7 +672,8 @@ export default function UaeNoticePeriodCalculator() {
                 )}
 
                 <dl className="nc-doc-grid">
-                  <div><dt>الطرف المبادر بالإنهاء</dt><dd>{initiator === "employee" ? "الموظف" : "صاحب العمل"}</dd></div>
+                  <div><dt>الطرف الذي بدأ الإنهاء</dt><dd>{terminationInitiator === "employee" ? "الموظف" : "صاحب العمل"}</dd></div>
+                  <div><dt>الطرف الذي لم يلتزم بالإنذار</dt><dd>{nonCompliantParty === "employee" ? "الموظف" : "صاحب العمل"}</dd></div>
                   <div><dt>تاريخ الإشعار</dt><dd>{formatDateAr(noticeStartDate)}</dd></div>
                   <div><dt>فترة الإنذار التعاقدية</dt><dd>{requiredNoticeDays} يوم</dd></div>
                   <div><dt>آخر يوم عمل المتوقع</dt><dd>{formatDateAr(expectedLastWorkingDate)}</dd></div>
