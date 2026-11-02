@@ -53,8 +53,9 @@ test("the calculator does not prefill assumed salary, notice length, service day
   assert.doesNotMatch(calculator, /setActualLastWorkingDate\(addDays\(newDate/);
 });
 
-test("date calculations use UAE-local today and timezone-independent Gregorian day math", () => {
-  assert.match(calculator, /timeZone: "Asia\/Dubai"/);
+test("date calculations use timezone-independent Gregorian day math and require the actual notice date", () => {
+  assert.match(calculator, /const \[noticeStartDate, setNoticeStartDate\] = useState\("+"\)/);
+  assert.match(calculator, /if \(!noticeStartDate\) return/);
   assert.match(calculator, /Date\.UTC\(year, month - 1, day \+ Number\(days\)\)/);
   assert.match(calculator, /Date\.UTC\(sy, sm - 1, sd\)/);
 });
