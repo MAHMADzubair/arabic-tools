@@ -46,9 +46,10 @@ test("the calculator declares its monthly-wage-only scope and official legal sou
 
 test("the calculator does not prefill assumed salary, notice length, service days or actual last date", () => {
   assert.match(calculator, /const \[contractNoticePreset, setContractNoticePreset\] = useState\("custom"\)/);
-  assert.match(calculator, /const \[customNoticeDays, setCustomNoticeDays\] = useState\(" "\)|const \[customNoticeDays, setCustomNoticeDays\] = useState\(" "\)/);
-  assert.match(calculator, /const \[servedDaysInput, setServedDaysInput\] = useState\(" "\)|const \[servedDaysInput, setServedDaysInput\] = useState\(" "\)/);
-  assert.match(calculator, /const \[lastWage, setLastWage\] = useState\(" "\)|const \[lastWage, setLastWage\] = useState\(" "\)/);
+  assert.match(calculator, /const \[customNoticeDays, setCustomNoticeDays\] = useState\("+"\)/);
+  assert.match(calculator, /const \[servedDaysInput, setServedDaysInput\] = useState\("+"\)/);
+  assert.match(calculator, /const \[lastWage, setLastWage\] = useState\("+"\)/);
+  assert.match(calculator, /const \[actualLastWorkingDate, setActualLastWorkingDate\] = useState\("+"\)/);
   assert.doesNotMatch(calculator, /setActualLastWorkingDate\(addDays\(newDate/);
 });
 
