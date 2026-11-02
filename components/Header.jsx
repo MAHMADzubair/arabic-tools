@@ -277,7 +277,7 @@ export default function Header() {
                 </span>
                 <span>
                   <span className="hd-name">Qemlo</span>
-                  <span className="hd-count">{count} أداة وحاسبة مجانية</span>
+                  <span className="hd-count">{count} أداة مختارة</span>
                 </span>
               </Link>
 
@@ -344,7 +344,7 @@ export default function Header() {
                       aria-label="ابحث عن أداة أو حاسبة"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={`ابحث بين ${count} أداة، مثال: الزكاة`}
+                      placeholder={`ابحث بين ${count} أداة مختارة، مثال: الزكاة`}
                     />
                     <span className="hd-kbd" aria-hidden="true">/</span>
                   </div>
@@ -412,7 +412,7 @@ export default function Header() {
                 </span>
                 <span>
                   <b style={{ display: "block", fontSize: 16 }}>Qemlo</b>
-                  <span style={{ fontSize: 11, color: "var(--text-3)" }}>{count} أداة وحاسبة مجانية</span>
+                  <span style={{ fontSize: 11, color: "var(--text-3)" }}>{count} أداة مختارة</span>
                 </span>
               </div>
               <button type="button" className="hd-x" aria-label="إغلاق القائمة"
