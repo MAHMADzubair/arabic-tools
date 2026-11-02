@@ -419,8 +419,8 @@ export default function UaeNoticePeriodCalculator() {
                 <Note title="تنبيه:">قد تختلف قواعد الإشعار في DIFC أو ADGM، لذلك لا ينبغي الاعتماد على هذه الحاسبة وحدها.</Note>
               )}
 
-              <Seg id="nc-prob" label="هل انتهت فترة التجربة؟" value={isProbation} onChange={setIsProbation}
-                options={[{ id: "no", label: "لم تنتهِ" }, { id: "yes", label: "نعم، انتهت" }, { id: "unsure", label: "غير متأكد" }]} />
+              <Seg id="nc-prob" label="هل الموظف لا يزال في فترة التجربة؟" value={isProbation} onChange={setIsProbation}
+                options={[{ id: "no", label: "لا" }, { id: "yes", label: "نعم" }, { id: "unsure", label: "غير متأكد" }]} />
               {isProbation !== "no" && (
                 <Note>لا تصدر الحاسبة نتيجة إلا بعد تأكيد انتهاء فترة التجربة؛ فحالات التجربة تخضع للمادة (9) لا للمادة (43).</Note>
               )}
