@@ -24,6 +24,9 @@ test("written waiver does not silently turn the allowance into zero", () => {
 test("the party who breached notice is separate from the party who initiated termination", () => {
   assert.match(calculator, /terminationInitiator/);
   assert.match(calculator, /nonCompliantParty/);
+  assert.match(calculator, /nonCompliantParty === "unsure"/);
+  assert.match(calculator, /useState\("unsure"\)/);
+  assert.match(calculator, /id: "unsure", label: "غير متأكد"/);
   assert.match(calculator, /return nonCompliantParty === "employer" \? "to_employee" : "to_employer"/);
   assert.match(calculator, /الطرف الذي لم يلتزم بالإنذار/);
 });
