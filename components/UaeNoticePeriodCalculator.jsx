@@ -150,6 +150,12 @@ export default function UaeNoticePeriodCalculator() {
   }, [contractNoticePreset, customNoticeDays]);
 
   const noticeValidation = useMemo(() => {
+    if (requiredNoticeDays <= 0) {
+      return {
+        status: "warning",
+        msg: "اختر مدة الإنذار المتفق عليها من الخيارات، أو أدخلها في حقل المدة المخصصة.",
+      };
+    }
     if (requiredNoticeDays < 30) {
       return {
         status: "warning",
