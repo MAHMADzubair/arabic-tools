@@ -142,7 +142,7 @@ export default function HomeHero({ toolCount = 15 }) {
                       </svg>
                     </span>
                     <span style={{ color: "#333333" }} className="truncate text-xs sm:text-sm font-semibold">
-                      ابحث في {toolCount} أداة...
+                      ابحث في {toolCount} أداة مختارة...
                     </span>
                   </div>
 

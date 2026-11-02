@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { CATEGORIES, getToolsByCategory } from "@/lib/registry";
+import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
 
 // Professional inline SVGs for all categories instead of emojis
 function getCategorySvg(id) {
@@ -98,6 +98,7 @@ function getToolSvg(id) {
 }
 
 export default function CategoryBrowseShowcase() {
+  const totalTools = getToolCount();
   const activeCategories = CATEGORIES.map((cat) => ({
     ...cat,
     tools: getToolsByCategory(cat.id),
@@ -140,7 +141,7 @@ export default function CategoryBrowseShowcase() {
           تصفح حسب القسم
         </h2>
         <p className="mt-1 text-xs font-semibold text-[var(--text-3)] sm:text-sm">
-          اسحب لاختيار قسم، ثم افتح أدواته
+          تضم المكتبة {totalTools.toLocaleString("ar-EG")} أداة. اسحب لاختيار قسم، ثم افتح أدواته
         </p>
       </div>
 

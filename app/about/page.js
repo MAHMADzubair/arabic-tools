@@ -7,8 +7,8 @@ export const metadata = {
   alternates: { canonical: "/about" },
 };
 
-// ⚠️ Fill this in. Until you do, the contact section is hidden.
-const CONTACT_EMAIL = "";
+// Keep this aligned with the existing public email destination on the Contact page.
+const CONTACT_EMAIL = "support@arabic-tools.com";
 
 // Same Ink & Signal tokens as the homepage. Once they live in layout/globals,
 // delete this constant and the <style> tag below.

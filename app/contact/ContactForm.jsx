@@ -2,22 +2,13 @@
 
 import { useState } from "react";
 
+const CONTACT_EMAIL = "support@arabic-tools.com";
 const fieldCls =
   "w-full rounded-xl border-2 border-[var(--text-3)] bg-[var(--surface)] px-4 py-3 text-base text-[var(--text)] placeholder:text-[var(--text-3)] transition-colors focus:border-[var(--text)] focus:outline-none";
 const labelCls = "mb-1.5 block text-sm font-bold text-[var(--text)]";
 const reqCls = "text-[var(--error)]";
 
 export default function ContactForm() {
-  // Feature toggle: disabled by default, enable with NEXT_PUBLIC_ENABLE_CONTACT=true
-  if (process.env.NEXT_PUBLIC_ENABLE_CONTACT !== "true") {
-    return (
-      <div className="rounded-3xl border-2 border-amber-400 bg-amber-50 p-10 text-center">
-        <p className="text-lg font-bold text-amber-900">نظام التواصل غير متاح حالياً. يرجى المتابعة لاحقاً.</p>
-      </div>
-    );
-  }
-
-  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,115 +16,117 @@ export default function ContactForm() {
     message: "",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) return;
-    setSubmitted(true);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const body = [
+      `الاسم: ${formData.name}`,
+      `البريد الإلكتروني: ${formData.email}`,
+      `الموضوع: ${formData.subject}`,
+      "",
+      "الرسالة:",
+      formData.message,
+    ].join("\n");
+
+    const mailtoUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
+      `[Qemlo] ${formData.subject}`
+    )}&body=${encodeURIComponent(body)}`;
+
+    // Hand the prepared message to the visitor's configured email application.
+    // The visitor reviews it and presses Send; the website never claims it was sent.
+    window.location.href = mailtoUrl;
   };
 
   return (
     <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-10">
-      {submitted ? (
-        <div className="space-y-4 py-10 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-[var(--success)] text-3xl font-bold text-[var(--success)]">
-            ✓
-          </div>
-          <h2 className="text-2xl font-bold text-[var(--text)]">شكراً لتواصلك معنا!</h2>
-          <p className="mx-auto max-w-md text-sm leading-8 text-[var(--text-2)]">
-            تم استلام رسالتك بنجاح وسيقوم فريق العمل بمراجعتها والرد عليك عبر بريدك الإلكتروني في أقرب وقت ممكن.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setSubmitted(false);
-              setFormData({ name: "", email: "", subject: "استفسار عام", message: "" });
-            }}
-            className="mt-4 rounded-xl border-2 border-[var(--text)] px-6 py-2.5 text-sm font-bold text-[var(--text)] transition-colors hover:bg-[var(--text)] hover:text-[var(--bg)]"
-          >
-            إرسال رسالة أخرى
-          </button>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div>
-              <label htmlFor="cf-name" className={labelCls}>
-                الاسم الكامل <span className={reqCls}>*</span>
-              </label>
-              <input
-                id="cf-name"
-                type="text"
-                required
-                placeholder="مثال: أحمد محمد"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={fieldCls}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="cf-email" className={labelCls}>
-                البريد الإلكتروني <span className={reqCls}>*</span>
-              </label>
-              <input
-                id="cf-email"
-                type="email"
-                required
-                placeholder="name@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={`${fieldCls} text-left`}
-                dir="ltr"
-              />
-            </div>
-          </div>
-
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="cf-subject" className={labelCls}>
-              موضوع الرسالة
+            <label htmlFor="cf-name" className={labelCls}>
+              الاسم الكامل <span className={reqCls}>*</span>
             </label>
-            <select
-              id="cf-subject"
-              value={formData.subject}
-              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-              className={fieldCls}
-            >
-              <option value="استفسار عام">استفسار عام</option>
-              <option value="اقتراح أداة جديدة">اقتراح أداة أو ميزة جديدة</option>
-              <option value="إبلاغ عن خطأ حسابي">إبلاغ عن خطأ أو تعديل في القوانين</option>
-              <option value="شراكات وإعلانات">شراكات وإعلانات</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="cf-message" className={labelCls}>
-              نص الرسالة <span className={reqCls}>*</span>
-            </label>
-            <textarea
-              id="cf-message"
+            <input
+              id="cf-name"
+              type="text"
               required
-              rows={5}
-              placeholder="اكتب تفاصيل رسالتك أو ملاحظاتك هنا..."
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className={`${fieldCls} resize-y`}
+              autoComplete="name"
+              placeholder="مثال: أحمد محمد"
+              value={formData.name}
+              onChange={(event) => setFormData({ ...formData, name: event.target.value })}
+              className={fieldCls}
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-[var(--orange)] py-3.5 text-base font-bold text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
-          >
-            إرسال الرسالة
-          </button>
-        </form>
-      )}
+          <div>
+            <label htmlFor="cf-email" className={labelCls}>
+              البريد الإلكتروني <span className={reqCls}>*</span>
+            </label>
+            <input
+              id="cf-email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="name@example.com"
+              value={formData.email}
+              onChange={(event) => setFormData({ ...formData, email: event.target.value })}
+              className={`${fieldCls} text-left`}
+              dir="ltr"
+            />
+          </div>
+        </div>
 
-      <div className="mt-10 space-y-1 border-t border-dashed border-[var(--border)] pt-6 text-center text-xs text-[var(--text-3)] sm:text-sm">
-        <p>أو يمكنك مراسلتنا مباشرة عبر البريد الإلكتروني:</p>
-        <p className="font-mono text-sm font-bold text-[var(--text)] sm:text-base" dir="ltr">
-          support@arabic-tools.com
+        <div>
+          <label htmlFor="cf-subject" className={labelCls}>
+            موضوع الرسالة
+          </label>
+          <select
+            id="cf-subject"
+            value={formData.subject}
+            onChange={(event) => setFormData({ ...formData, subject: event.target.value })}
+            className={fieldCls}
+          >
+            <option value="استفسار عام">استفسار عام</option>
+            <option value="اقتراح أداة جديدة">اقتراح أداة أو ميزة جديدة</option>
+            <option value="إبلاغ عن خطأ حسابي">إبلاغ عن خطأ أو تعديل في القوانين</option>
+            <option value="شراكات وإعلانات">شراكات وإعلانات</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="cf-message" className={labelCls}>
+            نص الرسالة <span className={reqCls}>*</span>
+          </label>
+          <textarea
+            id="cf-message"
+            required
+            rows={5}
+            placeholder="اكتب تفاصيل رسالتك أو ملاحظاتك هنا..."
+            value={formData.message}
+            onChange={(event) => setFormData({ ...formData, message: event.target.value })}
+            className={`${fieldCls} resize-y`}
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full rounded-xl bg-[var(--orange)] py-3.5 text-base font-bold text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
+        >
+          متابعة عبر البريد الإلكتروني
+        </button>
+        <p className="text-center text-xs leading-7 text-[var(--text-2)]" role="note">
+          سيتم فتح تطبيق البريد الإلكتروني مع تجهيز رسالتك. راجع التفاصيل ثم اضغط إرسال؛ لن تُرسل الرسالة تلقائياً من الموقع.
         </p>
+      </form>
+
+      <div className="mt-10 space-y-2 border-t border-dashed border-[var(--border)] pt-6 text-center text-xs text-[var(--text-3)] sm:text-sm">
+        <p>أو راسلنا مباشرة عبر البريد الإلكتروني:</p>
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          className="font-mono text-sm font-bold text-[var(--text)] underline underline-offset-4 sm:text-base"
+          dir="ltr"
+        >
+          {CONTACT_EMAIL}
+        </a>
       </div>
     </div>
   );
