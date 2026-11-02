@@ -1,5 +1,5 @@
 import Script from "next/script";
-import { CATEGORIES, getToolsByCategory, getCatalogToolsByCategory, getCatalogToolCount } from "@/lib/registry";
+import { CATEGORIES, getCatalogToolsByCategory, getCatalogToolCount } from "@/lib/registry";
 import HomeHero from "@/components/home/HomeHero";
 import CategoryBrowseShowcase from "@/components/home/CategoryBrowseShowcase";
 import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
@@ -8,11 +8,11 @@ export const metadata = {
   title: "Qemlo | حاسبات الراتب والعمرة وأدوات السعودية والإمارات",
   alternates: { canonical: "/" },
   description:
-    "استخدم حاسبة الراتب والمخالصة النهائية وفترة الإنذار وتكلفة العمرة وأمر الشراء والضريبة. 15 أداة عربية مجانية للسعودية والإمارات وبدون تسجيل.",
+    "استخدم حاسبة الراتب والمخالصة النهائية وفترة الإنذار وتكلفة العمرة وأمر الشراء والضريبة. 15 أداة عربية مجانية مختارة من مكتبة Qemlo التي تضم 36 أداة للسعودية والإمارات وبدون تسجيل.",
   openGraph: {
     title: "Qemlo | حاسبات الراتب والعمرة وأدوات السعودية والإمارات",
     description:
-      "حاسبات الرواتب والضرائب والعمرة وفترة الإنذار وأوامر الشراء باللغة العربية. مجموعة منتقاة من 15 أداة مجانية وبدون تسجيل.",
+      "حاسبات الرواتب والضرائب والعمرة وفترة الإنذار وأوامر الشراء باللغة العربية. 15 أداة مختارة للواجهة الرئيسية ضمن مكتبة تضم 36 أداة عربية مجانية وبدون تسجيل.",
     siteName: "Qemlo",
     locale: "ar_AR",
     type: "website",
@@ -174,24 +174,6 @@ const STRIP_SCRIPT = `
 })();
 `;
 
-const toolsLabel = (n) => `${n.toLocaleString("ar-EG")} ${n <= 10 ? "أدوات" : "أداة"}`;
-
-function Pill({ item, dup }) {
-  return (
-    <a
-      href={`#${item.id}`}
-      aria-hidden={dup ? "true" : undefined}
-      tabIndex={dup ? -1 : undefined}
-      className={`pill${item.soon ? " pill-soon" : ""}`}
-    >
-      <span className="pill-plate" aria-hidden="true">{item.icon}</span>
-      <span className="pill-name">{item.name}</span>
-      {!dup && <span className="sr-only">، {item.label}</span>}
-      <span className="pill-count" aria-hidden="true">{item.count}</span>
-    </a>
-  );
-}
-
 export default function HomePage() {
   const totalTools = getCatalogToolCount();
 
@@ -199,38 +181,6 @@ export default function HomePage() {
     ...cat,
     tools: getCatalogToolsByCategory(cat.id),
   })).filter((cat) => cat.tools.length > 0);
-
-  const upcomingCategories = CATEGORIES.filter(
-    (cat) => getToolsByCategory(cat.id).length === 0
-  );
-
-  const stats = [
-    { value: totalTools.toLocaleString("ar-EG"), label: "أداة وحاسبة متخصصة" },
-    { value: CATEGORIES.length.toLocaleString("ar-EG"), label: "تصنيف شامل" },
-    { value: "٠", label: "تسجيل مطلوب" },
-  ];
-
-  const navItems = [
-    ...activeCategories.map((c) => ({
-      id: c.id,
-      icon: c.icon,
-      name: c.nameAr,
-      count: c.tools.length.toLocaleString("ar-EG"),
-      label: toolsLabel(c.tools.length),
-    })),
-    ...(upcomingCategories.length > 0
-      ? [
-        {
-          id: "upcoming",
-          soon: true,
-          icon: "🚀",
-          name: "قريباً",
-          count: upcomingCategories.length.toLocaleString("ar-EG"),
-          label: `${upcomingCategories.length.toLocaleString("ar-EG")} أقسام`,
-        },
-      ]
-      : []),
-  ];
 
   return (
     <div className="home-root w-full max-w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
@@ -276,69 +226,6 @@ export default function HomePage() {
           </section>
         ))}
 
-        {/* Compact Coming Soon Section */}
-        {upcomingCategories.length > 0 && (
-          <section id="upcoming" className="cat-sec min-w-0 pt-2">
-            <div className="min-w-0 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-8">
-              <div className="flex flex-col justify-between gap-4 border-b border-[var(--border)] pb-5 sm:flex-row sm:items-center">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--card)] text-2xl text-[var(--card-text)]">
-                    🚀
-                  </div>
-                  <div className="min-w-0">
-                    <h2 className="text-xl font-bold leading-tight text-[var(--text)] sm:text-2xl">
-                      قريباً في Qemlo
-                    </h2>
-                    <p className="mt-1 text-xs leading-normal text-[var(--text-2)] sm:text-sm">
-                      نعمل على تطوير باقة متكاملة من الأدوات الرقمية لتغطية كافة احتياجاتك
-                    </p>
-                  </div>
-                </div>
-                <div className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-[var(--orange)] px-3 py-1 text-xs font-bold text-[var(--on-orange)] sm:self-auto">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--on-orange)]" />
-                  <span>{upcomingCategories.length} أقسام قيد التطوير</span>
-                </div>
-              </div>
-
-              <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {upcomingCategories.map((cat) => (
-                  <div
-                    key={cat.id}
-                    className="group relative flex min-w-0 flex-col justify-between rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg)] p-4 transition-colors hover:border-[var(--text)]"
-                  >
-                    <div className="min-w-0">
-                      <div className="mb-2.5 flex items-center justify-between gap-2">
-                        <div className="flex min-w-0 items-center gap-2.5">
-                          <span className="shrink-0 text-2xl">{cat.icon}</span>
-                          <div className="min-w-0">
-                            <h3 className="text-sm font-bold leading-snug text-[var(--text)] sm:text-base">
-                              {cat.nameAr}
-                            </h3>
-                            <span dir="ltr" className="block text-[11px] font-medium text-[var(--text-3)]" style={{ unicodeBidi: "isolate" }}>
-                              {cat.nameEn}
-                            </span>
-                          </div>
-                        </div>
-                        <span className="shrink-0 rounded-full border border-[var(--border)] px-2 py-0.5 text-[10px] font-bold text-[var(--text-3)]">
-                          قريباً
-                        </span>
-                      </div>
-                      {cat.comingSoonDesc && (
-                        <p className="mt-1 text-xs leading-relaxed text-[var(--text-2)]">
-                          {cat.comingSoonDesc}
-                        </p>
-                      )}
-                    </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-2.5 text-[11px] font-medium text-[var(--text-3)]">
-                      <span>جاري إعداد الأدوات</span>
-                      <span className="opacity-0 transition-opacity group-hover:opacity-100">⚡</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
       </div>
 
       {/* ── Country hubs strip — crawlable links to SA and UAE tool collections ── */}
