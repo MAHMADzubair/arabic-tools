@@ -124,8 +124,8 @@ export default function UaeNoticePeriodCalculator() {
   // Probation
   const [isProbation, setIsProbation] = useState("no");
   // Core inputs
-  const [terminationInitiator, setTerminationInitiator] = useState("employee");
-  const [nonCompliantParty, setNonCompliantParty] = useState("employee");
+  const [terminationInitiator, setTerminationInitiator] = useState("unsure");
+  const [nonCompliantParty, setNonCompliantParty] = useState("unsure");
   const [noticeStartDate, setNoticeStartDate] = useState(() => getUaeDateString());
   const [contractNoticePreset, setContractNoticePreset] = useState("30");
   const [customNoticeDays, setCustomNoticeDays] = useState("30");
@@ -220,6 +220,9 @@ export default function UaeNoticePeriodCalculator() {
     if (isMutualWaiver) {
       return "عند الاتفاق الكتابي على الإعفاء أو تخفيض الإنذار، لا يعني ذلك تلقائياً أن بدل الإنذار يساوي صفراً؛ فالمادة (43/2) تشترط حفظ حقوق العامل. راجع نص الاتفاق وMOHRE، وهذه الحاسبة لا تحسب اتفاقات الإعفاء أو التسوية الخاصة.";
     }
+    if (nonCompliantParty === "unsure") {
+      return "حدد الطرف الذي لم يلتزم بإكمال فترة الإنذار. الطرف الذي بدأ إنهاء العقد ليس بالضرورة الطرف المخل؛ إذا لم تتأكد، راجع الإخطار والاتفاق أو استشر MOHRE قبل الاعتماد على أي مبلغ.";
+    }
     if (noticeValidation.msg) return noticeValidation.msg;
     if (!Number.isInteger(requiredNoticeDays)) {
       return "أدخل مدة إنذار كاملة بالأيام دون كسور.";
@@ -244,6 +247,7 @@ export default function UaeNoticePeriodCalculator() {
     isExcludedCategory,
     isDifcAdgm,
     isProbation,
+    nonCompliantParty,
     noticeValidation.msg,
     requiredNoticeDays,
     noticeStartDate,
@@ -256,7 +260,7 @@ export default function UaeNoticePeriodCalculator() {
   ]);
 
   const compensationDirection = useMemo(() => {
-    if (remainingNoticeDays <= 0 || wage <= 0) return "none";
+    if (remainingNoticeDays <= 0 || wage <= 0 || nonCompliantParty === "unsure") return "none";
     return nonCompliantParty === "employer" ? "to_employee" : "to_employer";
   }, [remainingNoticeDays, wage, nonCompliantParty]);
 
@@ -312,8 +316,8 @@ export default function UaeNoticePeriodCalculator() {
     setIsExcludedCategory("no");
     setIsDifcAdgm("no");
     setIsProbation("no");
-    setTerminationInitiator("employee");
-    setNonCompliantParty("employee");
+    setTerminationInitiator("unsure");
+    setNonCompliantParty("unsure");
     const today = getUaeDateString();
     setNoticeStartDate(today);
     setContractNoticePreset("30");
@@ -419,10 +423,10 @@ export default function UaeNoticePeriodCalculator() {
               <Step n="2" id="nc-s2">بيانات إشعار الإنهاء وعقد العمل</Step>
 
               <Seg id="nc-init" label="من بدأ إنهاء عقد العمل؟" value={terminationInitiator} onChange={setTerminationInitiator}
-                options={[{ id: "employee", label: "الموظف" }, { id: "employer", label: "صاحب العمل" }]} />
+                options={[{ id: "employee", label: "الموظف" }, { id: "employer", label: "صاحب العمل" }, { id: "unsure", label: "غير متأكد" }]} />
 
               <Seg id="nc-breach" label="من الطرف الذي لم يلتزم بإكمال فترة الإنذار؟" value={nonCompliantParty} onChange={setNonCompliantParty}
-                options={[{ id: "employee", label: "الموظف" }, { id: "employer", label: "صاحب العمل" }]} />
+                options={[{ id: "employee", label: "الموظف" }, { id: "employer", label: "صاحب العمل" }, { id: "unsure", label: "غير متأكد" }]} />
               <Note>وفق المادة (43/3)، الطرف الذي لم يلتزم بمدة الإنذار هو الذي يدفع البدل للطرف الآخر؛ وليس بالضرورة الطرف الذي بدأ إنهاء العقد.</Note>
 
               <div className="nc-field">
@@ -555,10 +559,10 @@ export default function UaeNoticePeriodCalculator() {
                     <Row k="الطرف المستفيد" v={beneficiary} strong />
                   </dl>
 
-                  {terminationInitiator === "employer" && (
+                  {terminationInitiator !== "employee" && (
                     <div className="nc-white">
                       <p className="nc-small-b">ملاحظة (المادة 43 - البند 5)</p>
-                      <p className="nc-small">إذا أنهى صاحب العمل عقد العمل، يحق للعامل التغيب يوماً واحداً غير مدفوع الأجر أسبوعياً للبحث عن عمل، شريطة إخطار صاحب العمل قبل يوم الغياب بثلاثة أيام على الأقل.</p>
+                      <p className="nc-small">إذا كان صاحب العمل هو من أنهى عقد العمل، يحق للعامل التغيب يوماً واحداً غير مدفوع الأجر أسبوعياً للبحث عن عمل، شريطة إخطار صاحب العمل قبل يوم الغياب بثلاثة أيام على الأقل. إذا لم تتأكد من الطرف الذي بدأ الإنهاء، تحقق من الإخطار المكتوب.</p>
                     </div>
                   )}
 
@@ -686,8 +690,8 @@ export default function UaeNoticePeriodCalculator() {
                 )}
 
                 <dl className="nc-doc-grid">
-                  <div><dt>الطرف الذي بدأ الإنهاء</dt><dd>{terminationInitiator === "employee" ? "الموظف" : "صاحب العمل"}</dd></div>
-                  <div><dt>الطرف الذي لم يلتزم بالإنذار</dt><dd>{nonCompliantParty === "employee" ? "الموظف" : "صاحب العمل"}</dd></div>
+                  <div><dt>الطرف الذي بدأ الإنهاء</dt><dd>{terminationInitiator === "employee" ? "الموظف" : terminationInitiator === "employer" ? "صاحب العمل" : "غير محدد"}</dd></div>
+                  <div><dt>الطرف الذي لم يلتزم بالإنذار</dt><dd>{nonCompliantParty === "employee" ? "الموظف" : nonCompliantParty === "employer" ? "صاحب العمل" : "غير محدد"}</dd></div>
                   <div><dt>تاريخ الإشعار</dt><dd>{formatDateAr(noticeStartDate)}</dd></div>
                   <div><dt>فترة الإنذار التعاقدية</dt><dd>{requiredNoticeDays} يوم</dd></div>
                   <div><dt>آخر يوم عمل المتوقع</dt><dd>{formatDateAr(expectedLastWorkingDate)}</dd></div>
