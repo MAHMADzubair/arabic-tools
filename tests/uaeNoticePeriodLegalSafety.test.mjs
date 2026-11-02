@@ -8,6 +8,9 @@ const layout = fs.readFileSync("app/layout.js", "utf8");
 
 test("UAE notice estimates stop for unsupported legal scopes", () => {
   assert.match(calculator, /isPrivateSector !== "yes"/);
+  assert.match(calculator, /const \[isPrivateSector, setIsPrivateSector\] = useState\("unsure"\)/);
+  assert.match(calculator, /const \[isProbation, setIsProbation\] = useState\("unsure"\)/);
+  assert.match(calculator, /if \(isProbation !== "no"\)/);
   assert.match(calculator, /isDifcAdgm !== "no"/);
   assert.match(calculator, /isExcludedCategory !== "no"/);
   assert.match(calculator, /isProbation === "yes"/);
