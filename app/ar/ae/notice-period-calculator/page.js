@@ -150,9 +150,9 @@ export default function UaeNoticePeriodCalculatorPage() {
         {/* GEO Answer Summary */}
         <GeoAnswerSummary
           whatItDoes="تحسب مدة فترة الإنذار وتاريخ آخر يوم عمل وبدل الإنذار التقديري للموظف أو صاحب العمل"
-          appliesTo="دولة الإمارات العربية المتحدة — عقود العمل في القطاع الخاص"
+          appliesTo="القطاع الخاص الخاضع للقانون الاتحادي — الموظفون بأجر شهري بعد فترة التجربة، باستثناء DIFC وADGM"
           keyRule="تتراوح مدة الإنذار المتفق عليها في عقد العمل بين 30 و90 يوماً وفق المادة 43، ويجوز الاتفاق على الإعفاء منها أو تخفيضها مع حفظ حقوق العامل."
-          authority="وزارة الموارد البشرية والتوطين (MOHRE)"
+          authority="حكومة الإمارات — وزارة الموارد البشرية والتوطين (MOHRE)"
           authorityUrl="https://u.ae/en/information-and-services/jobs/employment-in-the-private-sector/job-offers-and-work-permits-and-contracts/terminating-employment-contracts"
           lastReviewed="نوفمبر 2026"
           disclaimer="تقدير إرشادي للموظفين بأجر شهري في القطاع الخاص الخاضع للقانون الاتحادي بعد فترة التجربة فقط. لا يحسب DIFC/ADGM أو الأجور غير الشهرية أو اتفاقات الإعفاء الخاصة."
@@ -289,7 +289,7 @@ export default function UaeNoticePeriodCalculatorPage() {
               <p className="text-xs text-ink-muted mt-2">إذا لم يلتزم أي طرف بمتطلبات المادة (9)، فقد يستحق الطرف الآخر تعويضاً يعادل أجر مهلة الإخطار أو الجزء المتبقي منها. هذه الحالة خارج نطاق الحاسبة الحالية.</p>
             </div>
 
-            {/* 8. هل تختلف القواعد في DIFC وADGM؟ */}
+            {/* 9. هل تختلف القواعد في DIFC وADGM؟ */}
             <div>
               <h3 className="text-base font-bold text-ink mb-1.5">هل تختلف القواعد في DIFC وADGM؟</h3>
               <p className="text-sm text-ink-secondary leading-relaxed">
@@ -297,7 +297,7 @@ export default function UaeNoticePeriodCalculatorPage() {
               </p>
             </div>
 
-            {/* 9. كيفية استخدام الحاسبة */}
+            {/* 10. كيفية استخدام الحاسبة */}
             <div>
               <h3 className="text-base font-bold text-ink mb-1.5">كيفية استخدام الحاسبة</h3>
               <ol className="list-decimal list-inside text-sm text-ink-secondary space-y-1">
@@ -309,7 +309,7 @@ export default function UaeNoticePeriodCalculatorPage() {
               </ol>
             </div>
 
-            {/* 10. مثال عملي */}
+            {/* 11. مثال عملي */}
             <div>
               <h3 className="text-base font-bold text-ink mb-2">أمثلة عملية (Worked Examples)</h3>
               <div className="space-y-3">
@@ -334,7 +334,7 @@ export default function UaeNoticePeriodCalculatorPage() {
               </div>
             </div>
 
-            {/* 11. المصادر الرسمية */}
+            {/* 12. المصادر الرسمية */}
             <div>
               <h3 className="text-base font-bold text-ink mb-1.5">المصادر الرسمية</h3>
               <ul className="list-disc list-inside text-xs text-ink-secondary leading-relaxed space-y-1">
@@ -357,7 +357,7 @@ export default function UaeNoticePeriodCalculatorPage() {
               <p className="text-xs text-ink-muted mt-2">المادة (43/4) تميز بين الأجر الشهري والأسبوعي واليومي وبالساعة، وتحدد متوسط الأجر اليومي للعامل بالقطعة؛ الحاسبة الحالية لا تدعم إلا الأجر الشهري.</p>
             </div>
 
-            {/* 12. آخر تحديث */}
+            {/* 13. آخر تحديث */}
             <div className="pt-2 border-t border-slate-200 flex justify-between text-xs text-ink-muted">
               <span><strong>آخر مراجعة قانونية:</strong> نوفمبر 2026</span>
               <span>المواد 1 و9 و43 و67 من المرسوم 33 لسنة 2021</span>
