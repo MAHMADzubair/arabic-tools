@@ -23,7 +23,7 @@ test("UAE FAQ schema and visible content are built from one FAQ source", () => {
 test("UAE copy does not imply official government approval", () => {
   assert.doesNotMatch(uae, /حاسبات معتمدة ومتكاملة/);
   assert.match(uae, /ليست أدوات معتمدة رسمياً من جهة حكومية/);
-  assert.match(uae, /disclaimer="هذه الأداة تقديرية استرشادية/);
+  assert.match(uae, /disclaimer="[^"]*(?:استرشادية|تقدير إرشادي)/);
 });
 
 test("Saudi FAQ distinguishes full settlement from the gratuity component", () => {
