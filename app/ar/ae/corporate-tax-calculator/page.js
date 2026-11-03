@@ -346,7 +346,7 @@ export default function UaeCorporateTaxPage() {
             {/* Update box */}
             <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4 mb-5">
               <p className="text-xs text-emerald-900 leading-relaxed">
-                <strong>تحديث أكتوبر 2026:</strong> بموجب القرار الوزاري رقم (131) لسنة 2026 الصادر من وزارة المالية الإماراتية،
+                <strong>تحديث نوفمبر 2026:</strong> بموجب القرار الوزاري رقم (131) لسنة 2026 الصادر من وزارة المالية الإماراتية،
                 تم تمديد تسهيلات الأعمال الصغيرة لتشمل الفترات الضريبية التي تنتهي في أو قبل{" "}
                 <strong>31 ديسمبر 2029</strong> — بدلاً من 31 ديسمبر 2026 السابقة. الحد الإيرادي يبقى 3,000,000 درهم.
               </p>
