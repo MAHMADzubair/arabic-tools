@@ -2,11 +2,13 @@
 
 /**
  * components/ToolGuideSection.jsx
- * Ink & Signal: shared guide section (about, sources, steps, example,
+ * Qemlo style: shared guide section (about, sources, steps, example,
  * test cases, FAQ, related tools).
- * Props and JSON-LD are unchanged. Changes: styling is local (no Tailwind
- * color classes), emoji icons removed, FAQ gets aria-controls, answers stay
- * in the DOM (via `hidden`) for SEO.
+ * allTools, the curated lists, TARGETED_GULF_ROUTES, props, state and both
+ * JSON-LD blocks are unchanged.
+ * Changes: local styling (glossy orange tiles, 26px cards, 16px controls),
+ * SVG icons, 48px FAQ buttons with aria-controls (answers stay in the DOM via
+ * `hidden` for SEO), print shows every answer, mobile-first layout.
  */
 import React, { useState } from "react";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -68,6 +70,85 @@ export const TARGETED_GULF_ROUTES = {
   "/overtime-calculator/uae": uaeCuratedTools,
 };
 
+// ─── Icons ───────────────────────────────────────────────────────────────────
+const ICONS = {
+  book: (
+    <>
+      <path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5v-15Z" />
+      <path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7.5h6" />
+    </>
+  ),
+  scale: (
+    <>
+      <path d="M12 4v16M7 20h10M5 7h14" />
+      <path d="m5 7-3 6a3 3 0 0 0 6 0L5 7ZM19 7l-3 6a3 3 0 0 0 6 0l-3-6Z" />
+    </>
+  ),
+  list: <path d="M9 6.5h11M9 12h11M9 17.5h11M4 6.5h.01M4 12h.01M4 17.5h.01" />,
+  calc: (
+    <>
+      <rect x="5" y="3" width="14" height="18" rx="3" />
+      <path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01" />
+    </>
+  ),
+  check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  help: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8M12 16.8h.01" />
+    </>
+  ),
+  grid: (
+    <>
+      <rect x="4" y="4" width="6.5" height="6.5" rx="2" />
+      <rect x="13.5" y="4" width="6.5" height="6.5" rx="2" />
+      <rect x="4" y="13.5" width="6.5" height="6.5" rx="2" />
+      <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="2" />
+    </>
+  ),
+  alert: (
+    <>
+      <path d="M12 4 2.8 19.5h18.4L12 4Z" />
+      <path d="M12 10v4.5M12 17.5h.01" />
+    </>
+  ),
+  plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
+  arrow: <path d="M19 12H5m6-6-6 6 6 6" />,
+};
+
+function Icon({ name, size = 20 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {ICONS[name]}
+    </svg>
+  );
+}
+
+function Head({ icon, id, title, sub, tag }) {
+  return (
+    <header className="tg-head">
+      <span className="tg-tile"><Icon name={icon} size={22} /></span>
+      <div className="tg-head-text">
+        {tag ? <p className="tg-tag">{tag}</p> : null}
+        <h2 id={id} className="tg-h2">{title}</h2>
+        {sub ? <p className="tg-text">{sub}</p> : null}
+      </div>
+    </header>
+  );
+}
+
 export default function ToolGuideSection({
   currentPath,
   aboutTitle,
@@ -121,19 +202,21 @@ export default function ToolGuideSection({
 
       {/* 1. About */}
       <section className="tg-section" aria-labelledby="tg-about">
-        <header className="tg-head">
-          {lastUpdated && <p className="tg-tag">آخر مراجعة للمحتوى: {lastUpdated}</p>}
-          <h2 id="tg-about" className="tg-h2">{aboutTitle}</h2>
-        </header>
+        <Head
+          icon="book"
+          id="tg-about"
+          title={aboutTitle}
+          tag={lastUpdated ? `آخر مراجعة للمحتوى: ${lastUpdated}` : null}
+        />
 
         <div className="tg-card">
           {disclaimerNotice && (
             <aside className="tg-notice">
-              <p className="tg-notice-title">
-                <span className="tg-mark" aria-hidden="true">!</span>
-                {disclaimerNotice.title || "تنبيه فقهي ونظامي هام:"}
-              </p>
-              <p className="tg-text">{disclaimerNotice.text}</p>
+              <span className="tg-notice-ic"><Icon name="alert" size={20} /></span>
+              <div>
+                <p className="tg-notice-title">{disclaimerNotice.title || "تنبيه فقهي ونظامي هام:"}</p>
+                <p className="tg-text">{disclaimerNotice.text}</p>
+              </div>
             </aside>
           )}
 
@@ -145,12 +228,12 @@ export default function ToolGuideSection({
 
           {legalSources && legalSources.length > 0 && (
             <div className="tg-block">
-              <h3 className="tg-h3">السند النظامي والمرجعي</h3>
+              <h3 className="tg-h3"><Icon name="scale" size={18} /> السند النظامي والمرجعي</h3>
               <div className="tg-grid2">
                 {legalSources.map((ls, idx) => (
                   <article key={idx} className="tg-box">
                     <div className="tg-box-top">
-                      <span className="tg-strong">{ls.authority || ls.country}</span>
+                      <span className="tg-chip">{ls.authority || ls.country}</span>
                       {ls.date && <span className="tg-small">{ls.date}</span>}
                     </div>
                     <h4 className="tg-h4">{ls.lawName}</h4>
@@ -163,7 +246,7 @@ export default function ToolGuideSection({
 
           {steps && steps.length > 0 && (
             <div className="tg-block">
-              <h3 className="tg-h3">{stepsTitle || "كيفية استخدام الأداة خطوة بخطوة"}</h3>
+              <h3 className="tg-h3"><Icon name="list" size={18} /> {stepsTitle || "كيفية استخدام الأداة خطوة بخطوة"}</h3>
               <ol className="tg-grid2 tg-steps">
                 {steps.map((s, i) => (
                   <li key={i} className="tg-box tg-step">
@@ -181,7 +264,7 @@ export default function ToolGuideSection({
           {example && (
             <div className="tg-block">
               <section className="tg-example" aria-labelledby="tg-ex">
-                <h3 id="tg-ex" className="tg-h3">{example.title || "مثال تطبيقي عملي بالأرقام"}</h3>
+                <h3 id="tg-ex" className="tg-h3"><Icon name="calc" size={18} /> {example.title || "مثال تطبيقي عملي بالأرقام"}</h3>
                 <p className="tg-strong">{example.scenario}</p>
                 <dl className="tg-calc">
                   {example.calculation.map((step, idx) => (
@@ -201,10 +284,12 @@ export default function ToolGuideSection({
       {/* Test cases */}
       {testCases && testCases.length > 0 && (
         <section className="tg-section" aria-labelledby="tg-tests">
-          <header className="tg-head">
-            <h2 id="tg-tests" className="tg-h2">أمثلة تطبيقية بالأرقام (Test Cases)</h2>
-            <p className="tg-text">مسائل نظامية تم حلها يدوياً لتوضيح طريقة الحساب. النتائج تقديرية حسب المدخلات.</p>
-          </header>
+          <Head
+            icon="check"
+            id="tg-tests"
+            title="أمثلة تطبيقية بالأرقام (Test Cases)"
+            sub="مسائل نظامية تم حلها يدوياً لتوضيح طريقة الحساب. النتائج تقديرية حسب المدخلات."
+          />
 
           <div className="tg-grid2">
             {testCases.map((tc, idx) => (
@@ -232,16 +317,13 @@ export default function ToolGuideSection({
 
       {/* 2. FAQ */}
       <section className="tg-section" aria-labelledby="tg-faq">
-        <header className="tg-head">
-          <h2 id="tg-faq" className="tg-h2">الأسئلة الأكثر تكراراً (FAQ)</h2>
-          <p className="tg-text">إجابات على أبرز الاستفسارات المتكررة</p>
-        </header>
+        <Head icon="help" id="tg-faq" title="الأسئلة الأكثر تكراراً (FAQ)" sub="إجابات على أبرز الاستفسارات المتكررة" />
 
         <div className="tg-faq">
           {faqs.map((faq, idx) => {
             const isOpen = openFaq === idx;
             return (
-              <div key={idx} className="tg-faq-item">
+              <div key={idx} className={`tg-faq-item${isOpen ? " is-open" : ""}`}>
                 <h3 className="tg-faq-q">
                   <button
                     type="button"
@@ -251,7 +333,9 @@ export default function ToolGuideSection({
                     onClick={() => setOpenFaq(isOpen ? -1 : idx)}
                   >
                     <span>{faq.question}</span>
-                    <span className="tg-sign" aria-hidden="true">{isOpen ? "−" : "+"}</span>
+                    <span className="tg-sign" aria-hidden="true">
+                      <Icon name={isOpen ? "minus" : "plus"} size={16} />
+                    </span>
                   </button>
                 </h3>
                 {/* Always in DOM for SEO; hidden when collapsed */}
@@ -266,10 +350,12 @@ export default function ToolGuideSection({
 
       {/* 3. Related tools */}
       <nav className="tg-section tg-last" aria-labelledby="tg-related">
-        <header className="tg-head">
-          <h2 id="tg-related" className="tg-h2 tg-h2-sm">أدوات عربية ذات صلة</h2>
-          <p className="tg-text">استكشف باقي حاسباتنا المجانية المصممة لتسهيل حساباتك اليومية</p>
-        </header>
+        <Head
+          icon="grid"
+          id="tg-related"
+          title="أدوات عربية ذات صلة"
+          sub="استكشف باقي حاسباتنا المجانية المصممة لتسهيل حساباتك اليومية"
+        />
 
         <ul className="tg-grid3">
           {relatedTools.map((tool) => (
@@ -277,7 +363,10 @@ export default function ToolGuideSection({
               <a href={tool.href} className="tg-tool">
                 <span className="tg-tool-title">{tool.title}</span>
                 <span className="tg-text">{tool.desc}</span>
-                <span className="tg-tool-cta">جرّب الأداة الآن</span>
+                <span className="tg-tool-cta">
+                  <span>جرّب الأداة الآن</span>
+                  <Icon name="arrow" size={16} />
+                </span>
               </a>
             </li>
           ))}
@@ -288,124 +377,166 @@ export default function ToolGuideSection({
 }
 
 /**
- * Local styles. Map the --tg-* fallbacks to your real Ink & Signal tokens.
+ * Local styles. Your global tokens win (--ink/--text, --surface, --line/--border,
+ * --signal/--orange); the fallbacks keep the section standalone.
  */
 function GuideStyles() {
   return (
     <style>{`
       .tg-root{
-        --tg-ink:#0a0a0a; --tg-paper:#ffffff; --tg-muted:#f0f0f0;
-        --tg-text2:#404040; --tg-orange:#ff5a1f;
-        max-width:64rem; margin:4rem auto 0; padding:3rem 1rem 0;
-        border-top:2px solid var(--tg-ink);
-        color:var(--tg-ink); background:var(--tg-paper);
-        display:grid; gap:4rem;
+        --k-bg:var(--bg,#F5F5F2);
+        --k-sf:var(--surface,#FFFFFF);
+        --k-ink:var(--ink,var(--text,#0D0D0D));
+        --k-mu:var(--ink-soft,var(--text-3,#4A4A46));
+        --k-ln:var(--line,var(--border,#D9D9D3));
+        --k-on-ink:var(--on-ink,#FFFFFF);
+        --k-g1:#FF9B63; --k-g2:var(--signal,var(--orange,#FF6A1A)); --k-g3:#EE5A0B;
+        --k-gloss:linear-gradient(160deg,var(--k-g1) 0%,var(--k-g2) 55%,var(--k-g3) 100%);
+        max-width:64rem; margin:3rem auto 0; padding:0 1rem 2rem;
+        color:var(--k-ink); font-family:inherit;
+        display:grid; gap:3rem;
       }
-      @media (min-width:640px){ .tg-root{ margin-top:6rem; padding-top:4rem; } }
+      @media (min-width:640px){ .tg-root{ margin-top:4.5rem; gap:4rem; } }
       @media (prefers-color-scheme: dark){
         :root:not([data-theme="light"]) .tg-root{
-          --tg-ink:#f5f5f5; --tg-paper:#0a0a0a; --tg-muted:#1a1a1a; --tg-text2:#d4d4d4;
+          --k-bg:var(--bg,#0D0D0D); --k-sf:var(--surface,#181816); --k-ink:var(--ink,var(--text,#F5F5F2));
+          --k-mu:var(--ink-soft,var(--text-3,#B4B4AD)); --k-ln:var(--line,var(--border,#34342F)); --k-on-ink:var(--on-ink,#0D0D0D);
         }
       }
       :root[data-theme="dark"] .tg-root{
-        --tg-ink:#f5f5f5; --tg-paper:#0a0a0a; --tg-muted:#1a1a1a; --tg-text2:#d4d4d4;
+        --k-bg:var(--bg,#0D0D0D); --k-sf:var(--surface,#181816); --k-ink:var(--ink,var(--text,#F5F5F2));
+        --k-mu:var(--ink-soft,var(--text-3,#B4B4AD)); --k-ln:var(--line,var(--border,#34342F)); --k-on-ink:var(--on-ink,#0D0D0D);
       }
-      .tg-root :focus-visible{ outline:3px solid var(--tg-orange); outline-offset:2px; }
+      .tg-root *,.tg-root *::before,.tg-root *::after{ box-sizing:border-box; }
+      .tg-root :focus-visible{ outline:3px solid var(--k-ink); outline-offset:2px; }
 
-      .tg-section{ display:grid; gap:1.5rem; }
-      .tg-last{ padding-bottom:2rem; }
-      .tg-head{ display:grid; gap:.5rem; justify-items:center; text-align:center; }
-      .tg-h2{ margin:0; font-size:clamp(1.25rem,4vw,1.75rem); font-weight:700; line-height:1.35; }
-      .tg-h2-sm{ font-size:1.125rem; }
-      .tg-h3{ margin:0; font-size:1rem; font-weight:700; }
-      .tg-h4{ margin:0; font-size:.875rem; font-weight:700; line-height:1.6; }
-      .tg-text{ margin:0; font-size:.875rem; line-height:1.8; color:var(--tg-text2); }
-      .tg-small{ font-size:.75rem; color:var(--tg-text2); }
-      .tg-strong{ font-size:.8125rem; font-weight:700; }
+      .tg-section{ display:grid; gap:1.25rem; min-width:0; }
+      .tg-last{ padding-bottom:1rem; }
+
+      /* Section head */
+      .tg-head{ display:flex; align-items:center; gap:.85rem; }
+      .tg-head-text{ min-width:0; display:grid; gap:.3rem; justify-items:start; }
+      .tg-tile{
+        flex:none; display:inline-grid; place-items:center; width:46px; height:46px;
+        color:#0D0D0D; background:var(--k-gloss); border-radius:15px;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.12),0 4px 10px -4px rgba(238,90,11,.55);
+      }
+      .tg-h2{ margin:0; font-size:clamp(1.2rem,4.4vw,1.7rem); font-weight:800; line-height:1.4; overflow-wrap:anywhere; }
+      .tg-h3{ margin:0; display:flex; align-items:center; gap:.5rem; font-size:1.02rem; font-weight:800; line-height:1.5; }
+      .tg-h3 svg{ flex:none; }
+      .tg-h4{ margin:0; font-size:.95rem; font-weight:800; line-height:1.6; overflow-wrap:anywhere; }
+      .tg-text{ margin:0; font-size:.9rem; line-height:1.85; color:var(--k-mu); overflow-wrap:anywhere; }
+      .tg-small{ font-size:.78rem; color:var(--k-mu); }
+      .tg-strong{ margin:0; font-size:.9rem; font-weight:700; line-height:1.8; overflow-wrap:anywhere; }
 
       .tg-tag{
-        display:inline-block; margin:0; padding:.125rem .75rem;
-        border:2px solid var(--tg-ink); font-size:.75rem; font-weight:600;
+        display:inline-block; margin:0; padding:.2rem .8rem; font-size:.78rem; font-weight:700;
+        color:var(--k-ink); background:var(--k-sf); border:1px solid var(--k-ln); border-radius:999px;
       }
-      .tg-mark{
-        flex:none; width:1.25rem; height:1.25rem; display:inline-flex;
-        align-items:center; justify-content:center; border:2px solid currentColor; font-weight:700;
+      .tg-chip{
+        display:inline-block; padding:.15rem .6rem; font-size:.78rem; font-weight:800;
+        color:var(--k-on-ink); background:var(--k-ink); border-radius:9px;
       }
 
       /* Cards */
-      .tg-card{ border:2px solid var(--tg-ink); padding:1.25rem; display:grid; gap:1.5rem; align-content:start; }
-      @media (min-width:640px){ .tg-card{ padding:2rem; } }
-      .tg-case{ padding:1.25rem; gap:.75rem; }
-      .tg-box{ border:2px solid var(--tg-ink); padding:1rem; display:grid; gap:.375rem; align-content:start; }
+      .tg-card{
+        display:grid; gap:1.5rem; align-content:start; min-width:0; padding:1.1rem;
+        background:var(--k-sf); border:1px solid var(--k-ln); border-radius:26px;
+      }
+      @media (min-width:640px){ .tg-card{ padding:1.75rem; } }
+      .tg-case{ padding:1.1rem; gap:.8rem; }
+      @media (min-width:640px){ .tg-case{ padding:1.25rem; } }
+      .tg-box{
+        display:grid; gap:.4rem; align-content:start; min-width:0; padding:1rem;
+        background:var(--k-bg); border:1px solid var(--k-ln); border-radius:18px;
+      }
       .tg-box-top{ display:flex; justify-content:space-between; align-items:center; gap:.5rem; flex-wrap:wrap; }
-      .tg-block{ border-top:2px solid var(--tg-ink); padding-top:1.5rem; display:grid; gap:1rem; }
-      .tg-grid2{ display:grid; gap:.75rem; grid-template-columns:1fr; margin:0; padding:0; list-style:none; }
-      @media (min-width:640px){ .tg-grid2{ grid-template-columns:1fr 1fr; } }
-      .tg-grid3{ display:grid; gap:1rem; grid-template-columns:1fr; margin:0; padding:0; list-style:none; }
-      @media (min-width:640px){ .tg-grid3{ grid-template-columns:repeat(2,1fr); } }
-      @media (min-width:900px){ .tg-grid3{ grid-template-columns:repeat(3,1fr); } }
+      .tg-block{ display:grid; gap:1rem; padding-top:1.5rem; border-top:1px dashed var(--k-ln); }
+      .tg-grid2{ display:grid; gap:.75rem; grid-template-columns:minmax(0,1fr); margin:0; padding:0; list-style:none; }
+      @media (min-width:640px){ .tg-grid2{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      .tg-grid3{ display:grid; gap:.75rem; grid-template-columns:minmax(0,1fr); margin:0; padding:0; list-style:none; }
+      @media (min-width:640px){ .tg-grid3{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; } }
+      @media (min-width:900px){ .tg-grid3{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
 
       .tg-prose{ display:grid; gap:1rem; }
-      .tg-prose p{ margin:0; font-size:.9375rem; line-height:2; color:var(--tg-text2); max-width:70ch; }
+      .tg-prose p{ margin:0; max-width:70ch; font-size:.97rem; line-height:2; color:var(--k-mu); overflow-wrap:anywhere; }
 
       /* Disclaimer notice */
       .tg-notice{
-        border:2px solid var(--tg-ink); border-inline-start:6px solid var(--tg-orange);
-        padding:.875rem 1rem; display:grid; gap:.375rem;
+        display:flex; gap:.75rem; padding:.9rem 1rem; background:var(--k-bg);
+        border:1px solid var(--k-ln); border-inline-start:6px solid var(--k-g2); border-radius:18px;
       }
-      .tg-notice-title{ margin:0; display:flex; align-items:center; gap:.5rem; font-size:.875rem; font-weight:700; }
+      .tg-notice-ic{ flex:none; margin-top:.1rem; }
+      .tg-notice-title{ margin:0 0 .25rem; font-size:.92rem; font-weight:800; }
 
-      /* Steps */
-      .tg-step{ grid-template-columns:auto 1fr; gap:.75rem; align-items:start; }
+      /* Steps (a real sequence, so numbered) */
+      .tg-step{ grid-template-columns:auto minmax(0,1fr); gap:.8rem; align-items:start; }
       .tg-num{
-        width:1.75rem; height:1.75rem; display:inline-flex; align-items:center; justify-content:center;
-        border:2px solid var(--tg-ink); font-size:.8125rem; font-weight:700;
+        display:inline-grid; place-items:center; width:34px; height:34px; font-size:.9rem; font-weight:800;
+        color:#0D0D0D; background:var(--k-gloss); border-radius:11px;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.12);
       }
 
       /* Example + calc rows */
-      .tg-example{ border:2px dashed var(--tg-ink); padding:1.25rem; display:grid; gap:.75rem; }
-      .tg-calc{ margin:0; border:2px solid var(--tg-ink); }
+      .tg-example{ display:grid; gap:.8rem; padding:1.1rem; border:1.5px dashed var(--k-ink); border-radius:20px; min-width:0; }
+      .tg-calc{ margin:0; background:var(--k-bg); border:1px solid var(--k-ln); border-radius:16px; overflow:hidden; }
       .tg-calc-row{
-        display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
-        padding:.375rem .75rem; border-top:1px solid var(--tg-ink); font-size:.8125rem;
+        display:flex; justify-content:space-between; align-items:baseline; gap:.5rem 1rem; flex-wrap:wrap;
+        padding:.6rem .9rem; font-size:.85rem;
       }
-      .tg-calc-row:first-child{ border-top:0; }
-      .tg-calc-row dt{ margin:0; color:var(--tg-text2); }
-      .tg-calc-row dd{ margin:0; font-weight:700; direction:ltr; unicode-bidi:isolate; }
+      .tg-calc-row + .tg-calc-row{ border-top:1px solid var(--k-ln); }
+      .tg-calc-row dt{ margin:0; min-width:0; color:var(--k-mu); overflow-wrap:anywhere; }
+      .tg-calc-row dd{ margin:0; font-weight:800; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
       .tg-result{
-        margin:0; padding:.625rem .75rem; background:var(--tg-orange); color:#0a0a0a;
-        border:2px solid var(--tg-ink); font-size:.875rem; font-weight:700; line-height:1.8;
-        print-color-adjust:exact; -webkit-print-color-adjust:exact;
+        margin:0; padding:.8rem 1rem; font-size:.92rem; font-weight:800; line-height:1.8; color:#0D0D0D;
+        background:var(--k-gloss); border-radius:16px; box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.1);
+        overflow-wrap:anywhere; print-color-adjust:exact; -webkit-print-color-adjust:exact;
       }
 
       /* FAQ */
-      .tg-faq{ display:grid; gap:.75rem; }
-      .tg-faq-item{ border:2px solid var(--tg-ink); }
+      .tg-faq{ display:grid; gap:.6rem; }
+      .tg-faq-item{ background:var(--k-sf); border:1px solid var(--k-ln); border-radius:20px; overflow:hidden; }
+      .tg-faq-item.is-open{ border-color:var(--k-ink); }
       .tg-faq-q{ margin:0; }
       .tg-faq-q button{
-        width:100%; display:flex; justify-content:space-between; align-items:center; gap:1rem;
-        padding:1rem 1.25rem; border:0; background:var(--tg-paper); color:var(--tg-ink);
-        font-family:inherit; font-size:.9375rem; font-weight:700; text-align:start; cursor:pointer;
+        width:100%; min-height:56px; display:flex; justify-content:space-between; align-items:center; gap:1rem;
+        padding:.8rem 1.1rem; border:0; background:transparent; color:var(--k-ink);
+        font-family:inherit; font-size:.97rem; font-weight:800; line-height:1.6; text-align:start; cursor:pointer;
       }
-      .tg-faq-q button:hover{ background:var(--tg-muted); }
-      .tg-faq-q button[aria-expanded="true"]{ background:var(--tg-ink); color:var(--tg-paper); }
-      .tg-sign{ flex:none; font-size:1.125rem; font-weight:700; line-height:1; }
-      .tg-faq-a{ padding:1rem 1.25rem; border-top:2px solid var(--tg-ink); }
+      .tg-faq-q button:hover{ background:var(--k-bg); }
+      .tg-faq-q button:focus-visible{ outline-offset:-3px; }
+      .tg-sign{
+        flex:none; display:inline-grid; place-items:center; width:30px; height:30px;
+        border:2px solid var(--k-ink); border-radius:50%;
+      }
+      .tg-faq-item.is-open .tg-sign{ color:#0D0D0D; background:var(--k-gloss); }
+      .tg-faq-a{ padding:.9rem 1.1rem 1.1rem; border-top:1px dashed var(--k-ln); }
       .tg-faq-a[hidden]{ display:none; }
-      .tg-faq-a .tg-text{ font-size:.875rem; max-width:70ch; }
+      .tg-faq-a .tg-text{ max-width:70ch; }
 
       /* Related tools */
       .tg-tool{
-        height:100%; box-sizing:border-box; display:grid; gap:.5rem; align-content:start;
-        padding:1.25rem; border:2px solid var(--tg-ink); color:var(--tg-ink);
-        background:var(--tg-paper); text-decoration:none;
+        height:100%; display:grid; gap:.5rem; align-content:start; padding:1.1rem;
+        color:var(--k-ink); text-decoration:none; background:var(--k-sf);
+        border:1px solid var(--k-ln); border-radius:22px;
+        transition:border-color .15s, transform .15s;
       }
-      .tg-tool:hover{ background:var(--tg-muted); }
+      .tg-tool:hover{ border-color:var(--k-ink); }
       .tg-tool:hover .tg-tool-title{ text-decoration:underline; text-underline-offset:4px; }
-      .tg-tool-title{ font-size:.9375rem; font-weight:700; line-height:1.6; }
+      .tg-tool-title{ font-size:.97rem; font-weight:800; line-height:1.6; overflow-wrap:anywhere; }
       .tg-tool-cta{
-        margin-top:.25rem; padding-top:.5rem; border-top:2px solid var(--tg-orange);
-        font-size:.75rem; font-weight:700;
+        display:inline-flex; align-items:center; gap:.4rem; align-self:end; margin-top:.35rem;
+        padding-top:.65rem; border-top:1px dashed var(--k-ln); font-size:.82rem; font-weight:800;
+      }
+      @media (max-width:639px){ .tg-tool{ padding:1rem; } }
+
+      @media (prefers-reduced-motion:reduce){ .tg-root *{ transition:none !important; } }
+
+      /* Print: show every FAQ answer, drop related tools */
+      @media print{
+        .tg-faq-a[hidden]{ display:block !important; }
+        .tg-last{ display:none !important; }
+        .tg-card,.tg-faq-item,.tg-box{ break-inside:avoid; }
       }
     `}</style>
   );

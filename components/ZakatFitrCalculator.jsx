@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
+/**
+ * components/ZakatFitrCalculator.jsx
+ * Qemlo tool style: glossy orange + ink, SVG icons, 26px cards, 16px controls,
+ * light/dark, mobile-first. Rates, food weights and the calculation are
+ * unchanged; only presentation, accessibility and one copy-text label changed.
+ */
+
+import { useState, useMemo, useId, useRef } from "react";
 
 // Official approximate cash value recommendations by fatwa authorities per person
 const countryCashRates = [
@@ -30,7 +37,381 @@ function formatNumber(n, decimals = 1) {
   });
 }
 
+/* ─── Icons (SVG) ─────────────────────────────────────────────────────────── */
+const ICONS = {
+  wheat: (
+    <>
+      <path d="M12 21V7" />
+      <path d="M12 7c-2.2 0-4-1.8-4-4 2.2 0 4 1.8 4 4zM12 7c2.2 0 4-1.8 4-4-2.2 0-4 1.8-4 4z" />
+      <path d="M12 13c-2.2 0-4-1.8-4-4 2.2 0 4 1.8 4 4zM12 13c2.2 0 4-1.8 4-4-2.2 0-4 1.8-4 4z" />
+      <path d="M12 19c-2.2 0-4-1.8-4-4 2.2 0 4 1.8 4 4zM12 19c2.2 0 4-1.8 4-4-2.2 0-4 1.8-4 4z" />
+    </>
+  ),
+  coin: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1.2 0-2.1-.5-2.6-1.3M12 6.5V8M12 16v1.5" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" />
+      <path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.4c1.8.8 3 2.7 3 5.6" />
+    </>
+  ),
+  heart: <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z" />,
+  briefcase: (
+    <>
+      <rect x="3" y="7" width="18" height="13" rx="3" />
+      <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" />
+    </>
+  ),
+  sprout: (
+    <>
+      <path d="M12 21v-8" />
+      <path d="M12 13c0-3.5-2.5-6-6.5-6 0 3.5 2.5 6 6.5 6zM12 15c0-3 2-5 5.5-5 0 3-2 5-5.5 5z" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
+  scale: (
+    <>
+      <path d="M12 3v18M6 21h12M5 7h14" />
+      <path d="m5 7-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z" />
+    </>
+  ),
+  receipt: (
+    <>
+      <path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" />
+      <path d="M9 8h6M9 12h6" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="9" y="9" width="11" height="11" rx="2.5" />
+      <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+    </>
+  ),
+  check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5M12 7.5v.01" />
+    </>
+  ),
+  edit: (
+    <>
+      <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z" />
+      <path d="m13.5 6.5 4 4" />
+    </>
+  ),
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" />
+    </>
+  ),
+  arrow: <path d="M12 5v14m0 0 5-5m-5 5-5-5" />,
+};
+
+function Icon({ name, size = 20 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {ICONS[name]}
+    </svg>
+  );
+}
+
+/* ─── Styles ──────────────────────────────────────────────────────────────── */
+const css = `
+.zf{
+  --z-surface:var(--surface,#FFFFFF);
+  --z-surface-2:var(--surface-2,#ECECE7);
+  --z-border:var(--border,#D4D4CE);
+  --z-text:var(--text,#0D0D0D);
+  --z-text-2:var(--text-2,#555555);
+  --z-muted:var(--muted,#6B6B66);
+  --z-ink:#0D0D0D;
+  --z-ink-text:#F5F5F2;
+  --z-orange:var(--orange,#FF5B04);
+  --z-on-orange:#0D0D0D;
+  --z-gloss:linear-gradient(180deg,#FF8A3D 0%,#FF5B04 52%,#E64F00 100%);
+  --z-gloss-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(0,0,0,.12),0 10px 22px -10px rgba(255,91,4,.65);
+  --z-ring:color-mix(in srgb,var(--z-orange) 22%,transparent);
+  color:var(--z-text);max-width:1080px;margin:0 auto;line-height:1.6;
+  padding:clamp(16px,4vw,40px) clamp(14px,4vw,24px) 48px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .zf{
+    --z-surface:var(--surface,#161616);
+    --z-surface-2:var(--surface-2,#1D1D1D);
+    --z-border:var(--border,#2A2A2A);
+    --z-text:var(--text,#F5F5F2);
+    --z-text-2:var(--text-2,#B5B5B0);
+    --z-muted:var(--muted,#8E8E89);
+  }
+}
+:root[data-theme="dark"] .zf{
+  --z-surface:var(--surface,#161616);
+  --z-surface-2:var(--surface-2,#1D1D1D);
+  --z-border:var(--border,#2A2A2A);
+  --z-text:var(--text,#F5F5F2);
+  --z-text-2:var(--text-2,#B5B5B0);
+  --z-muted:var(--muted,#8E8E89);
+}
+.zf *,.zf *::before,.zf *::after{box-sizing:border-box}
+.zf h1,.zf h2,.zf h3,.zf p,.zf dl,.zf dd{margin:0;padding:0}
+.zf button,.zf input{font:inherit;color:inherit}
+.zf :focus-visible{outline:2px solid var(--z-orange);outline-offset:3px}
+.zf bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+
+/* Header */
+.zf-head{display:grid;justify-items:center;gap:12px;text-align:center;margin-bottom:24px}
+.zf-badge{display:inline-flex;align-items:center;gap:8px;padding-block:5px;padding-inline:6px 14px;border-radius:999px;background:var(--z-gloss);color:var(--z-on-orange);font-size:.8125rem;font-weight:800;box-shadow:var(--z-gloss-shadow)}
+.zf-badge-ico{width:26px;height:26px;border-radius:999px;flex:none;display:grid;place-items:center;background:var(--z-ink);color:var(--z-orange)}
+.zf-h1{font-size:clamp(1.75rem,5.5vw,2.75rem);font-weight:800;line-height:1.25;text-wrap:balance}
+.zf-lead{max-width:40rem;color:var(--z-text-2);font-size:clamp(.875rem,2.4vw,1rem);line-height:1.8;text-wrap:balance}
+
+/* Layout */
+.zf-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.zf-col{display:grid;gap:16px;min-width:0;align-content:start}
+@media (min-width:960px){
+  .zf-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+  .zf-aside{position:sticky;top:16px}
+}
+
+/* Cards */
+.zf-box{background:var(--z-surface);border:1px solid var(--z-border);border-radius:26px;padding:clamp(16px,3.5vw,24px);min-width:0;transition:border-color .2s,box-shadow .2s}
+@media (hover:hover){.zf-box:hover{border-color:color-mix(in srgb,var(--z-orange) 55%,var(--z-border));box-shadow:0 0 0 4px var(--z-ring)}}
+.zf-h2{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:1rem;line-height:1.5;font-weight:800}
+.zf-tile{width:36px;height:36px;border-radius:12px;flex:none;display:grid;place-items:center;background:var(--z-gloss);color:var(--z-on-orange);box-shadow:var(--z-gloss-shadow)}
+.zf-label{display:block;margin-bottom:8px;font-size:.8125rem;font-weight:700;color:var(--z-text-2)}
+.zf-sub{margin:-6px 0 16px;font-size:.8125rem;line-height:1.8;color:var(--z-text-2)}
+.zf-divider{margin-top:20px;padding-top:20px;border-top:1px solid var(--z-border)}
+
+/* Mode switch */
+.zf-modes{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:480px){.zf-modes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.zf-opt{
+  position:relative;display:grid;gap:4px;align-content:start;min-width:0;min-height:64px;padding:12px 14px;border-radius:16px;text-align:start;cursor:pointer;
+  border:1px solid var(--z-border);background:var(--z-surface-2);color:var(--z-text);transition:border-color .2s,box-shadow .2s,transform .2s;
+}
+.zf-opt:active{transform:scale(.98)}
+@media (hover:hover){.zf-opt:not(.is-on):hover{border-color:var(--z-orange);transform:translateY(-2px)}}
+.zf-opt.is-on{border-color:transparent;background:var(--z-gloss);color:var(--z-on-orange);box-shadow:var(--z-gloss-shadow)}
+.zf-opt-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:22px}
+.zf-opt-name{display:flex;align-items:center;gap:8px;font-size:.875rem;font-weight:800;line-height:1.5}
+.zf-opt-desc{font-size:.75rem;line-height:1.6;color:var(--z-muted)}
+.zf-opt.is-on .zf-opt-desc{color:rgba(13,13,13,.75)}
+.zf-check{width:22px;height:22px;border-radius:999px;display:grid;place-items:center;flex:none;background:var(--z-ink);color:var(--z-orange)}
+.zf-code{padding:1px 8px;border-radius:999px;font-size:.6875rem;font-weight:800;line-height:1.7;background:var(--z-surface);color:var(--z-text-2);border:1px solid var(--z-border)}
+.zf-opt.is-on .zf-code{background:var(--z-ink);color:var(--z-ink-text);border-color:transparent}
+.zf-countries{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.zf-cval{font-size:.8125rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--z-text-2)}
+.zf-opt.is-on .zf-cval{color:var(--z-on-orange)}
+
+/* Rate input */
+.zf-rate-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.zf-rate-head .zf-label{margin:0}
+.zf-link{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border-radius:12px;border:1px solid var(--z-border);background:var(--z-surface-2);font-size:.75rem;font-weight:800;cursor:pointer;transition:border-color .2s}
+@media (hover:hover){.zf-link:hover{border-color:var(--z-orange)}}
+.zf-inwrap{position:relative}
+.zf-input{
+  width:100%;min-height:52px;padding-block:0;padding-inline:16px 64px;border-radius:16px;border:1px solid var(--z-border);
+  background:var(--z-surface-2);color:var(--z-text);font-size:1.125rem;font-weight:800;font-variant-numeric:tabular-nums;text-align:start;
+  transition:border-color .2s,background .2s,box-shadow .2s;-moz-appearance:textfield;appearance:textfield;
+}
+.zf-input::-webkit-outer-spin-button,.zf-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.zf-input:focus{outline:none;background:var(--z-surface);border-color:var(--z-orange);box-shadow:0 0 0 4px var(--z-ring)}
+.zf-suffix{position:absolute;inset-inline-end:14px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:.75rem;font-weight:800;color:var(--z-muted)}
+.zf-note{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:12px 14px;border-radius:16px;font-size:.8125rem;line-height:1.7;background:color-mix(in srgb,var(--z-orange) 10%,var(--z-surface));border:1px solid color-mix(in srgb,var(--z-orange) 35%,var(--z-border))}
+.zf-note svg{flex:none;margin-top:3px;color:var(--z-orange)}
+
+/* Food rows */
+.zf-foods{display:grid;gap:10px}
+.zf-food{
+  position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;min-height:56px;padding:10px 14px;border-radius:16px;cursor:pointer;
+  border:1px solid var(--z-border);background:var(--z-surface-2);font-size:.875rem;font-weight:700;transition:border-color .2s,transform .2s;
+}
+.zf-food input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.zf-food:focus-within{outline:2px solid var(--z-orange);outline-offset:3px}
+.zf-food:active{transform:scale(.99)}
+@media (hover:hover){.zf-food:not(.is-on):hover{border-color:var(--z-orange)}}
+.zf-food-l{display:flex;align-items:center;gap:10px;min-width:0}
+.zf-dot{width:22px;height:22px;border-radius:999px;flex:none;display:grid;place-items:center;border:1.5px solid var(--z-border);background:var(--z-surface);color:var(--z-orange)}
+.zf-food.is-on{border-color:transparent;background:var(--z-gloss);color:var(--z-on-orange);box-shadow:var(--z-gloss-shadow)}
+.zf-food.is-on .zf-dot{background:var(--z-ink);border-color:var(--z-ink)}
+.zf-pill{padding:1px 10px;border-radius:999px;font-size:.75rem;font-weight:800;line-height:1.7;white-space:nowrap;background:var(--z-surface);border:1px solid var(--z-border);color:var(--z-text)}
+.zf-food.is-on .zf-pill{background:var(--z-ink);color:var(--z-ink-text);border-color:transparent}
+
+/* Family */
+.zf-self{
+  position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:0 14px;border-radius:16px;cursor:pointer;
+  border:1px solid var(--z-border);background:var(--z-surface-2);font-size:.875rem;font-weight:800;transition:border-color .2s,background .2s;
+}
+.zf-self input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.zf-self:focus-within{outline:2px solid var(--z-orange);outline-offset:3px}
+.zf-self-l{display:flex;align-items:center;gap:10px}
+.zf-switch{position:relative;flex:none;width:48px;height:28px;border-radius:999px;border:1px solid var(--z-border);background:var(--z-surface);transition:background .2s}
+.zf-switch::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:20px;height:20px;border-radius:999px;background:var(--z-text-2);transition:inset-inline-start .2s,background .2s}
+.zf-self.is-on{border-color:transparent;background:var(--z-gloss);color:var(--z-on-orange);box-shadow:var(--z-gloss-shadow)}
+.zf-self.is-on .zf-switch{background:var(--z-ink);border-color:var(--z-ink)}
+.zf-self.is-on .zf-switch::after{inset-inline-start:calc(100% - 23px);background:var(--z-orange)}
+.zf-members{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:420px){.zf-members{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.zf-member{display:grid;gap:10px;padding:12px;border-radius:18px;background:var(--z-surface-2);border:1px solid var(--z-border);min-width:0}
+.zf-member-top{display:flex;align-items:center;gap:8px;min-width:0}
+.zf-mini-ico{width:28px;height:28px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--z-surface);border:1px solid var(--z-border);color:var(--z-orange)}
+.zf-member-label{font-size:.75rem;font-weight:700;line-height:1.5}
+.zf-counter{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:6px}
+.zf-cbtn{height:44px;border-radius:14px;display:grid;place-items:center;cursor:pointer;border:1px solid var(--z-border);background:var(--z-surface);color:var(--z-orange);transition:border-color .2s,transform .2s,opacity .2s}
+.zf-cbtn:active{transform:scale(.92)}
+.zf-cbtn:disabled{opacity:.4;cursor:not-allowed}
+@media (hover:hover){.zf-cbtn:not(:disabled):hover{border-color:var(--z-orange)}}
+.zf-cval{text-align:center;font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums}
+
+/* Result */
+.zf-result{
+  position:relative;overflow:hidden;border-radius:26px;padding:clamp(18px,4vw,28px);text-align:center;display:grid;gap:10px;justify-items:center;scroll-margin-top:16px;
+  background:var(--z-gloss);color:var(--z-on-orange);box-shadow:0 18px 40px -18px rgba(255,91,4,.6),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.zf-result::before{content:"";position:absolute;inset:0 0 55% 0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0))}
+.zf-result::after{content:"";position:absolute;inset-inline-end:-54px;top:-54px;width:170px;height:170px;border:30px solid rgba(13,13,13,.07);border-radius:999px;pointer-events:none}
+.zf-result > *{position:relative;z-index:1}
+.zf-rtag{padding:3px 12px;border-radius:999px;background:var(--z-ink);color:var(--z-ink-text);font-size:.75rem;font-weight:800}
+.zf-rlabel{font-size:.8125rem;font-weight:800}
+.zf-rvalue{font-size:clamp(2rem,8vw,3rem);font-weight:800;line-height:1.15;letter-spacing:-.01em;overflow-wrap:anywhere;animation:zf-pop .28s ease-out}
+@keyframes zf-pop{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
+.zf-rpill{display:inline-flex;align-items:center;gap:8px;max-width:100%;padding:6px 14px;border-radius:999px;background:var(--z-ink);color:var(--z-ink-text);font-size:.8125rem;font-weight:700;line-height:1.6}
+.zf-rpill svg{flex:none;color:var(--z-orange)}
+.zf-rvol{width:100%;padding:10px 14px;border-radius:16px;background:rgba(13,13,13,.12);font-size:.8125rem;font-weight:800;line-height:1.7;overflow-wrap:anywhere}
+
+/* Breakdown */
+.zf-head-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.zf-head-row .zf-h2{margin-bottom:0}
+.zf-copy{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:16px;border:0;cursor:pointer;background:var(--z-ink);color:var(--z-ink-text);font-size:.8125rem;font-weight:800;transition:transform .2s}
+.zf-copy:active{transform:scale(.97)}
+:root:not([data-theme="light"]) .zf-copy{border:1px solid var(--z-border)}
+.zf-rows{display:grid;padding:4px 16px;border-radius:18px;background:var(--z-surface-2);border:1px solid var(--z-border)}
+.zf-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--z-border);font-size:.8125rem}
+.zf-row:last-child{border-bottom:0}
+.zf-row dt{font-weight:700;color:var(--z-text-2);min-width:0}
+.zf-row dd{font-weight:800;text-align:end;overflow-wrap:anywhere;font-size:.875rem}
+.zf-row.is-total dt{color:var(--z-text)}
+.zf-row.is-total dd{font-size:1rem}
+.zf-tip{display:grid;gap:6px;margin-top:16px;padding:14px 16px;border-radius:18px;background:var(--z-surface-2);border:1px solid var(--z-border);font-size:.8125rem;line-height:1.8;color:var(--z-text-2)}
+.zf-tip-title{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--z-text)}
+.zf-tip strong{color:var(--z-text)}
+
+/* Mobile summary bar */
+.zf-mini{
+  position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 12px 10px 14px;border-radius:20px;background:var(--z-ink);color:var(--z-ink-text);border:1px solid #2A2A2A;box-shadow:0 14px 30px -12px rgba(0,0,0,.55);
+}
+.zf-mini-l{min-width:0}
+.zf-mini-k{display:block;font-size:.6875rem;opacity:.7}
+.zf-mini-v{display:block;font-size:1.0625rem;font-weight:800;color:var(--z-orange);overflow-wrap:anywhere}
+.zf-mini-a{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:14px;background:var(--z-gloss);color:var(--z-on-orange);font-size:.8125rem;font-weight:800;text-decoration:none}
+@media (min-width:960px){.zf-mini{display:none}}
+
+.zf-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.zf *,.zf *::before,.zf *::after{transition:none!important;animation:none!important}}
+@media print{
+  .zf{padding:0;max-width:none}
+  .zf-noprint{display:none!important}
+  .zf-grid{display:block}
+  .zf-aside{position:static}
+  .zf-result{background:#fff!important;color:#000!important;border:1.5px solid #000;box-shadow:none!important;margin-bottom:12px}
+  .zf-result::before,.zf-result::after{display:none}
+  .zf-rpill,.zf-rtag{background:#000!important;color:#fff!important}
+  .zf-box{box-shadow:none!important;break-inside:avoid}
+}
+`;
+
+/* ─── Small components (outside to keep state/focus stable) ───────────────── */
+function Section({ icon, title, children }) {
+  return (
+    <section className="zf-box">
+      <h2 className="zf-h2">
+        <span className="zf-tile" aria-hidden="true">
+          <Icon name={icon} />
+        </span>
+        <span>{title}</span>
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+function CheckBadge() {
+  return (
+    <span className="zf-check" aria-hidden="true">
+      <Icon name="check" size={13} />
+    </span>
+  );
+}
+
+function NumberSelector({ label, value, onChange, min = 0, icon }) {
+  return (
+    <div className="zf-member">
+      <div className="zf-member-top">
+        <span className="zf-mini-ico" aria-hidden="true">
+          <Icon name={icon} size={15} />
+        </span>
+        <span className="zf-member-label">{label}</span>
+      </div>
+      <div className="zf-counter" role="group" aria-label={label}>
+        <button
+          type="button"
+          className="zf-cbtn"
+          onClick={() => onChange(Math.max(min, value - 1))}
+          disabled={value <= min}
+          aria-label={`إنقاص: ${label}`}
+        >
+          <Icon name="minus" size={18} />
+        </button>
+        <output className="zf-cval" aria-live="polite">{value}</output>
+        <button
+          type="button"
+          className="zf-cbtn"
+          onClick={() => onChange(value + 1)}
+          aria-label={`زيادة: ${label}`}
+        >
+          <Icon name="plus" size={18} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Component ───────────────────────────────────────────────────────────── */
 export default function ZakatFitrCalculator() {
+  const uid = useId();
+
   // Mode: 'cash' (نقداً بالقيمة) or 'food' (عيناً بالأصناف والكيلوجرامات)
   const [outputMode, setOutputMode] = useState("cash");
 
@@ -55,6 +436,7 @@ export default function ZakatFitrCalculator() {
 
   // Copy feedback
   const [copied, setCopied] = useState(false);
+  const copyTimer = useRef(null);
 
   // Active food item
   const activeFood = stapleFoodTypes.find((f) => f.id === selectedFoodId) || stapleFoodTypes[0];
@@ -126,14 +508,14 @@ export default function ZakatFitrCalculator() {
   ]);
 
   // Copy details
-  const handleCopy = () => {
-    let text = `🌙 تقرير حساب زكاة الفطر المباركة\n`;
+  const handleCopy = async () => {
+    let text = `تقرير حساب زكاة الفطر المباركة\n`;
     text += `------------------------------------\n`;
     text += `عدد الأفراد الواجب إخراجها عنهم: ${calculation.obligIndividuals} أفراد\n`;
     if (calculation.voluntaryIndividuals > 0) {
       text += `الأجنة في البطن (مستحبة): ${calculation.voluntaryIndividuals}\n`;
     }
-    text += `إجمالي عدد المستحقين: ${calculation.totalIndividuals} صاع\n\n`;
+    text += `إجمالي عدد الأفراد: ${calculation.totalIndividuals}\n\n`;
 
     if (outputMode === "food") {
       text += `الصنف المختار: ${activeFood.name}\n`;
@@ -153,380 +535,314 @@ export default function ZakatFitrCalculator() {
     text += `\n------------------------------------\n`;
     text += `الوقت الشرعي: تُخرج قبل صلاة العيد، ويجوز إخراجها قبل العيد بيوم أو يومين.`;
 
-    navigator.clipboard.writeText(text);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      } catch {
+        return;
+      }
+    }
     setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopied(false), 3000);
   };
 
+  const mainValue =
+    outputMode === "cash"
+      ? `${formatNumber(calculation.totalCashObligatory, 2)} ${currency}`
+      : `${formatNumber(calculation.totalKgObligatory)} كيلوجرام`;
+
+  const resultsId = `${uid}-results`;
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12" dir="rtl">
+    <div className="zf" dir="rtl">
+      <style>{css}</style>
+
       {/* Header */}
-      <div className="mb-8 text-center sm:mb-12">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#FED7AA] bg-[#FFF7ED] px-4 py-1.5 text-xs font-bold text-[#9A3412]">
-          <span>🌾</span>
+      <header className="zf-head">
+        <div className="zf-badge">
+          <span className="zf-badge-ico" aria-hidden="true">
+            <Icon name="wheat" size={14} />
+          </span>
           <span>طهور للصائم وطعمة للمساكين</span>
         </div>
-        <h1 className="mb-3 text-3xl font-extrabold text-[#0D0D0D] sm:text-5xl">
-          حاسبة زكاة الفطر المباركة
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-[#555555] sm:text-base">
+        <h1 className="zf-h1">حاسبة زكاة الفطر المباركة</h1>
+        <p className="zf-lead">
           احسب زكاة الفطر بدقة عنك وعن جميع أفراد أسرتك، سواء عيناً بالطعام والأرز (بالصاع والكيلوجرام)
           أو نقداً بالقيمة المعتمدة في الفتوى الرسمية لكل دولة.
         </p>
-      </div>
+      </header>
 
-      {/* Main Grid */}
-      <div className="grid gap-8 lg:grid-cols-12">
-        {/* Left Inputs (6 cols) */}
-        <div className="space-y-6 lg:col-span-6">
-          {/* Output Mode Switcher */}
-          <div className="rounded-2xl border border-[#D4D4CE] bg-white p-5 shadow-sm sm:p-6">
-            <label className="mb-2 block text-xs font-bold text-[#555555]">
-              كيف تفضل إخراج زكاة الفطر؟
-            </label>
-            <div className="grid grid-cols-2 gap-2 rounded-2xl bg-[#F5F5F2] p-1.5 border border-[#D4D4CE]">
-              <button
-                type="button"
-                onClick={() => setOutputMode("cash")}
-                className={`flex flex-col items-center justify-center rounded-xl py-2.5 px-3 text-xs font-bold transition ${
-                  outputMode === "cash"
-                    ? "bg-[#FF5B04] text-[#0D0D0D] shadow-sm font-extrabold"
-                    : "text-[#555555] hover:text-[#0D0D0D]"
-                }`}
-              >
-                <span className="text-sm">💵 نقداً بالقيمة المالية</span>
-                <span className={`text-[10px] font-normal ${outputMode === "cash" ? "text-[#0D0D0D]/80" : "text-[#6B6B66]"}`}>
-                  (مذهب الحنفية ودور الإفتاء المعاصرة)
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setOutputMode("food")}
-                className={`flex flex-col items-center justify-center rounded-xl py-2.5 px-3 text-xs font-bold transition ${
-                  outputMode === "food"
-                    ? "bg-[#FF5B04] text-[#0D0D0D] shadow-sm font-extrabold"
-                    : "text-[#555555] hover:text-[#0D0D0D]"
-                }`}
-              >
-                <span className="text-sm">🌾 طعاماً عيناً (حبوب وأرز)</span>
-                <span className={`text-[10px] font-normal ${outputMode === "food" ? "text-[#0D0D0D]/80" : "text-[#6B6B66]"}`}>
-                  (مذهب الجمهور وفتوى السعودية)
-                </span>
-              </button>
+      <div className="zf-grid">
+        {/* ── Inputs ─────────────────────────────────────────────────────────── */}
+        <div className="zf-col zf-noprint">
+          {/* Output mode */}
+          <Section icon="scale" title="كيف تفضل إخراج زكاة الفطر؟">
+            <div className="zf-modes" role="group" aria-label="طريقة الإخراج">
+              {[
+                { id: "cash", icon: "coin", name: "نقداً بالقيمة المالية", desc: "(مذهب الحنفية ودور الإفتاء المعاصرة)" },
+                { id: "food", icon: "wheat", name: "طعاماً عيناً (حبوب وأرز)", desc: "(مذهب الجمهور وفتوى السعودية)" },
+              ].map((m) => {
+                const on = outputMode === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => setOutputMode(m.id)}
+                    className={`zf-opt${on ? " is-on" : ""}`}
+                  >
+                    <span className="zf-opt-top">
+                      <span className="zf-opt-name">
+                        <Icon name={m.icon} size={18} />
+                        <span>{m.name}</span>
+                      </span>
+                      {on && <CheckBadge />}
+                    </span>
+                    <span className="zf-opt-desc">{m.desc}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Mode-specific settings */}
             {outputMode === "cash" ? (
-              <div className="mt-5 space-y-4 border-t border-[#D4D4CE] pt-4">
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold text-[#555555]">
-                    اختر الدولة أو الفتوى المعتمدة لقيمة الصاع:
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {countryCashRates.map((c) => (
+              <div className="zf-divider">
+                <p className="zf-label">اختر الدولة أو الفتوى المعتمدة لقيمة الصاع:</p>
+                <div className="zf-countries" role="group" aria-label="الدولة">
+                  {countryCashRates.map((c) => {
+                    const on = selectedCountryCode === c.code && !isCustomCashRate;
+                    return (
                       <button
                         key={c.code}
                         type="button"
+                        aria-pressed={on}
                         onClick={() => handleCountryChange(c)}
-                        className={`flex items-center gap-1.5 rounded-xl border p-2 text-xs font-bold transition text-right ${
-                          selectedCountryCode === c.code && !isCustomCashRate
-                            ? "border-[#FF5B04] bg-[#FF5B04] text-[#0D0D0D] shadow-sm ring-2 ring-orange-500/20 font-extrabold"
-                            : "border-[#D4D4CE] bg-white text-[#0D0D0D] hover:bg-[#F5F5F2]"
-                        }`}
+                        className={`zf-opt${on ? " is-on" : ""}`}
                       >
-                        <span className="text-base">{c.flag}</span>
-                        <div className="flex-1 overflow-hidden">
-                          <p className="truncate">{c.country}</p>
-                          <p className={`text-[10px] ${selectedCountryCode === c.code && !isCustomCashRate ? "text-[#0D0D0D]" : "text-[#C2410C]"}`}>
-                            {c.value} {c.currency}
-                          </p>
-                        </div>
+                        <span className="zf-opt-top">
+                          <span className="zf-code">{c.currency}</span>
+                          {on && <CheckBadge />}
+                        </span>
+                        <span className="zf-opt-name">{c.country}</span>
+                        <span className="zf-cval">
+                          <bdi>{c.value} {c.currency}</bdi>
+                        </span>
                       </button>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
 
                 {/* Custom Cash rate input */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-bold text-[#555555]">
+                <div style={{ marginTop: 20 }}>
+                  <div className="zf-rate-head">
+                    <label className="zf-label" htmlFor={`${uid}-rate`}>
                       قيمة الفرد الواحد ({currency}):
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => setIsCustomCashRate(!isCustomCashRate)}
-                      className="text-[11px] font-bold text-[#C2410C] hover:underline"
-                    >
-                      {isCustomCashRate ? "استعادة القيم المعتمدة" : "تعديل القيمة يدوياً"}
+                    <button type="button" className="zf-link" onClick={() => setIsCustomCashRate(!isCustomCashRate)}>
+                      <Icon name={isCustomCashRate ? "globe" : "edit"} size={14} />
+                      <span>{isCustomCashRate ? "استعادة القيم المعتمدة" : "تعديل القيمة يدوياً"}</span>
                     </button>
                   </div>
-                  <input
-                    type="number"
-                    min="1"
-                    step="any"
-                    value={isCustomCashRate ? customCashInput : cashRatePerPerson}
-                    onChange={(e) => {
-                      setIsCustomCashRate(true);
-                      setCustomCashInput(e.target.value);
-                    }}
-                    className="w-full rounded-xl border border-[#D4D4CE] bg-white px-3 py-2 text-sm font-bold text-[#0D0D0D] focus:border-[#FF5B04] focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-                  />
-                  <p className="mt-1 text-[11px] text-[#6B6B66]">
-                    {activeCountry.note}
+                  <div className="zf-inwrap">
+                    <input
+                      id={`${uid}-rate`}
+                      type="number"
+                      inputMode="decimal"
+                      min="1"
+                      step="any"
+                      value={isCustomCashRate ? customCashInput : cashRatePerPerson}
+                      onChange={(e) => {
+                        setIsCustomCashRate(true);
+                        setCustomCashInput(e.target.value);
+                      }}
+                      className="zf-input"
+                    />
+                    <span className="zf-suffix" aria-hidden="true">{currency}</span>
+                  </div>
+                  <p className="zf-note">
+                    <Icon name="info" size={16} />
+                    <span>{activeCountry.note}</span>
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="mt-5 space-y-3 border-t border-[#D4D4CE] pt-4">
-                <label className="block text-xs font-bold text-[#555555]">
-                  اختر نوع طعام القوت لإخراج الصاع عيناً:
-                </label>
-                <div className="space-y-2">
-                  {stapleFoodTypes.map((food) => (
-                    <label
-                      key={food.id}
-                      className={`flex items-center justify-between rounded-xl border p-3 text-xs font-bold cursor-pointer transition ${
-                        selectedFoodId === food.id
-                          ? "border-[#FF5B04] bg-[#FFF7ED] text-[#9A3412] ring-2 ring-orange-500/20"
-                          : "border-[#D4D4CE] bg-white text-[#0D0D0D] hover:bg-[#F5F5F2]"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
+              <div className="zf-divider">
+                <p className="zf-label" id={`${uid}-food`}>اختر نوع طعام القوت لإخراج الصاع عيناً:</p>
+                <div className="zf-foods" role="radiogroup" aria-labelledby={`${uid}-food`}>
+                  {stapleFoodTypes.map((food) => {
+                    const on = selectedFoodId === food.id;
+                    return (
+                      <label key={food.id} className={`zf-food${on ? " is-on" : ""}`}>
                         <input
                           type="radio"
-                          name="foodType"
-                          checked={selectedFoodId === food.id}
+                          name={`${uid}-foodType`}
+                          checked={on}
                           onChange={() => setSelectedFoodId(food.id)}
-                          className="h-4 w-4 text-[#FF5B04] focus:ring-[#FF5B04]"
                         />
-                        <span>{food.name}</span>
-                      </div>
-                      <span className="rounded-lg border border-[#D4D4CE] bg-white px-2 py-0.5 text-xs text-[#0D0D0D] font-bold shadow-sm">
-                        الصاع ≈ {food.saWeightKg} كجم
-                      </span>
-                    </label>
-                  ))}
+                        <span className="zf-food-l">
+                          <span className="zf-dot" aria-hidden="true">
+                            {on && <Icon name="check" size={13} />}
+                          </span>
+                          <span>{food.name}</span>
+                        </span>
+                        <span className="zf-pill">الصاع ≈ {food.saWeightKg} كجم</span>
+                      </label>
+                    );
+                  })}
                 </div>
+                <p className="zf-note">
+                  <Icon name="info" size={16} />
+                  <span>{activeFood.note}</span>
+                </p>
               </div>
             )}
-          </div>
+          </Section>
 
-          {/* Family Members Count Card */}
-          <div className="rounded-2xl border border-[#D4D4CE] bg-white p-5 shadow-sm sm:p-6 space-y-4">
-            <h2 className="flex items-center gap-2 text-base font-bold text-[#0D0D0D] sm:text-lg">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#D4D4CE] bg-[#F5F5F2] text-[#0D0D0D] text-sm">
-                👨‍👩‍👧‍👦
-              </span>
-              <span>تحديد أفراد الأسرة والمُعالين</span>
-            </h2>
-
-            <p className="text-xs text-ink-muted leading-relaxed">
+          {/* Family Members */}
+          <Section icon="users" title="تحديد أفراد الأسرة والمُعالين">
+            <p className="zf-sub">
               تجب زكاة الفطر على المسلم عن نفسه وعمن تلزمه نفقته الشرعية وقت غروب شمس ليلة العيد.
             </p>
 
-            {/* Self checkbox */}
-            <label className="flex items-center justify-between rounded-xl border border-brand-border bg-brand-surface/50 p-3 text-xs font-bold text-ink cursor-pointer hover:bg-white">
-              <span className="flex items-center gap-2">
-                <span>👤</span>
-                <span>صاحب الزكاة (نفسك)</span>
-              </span>
-              <input
-                type="checkbox"
-                checked={selfIncluded}
-                onChange={(e) => setSelfIncluded(e.target.checked)}
-                className="h-4 w-4 rounded text-brand focus:ring-brand"
-              />
-            </label>
+            <div style={{ display: "grid", gap: 12 }}>
+              <label className={`zf-self${selfIncluded ? " is-on" : ""}`}>
+                <input
+                  type="checkbox"
+                  checked={selfIncluded}
+                  onChange={(e) => setSelfIncluded(e.target.checked)}
+                />
+                <span className="zf-self-l">
+                  <Icon name="user" size={18} />
+                  <span>صاحب الزكاة (نفسك)</span>
+                </span>
+                <span className="zf-switch" aria-hidden="true" />
+              </label>
 
-            {/* Wives & Parents */}
-            <div className="grid grid-cols-2 gap-3">
-              <NumberSelector
-                label="الزوجة / الزوجات"
-                value={wivesCount}
-                onChange={setWivesCount}
-                min={0}
-                icon="💍"
-              />
-              <NumberSelector
-                label="الوالدان المعالان"
-                value={parentsCount}
-                onChange={setParentsCount}
-                min={0}
-                icon="👵"
-              />
+              <div className="zf-members">
+                <NumberSelector label="الزوجة / الزوجات" value={wivesCount} onChange={setWivesCount} icon="heart" />
+                <NumberSelector label="الوالدان المعالان" value={parentsCount} onChange={setParentsCount} icon="users" />
+                <NumberSelector label="الأبناء (الذكور)" value={sonsCount} onChange={setSonsCount} icon="user" />
+                <NumberSelector label="البنات (الإناث)" value={daughtersCount} onChange={setDaughtersCount} icon="user" />
+                <NumberSelector label="العمالة / المكفولين (تبرعاً)" value={workersCount} onChange={setWorkersCount} icon="briefcase" />
+                <NumberSelector label="الجنين في البطن (مستحبة)" value={unbornCount} onChange={setUnbornCount} icon="sprout" />
+              </div>
             </div>
+          </Section>
 
-            {/* Sons & Daughters */}
-            <div className="grid grid-cols-2 gap-3">
-              <NumberSelector
-                label="الأبناء (الذكور)"
-                value={sonsCount}
-                onChange={setSonsCount}
-                min={0}
-                icon="👦"
-              />
-              <NumberSelector
-                label="البنات (الإناث)"
-                value={daughtersCount}
-                onChange={setDaughtersCount}
-                min={0}
-                icon="👧"
-              />
+          {/* Mobile summary bar */}
+          <div className="zf-mini" role="status">
+            <div className="zf-mini-l">
+              <span className="zf-mini-k">الإجمالي · {calculation.obligIndividuals} أفراد</span>
+              <span className="zf-mini-v"><bdi>{mainValue}</bdi></span>
             </div>
-
-            {/* Workers / Domestic & Unborn */}
-            <div className="grid grid-cols-2 gap-3">
-              <NumberSelector
-                label="العمالة / المكفولين (تبرعاً)"
-                value={workersCount}
-                onChange={setWorkersCount}
-                min={0}
-                icon="🤝"
-              />
-              <NumberSelector
-                label="الجنين في البطن (مستحبة)"
-                value={unbornCount}
-                onChange={setUnbornCount}
-                min={0}
-                icon="👶"
-              />
-            </div>
+            <a className="zf-mini-a" href={`#${resultsId}`}>
+              <span>التفاصيل</span>
+              <Icon name="arrow" size={16} />
+            </a>
           </div>
         </div>
 
-        {/* Right Output Card (6 cols) */}
-        <div className="space-y-6 lg:col-span-6">
-          <div className="rounded-2xl border border-[#D4D4CE] bg-white p-6 shadow-sm sm:p-8">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <span className="inline-block rounded-full bg-[#0D0D0D] px-3 py-1 text-xs font-bold text-white">
-                  النتيجة الشرعية
-                </span>
-                <h2 className="mt-1 text-2xl font-bold text-[#0D0D0D]">
-                  إجمالي زكاة الفطر الواجبة
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-[#D4D4CE] bg-[#F5F5F2] px-3.5 py-1.5 text-xs font-bold text-[#0D0D0D] transition hover:bg-[#EAEAE5]"
-              >
-                <span>{copied ? "✓ تم النسخ!" : "📋 نسخ التقرير"}</span>
-              </button>
-            </div>
+        {/* ── Results ────────────────────────────────────────────────────────── */}
+        <aside className="zf-col zf-aside" aria-label="النتيجة">
+          <div className="zf-result" id={resultsId}>
+            <span className="zf-rtag">النتيجة الشرعية</span>
+            <p className="zf-rlabel">
+              {outputMode === "cash"
+                ? "المبلغ الإجمالي الواجب إخراجه نقداً"
+                : `إجمالي وزن الحبوب المطلوبة (${activeFood.name})`}
+            </p>
+            <p className="zf-rvalue" key={`${mainValue}-${outputMode}`}>
+              <bdi>{mainValue}</bdi>
+            </p>
+            <p className="zf-rpill">
+              <Icon name="scale" size={16} />
+              <span>
+                المقدار الشرعي: {calculation.totalSaObligatory} صاع نبوي ({calculation.obligIndividuals} أفراد)
+              </span>
+            </p>
 
-            {/* Main Result Hero Box */}
-            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[#FF7A29] to-[#FF5B04] p-6 text-center text-[#0D0D0D] shadow-md shadow-orange-500/20 border border-orange-500/20">
-              <p className="text-xs font-bold text-[#0D0D0D]/90">
-                {outputMode === "cash" ? "المبلغ الإجمالي الواجب إخراجه نقداً" : `إجمالي وزن الحبوب المطلوبة (${activeFood.name})`}
-              </p>
-
-              <p className="mt-2 text-3xl font-extrabold text-[#0D0D0D] sm:text-4xl">
-                {outputMode === "cash"
-                  ? `${formatNumber(calculation.totalCashObligatory, 2)} ${currency}`
-                  : `${formatNumber(calculation.totalKgObligatory)} كيلوجرام`}
-              </p>
-
-              <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#0D0D0D] px-3 py-1 text-xs font-bold text-white">
-                <span>⚖️ المقدار الشرعي:</span>
-                <span>{calculation.totalSaObligatory} صاع نبوي ({calculation.obligIndividuals} أفراد)</span>
-              </div>
-
-              {calculation.voluntaryIndividuals > 0 && (
-                <p className="mt-3 text-xs font-bold text-[#0D0D0D]">
-                  + يشمل إضافة الجنين استحباباً:{" "}
+            {calculation.voluntaryIndividuals > 0 && (
+              <p className="zf-rvol">
+                + يشمل إضافة الجنين استحباباً:{" "}
+                <bdi>
                   {outputMode === "cash"
                     ? `${formatNumber(calculation.totalCashWithVoluntary, 2)} ${currency}`
                     : `${formatNumber(calculation.totalKgWithVoluntary)} كجم (${calculation.totalSaWithVoluntary} صاع)`}
-                </p>
-              )}
-            </div>
+                </bdi>
+              </p>
+            )}
+          </div>
 
-            {/* Breakdown List */}
-            <div className="space-y-3 rounded-2xl border border-[#D4D4CE] bg-[#F5F5F2]/70 p-4 text-xs font-mono text-[#0D0D0D]">
-              <div className="flex items-center justify-between border-b border-[#D4D4CE] pb-2">
-                <span className="font-sans font-bold text-[#555555]">
-                  عدد الأفراد الواجب إخراجها عنهم:
+          <section className="zf-box">
+            <div className="zf-head-row">
+              <h2 className="zf-h2">
+                <span className="zf-tile" aria-hidden="true">
+                  <Icon name="receipt" />
                 </span>
-                <span className="font-bold text-[#0D0D0D] text-sm">
-                  {calculation.obligIndividuals} أفراد
-                </span>
+                <span>تفصيل الحساب</span>
+              </h2>
+              <button type="button" className="zf-copy zf-noprint" onClick={handleCopy}>
+                <Icon name={copied ? "check" : "copy"} size={16} />
+                <span>{copied ? "تم النسخ!" : "نسخ التقرير"}</span>
+              </button>
+            </div>
+            <p className="zf-sr" role="status">{copied ? "تم نسخ التقرير" : ""}</p>
+
+            <dl className="zf-rows">
+              <div className="zf-row">
+                <dt>عدد الأفراد الواجب إخراجها عنهم:</dt>
+                <dd>{calculation.obligIndividuals} أفراد</dd>
               </div>
 
-              <div className="flex items-center justify-between border-b border-[#D4D4CE] pb-2">
-                <span className="font-sans font-bold text-[#555555]">
-                  المقدار الواجب للشخص الواحد:
-                </span>
-                <span className="font-bold text-[#C2410C] text-sm">
-                  {outputMode === "cash"
-                    ? `${calculation.rate} ${currency} (صاع)`
-                    : `صاع نبوي (≈ ${calculation.kgPerPerson} كجم ${activeFood.name})`}
-                </span>
+              <div className="zf-row">
+                <dt>المقدار الواجب للشخص الواحد:</dt>
+                <dd>
+                  <bdi>
+                    {outputMode === "cash"
+                      ? `${calculation.rate} ${currency} (صاع)`
+                      : `صاع نبوي (≈ ${calculation.kgPerPerson} كجم ${activeFood.name})`}
+                  </bdi>
+                </dd>
               </div>
 
               {calculation.voluntaryIndividuals > 0 && (
-                <div className="flex items-center justify-between border-b border-[#D4D4CE] pb-2">
-                  <span className="font-sans font-bold text-[#555555]">
-                    الأجنة في البطن (مستحبة كفعل عثمان رضي الله عنه):
-                  </span>
-                  <span className="font-bold text-[#C2410C] text-sm">
-                    {calculation.voluntaryIndividuals} أجنة ({calculation.voluntaryIndividuals} صاع)
-                  </span>
+                <div className="zf-row">
+                  <dt>الأجنة في البطن (مستحبة كفعل عثمان رضي الله عنه):</dt>
+                  <dd>{calculation.voluntaryIndividuals} أجنة ({calculation.voluntaryIndividuals} صاع)</dd>
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-1">
-                <span className="font-sans font-bold text-[#0D0D0D]">
-                  إجمالي الأصوع النبوية الواجبة:
-                </span>
-                <span className="font-bold text-[#0D0D0D] text-base">
-                  {calculation.totalSaObligatory} صاع
-                </span>
+              <div className="zf-row is-total">
+                <dt>إجمالي الأصوع النبوية الواجبة:</dt>
+                <dd>{calculation.totalSaObligatory} صاع</dd>
               </div>
-            </div>
+            </dl>
 
-            {/* Quick Jurisprudence Tip Banner */}
-            <div className="mt-6 rounded-2xl border border-[#D4D4CE] bg-[#F5F5F2] p-4 text-xs leading-relaxed text-[#0D0D0D]">
-              <h4 className="font-bold mb-1 flex items-center gap-1.5 text-[#0D0D0D]">
-                <span>⏰</span>
+            <div className="zf-tip">
+              <h3 className="zf-tip-title">
+                <Icon name="clock" size={18} />
                 <span>توقيت إخراج زكاة الفطر المشروع:</span>
-              </h4>
-              <p className="text-[#555555]">
-                <strong className="text-[#0D0D0D]">أفضل وقت:</strong> صباح يوم العيد قبل الخروج لصلاة العيد.
-                <br />
-                <strong className="text-[#0D0D0D]">وقت الجواز:</strong> يجوز إخراجها قبل العيد بيوم أو يومين (يوم 28 أو 29 رمضان) لتصل إلى الفقراء في وقتها المناسب.
+              </h3>
+              <p>
+                <strong>أفضل وقت:</strong> صباح يوم العيد قبل الخروج لصلاة العيد.
+              </p>
+              <p>
+                <strong>وقت الجواز:</strong> يجوز إخراجها قبل العيد بيوم أو يومين (يوم 28 أو 29 رمضان) لتصل إلى الفقراء في وقتها المناسب.
               </p>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function NumberSelector({ label, value, onChange, min = 0, icon }) {
-  return (
-    <div className="rounded-xl border border-brand-border bg-white p-3">
-      <div className="flex items-center gap-1.5 mb-1.5">
-        <span className="text-sm">{icon}</span>
-        <label className="text-[11px] font-bold text-ink truncate">{label}</label>
-      </div>
-      <div className="flex items-center justify-between rounded-lg border border-brand-border bg-brand-surface">
-        <button
-          type="button"
-          onClick={() => onChange(Math.max(min, value - 1))}
-          className="px-2.5 py-1 text-sm font-bold text-ink hover:text-brand"
-        >
-          -
-        </button>
-        <span className="text-xs font-bold text-ink">{value}</span>
-        <button
-          type="button"
-          onClick={() => onChange(value + 1)}
-          className="px-2.5 py-1 text-sm font-bold text-ink hover:text-brand"
-        >
-          +
-        </button>
+          </section>
+        </aside>
       </div>
     </div>
   );

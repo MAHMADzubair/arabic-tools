@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import HomeHeader from "./HomeHeader";
 import BrandValueGrid from "./BrandValueGrid";
 import HomeSearchDialog from "./HomeSearchDialog";
 
@@ -25,9 +24,6 @@ export default function HomeHero({ toolCount = 15 }) {
           className="qemlo-hero-glow-2 pointer-events-none absolute -bottom-32 -end-32 h-[550px] w-[550px] rounded-full bg-[radial-gradient(circle,rgba(255,91,4,0.18)_0%,rgba(13,13,13,0)_70%)] blur-3xl transition-all"
           aria-hidden="true"
         />
-
-        {/* ── Integrated Header (Non-sticky, Logo on the Right) ── */}
-        <HomeHeader />
 
         {/* ── Hero Content Body (Generous, balanced side padding) ── */}
         <div className="relative z-10 px-6 pt-6 pb-10 sm:px-10 sm:pt-8 sm:pb-12 lg:px-14 xl:px-16">

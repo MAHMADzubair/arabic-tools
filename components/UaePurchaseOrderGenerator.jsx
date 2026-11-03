@@ -2,16 +2,10 @@
 
 /**
  * components/UaePurchaseOrderGenerator.jsx
- * Ink & Signal: UAE purchase order generator.
- * Calculation, draft, prefill-import and invoice-handoff logic is unchanged, except:
- *  - draft restore: the line-id counter is moved above restored ids (otherwise
- *    new lines collide with restored ones and React keys duplicate)
- *  - "خارج النطاق" is now included in the preview totals (it was form-only)
- *  - the two preview headers "الضريبة / VAT" and "VAT" are now
- *    "نسبة الضريبة" and "مبلغ الضريبة"
- *  - clearDraft is wrapped in try/catch
- * Styling is local (inputCls/selectCls/labelCls/stepBadgeCls and the
- * checker's barColor are no longer used here).
+ * Qemlo redesign — glossy orange / ink, SVG icons, 26px radius, dark + light.
+ * ALL logic is unchanged (calculations, draft save/restore, prefill import,
+ * invoice hand-off, over-discount guards, completeness checks).
+ * The printed/preview document (.po-doc) stays fixed ink-on-white for print.
  */
 import { useState, useMemo, useCallback, useEffect } from "react";
 import {
@@ -29,23 +23,23 @@ import { EMIRATES } from "@/lib/countryBusinessConfig";
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
-const DRAFT_KEY   = "uae_purchase_order_draft_v1";
+const DRAFT_KEY = "uae_purchase_order_draft_v1";
 const PREFILL_KEY = "uae_po_prefill_v1";
 
 const VAT_RATES = [
-  { id: "5",      label: "5% — خاضعة للضريبة", rate: 0.05, tag: "5%" },
-  { id: "0",      label: "0% — صفرية المعدل",   rate: 0,    tag: "0%" },
-  { id: "exempt", label: "معفاة",               rate: null, tag: "معفاة" },
-  { id: "out",    label: "خارج النطاق",          rate: null, tag: "خ.ن" },
-  { id: "none",   label: "بدون ضريبة",           rate: null, tag: "—" },
+  { id: "5", label: "5% — خاضعة للضريبة", rate: 0.05, tag: "5%" },
+  { id: "0", label: "0% — صفرية المعدل", rate: 0, tag: "0%" },
+  { id: "exempt", label: "معفاة", rate: null, tag: "معفاة" },
+  { id: "out", label: "خارج النطاق", rate: null, tag: "خ.ن" },
+  { id: "none", label: "بدون ضريبة", rate: null, tag: "—" },
 ];
 
 const UNITS = ["وحدة", "قطعة", "صندوق", "كرتون", "كغ", "طن", "متر", "متر مربع", "لتر", "ساعة", "يوم", "شهر", "نسخة"];
 
 const STATUS_OPTIONS = [
-  { id: "",          label: "بدون حالة" },
-  { id: "draft",     label: "مسودة" },
-  { id: "sent",      label: "مرسل للمورد" },
+  { id: "", label: "بدون حالة" },
+  { id: "draft", label: "مسودة" },
+  { id: "sent", label: "مرسل للمورد" },
   { id: "confirmed", label: "مؤكد" },
   { id: "cancelled", label: "ملغي" },
 ];
@@ -66,8 +60,8 @@ function generatePoNumber() {
   return `PO-${y}-${n}`;
 }
 
-const today  = () => new Date().toISOString().split("T")[0];
-const plus7  = () => { const d = new Date(); d.setDate(d.getDate() + 7);  return d.toISOString().split("T")[0]; };
+const today = () => new Date().toISOString().split("T")[0];
+const plus7 = () => { const d = new Date(); d.setDate(d.getDate() + 7); return d.toISOString().split("T")[0]; };
 
 const defaultBuyer = () => ({
   name: "", address: "", emirate: "دبي", trn: "",
@@ -78,30 +72,66 @@ const defaultSupplier = () => ({
   contactPerson: "", phone: "", email: "",
 });
 const defaultPoDetails = () => ({
-  poNumber:      generatePoNumber(),
-  issueDate:     today(),
-  deliveryDate:  plus7(),
-  currency:      "AED",
-  quoteRef:      "",
-  projectRef:    "",
-  requestedBy:   "",
-  status:        "",
-  showVat:       true,
+  poNumber: generatePoNumber(),
+  issueDate: today(),
+  deliveryDate: plus7(),
+  currency: "AED",
+  quoteRef: "",
+  projectRef: "",
+  requestedBy: "",
+  status: "",
+  showVat: true,
 });
 const defaultDelivery = () => ({
-  address:      "",
+  address: "",
   instructions: "",
   paymentTerms: "50% مقدماً و50% عند التسليم",
-  paymentMethod:"",
-  warranty:     "",
-  returns:      "",
-  notes:        "",
+  paymentMethod: "",
+  warranty: "",
+  returns: "",
+  notes: "",
 });
 const defaultCharges = () => ({
-  shipping:     { label: "رسوم الشحن والتوصيل", amount: "" },
-  installation: { label: "رسوم التركيب",          amount: "" },
-  custom:       { label: "",                        amount: "" },
+  shipping: { label: "رسوم الشحن والتوصيل", amount: "" },
+  installation: { label: "رسوم التركيب", amount: "" },
+  custom: { label: "", amount: "" },
 });
+
+// ─── Icons ─────────────────────────────────────────────────────────────────────
+
+const ICONS = {
+  file: <><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></>,
+  building: <><path d="M4 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16" /><path d="M14 10h5a1 1 0 0 1 1 1v10" /><path d="M8 8h2M8 12h2M8 16h2M3 21h18" /></>,
+  truck: <><path d="M3 6h11v10H3z" /><path d="M14 9h4l3 3v4h-7" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></>,
+  box: <><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" /><path d="m4 7.5 8 4.5 8-4.5M12 12v9" /></>,
+  receipt: <><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z" /><path d="M9 8h6M9 12h6" /></>,
+  wallet: <><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a1 1 0 0 1 1 1v2" /><path d="M3 7.5V17a2 2 0 0 0 2 2h13a1 1 0 0 0 1-1v-3" /><path d="M21 9.5h-4a2.5 2.5 0 0 0 0 5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-.5-.5z" /></>,
+  shield: <><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z" /><path d="m9 12 2.2 2.2L15 10.5" /></>,
+  sum: <><path d="M17 5H7l6 7-6 7h10" /></>,
+  info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>,
+  alert: <><path d="M12 3 2.5 20h19L12 3z" /><path d="M12 10v4M12 17h.01" /></>,
+  check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  save: <><path d="M5 4h11l3 3v13H5z" /><path d="M8 4v5h7V4M8 20v-6h8v6" /></>,
+  undo: <><path d="M9 7 4 12l5 5" /><path d="M4 12h10a6 6 0 0 1 0 12" transform="translate(0 -5)" /></>,
+  trash: <><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></>,
+  copy: <><rect x="8" y="8" width="12" height="12" rx="3" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></>,
+  eye: <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></>,
+  print: <><path d="M7 9V4h10v5" /><rect x="4" y="9" width="16" height="8" rx="2" /><path d="M7 14h10v6H7z" /></>,
+  external: <><path d="M14 4h6v6M20 4l-9 9" /><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></>,
+  edit: <><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="m13 7 4 4" /></>,
+  reset: <><path d="M4 12a8 8 0 1 0 3-6.2" /><path d="M4 4v5h5" /></>,
+  bolt: <path d="M13 3 5 14h6l-1 7 8-11h-6l1-7z" />,
+};
+
+function Icon({ name, size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      {ICONS[name]}
+    </svg>
+  );
+}
 
 // ─── Small UI pieces ───────────────────────────────────────────────────────────
 
@@ -131,7 +161,7 @@ function TextField({ id, label, hint, span, value, onChange, area = false, ...re
 function SelectField({ id, label, span, value, onChange, children }) {
   return (
     <Field id={id} label={label} span={span}>
-      <select id={id} className="po-input" value={value} onChange={(e) => onChange(e.target.value)}>
+      <select id={id} className="po-input po-select" value={value} onChange={(e) => onChange(e.target.value)}>
         {children}
       </select>
     </Field>
@@ -148,17 +178,17 @@ function TrnField({ id, label, hint, value, onChange }) {
         value={value} aria-invalid={has && !ok} aria-describedby={has ? `${id}-msg` : undefined}
         onChange={(e) => onChange(e.target.value.replace(/\D/g, ""))}
       />
-      {has && !ok && <p id={`${id}-msg`} className="po-err">الرقم الضريبي غير صالح شكلياً (عادةً 15 رقماً)</p>}
-      {ok && <p id={`${id}-msg`} className="po-ok">صالح شكلياً</p>}
+      {has && !ok && <p id={`${id}-msg`} className="po-err"><Icon name="alert" size={14} />الرقم الضريبي غير صالح شكلياً (عادةً 15 رقماً)</p>}
+      {ok && <p id={`${id}-msg`} className="po-ok"><Icon name="check" size={14} />صالح شكلياً</p>}
     </Field>
   );
 }
 
-function StepTitle({ n, id, children }) {
+function StepTitle({ icon, id, children }) {
   return (
     <h2 id={id} className="po-h2">
-      <span className="po-num" aria-hidden="true">{n}</span>
-      {children}
+      <span className="po-tile"><Icon name={icon} size={20} /></span>
+      <span>{children}</span>
     </h2>
   );
 }
@@ -166,20 +196,20 @@ function StepTitle({ n, id, children }) {
 // ─── Main Component ─────────────────────────────────────────────────────────────
 
 export default function UaePurchaseOrderGenerator() {
-  const [buyer,      setBuyer]      = useState(defaultBuyer);
-  const [supplier,   setSupplier]   = useState(defaultSupplier);
-  const [poDetails,  setPoDetails]  = useState(defaultPoDetails);
-  const [lines,      setLines]      = useState([emptyLine()]);
-  const [charges,    setCharges]    = useState(defaultCharges);
-  const [delivery,   setDelivery]   = useState(defaultDelivery);
-  const [activeTab,  setActiveTab]  = useState("form");
-  const [draftMsg,   setDraftMsg]   = useState("");
-  const [showChecker,setShowChecker]= useState(false);
+  const [buyer, setBuyer] = useState(defaultBuyer);
+  const [supplier, setSupplier] = useState(defaultSupplier);
+  const [poDetails, setPoDetails] = useState(defaultPoDetails);
+  const [lines, setLines] = useState([emptyLine()]);
+  const [charges, setCharges] = useState(defaultCharges);
+  const [delivery, setDelivery] = useState(defaultDelivery);
+  const [activeTab, setActiveTab] = useState("form");
+  const [draftMsg, setDraftMsg] = useState("");
+  const [showChecker, setShowChecker] = useState(false);
 
   const flash = (msg) => { setDraftMsg(msg); setTimeout(() => setDraftMsg(""), 3000); };
 
   // ── Prefill from Quotation Generator ──────────────────────────────────────────
-  const [prefillData,      setPrefillData]      = useState(null);
+  const [prefillData, setPrefillData] = useState(null);
   const [prefillDismissed, setPrefillDismissed] = useState(false);
 
   useEffect(() => {
@@ -192,8 +222,8 @@ export default function UaePurchaseOrderGenerator() {
   const handleImportPrefill = () => {
     if (!prefillData) return;
     try {
-      if (prefillData.supplier)  setSupplier(s => ({ ...s, ...prefillData.supplier }));
-      if (prefillData.buyer)     setBuyer(b => ({ ...b, ...prefillData.buyer }));
+      if (prefillData.supplier) setSupplier(s => ({ ...s, ...prefillData.supplier }));
+      if (prefillData.buyer) setBuyer(b => ({ ...b, ...prefillData.buyer }));
       if (prefillData.lines && prefillData.lines.length > 0) setLines(prefillData.lines.map(l => ({ ...l, id: newLineId(), sku: l.sku || "" })));
       if (prefillData.poDetails) setPoDetails(d => ({ ...d, ...prefillData.poDetails }));
       localStorage.removeItem(PREFILL_KEY);
@@ -216,16 +246,16 @@ export default function UaePurchaseOrderGenerator() {
       const raw = localStorage.getItem(DRAFT_KEY);
       if (!raw) { flash("لا توجد مسودة محفوظة"); return; }
       const d = JSON.parse(raw);
-      if (d.buyer)      setBuyer(d.buyer);
-      if (d.supplier)   setSupplier(d.supplier);
-      if (d.poDetails)  setPoDetails(d.poDetails);
+      if (d.buyer) setBuyer(d.buyer);
+      if (d.supplier) setSupplier(d.supplier);
+      if (d.poDetails) setPoDetails(d.poDetails);
       if (d.lines) {
         // keep new ids above restored ids (otherwise duplicate keys after reload)
         _lineId = Math.max(_lineId, ...d.lines.map((l) => Number(l.id) || 0));
         setLines(d.lines);
       }
-      if (d.charges)    setCharges(d.charges);
-      if (d.delivery)   setDelivery(d.delivery);
+      if (d.charges) setCharges(d.charges);
+      if (d.delivery) setDelivery(d.delivery);
       flash("تمت استعادة المسودة");
     } catch { flash("تعذّرت الاستعادة"); }
   }, []);
@@ -236,10 +266,10 @@ export default function UaePurchaseOrderGenerator() {
   }, []);
 
   // ── Line helpers ──────────────────────────────────────────────────────────────
-  const updateLine    = (id, field, value) =>
+  const updateLine = (id, field, value) =>
     setLines(ls => ls.map(l => l.id === id ? { ...l, [field]: value } : l));
-  const addLine       = () => setLines(ls => [...ls, emptyLine()]);
-  const removeLine    = (id) => setLines(ls => ls.length > 1 ? ls.filter(l => l.id !== id) : ls);
+  const addLine = () => setLines(ls => [...ls, emptyLine()]);
+  const removeLine = (id) => setLines(ls => ls.length > 1 ? ls.filter(l => l.id !== id) : ls);
   const duplicateLine = (id) => {
     const src = lines.find(l => l.id === id);
     if (!src) return;
@@ -251,9 +281,9 @@ export default function UaePurchaseOrderGenerator() {
   };
 
   const handleReset = () => {
-    setBuyer(defaultBuyer());        setSupplier(defaultSupplier());
+    setBuyer(defaultBuyer()); setSupplier(defaultSupplier());
     setPoDetails(defaultPoDetails()); setLines([emptyLine()]);
-    setCharges(defaultCharges());    setDelivery(defaultDelivery());
+    setCharges(defaultCharges()); setDelivery(defaultDelivery());
     setActiveTab("form");
   };
 
@@ -265,17 +295,9 @@ export default function UaePurchaseOrderGenerator() {
 
   // ── Open invoice generator ────────────────────────────────────────────────────
   /**
-   * Derive a draft invoice number from the PO number.
-   *
-   * Rules (applied in order):
-   *  1. Strip a leading PO- / LPO- / po- / lpo- prefix (case-insensitive) and
-   *     prepend INV-.
-   *  2. If no recognised prefix is found, prepend "INV-" to whatever the user
-   *     entered.
-   *
-   * This is a *draft reference* only.  A compliant sequential tax invoice
-   * number must be assigned by the supplier's invoicing system; the PO
-   * reference is preserved in the notes so the issuer can cross-reference it.
+   * Draft invoice number derived from the PO number (strip PO-/LPO- prefix, add INV-).
+   * Draft reference only — a compliant sequential tax invoice number must be assigned
+   * by the supplier's invoicing system; the PO reference is kept in the notes.
    */
   const deriveDraftInvoiceNumber = (poNumber) => {
     const stripped = poNumber.replace(/^(L?PO[-_]?)/i, "");
@@ -286,14 +308,13 @@ export default function UaePurchaseOrderGenerator() {
     try {
       const draftInvNumber = deriveDraftInvoiceNumber(poDetails.poNumber);
       const payload = {
-        seller:  { name: supplier.name, address: supplier.address, emirate: supplier.emirate, trn: supplier.trn, email: supplier.email, phone: supplier.phone, cr: "" },
-        buyer:   { name: buyer.name, address: buyer.address, emirate: buyer.emirate, trn: buyer.trn, vatRegistered: buyer.trn ? "yes" : "no" },
+        seller: { name: supplier.name, address: supplier.address, emirate: supplier.emirate, trn: supplier.trn, email: supplier.email, phone: supplier.phone, cr: "" },
+        buyer: { name: buyer.name, address: buyer.address, emirate: buyer.emirate, trn: buyer.trn, vatRegistered: buyer.trn ? "yes" : "no" },
         details: {
           invoiceNumber: draftInvNumber,
-          issueDate:     poDetails.issueDate,
-          supplyDate:    "",
-          currency:      poDetails.currency,
-          // Preserve the PO reference so the invoice issuer can cross-reference it.
+          issueDate: poDetails.issueDate,
+          supplyDate: "",
+          currency: poDetails.currency,
           notes: [
             `مرجع أمر الشراء / PO Ref: ${poDetails.poNumber}`,
             delivery.notes,
@@ -306,51 +327,45 @@ export default function UaePurchaseOrderGenerator() {
     window.open("/ar/ae/vat-invoice-generator", "_blank");
   };
 
-  // ── Calculations (discount summary fix: effective discount capped at gross) ──
+  // ── Calculations (effective discount capped at gross so totals reconcile) ────
   const { lineCalcs, totals } = useMemo(() => {
     const lineCalcs = lines.map(l => {
-      const rateObj      = VAT_RATES.find(r => r.id === l.vatRateId) || VAT_RATES[0];
+      const rateObj = VAT_RATES.find(r => r.id === l.vatRateId) || VAT_RATES[0];
       const effectiveRate = poDetails.showVat ? rateObj.rate : null;
-      const result       = calcLineVat({ qty: l.qty, unitPrice: l.unitPrice, discount: l.discount, vatRate: effectiveRate });
-      // effectiveDiscount: the discount actually applied to this line (capped at gross).
-      // This is what reconciles the summary: grossTotal - effectiveDiscountTotal = sum of taxableBases.
-      // We preserve result.discount (raw entered) for display/warning purposes.
+      const result = calcLineVat({ qty: l.qty, unitPrice: l.unitPrice, discount: l.discount, vatRate: effectiveRate });
       const effectiveDiscount = Math.min(result.discount, result.gross);
       return { ...result, rateObj, effectiveDiscount };
     });
 
     const chargeTotal = parseNum(charges.shipping.amount) + parseNum(charges.installation.amount) + parseNum(charges.custom.amount);
-    const grossTotal         = lineCalcs.reduce((s, l) => s + l.gross, 0);
-    // totalDiscount shown in summary = sum of EFFECTIVE (capped) discounts.
-    // This ensures: grossTotal - totalDiscount = sum of taxableBases (always reconciles).
-    const totalDiscount      = lineCalcs.reduce((s, l) => s + l.effectiveDiscount, 0);
-    const taxable5      = lineCalcs.filter(l => l.rateObj.id === "5").reduce((s, l) => s + l.taxableBase, 0);
-    const taxable0      = lineCalcs.filter(l => l.rateObj.id === "0").reduce((s, l) => s + l.taxableBase, 0);
-    const exemptTotal   = lineCalcs.filter(l => l.rateObj.id === "exempt").reduce((s, l) => s + l.taxableBase, 0);
-    const outTotal      = lineCalcs.filter(l => l.rateObj.id === "out").reduce((s, l) => s + l.taxableBase, 0);
-    const totalVat      = lineCalcs.reduce((s, l) => s + l.vatAmount, 0);
-    const grandTotal    = lineCalcs.reduce((s, l) => s + l.lineTotal, 0) + chargeTotal;
+    const grossTotal = lineCalcs.reduce((s, l) => s + l.gross, 0);
+    const totalDiscount = lineCalcs.reduce((s, l) => s + l.effectiveDiscount, 0);
+    const taxable5 = lineCalcs.filter(l => l.rateObj.id === "5").reduce((s, l) => s + l.taxableBase, 0);
+    const taxable0 = lineCalcs.filter(l => l.rateObj.id === "0").reduce((s, l) => s + l.taxableBase, 0);
+    const exemptTotal = lineCalcs.filter(l => l.rateObj.id === "exempt").reduce((s, l) => s + l.taxableBase, 0);
+    const outTotal = lineCalcs.filter(l => l.rateObj.id === "out").reduce((s, l) => s + l.taxableBase, 0);
+    const totalVat = lineCalcs.reduce((s, l) => s + l.vatAmount, 0);
+    const grandTotal = lineCalcs.reduce((s, l) => s + l.lineTotal, 0) + chargeTotal;
 
     return { lineCalcs, totals: { grossTotal, totalDiscount, taxable5, taxable0, exemptTotal, outTotal, totalVat, chargeTotal, grandTotal } };
   }, [lines, charges, poDetails.showVat]);
 
-  // ── Completeness checks (unchanged) ───────────────────────────────────────────
+  // ── Completeness checks ───────────────────────────────────────────────────────
   const checks = useMemo(() => {
     const c = [];
-    buyer.name.trim()                  ? c.push(checkOk("اسم الشركة المشترية"))     : c.push(checkMissing("اسم الشركة المشترية", "مطلوب"));
-    supplier.name.trim()               ? c.push(checkOk("اسم المورد"))               : c.push(checkMissing("اسم المورد", "مطلوب"));
-    poDetails.poNumber.trim()          ? c.push(checkOk("رقم أمر الشراء"))           : c.push(checkMissing("رقم أمر الشراء", "مطلوب"));
-    poDetails.issueDate                ? c.push(checkOk("تاريخ الإصدار"))             : c.push(checkMissing("تاريخ الإصدار", "مطلوب"));
-    poDetails.deliveryDate             ? c.push(checkOk("تاريخ التسليم المتوقع"))     : c.push(checkWarn("تاريخ التسليم المتوقع", "يُستحسن تحديده"));
+    buyer.name.trim() ? c.push(checkOk("اسم الشركة المشترية")) : c.push(checkMissing("اسم الشركة المشترية", "مطلوب"));
+    supplier.name.trim() ? c.push(checkOk("اسم المورد")) : c.push(checkMissing("اسم المورد", "مطلوب"));
+    poDetails.poNumber.trim() ? c.push(checkOk("رقم أمر الشراء")) : c.push(checkMissing("رقم أمر الشراء", "مطلوب"));
+    poDetails.issueDate ? c.push(checkOk("تاريخ الإصدار")) : c.push(checkMissing("تاريخ الإصدار", "مطلوب"));
+    poDetails.deliveryDate ? c.push(checkOk("تاريخ التسليم المتوقع")) : c.push(checkWarn("تاريخ التسليم المتوقع", "يُستحسن تحديده"));
     const badLines = lines.filter(l => !l.name.trim() || !parseNum(l.unitPrice));
-    badLines.length === 0              ? c.push(checkOk("بنود أمر الشراء (وصف + سعر)")) : c.push(checkMissing("بنود أمر الشراء", `${badLines.length} بند ناقص`));
-    delivery.paymentTerms.trim()       ? c.push(checkOk("شروط الدفع"))               : c.push(checkWarn("شروط الدفع", "يُستحسن تحديدها"));
+    badLines.length === 0 ? c.push(checkOk("بنود أمر الشراء (وصف + سعر)")) : c.push(checkMissing("بنود أمر الشراء", `${badLines.length} بند ناقص`));
+    delivery.paymentTerms.trim() ? c.push(checkOk("شروط الدفع")) : c.push(checkWarn("شروط الدفع", "يُستحسن تحديدها"));
     return c;
   }, [buyer, supplier, poDetails, lines, delivery]);
 
   const { okCount, warnCount, missCount, completePct } = calcCompleteness(checks);
 
-  // Lines where entered discount exceeds the line gross — prevents misleading PDF
   const overDiscountLines = lines.filter(l =>
     discountExceedsGross(l.qty, l.unitPrice, l.discount)
   );
@@ -362,10 +377,10 @@ export default function UaePurchaseOrderGenerator() {
   const totalRows = (bi) => [
     { label: bi ? "المجموع الفرعي / Subtotal" : "المجموع قبل الخصم", val: totals.grossTotal },
     totals.totalDiscount > 0 && { label: bi ? "الخصومات / Discounts" : "إجمالي الخصومات", val: -totals.totalDiscount },
-    poDetails.showVat && totals.taxable5 > 0     && { label: bi ? "خاضع 5% / Taxable 5%" : "القيمة الخاضعة لـ 5%", val: totals.taxable5 },
-    poDetails.showVat && totals.taxable0 > 0     && { label: bi ? "صفري / Zero-rated" : "القيمة الخاضعة لـ 0%", val: totals.taxable0 },
-    poDetails.showVat && totals.exemptTotal > 0  && { label: bi ? "معفاة / Exempt" : "القيمة المعفاة", val: totals.exemptTotal },
-    poDetails.showVat && totals.outTotal > 0     && { label: bi ? "خارج النطاق / Out of scope" : "خارج النطاق", val: totals.outTotal },
+    poDetails.showVat && totals.taxable5 > 0 && { label: bi ? "خاضع 5% / Taxable 5%" : "القيمة الخاضعة لـ 5%", val: totals.taxable5 },
+    poDetails.showVat && totals.taxable0 > 0 && { label: bi ? "صفري / Zero-rated" : "القيمة الخاضعة لـ 0%", val: totals.taxable0 },
+    poDetails.showVat && totals.exemptTotal > 0 && { label: bi ? "معفاة / Exempt" : "القيمة المعفاة", val: totals.exemptTotal },
+    poDetails.showVat && totals.outTotal > 0 && { label: bi ? "خارج النطاق / Out of scope" : "خارج النطاق", val: totals.outTotal },
     poDetails.showVat && { label: bi ? "إجمالي الضريبة / Total VAT" : "إجمالي ضريبة القيمة المضافة", val: totals.totalVat, bold: true },
     totals.chargeTotal > 0 && { label: bi ? "رسوم إضافية / Charges" : "إجمالي الرسوم الإضافية", val: totals.chargeTotal },
   ].filter(Boolean);
@@ -388,7 +403,7 @@ export default function UaePurchaseOrderGenerator() {
       {/* Prefill banner */}
       {prefillData && !prefillDismissed && (
         <aside className="po-note po-noprint" aria-live="polite">
-          <span className="po-mark" aria-hidden="true">!</span>
+          <span className="po-ico"><Icon name="info" size={20} /></span>
           <div className="po-note-body">
             <p className="po-small-b">تم اكتشاف بيانات من مولد عرض السعر الإماراتي</p>
             <p className="po-small">لن تُستبدل البيانات الحالية إلا بعد موافقتك الصريحة</p>
@@ -405,29 +420,32 @@ export default function UaePurchaseOrderGenerator() {
         <div className="po-head-row">
           <div>
             {/* Intentionally not an H1 — the page hero already owns the H1 */}
-            <p className="po-h1" role="heading" aria-level="2">مولد أمر الشراء في الإمارات</p>
+            <p className="po-h1" role="heading" aria-level="2">
+              <span className="po-tile"><Icon name="file" size={20} /></span>
+              مولد أمر الشراء في الإمارات
+            </p>
             <p className="po-lead">أنشئ أمر شراء احترافي بالعربية والإنجليزية — للشركات والمتاجر وفرق المشتريات في الإمارات</p>
           </div>
-          <button type="button" className="po-btn po-btn-o" onClick={handleReset}>مسح</button>
+          <button type="button" className="po-btn po-btn-o" onClick={handleReset}><Icon name="reset" size={16} />مسح</button>
         </div>
 
         <div className="po-actions po-draft">
-          <button type="button" className="po-btn po-btn-o po-btn-sm" onClick={saveDraft}>حفظ المسودة</button>
-          <button type="button" className="po-btn po-btn-o po-btn-sm" onClick={restoreDraft}>استعادة آخر مسودة</button>
-          <button type="button" className="po-btn po-btn-o po-btn-sm" onClick={clearDraft}>مسح المسودة</button>
+          <button type="button" className="po-btn po-btn-o po-btn-sm" onClick={saveDraft}><Icon name="save" size={16} />حفظ المسودة</button>
+          <button type="button" className="po-btn po-btn-o po-btn-sm" onClick={restoreDraft}><Icon name="undo" size={16} />استعادة آخر مسودة</button>
+          <button type="button" className="po-btn po-btn-o po-btn-sm" onClick={clearDraft}><Icon name="trash" size={16} />مسح المسودة</button>
           <span className="po-small" role="status" aria-live="polite">{draftMsg}</span>
           <span className="po-small po-push">محفوظ على هذا الجهاز فقط</span>
         </div>
 
         <div className="po-tabs" role="group" aria-label="العرض">
-          <button type="button" aria-pressed={activeTab === "form"} onClick={() => setActiveTab("form")}>إدخال البيانات</button>
+          <button type="button" aria-pressed={activeTab === "form"} onClick={() => setActiveTab("form")}><Icon name="edit" size={16} />إدخال البيانات</button>
           <button
             type="button"
             aria-pressed={activeTab === "preview"}
             disabled={hasOverDiscount}
             aria-disabled={hasOverDiscount}
             onClick={() => !hasOverDiscount && setActiveTab("preview")}
-          >معاينة أمر الشراء</button>
+          ><Icon name="eye" size={16} />معاينة أمر الشراء</button>
         </div>
       </header>
 
@@ -437,7 +455,7 @@ export default function UaePurchaseOrderGenerator() {
 
           {/* 1 — PO details */}
           <section className="po-card" aria-labelledby="po-s1">
-            <StepTitle n="1" id="po-s1">بيانات أمر الشراء</StepTitle>
+            <StepTitle icon="file" id="po-s1">بيانات أمر الشراء</StepTitle>
             <div className="po-two">
               <TextField id="po-no" label="رقم أمر الشراء (PO No.) *" placeholder="PO-2026-0001" dir="ltr"
                 value={poDetails.poNumber} onChange={(v) => setPoDetails((d) => ({ ...d, poNumber: v }))} />
@@ -477,7 +495,7 @@ export default function UaePurchaseOrderGenerator() {
 
           {/* 2 — Buyer */}
           <section className="po-card" aria-labelledby="po-s2">
-            <StepTitle n="2" id="po-s2">بيانات المشتري (شركتك / جهة الشراء)</StepTitle>
+            <StepTitle icon="building" id="po-s2">بيانات المشتري (شركتك / جهة الشراء)</StepTitle>
             <div className="po-two">
               <TextField id="po-bname" span label="اسم الشركة *" placeholder="شركة الأفق التجارية ذ.م.م"
                 value={buyer.name} onChange={(v) => setBuyer((b) => ({ ...b, name: v }))} />
@@ -499,7 +517,7 @@ export default function UaePurchaseOrderGenerator() {
 
           {/* 3 — Supplier */}
           <section className="po-card" aria-labelledby="po-s3">
-            <StepTitle n="3" id="po-s3">بيانات المورد (Supplier)</StepTitle>
+            <StepTitle icon="truck" id="po-s3">بيانات المورد (Supplier)</StepTitle>
             <div className="po-two">
               <TextField id="po-sname" span label="اسم المورد *" placeholder="شركة التوريدات التقنية ذ.م.م"
                 value={supplier.name} onChange={(v) => setSupplier((s) => ({ ...s, name: v }))} />
@@ -522,20 +540,20 @@ export default function UaePurchaseOrderGenerator() {
 
           {/* 4 — Lines */}
           <section className="po-card" aria-labelledby="po-s4">
-            <StepTitle n="4" id="po-s4">بنود الطلب</StepTitle>
+            <StepTitle icon="box" id="po-s4">بنود الطلب</StepTitle>
             <div className="po-stack">
               {lines.map((line, idx) => {
-                const calc     = lineCalcs[idx];
-                const rateObj  = VAT_RATES.find((r) => r.id === line.vatRateId) || VAT_RATES[0];
+                const calc = lineCalcs[idx];
+                const rateObj = VAT_RATES.find((r) => r.id === line.vatRateId) || VAT_RATES[0];
                 const overDisc = discountExceedsGross(line.qty, line.unitPrice, line.discount);
                 const k = `po-l${line.id}`;
                 return (
                   <fieldset key={line.id} className="po-line">
                     <legend className="po-legend">بند {idx + 1}</legend>
                     <div className="po-actions po-line-top">
-                      <button type="button" className="po-link" aria-label={`تكرار البند ${idx + 1}`} onClick={() => duplicateLine(line.id)}>تكرار</button>
+                      <button type="button" className="po-link" aria-label={`تكرار البند ${idx + 1}`} onClick={() => duplicateLine(line.id)}><Icon name="copy" size={15} />تكرار</button>
                       {lines.length > 1 && (
-                        <button type="button" className="po-link" aria-label={`حذف البند ${idx + 1}`} onClick={() => removeLine(line.id)}>حذف</button>
+                        <button type="button" className="po-link" aria-label={`حذف البند ${idx + 1}`} onClick={() => removeLine(line.id)}><Icon name="trash" size={15} />حذف</button>
                       )}
                     </div>
 
@@ -562,7 +580,7 @@ export default function UaePurchaseOrderGenerator() {
                         <input id={`${k}-disc`} className="po-input" type="number" min="0" step="any" placeholder="0" dir="ltr"
                           aria-invalid={overDisc} aria-describedby={overDisc ? `${k}-disc-msg` : undefined}
                           value={line.discount} onChange={(e) => updateLine(line.id, "discount", e.target.value)} />
-                        {overDisc && <p id={`${k}-disc-msg`} className="po-err">الخصم يتجاوز قيمة البند</p>}
+                        {overDisc && <p id={`${k}-disc-msg`} className="po-err"><Icon name="alert" size={14} />الخصم يتجاوز قيمة البند</p>}
                       </Field>
                       {poDetails.showVat && (
                         <SelectField id={`${k}-vat`} label="نسبة الضريبة" value={line.vatRateId} onChange={(v) => updateLine(line.id, "vatRateId", v)}>
@@ -582,15 +600,14 @@ export default function UaePurchaseOrderGenerator() {
                 );
               })}
             </div>
-            <button type="button" className="po-add" onClick={addLine}>+ إضافة بند جديد</button>
+            <button type="button" className="po-add" onClick={addLine}><Icon name="plus" size={18} />إضافة بند جديد</button>
           </section>
 
           {/* 5 — Charges */}
           <section className="po-card" aria-labelledby="po-s5">
-            <StepTitle n="5" id="po-s5">رسوم إضافية (اختياري)</StepTitle>
-            {/* VAT-treatment notice — visible to user before printing */}
+            <StepTitle icon="receipt" id="po-s5">رسوم إضافية (اختياري)</StepTitle>
             <div className="po-dash po-noprint" role="note">
-              <p className="po-small-b">⚠️ تنبيه: معالجة ضريبة القيمة المضافة على الرسوم الإضافية</p>
+              <p className="po-small-b po-with-ico"><span className="po-ico"><Icon name="alert" size={18} /></span>تنبيه: معالجة ضريبة القيمة المضافة على الرسوم الإضافية</p>
               <p className="po-small">
                 المبالغ المدخلة هنا تُضاف كما هي إلى الإجمالي النهائي — بدون احتساب ضريبة قيمة مضافة إضافية.
                 إذا كانت هذه الرسوم خاضعة لـ VAT، فيجب أن يشمل المبلغ المدخل ضريبة القيمة المضافة، أو يمكنك إضافتها كبند منفصل في قسم «بنود الطلب» باختيار نسبة الضريبة المناسبة.
@@ -599,9 +616,9 @@ export default function UaePurchaseOrderGenerator() {
             </div>
             <div className="po-stack">
               {[
-                { key: "shipping",     placeholder: "رسوم الشحن والتوصيل", lab: "التسمية" },
+                { key: "shipping", placeholder: "رسوم الشحن والتوصيل", lab: "التسمية" },
                 { key: "installation", placeholder: "رسوم التركيب والتشغيل", lab: "التسمية" },
-                { key: "custom",       placeholder: "رسوم إضافية...", lab: "رسوم مخصصة (التسمية)" },
+                { key: "custom", placeholder: "رسوم إضافية...", lab: "رسوم مخصصة (التسمية)" },
               ].map(({ key, placeholder, lab }) => (
                 <div key={key} className="po-two">
                   <TextField id={`po-c-${key}-l`} label={lab} placeholder={placeholder} value={charges[key].label}
@@ -626,7 +643,7 @@ export default function UaePurchaseOrderGenerator() {
 
           {/* 6 — Delivery */}
           <section className="po-card" aria-labelledby="po-s6">
-            <StepTitle n="6" id="po-s6">شروط التسليم والدفع</StepTitle>
+            <StepTitle icon="wallet" id="po-s6">شروط التسليم والدفع</StepTitle>
             <div className="po-two">
               <TextField id="po-d-addr" span label="عنوان التسليم" placeholder="نفس عنوان الشركة أو عنوان مختلف"
                 value={delivery.address} onChange={(v) => setDelivery((d) => ({ ...d, address: v }))} />
@@ -648,9 +665,12 @@ export default function UaePurchaseOrderGenerator() {
           {/* Completeness checker */}
           <section className="po-card" aria-labelledby="po-chk">
             <div className="po-head-row">
-              <div>
-                <h2 id="po-chk" className="po-h2">فحص مبدئي لاكتمال أمر الشراء</h2>
-                <p className="po-small">تحقق شكلي — ليس شرطاً قانونياً</p>
+              <div className="po-chk-head">
+                <span className="po-tile"><Icon name="shield" size={20} /></span>
+                <div>
+                  <h2 id="po-chk" className="po-h2-plain">فحص مبدئي لاكتمال أمر الشراء</h2>
+                  <p className="po-small">تحقق شكلي — ليس شرطاً قانونياً</p>
+                </div>
               </div>
               <button type="button" className="po-link" aria-expanded={showChecker} aria-controls="po-chk-list" onClick={() => setShowChecker((v) => !v)}>
                 {showChecker ? "إخفاء التفاصيل" : "عرض التفاصيل"}
@@ -672,11 +692,10 @@ export default function UaePurchaseOrderGenerator() {
             {showChecker && (
               <ul id="po-chk-list" className="po-checks">
                 {checks.map((c, i) => {
-                  const mark = c.status === "ok" ? "✓" : "!";
                   const word = c.status === "ok" ? "مكتمل" : c.status === "warning" ? "يحتاج مراجعة" : "مفقود";
                   return (
-                    <li key={i} className={`po-check ${c.status === "missing" ? "po-check-miss" : c.status === "warning" ? "po-check-warn" : ""}`}>
-                      <span className="po-mark" aria-hidden="true">{mark}</span>
+                    <li key={i} className={`po-check ${c.status === "missing" ? "po-check-miss" : c.status === "warning" ? "po-check-warn" : "po-check-ok"}`}>
+                      <span className="po-mark" aria-hidden="true"><Icon name={c.status === "ok" ? "check" : "alert"} size={14} /></span>
                       <span><strong>{c.label}</strong> ({word}){c.hint && <> — {c.hint}</>}</span>
                     </li>
                   );
@@ -694,7 +713,7 @@ export default function UaePurchaseOrderGenerator() {
               disabled={hasOverDiscount}
               aria-disabled={hasOverDiscount}
             >
-              معاينة أمر الشراء
+              <Icon name="eye" size={18} />معاينة أمر الشراء
             </button>
             <button
               type="button"
@@ -703,17 +722,17 @@ export default function UaePurchaseOrderGenerator() {
               disabled={hasOverDiscount}
               aria-disabled={hasOverDiscount}
             >
-              طباعة / PDF
+              <Icon name="print" size={18} />طباعة / PDF
             </button>
             <button type="button" className="po-btn po-btn-o" onClick={handleOpenInvoice}>
-              فتح مولد الفاتورة<span className="po-sr"> (يفتح في نافذة جديدة)</span>
+              <Icon name="external" size={18} />فتح مولد الفاتورة<span className="po-sr"> (يفتح في نافذة جديدة)</span>
             </button>
           </div>
 
-          {/* Over-discount blocking error — prevents printing a contradictory document */}
+          {/* Over-discount blocking error */}
           {hasOverDiscount && (
-            <aside className="po-note" role="alert" aria-live="assertive">
-              <span className="po-mark" aria-hidden="true">!</span>
+            <aside className="po-note po-note-err" role="alert" aria-live="assertive">
+              <span className="po-ico"><Icon name="alert" size={20} /></span>
               <div className="po-note-body">
                 <p className="po-small-b">لا يمكن معاينة أو طباعة أمر الشراء</p>
                 <p className="po-small">
@@ -728,8 +747,11 @@ export default function UaePurchaseOrderGenerator() {
           )}
 
           <aside className="po-note-b">
-            <p className="po-small-b">ملاحظة</p>
-            <p className="po-small">أمر الشراء ليس فاتورة ضريبية. لإصدار فاتورة ضريبية معتمدة استخدم مولد الفاتورة الضريبية الإماراتي — بعد قبول المورد لأمر الشراء وإتمام التوريد.</p>
+            <span className="po-ico"><Icon name="info" size={20} /></span>
+            <div>
+              <p className="po-small-b">ملاحظة</p>
+              <p className="po-small">أمر الشراء ليس فاتورة ضريبية. لإصدار فاتورة ضريبية معتمدة استخدم مولد الفاتورة الضريبية الإماراتي — بعد قبول المورد لأمر الشراء وإتمام التوريد.</p>
+            </div>
           </aside>
         </div>
       )}
@@ -738,14 +760,14 @@ export default function UaePurchaseOrderGenerator() {
       {activeTab === "preview" && (
         <>
           <div className="po-actions po-noprint">
-            <button type="button" className="po-btn po-btn-o" onClick={() => setActiveTab("form")}>العودة للتعديل</button>
+            <button type="button" className="po-btn po-btn-o" onClick={() => setActiveTab("form")}><Icon name="edit" size={18} />العودة للتعديل</button>
             <button
               type="button"
               className="po-btn po-btn-p"
               onClick={handlePrint}
               disabled={hasOverDiscount}
               aria-disabled={hasOverDiscount}
-            >طباعة / PDF</button>
+            ><Icon name="print" size={18} />طباعة / PDF</button>
           </div>
 
           <article id="po-print" className="po-doc">
@@ -795,6 +817,7 @@ export default function UaePurchaseOrderGenerator() {
                 </div>
               </div>
 
+              <p className="po-scroll-hint po-noprint">اسحب الجدول يميناً ويساراً لعرض كل الأعمدة</p>
               <div className="po-doc-scroll">
                 <table className="po-doc-table">
                   <thead>
@@ -813,7 +836,7 @@ export default function UaePurchaseOrderGenerator() {
                   </thead>
                   <tbody>
                     {lines.map((line, idx) => {
-                      const calc    = lineCalcs[idx];
+                      const calc = lineCalcs[idx];
                       const rateObj = VAT_RATES.find((r) => r.id === line.vatRateId) || VAT_RATES[0];
                       return (
                         <tr key={line.id}>
@@ -859,12 +882,12 @@ export default function UaePurchaseOrderGenerator() {
                 <div className="po-doc-box">
                   <p className="po-doc-cap">شروط التسليم والدفع / Delivery &amp; Payment Terms</p>
                   <div className="po-doc-terms">
-                    {delivery.address       && <p className="po-doc-wide"><strong>عنوان التسليم: </strong>{delivery.address}</p>}
-                    {delivery.paymentTerms  && <p><strong>الدفع: </strong>{delivery.paymentTerms}</p>}
+                    {delivery.address && <p className="po-doc-wide"><strong>عنوان التسليم: </strong>{delivery.address}</p>}
+                    {delivery.paymentTerms && <p><strong>الدفع: </strong>{delivery.paymentTerms}</p>}
                     {delivery.paymentMethod && <p><strong>طريقة الدفع: </strong>{delivery.paymentMethod}</p>}
-                    {delivery.instructions  && <p className="po-doc-wide"><strong>تعليمات التسليم: </strong>{delivery.instructions}</p>}
-                    {delivery.warranty      && <p><strong>الضمان: </strong>{delivery.warranty}</p>}
-                    {delivery.returns       && <p><strong>الإرجاع: </strong>{delivery.returns}</p>}
+                    {delivery.instructions && <p className="po-doc-wide"><strong>تعليمات التسليم: </strong>{delivery.instructions}</p>}
+                    {delivery.warranty && <p><strong>الضمان: </strong>{delivery.warranty}</p>}
+                    {delivery.returns && <p><strong>الإرجاع: </strong>{delivery.returns}</p>}
                   </div>
                 </div>
               )}
@@ -906,140 +929,188 @@ export default function UaePurchaseOrderGenerator() {
 }
 
 /**
- * Local styles. Map the --po-* fallbacks to your real Ink & Signal tokens.
+ * Styles. Form UI follows the Qemlo system (glossy orange, 26px cards, 16px inputs).
  * The printed document (.po-doc) always uses fixed ink-on-white colours.
  */
 function PoStyles() {
   return (
     <style>{`
       .po-root{
-        --po-ink:#0a0a0a; --po-paper:#ffffff; --po-muted:#f0f0f0;
-        --po-text2:#404040; --po-orange:#ff5a1f;
-        max-width:48rem; margin:0 auto; padding:1.5rem 1rem;
-        color:var(--po-ink); background:var(--po-paper); display:grid; gap:1rem;
+        --f-bg:#F5F5F2; --f-surface:#FFFFFF; --f-line:#E1E1DA; --f-ink:#0D0D0D; --f-t2:#55554F; --f-t3:#8A8A82;
+        --f-soft:rgba(13,13,13,.04); --f-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 12px 32px -18px rgba(13,13,13,.28);
+        --f-err-bg:#FFF1EC; --f-err-tx:#B42318;
       }
-      @media (prefers-color-scheme: dark){
-        :root:not([data-theme="light"]) .po-root{
-          --po-ink:#f5f5f5; --po-paper:#0a0a0a; --po-muted:#1a1a1a; --po-text2:#d4d4d4;
+      @media (prefers-color-scheme:dark){
+        .po-root{
+          --f-bg:#0D0D0D; --f-surface:#171717; --f-line:#2A2A27; --f-ink:#F5F5F2; --f-t2:#B4B4AC; --f-t3:#7C7C75;
+          --f-soft:rgba(255,255,255,.05); --f-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 16px 36px -20px rgba(0,0,0,.9);
+          --f-err-bg:#2A1411; --f-err-tx:#FDA29B;
         }
       }
-      :root[data-theme="dark"] .po-root{
-        --po-ink:#f5f5f5; --po-paper:#0a0a0a; --po-muted:#1a1a1a; --po-text2:#d4d4d4;
+      .po-root{
+        --po-ink:var(--text,var(--f-ink)); --po-text2:var(--text-2,var(--f-t2)); --po-dim:var(--text-3,var(--f-t3));
+        --po-surface:var(--surface,var(--f-surface)); --po-bg:var(--bg,var(--f-bg)); --po-line:var(--border,var(--f-line));
+        --po-orange:var(--orange,#FF5B04); --po-on:var(--on-orange,#0D0D0D);
+        --po-gloss:linear-gradient(165deg,#FF9A52 0%,#FF5B04 46%,#E14600 100%);
+        --po-gloss-sh:inset 0 1px 0 rgba(255,255,255,.5), inset 0 -3px 8px rgba(120,30,0,.25), 0 14px 28px -12px rgba(255,91,4,.6);
+        --po-r:26px; --po-r-sm:16px;
+        max-width:52rem; margin:0 auto; padding:1.5rem 1rem 3rem; color:var(--po-ink); display:grid; gap:1.25rem; line-height:1.6;
       }
+      @media (min-width:640px){ .po-root{ padding:2.5rem 1.5rem 4rem; } }
+      .po-root *{ box-sizing:border-box; }
       .po-root :focus-visible{ outline:3px solid var(--po-orange); outline-offset:2px; }
       .po-ltr{ direction:ltr; unicode-bidi:isolate; display:inline-block; }
       .po-sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
-      .po-stack{ display:grid; gap:1rem; }
-      .po-stack-s{ display:grid; gap:.375rem; }
+      .po-stack{ display:grid; gap:1.25rem; }
+      .po-stack-s{ display:grid; gap:.5rem; }
 
       /* Cards + text */
-      .po-card{ border:2px solid var(--po-ink); padding:1.25rem; display:grid; gap:1rem; }
-      .po-h1{ margin:0; font-size:1.375rem; font-weight:700; }
-      .po-h2{ margin:0; display:flex; align-items:center; gap:.625rem; font-size:.9375rem; font-weight:700; }
-      .po-num{
-        flex:none; width:1.75rem; height:1.75rem; display:inline-flex; align-items:center; justify-content:center;
-        border:2px solid var(--po-ink); font-size:.8125rem; font-weight:700;
+      .po-card{
+        background:var(--po-surface); border:1px solid var(--po-line); border-radius:var(--po-r); padding:1.25rem;
+        display:grid; gap:1rem; box-shadow:var(--f-shadow); transition:border-color .2s, box-shadow .2s;
       }
-      .po-lead{ margin:.25rem 0 0; font-size:.75rem; line-height:1.8; color:var(--po-text2); }
-      .po-small{ margin:0; font-size:.6875rem; line-height:1.8; color:var(--po-text2); }
-      .po-small-b{ margin:0; font-size:.75rem; font-weight:700; }
+      @media (min-width:640px){ .po-card{ padding:1.5rem; } }
+      .po-card:hover{ border-color:var(--po-orange); box-shadow:0 0 0 3px color-mix(in srgb,var(--po-orange) 20%,transparent), var(--f-shadow); }
+      .po-h1{ margin:0; display:flex; align-items:center; gap:.75rem; font-size:1.375rem; font-weight:800; line-height:1.4; }
+      .po-h2{ margin:0; display:flex; align-items:center; gap:.75rem; font-size:1.0625rem; font-weight:800; line-height:1.5; }
+      .po-h2-plain{ margin:0; font-size:1.0625rem; font-weight:800; line-height:1.5; }
+      .po-chk-head{ display:flex; align-items:center; gap:.75rem; }
+      .po-tile{
+        flex:none; width:2.5rem; height:2.5rem; display:inline-flex; align-items:center; justify-content:center;
+        border-radius:14px; background:var(--po-gloss); color:var(--po-on); box-shadow:var(--po-gloss-sh);
+      }
+      .po-lead{ margin:.5rem 0 0; font-size:.875rem; line-height:1.8; color:var(--po-text2); }
+      .po-small{ margin:0; font-size:.8125rem; line-height:1.8; color:var(--po-text2); }
+      .po-small-b{ margin:0; font-size:.875rem; font-weight:800; }
+      .po-with-ico{ display:flex; align-items:center; gap:.5rem; }
       .po-head-row,.po-row-between{ display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between; align-items:flex-start; }
       .po-actions{ display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
       .po-draft{ padding-top:.25rem; }
       .po-push{ margin-inline-start:auto; }
-      .po-dash{ border:2px dashed var(--po-ink); padding:.75rem; display:grid; gap:.5rem; }
+      .po-dash{ border:1px dashed var(--po-dim); border-radius:var(--po-r-sm); background:var(--f-soft); padding:.875rem 1rem; display:grid; gap:.5rem; }
       .po-vat-row{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:.75rem; }
-      .po-note{ display:flex; gap:.5rem; align-items:flex-start; border:2px solid var(--po-ink); border-inline-start:6px solid var(--po-orange); padding:.75rem 1rem; }
-      .po-note-body{ display:grid; gap:.375rem; }
-      .po-note-b{ border:2px solid var(--po-ink); border-inline-start:6px solid var(--po-orange); padding:.75rem 1rem; display:grid; gap:.25rem; }
-      .po-mark{
-        flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center;
-        border:2px solid currentColor; font-size:.75rem; font-weight:700; color:var(--po-ink);
+      .po-ico{ flex:none; display:inline-flex; margin-top:.1rem; color:var(--po-orange); }
+      .po-with-ico .po-ico{ margin-top:0; }
+      .po-note,.po-note-b{
+        display:flex; gap:.75rem; align-items:flex-start; background:var(--po-surface); border:1px solid var(--po-line);
+        border-inline-start:6px solid var(--po-orange); border-radius:var(--po-r-sm); padding:.875rem 1rem; box-shadow:var(--f-shadow);
       }
+      .po-note-err{ background:var(--f-err-bg); border-color:var(--f-err-tx); border-inline-start-color:var(--f-err-tx); }
+      .po-note-err .po-ico{ color:var(--f-err-tx); }
+      .po-note-body{ display:grid; gap:.375rem; }
+      .po-mark{
+        flex:none; width:1.5rem; height:1.5rem; display:inline-flex; align-items:center; justify-content:center;
+        border-radius:8px; background:#0D0D0D; color:#FF7A33;
+      }
+      @media (prefers-color-scheme:dark){ .po-mark{ background:#2A2A27; } }
 
       /* Buttons */
       .po-btn{
-        padding:.5rem .875rem; border:2px solid var(--po-ink); font-size:.75rem; font-weight:700;
-        font-family:inherit; cursor:pointer; background:var(--po-paper); color:var(--po-ink);
+        display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.5rem 1rem; min-height:2.75rem;
+        border:1.5px solid var(--po-line); border-radius:var(--po-r-sm); font-size:.875rem; font-weight:800;
+        font-family:inherit; cursor:pointer; background:var(--po-surface); color:var(--po-ink); transition:border-color .15s, transform .15s, background-color .15s;
       }
+      .po-btn:hover{ border-color:var(--po-orange); }
       .po-btn:disabled,.po-btn[aria-disabled="true"]{ opacity:.45; cursor:not-allowed; pointer-events:none; }
-      .po-btn-sm{ padding:.375rem .875rem; min-height:2.75rem; }
-      .po-btn-o:hover,.po-btn:hover{ background:var(--po-muted); }
-      .po-btn-p{ background:var(--po-orange); color:#0a0a0a; flex:1; }
-      .po-btn-p:hover{ background:var(--po-ink); color:var(--po-paper); }
-      .po-bottom .po-btn{ flex:1; padding:.75rem 1rem; font-size:.8125rem; }
+      .po-btn-sm{ padding:.375rem .875rem; font-size:.8125rem; }
+      .po-btn-p{ background:var(--po-gloss); border-color:transparent; color:var(--po-on); box-shadow:var(--po-gloss-sh); flex:1; }
+      .po-btn-p:hover{ transform:translateY(-1px); border-color:transparent; }
+      .po-bottom .po-btn{ flex:1; min-height:3rem; padding:.75rem 1rem; }
       .po-link{
-        background:none; border:0; padding:0; font-family:inherit; font-size:.75rem; font-weight:700;
-        color:var(--po-ink); text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+        display:inline-flex; align-items:center; gap:.375rem; background:none; border:0; padding:.25rem .5rem; min-height:2.25rem;
+        border-radius:999px; font-family:inherit; font-size:.8125rem; font-weight:800; color:var(--po-orange); cursor:pointer;
       }
+      .po-link:hover{ background:color-mix(in srgb,var(--po-orange) 14%,transparent); }
       .po-add{
-        width:100%; padding:.75rem; border:2px dashed var(--po-ink); background:transparent;
-        color:var(--po-ink); font-family:inherit; font-size:.75rem; font-weight:700; cursor:pointer;
+        width:100%; display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:3rem; padding:.75rem;
+        border:1.5px dashed var(--po-dim); border-radius:var(--po-r-sm); background:transparent; color:var(--po-ink);
+        font-family:inherit; font-size:.875rem; font-weight:800; cursor:pointer; transition:border-color .15s, color .15s;
       }
-      .po-add:hover{ background:var(--po-muted); }
+      .po-add:hover{ border-color:var(--po-orange); color:var(--po-orange); }
 
       /* Tabs / segmented */
-      .po-tabs,.po-seg{ display:flex; border:2px solid var(--po-ink); }
+      .po-tabs,.po-seg{ display:flex; gap:.25rem; padding:.25rem; border:1px solid var(--po-line); border-radius:999px; background:var(--f-soft); }
       .po-tabs button,.po-seg button{
-        flex:1; padding:.5rem .875rem; border:0; background:var(--po-paper); color:var(--po-ink);
-        font-size:.75rem; font-weight:700; font-family:inherit; cursor:pointer;
+        flex:1; display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:2.5rem; padding:.25rem 1rem;
+        border:0; border-radius:999px; background:transparent; color:var(--po-ink);
+        font-size:.875rem; font-weight:800; font-family:inherit; cursor:pointer; transition:background-color .15s;
       }
-      .po-tabs button + button,.po-seg button + button{ border-inline-start:2px solid var(--po-ink); }
-      .po-tabs button[aria-pressed="true"],.po-seg button[aria-pressed="true"]{ background:var(--po-ink); color:var(--po-paper); }
+      .po-tabs button:hover,.po-seg button:hover{ background:var(--f-soft); }
+      .po-tabs button[aria-pressed="true"],.po-seg button[aria-pressed="true"]{ background:var(--po-gloss); color:var(--po-on); box-shadow:var(--po-gloss-sh); }
       .po-tabs button:disabled,.po-tabs button[aria-disabled="true"]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
-      .po-seg button{ flex:none; padding:.375rem 1.25rem; }
+      .po-seg button{ flex:none; padding:.25rem 1.25rem; }
 
       /* Fields */
-      .po-two{ display:grid; gap:.875rem; grid-template-columns:1fr; }
-      @media (min-width:640px){ .po-two{ grid-template-columns:1fr 1fr; } .po-span{ grid-column:1 / -1; } }
-      .po-field{ display:grid; gap:.25rem; align-content:start; }
-      .po-label{ font-size:.75rem; font-weight:700; line-height:1.6; }
-      .po-hint{ font-weight:600; color:var(--po-text2); font-size:.625rem; }
+      .po-two{ display:grid; gap:1rem; grid-template-columns:minmax(0,1fr); }
+      @media (min-width:640px){ .po-two{ grid-template-columns:repeat(2,minmax(0,1fr)); } .po-span{ grid-column:1 / -1; } }
+      .po-field{ display:grid; gap:.5rem; align-content:start; min-width:0; }
+      .po-label{ font-size:.875rem; font-weight:700; line-height:1.6; }
+      .po-hint{ font-weight:600; color:var(--po-text2); font-size:.75rem; }
       .po-input{
-        width:100%; min-width:0; box-sizing:border-box; border:2px solid var(--po-ink);
-        background:var(--po-paper); color:var(--po-ink); padding:.5rem .625rem;
-        font-size:.8125rem; font-weight:600; font-family:inherit;
+        width:100%; min-width:0; min-height:3rem; border:1.5px solid var(--po-line); border-radius:var(--po-r-sm);
+        background:var(--po-bg); color:var(--po-ink); padding:.5rem .875rem;
+        font-size:.9375rem; font-weight:700; font-family:inherit; transition:border-color .15s, box-shadow .15s;
       }
-      .po-input[aria-invalid="true"]{ border-style:dashed; border-width:3px; }
-      .po-err,.po-ok{ margin:0; font-size:.6875rem; font-weight:700; }
-      .po-err::before{ content:"! "; font-weight:700; }
-      .po-ok::before{ content:"✓ "; font-weight:700; }
+      .po-input:hover{ border-color:var(--po-dim); }
+      .po-input:focus-visible{ outline:none; border-color:var(--po-orange); box-shadow:0 0 0 4px color-mix(in srgb,var(--po-orange) 28%,transparent); }
+      .po-input::placeholder{ color:var(--po-dim); font-weight:500; }
+      .po-input[aria-invalid="true"]{ border-color:var(--f-err-tx); background:var(--f-err-bg); }
+      textarea.po-input{ resize:vertical; line-height:1.7; }
+      .po-select{
+        cursor:pointer; color-scheme:light dark; appearance:none; -webkit-appearance:none; padding-inline-start:2.5rem; text-overflow:ellipsis;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FF5B04' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat:no-repeat; background-position:left .875rem center;
+      }
+      .po-select option{ background:var(--po-surface); color:var(--po-ink); }
+      .po-err,.po-ok{ margin:0; display:flex; align-items:center; gap:.375rem; font-size:.8125rem; font-weight:800; }
+      .po-err{ color:var(--f-err-tx); }
+      .po-ok{ color:var(--po-orange); }
 
       /* Lines */
-      .po-line{ border:2px solid var(--po-ink); margin:0; padding:.75rem; display:grid; gap:.75rem; min-width:0; }
-      .po-legend{ padding:0 .5rem; font-size:.75rem; font-weight:700; }
-      .po-line-top{ justify-content:flex-end; }
-      .po-line-grid,.po-line-grid4{ display:grid; gap:.75rem; grid-template-columns:1fr; }
-      @media (min-width:640px){
-        .po-line-grid{ grid-template-columns:repeat(6,1fr); }
-        .po-c3{ grid-column:span 3; } .po-c2{ grid-column:span 2; }
-        .po-line-grid4{ grid-template-columns:repeat(4,1fr); }
+      .po-line{
+        border:1px solid var(--po-line); border-radius:20px; background:var(--f-soft);
+        margin:0; padding:1rem; display:grid; gap:.875rem; min-width:0;
       }
-      .po-mini{ margin:0; display:grid; gap:.125rem; font-size:.6875rem; }
+      .po-legend{ padding:0 .625rem; font-size:.875rem; font-weight:800; }
+      .po-line-top{ justify-content:flex-end; }
+      .po-line-grid,.po-line-grid4{ display:grid; gap:.875rem; grid-template-columns:minmax(0,1fr); }
+      @media (min-width:640px){
+        .po-line-grid{ grid-template-columns:repeat(6,minmax(0,1fr)); }
+        .po-c3{ grid-column:span 3; } .po-c2{ grid-column:span 2; }
+        .po-line-grid4{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+      }
+      .po-mini{ margin:0; display:grid; gap:.25rem; font-size:.8125rem; padding:.75rem .875rem; border:1px dashed var(--po-dim); border-radius:var(--po-r-sm); background:var(--po-surface); }
       .po-mini div{ display:flex; justify-content:space-between; gap:.5rem; }
-      .po-mini dt{ color:var(--po-text2); } .po-mini dd{ margin:0; font-weight:700; }
-      .po-mini-t{ border-top:2px solid var(--po-ink); padding-top:.125rem; }
-      .po-mini-t dt{ color:var(--po-ink); font-weight:700; }
+      .po-mini dt{ color:var(--po-text2); } .po-mini dd{ margin:0; font-weight:800; }
+      .po-mini-t{ border-top:1.5px dashed var(--po-dim); padding-top:.375rem; margin-top:.125rem; }
+      .po-mini-t dt{ color:var(--po-ink); font-weight:800; }
 
-      /* Totals (orange panel, black text) */
-      .po-result{ background:var(--po-orange); color:#0a0a0a; border:2px solid var(--po-ink); padding:1.25rem; display:grid; gap:.75rem; }
-      .po-result-h{ margin:0; font-size:.9375rem; font-weight:700; }
-      .po-tbox{ background:#fff; border:2px solid #0a0a0a; }
-      .po-trow{ display:flex; justify-content:space-between; gap:1rem; padding:.375rem .75rem; border-top:1px solid #0a0a0a; font-size:.75rem; font-weight:700; }
+      /* Totals (glossy orange panel) */
+      .po-result{
+        position:relative; overflow:hidden; background:var(--po-gloss); color:#0D0D0D; border-radius:var(--po-r);
+        padding:1.5rem 1.25rem; display:grid; gap:.875rem; box-shadow:var(--po-gloss-sh);
+      }
+      .po-result::before{ content:""; position:absolute; inset:0 0 62% 0; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0)); }
+      .po-result>*{ position:relative; }
+      .po-result-h{ margin:0; font-size:1.0625rem; font-weight:800; }
+      .po-tbox{ background:#0D0D0D; color:#F5F5F2; border-radius:18px; overflow:hidden; }
+      .po-trow{ display:flex; justify-content:space-between; gap:1rem; padding:.5rem .875rem; border-top:1px solid #2E2E2B; font-size:.875rem; font-weight:700; }
       .po-trow:first-child{ border-top:0; }
-      .po-trow-b{ border-top:2px solid #0a0a0a; font-weight:700; }
-      .po-grand-row{ display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; align-items:center; font-size:1.125rem; font-weight:700; }
+      .po-trow-b{ border-top:1.5px solid #FF7A33; font-weight:800; }
+      .po-grand-row{ display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; align-items:center; font-size:1.25rem; font-weight:800; }
 
       /* Checker */
-      .po-track{ height:.875rem; border:2px solid var(--po-ink); background:var(--po-paper); overflow:hidden; direction:ltr; }
-      .po-fill{ height:100%; background:var(--po-ink); }
+      .po-track{ height:.875rem; border:1px solid var(--po-line); border-radius:999px; background:var(--f-soft); overflow:hidden; direction:ltr; }
+      .po-fill{ height:100%; background:var(--po-gloss); border-radius:999px; transition:width .35s ease; }
       .po-checks{ margin:0; padding:0; list-style:none; display:grid; gap:.5rem; }
-      .po-check{ display:flex; gap:.5rem; align-items:flex-start; border:2px solid var(--po-ink); padding:.5rem .75rem; font-size:.75rem; line-height:1.7; }
-      .po-check-warn{ border-style:dashed; }
-      .po-check-miss{ border-style:dashed; border-width:3px; }
+      .po-check{ display:flex; gap:.625rem; align-items:flex-start; border:1px solid var(--po-line); border-radius:var(--po-r-sm); padding:.625rem .875rem; font-size:.875rem; line-height:1.7; }
+      .po-check-warn{ border-style:dashed; border-color:var(--po-dim); }
+      .po-check-miss{ border-style:dashed; border-color:var(--f-err-tx); background:var(--f-err-bg); }
 
-      /* Preview document: fixed ink on white, independent of theme */
-      .po-doc{ --d-ink:#0a0a0a; --d-text2:#404040; --d-or:#ff5a1f; background:#fff; color:var(--d-ink); border:2px solid #0a0a0a; }
+      @media (prefers-reduced-motion:reduce){ .po-root *{ transition:none !important; } .po-btn-p:hover{ transform:none; } }
+
+      /* ───── Preview document: fixed ink on white, independent of theme ───── */
+      .po-doc{ --d-ink:#0a0a0a; --d-text2:#404040; --d-or:#ff5a1f; background:#fff; color:var(--d-ink); border:2px solid #0a0a0a; border-radius:0; line-height:1.6; }
       .po-doc p{ margin:0; }
       .po-doc-head{ background:var(--d-or); color:#0a0a0a; border-bottom:2px solid #0a0a0a; padding:1.25rem 1.5rem; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
       .po-doc-head-row{ display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; align-items:flex-start; }
@@ -1065,7 +1136,7 @@ function PoStyles() {
       .po-doc-tag{ border:1px solid var(--d-ink); padding:0 .375rem; font-size:.625rem; font-weight:700; }
       .po-doc-tot-wrap{ display:flex; justify-content:flex-end; }
       .po-doc-tot{ width:100%; max-width:20rem; border:2px solid var(--d-ink); }
-      .po-doc-tot .po-trow{ border-top:1px solid var(--d-ink); color:var(--d-ink); }
+      .po-doc-tot .po-trow{ background:#fff; color:var(--d-ink); border-top:1px solid var(--d-ink); font-size:.75rem; padding:.375rem .75rem; }
       .po-doc-tot .po-trow:first-child{ border-top:0; }
       .po-doc-tot .po-trow-b{ border-top:2px solid var(--d-ink); }
       .po-doc-grand{ display:flex; justify-content:space-between; gap:1rem; padding:.625rem .75rem; background:var(--d-or); color:#0a0a0a; border-top:2px solid var(--d-ink); font-size:.875rem; font-weight:700; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
@@ -1077,6 +1148,93 @@ function PoStyles() {
       .po-doc-charge-note{ font-size:.5625rem; font-weight:400; color:var(--d-text2); margin-inline-start:.375rem; }
       .po-doc-disc{ display:flex; gap:.5rem; align-items:flex-start; border:2px dashed var(--d-ink); padding:.625rem .75rem; font-size:.625rem; line-height:1.8; color:var(--d-text2); }
       .po-doc-excl{ flex:none; width:1.25rem; height:1.25rem; display:inline-flex; align-items:center; justify-content:center; border:2px solid var(--d-ink); font-weight:700; color:var(--d-ink); }
+
+
+      /* ───── Mobile responsive ───── */
+      .po-root > *{ min-width:0; }
+      .po-scroll-hint{ display:none; margin:0; font-size:.75rem; color:#404040; }
+      .po-line-grid .po-c3,.po-line-grid .po-c2{ min-width:0; }
+
+      @media (max-width:639px){
+        .po-root{ padding:1rem .75rem 2.5rem; gap:1rem; }
+        .po-card{ padding:1rem; border-radius:22px; }
+        .po-stack{ gap:1rem; }
+        .po-h1{ font-size:1.125rem; gap:.625rem; }
+        .po-h2{ font-size:1rem; }
+        .po-tile{ width:2.25rem; height:2.25rem; border-radius:12px; }
+        .po-lead{ font-size:.8125rem; }
+
+        /* inputs: 16px stops iOS zoom-on-focus */
+        .po-input{ font-size:1rem; min-height:3rem; }
+
+        /* header + draft bar */
+        .po-head-row{ flex-direction:column; align-items:stretch; gap:.75rem; }
+        .po-head-row > .po-btn{ width:100%; }
+        .po-draft{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+        .po-draft .po-btn{ width:100%; padding-inline:.5rem; }
+        .po-draft .po-btn:last-of-type{ grid-column:1 / -1; }
+        .po-draft .po-small{ grid-column:1 / -1; margin:0; }
+        .po-push{ margin-inline-start:0; }
+        .po-tabs button{ font-size:.8125rem; padding-inline:.5rem; gap:.375rem; }
+
+        /* VAT toggle row */
+        .po-vat-row{ flex-direction:column; align-items:stretch; }
+        .po-seg{ width:100%; }
+        .po-seg button{ flex:1; }
+
+        /* lines */
+        .po-line{ padding:.875rem .75rem; border-radius:18px; }
+        .po-line-grid,.po-line-grid4{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; }
+        .po-line-grid .po-c3{ grid-column:1 / -1; }
+        .po-line-grid .po-c2{ grid-column:1 / 2; }
+        .po-line-top{ justify-content:space-between; }
+        .po-link{ min-height:2.75rem; padding:.25rem .75rem; }
+
+        /* totals + checker */
+        .po-result{ padding:1.25rem 1rem; border-radius:22px; }
+        .po-trow{ flex-wrap:wrap; gap:.125rem .75rem; padding:.5rem .75rem; font-size:.8125rem; }
+        .po-grand-row{ font-size:1.125rem; }
+        .po-chk-head{ align-items:flex-start; }
+        .po-check{ font-size:.8125rem; }
+
+        /* bottom actions */
+        .po-bottom{ flex-direction:column; align-items:stretch; }
+        .po-bottom .po-btn{ width:100%; flex:none; }
+        .po-note,.po-note-b{ padding:.75rem; }
+
+        /* preview toolbar */
+        .po-actions:not(.po-draft):not(.po-bottom):not(.po-line-top){ flex-direction:column; align-items:stretch; }
+        .po-actions:not(.po-draft):not(.po-bottom):not(.po-line-top) .po-btn{ width:100%; flex:none; }
+
+        /* preview document */
+        .po-doc-head{ padding:1rem; }
+        .po-doc-head-row{ flex-direction:column; }
+        .po-doc-meta{ text-align:left; }
+        .po-doc-title{ font-size:1.25rem; }
+        .po-doc-dates{ gap:.5rem 1rem; flex-direction:column; }
+        .po-doc-body{ padding:1rem; gap:1rem; }
+        .po-doc-box{ padding:.625rem .75rem; }
+        .po-scroll-hint{ display:block; }
+        .po-doc-scroll{ -webkit-overflow-scrolling:touch; margin-inline:-.25rem; }
+        .po-doc-table{ min-width:42rem; }
+        .po-doc-tot{ max-width:none; }
+        .po-doc-sigs{ grid-template-columns:1fr; gap:1rem; }
+        .po-doc-line{ height:2.25rem; }
+      }
+      @media (max-width:380px){
+        .po-line-grid,.po-line-grid4{ grid-template-columns:minmax(0,1fr); }
+        .po-line-grid .po-c2{ grid-column:auto; }
+        .po-tabs{ flex-direction:column; border-radius:22px; }
+        .po-draft{ grid-template-columns:minmax(0,1fr); }
+      }
+
+      @media print{
+        .po-scroll-hint{ display:none !important; }
+        .po-doc-table{ min-width:0; }
+        .po-doc-sigs{ grid-template-columns:repeat(3,1fr); }
+        .po-doc-head-row{ flex-direction:row; }
+        .po-doc-body{ padding:1.25rem 1.5rem; }
+      }
 
       @media print{
         .po-noprint{ display:none !important; }

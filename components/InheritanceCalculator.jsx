@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useMemo, useId } from "react";
+/**
+ * components/InheritanceCalculator.jsx
+ * Qemlo tool style: glossy orange + ink, SVG icons, 26px cards, 16px controls,
+ * light/dark, mobile-first. The inheritance calculation (useMemo block),
+ * presets and copy-report text are unchanged; only presentation and
+ * accessibility were redesigned.
+ */
+
+import { useState, useMemo, useId, useRef } from "react";
 
 const currencyOptions = [
   { code: "SAR", label: "ريال سعودي" },
@@ -21,6 +29,91 @@ function formatCurrency(amount, currency) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })} ${currency}`;
+}
+
+// ─── Icons (SVG) ───────────────────────────────────────────────────────────────
+const ICONS = {
+  scale: (
+    <>
+      <path d="M12 3v18M6 21h12M5 7h14" />
+      <path d="m5 7-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z" />
+    </>
+  ),
+  wallet: (
+    <>
+      <path d="M3 7a2 2 0 0 1 2-2h12v4" />
+      <path d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2H5a2 2 0 0 1-2-2z" />
+      <circle cx="16.5" cy="14" r="1" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" />
+      <path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.4c1.8.8 3 2.7 3 5.6" />
+    </>
+  ),
+  pie: (
+    <>
+      <path d="M12 3v9h9" />
+      <path d="M20.5 15A9 9 0 1 1 9 3.5" />
+    </>
+  ),
+  chevron: <path d="m6 9 6 6 6-6" />,
+  copy: (
+    <>
+      <rect x="9" y="9" width="11" height="11" rx="2.5" />
+      <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+    </>
+  ),
+  check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5M12 7.5v.01" />
+    </>
+  ),
+  alert: (
+    <>
+      <path d="M12 3 2.5 20h19z" />
+      <path d="M12 10v4.5M12 17.5v.01" />
+    </>
+  ),
+  bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
+  arrow: <path d="M12 5v14m0 0 5-5m-5 5-5-5" />,
+  xcircle: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m9 9 6 6M15 9l-6 6" />
+    </>
+  ),
+  shield: (
+    <>
+      <path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+};
+
+function Icon({ name, size = 20 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {ICONS[name]}
+    </svg>
+  );
 }
 
 // ─── Small UI pieces ───────────────────────────────────────────────────────────
@@ -52,7 +145,15 @@ function Stepper({ label, value, onChange }) {
     <div>
       <label className="inh-label" htmlFor={id}>{label}</label>
       <div className="inh-stepper">
-        <button type="button" className="inh-btn" aria-label={`إنقاص: ${label}`} onClick={() => onChange(Math.max(0, value - 1))}>−</button>
+        <button
+          type="button"
+          className="inh-sbtn"
+          aria-label={`إنقاص: ${label}`}
+          disabled={value <= 0}
+          onClick={() => onChange(Math.max(0, value - 1))}
+        >
+          <Icon name="minus" size={18} />
+        </button>
         <input
           id={id}
           type="number"
@@ -62,7 +163,14 @@ function Stepper({ label, value, onChange }) {
           onChange={(e) => onChange(parseInt(e.target.value) || 0)}
           className="inh-input inh-center"
         />
-        <button type="button" className="inh-btn" aria-label={`زيادة: ${label}`} onClick={() => onChange(value + 1)}>+</button>
+        <button
+          type="button"
+          className="inh-sbtn"
+          aria-label={`زيادة: ${label}`}
+          onClick={() => onChange(value + 1)}
+        >
+          <Icon name="plus" size={18} />
+        </button>
       </div>
     </div>
   );
@@ -77,7 +185,7 @@ function Seg({ legend, options, value, onChange, hideLegend }) {
           <button
             key={String(o.v)}
             type="button"
-            className="inh-btn"
+            className="inh-segbtn"
             aria-pressed={value === o.v}
             onClick={() => onChange(o.v)}
           >
@@ -89,8 +197,36 @@ function Seg({ legend, options, value, onChange, hideLegend }) {
   );
 }
 
+function CheckCard({ checked, onChange, label }) {
+  return (
+    <label className={`inh-check${checked ? " is-on" : ""}`}>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span className="inh-check-box" aria-hidden="true">
+        {checked && <Icon name="check" size={14} />}
+      </span>
+      <span>{label}</span>
+    </label>
+  );
+}
+
+function Section({ icon, title, id, children }) {
+  return (
+    <section className="inh-box" aria-labelledby={id}>
+      <h2 className="inh-h2" id={id}>
+        <span className="inh-tile" aria-hidden="true">
+          <Icon name={icon} />
+        </span>
+        <span>{title}</span>
+      </h2>
+      {children}
+    </section>
+  );
+}
+
 // ─── Main component ────────────────────────────────────────────────────────────
 export default function InheritanceCalculator() {
+  const uid = useId();
+
   // Estate state
   const [totalEstate, setTotalEstate] = useState("1000000");
   const [debts, setDebts] = useState("0");
@@ -122,6 +258,7 @@ export default function InheritanceCalculator() {
 
   // Copy notification
   const [copied, setCopied] = useState(false);
+  const copyTimer = useRef(null);
 
   // Quick Preset Scenarios
   const applyPreset = (presetKey) => {
@@ -696,7 +833,7 @@ export default function InheritanceCalculator() {
   ]);
 
   // Copy summary text
-  const copySummary = () => {
+  const copySummary = async () => {
     let summary = `تقرير قسمة الميراث الشرعي\n`;
     summary += `---------------------------------\n`;
     summary += `قيمة التركة الإجمالية: ${formatCurrency(calculation.gross, currency)}\n`;
@@ -729,19 +866,37 @@ export default function InheritanceCalculator() {
 
     summary += `\n* تم الحساب وفق أحكام الشريعة الإسلامية. للمسائل القضائية يرجى مراجعة المحاكم الشرعية.`;
 
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(summary);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
+    try {
+      await navigator.clipboard.writeText(summary);
+    } catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = summary;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      } catch {
+        return;
+      }
     }
+    setCopied(true);
+    clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopied(false), 3000);
   };
 
   const statusTitle =
     calculation.statusType === "awl"
       ? "مسألة عائلة (العول)"
       : calculation.statusType === "radd"
-      ? "مسألة فيها رد"
-      : "حالة المسألة";
+        ? "مسألة فيها رد"
+        : "حالة المسألة";
+
+  const statusIcon =
+    calculation.statusType === "awl" ? "alert" : calculation.statusType === "radd" ? "info" : "check";
 
   const presets = [
     { k: "family_standard", label: "زوجة وأبناء وبنات وأبوان" },
@@ -750,53 +905,65 @@ export default function InheritanceCalculator() {
     { k: "no_children", label: "زوجة ووالدان (دون أبناء)" },
   ];
 
+  const resultsId = `${uid}-results`;
+
   return (
     <div className="inh" dir="rtl">
       <style>{css}</style>
 
       {/* Header */}
       <header className="inh-head">
-        <p className="inh-kicker">علم الفرائض والمواريث الإسلامية</p>
+        <div className="inh-badge">
+          <span className="inh-badge-ico" aria-hidden="true">
+            <Icon name="scale" size={14} />
+          </span>
+          <span>علم الفرائض والمواريث الإسلامية</span>
+        </div>
         <h1 className="inh-h1">حاسبة الميراث الشرعية</h1>
         <p className="inh-lead">
           احسب توزيع التركة بين الورثة وفق أحكام القرآن الكريم والسنة النبوية،
           مع مراعاة الفروض والعصبات والعول والرد وحجب الحرمان.
         </p>
+      </header>
 
-        <div className="inh-presets" role="group" aria-label="نماذج جاهزة سريعة">
-          <span className="inh-presets-label">نماذج جاهزة:</span>
+      <section className="inh-presets inh-noprint" aria-label="نماذج جاهزة سريعة">
+        <p className="inh-presets-label">
+          <Icon name="bolt" size={14} />
+          <span>نماذج جاهزة</span>
+        </p>
+        <div className="inh-chips">
           {presets.map((p) => (
-            <button key={p.k} type="button" className="inh-btn" onClick={() => applyPreset(p.k)}>
+            <button key={p.k} type="button" className="inh-chip-btn" onClick={() => applyPreset(p.k)}>
               {p.label}
             </button>
           ))}
         </div>
-      </header>
+      </section>
 
       <div className="inh-grid">
         {/* ── Inputs ─────────────────────────────────────────────────────────── */}
-        <div className="inh-col">
-          <section className="inh-box" aria-labelledby="inh-s1">
-            <h2 className="inh-h2" id="inh-s1">
-              <span className="inh-num">1</span>
-              <span>قيمة التركة والوصية</span>
-            </h2>
-
+        <div className="inh-col inh-noprint">
+          <Section icon="wallet" title="قيمة التركة والوصية" id={`${uid}-s1`}>
             <div className="inh-stack">
               <div>
                 <label className="inh-label" htmlFor={currencyId}>العملة</label>
-                <select
-                  id={currencyId}
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className="inh-input"
-                >
-                  {currencyOptions.map((c) => (
-                    <option key={c.code} value={c.code}>
-                      {c.label} ({c.code})
-                    </option>
-                  ))}
-                </select>
+                <div className="inh-select-wrap">
+                  <select
+                    id={currencyId}
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="inh-input inh-select"
+                  >
+                    {currencyOptions.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.label} ({c.code})
+                      </option>
+                    ))}
+                  </select>
+                  <span className="inh-chev" aria-hidden="true">
+                    <Icon name="chevron" size={18} />
+                  </span>
+                </div>
               </div>
 
               <Num
@@ -811,6 +978,7 @@ export default function InheritanceCalculator() {
                 label="الديون وتكاليف الجنازة (تُخصم أولاً شرعاً)"
                 value={debts}
                 onChange={setDebts}
+                suffix={currency}
                 placeholder="0"
               />
 
@@ -819,23 +987,22 @@ export default function InheritanceCalculator() {
                   label="الوصية لغير وارث (الحد الأقصى الثلث)"
                   value={wasiyyah}
                   onChange={setWasiyyah}
+                  suffix={currency}
                   placeholder="0"
                 />
                 {calculation.wasiyyahCapped && (
                   <p className="inh-note" role="status">
-                    تنبيه: قُيّدت الوصية بالثلث شرعاً ({formatCurrency(calculation.maxAllowedWasiyyah, currency)}).
+                    <Icon name="alert" size={16} />
+                    <span>
+                      تنبيه: قُيّدت الوصية بالثلث شرعاً (<bdi>{formatCurrency(calculation.maxAllowedWasiyyah, currency)}</bdi>).
+                    </span>
                   </p>
                 )}
               </div>
             </div>
-          </section>
+          </Section>
 
-          <section className="inh-box" aria-labelledby="inh-s2">
-            <h2 className="inh-h2" id="inh-s2">
-              <span className="inh-num">2</span>
-              <span>بيانات المتوفى والورثة الأساسيين</span>
-            </h2>
-
+          <Section icon="users" title="بيانات المتوفى والورثة الأساسيين" id={`${uid}-s2`}>
             <div className="inh-stack inh-stack-lg">
               <Seg
                 legend="المتوفى هو:"
@@ -895,38 +1062,30 @@ export default function InheritanceCalculator() {
               <div>
                 <button
                   type="button"
-                  className="inh-btn inh-toggle"
+                  className="inh-toggle"
                   aria-expanded={showExtended}
-                  aria-controls="inh-extended"
+                  aria-controls={`${uid}-extended`}
                   onClick={() => setShowExtended(!showExtended)}
                 >
                   <span>أقارب آخرون (أجداد، إخوة وأخوات)</span>
-                  <span>{showExtended ? "إخفاء" : "إظهار"}</span>
+                  <span className="inh-toggle-state">
+                    <span>{showExtended ? "إخفاء" : "إظهار"}</span>
+                    <span className={`inh-toggle-ico${showExtended ? " is-open" : ""}`}>
+                      <Icon name="chevron" size={18} />
+                    </span>
+                  </span>
                 </button>
 
                 {showExtended && (
-                  <div id="inh-extended" className="inh-extended">
-                    <p className="inh-small">
-                      ملاحظة شرعية: يُحجب الإخوة والأخوات بوجود الأب أو الابن الذكر، ويُحجب الأجداد بوجود الآباء.
+                  <div id={`${uid}-extended`} className="inh-extended">
+                    <p className="inh-hint">
+                      <Icon name="info" size={16} />
+                      <span>ملاحظة شرعية: يُحجب الإخوة والأخوات بوجود الأب أو الابن الذكر، ويُحجب الأجداد بوجود الآباء.</span>
                     </p>
 
                     <div className="inh-two">
-                      <label className="inh-check">
-                        <input
-                          type="checkbox"
-                          checked={grandfatherAlive}
-                          onChange={(e) => setGrandfatherAlive(e.target.checked)}
-                        />
-                        <span>الجد لأب حي</span>
-                      </label>
-                      <label className="inh-check">
-                        <input
-                          type="checkbox"
-                          checked={grandmotherAlive}
-                          onChange={(e) => setGrandmotherAlive(e.target.checked)}
-                        />
-                        <span>الجدة حية</span>
-                      </label>
+                      <CheckCard checked={grandfatherAlive} onChange={setGrandfatherAlive} label="الجد لأب حي" />
+                      <CheckCard checked={grandmotherAlive} onChange={setGrandmotherAlive} label="الجدة حية" />
                     </div>
 
                     <div className="inh-two">
@@ -937,13 +1096,25 @@ export default function InheritanceCalculator() {
                 )}
               </div>
             </div>
-          </section>
+          </Section>
+
+          {/* Mobile summary bar */}
+          <div className="inh-mini" role="status">
+            <div className="inh-mini-l">
+              <span className="inh-mini-k">صافي التركة · {calculation.heirs.length} فئات وارثة</span>
+              <span className="inh-mini-v"><bdi>{formatCurrency(calculation.netEstate, currency)}</bdi></span>
+            </div>
+            <a className="inh-mini-a" href={`#${resultsId}`}>
+              <span>الأنصبة</span>
+              <Icon name="arrow" size={16} />
+            </a>
+          </div>
         </div>
 
         {/* ── Results ────────────────────────────────────────────────────────── */}
         <div className="inh-col">
-          <section className="inh-result" aria-labelledby="inh-net-label" aria-live="polite">
-            <p className="inh-result-label" id="inh-net-label">صافي التركة القابلة للقسمة</p>
+          <section className="inh-result" id={resultsId} aria-labelledby={`${uid}-net`} aria-live="polite">
+            <p className="inh-result-label" id={`${uid}-net`}>صافي التركة القابلة للقسمة</p>
             <p className="inh-result-big"><bdi>{formatCurrency(calculation.netEstate, currency)}</bdi></p>
             <dl className="inh-result-rows">
               <div><dt>إجمالي التركة</dt><dd><bdi>{formatCurrency(calculation.gross, currency)}</bdi></dd></div>
@@ -952,18 +1123,29 @@ export default function InheritanceCalculator() {
             </dl>
           </section>
 
-          <section className="inh-box" aria-labelledby="inh-s3">
+          <section className="inh-box" aria-labelledby={`${uid}-s3`}>
             <div className="inh-res-head">
-              <h2 className="inh-h2 inh-h2-flush" id="inh-s3">جدول توزيع الأنصبة</h2>
-              <button type="button" className="inh-btn" onClick={copySummary}>
-                {copied ? "تم النسخ" : "نسخ التقرير"}
+              <h2 className="inh-h2 inh-h2-flush" id={`${uid}-s3`}>
+                <span className="inh-tile" aria-hidden="true">
+                  <Icon name="pie" />
+                </span>
+                <span>جدول توزيع الأنصبة</span>
+              </h2>
+              <button type="button" className="inh-copy inh-noprint" onClick={copySummary}>
+                <Icon name={copied ? "check" : "copy"} size={16} />
+                <span>{copied ? "تم النسخ" : "نسخ التقرير"}</span>
               </button>
             </div>
             <p className="inh-sr" role="status">{copied ? "تم نسخ التقرير" : ""}</p>
 
             <div className="inh-status" data-k={calculation.statusType}>
-              <p className="inh-status-title">{statusTitle}</p>
-              <p>{calculation.statusNote}</p>
+              <span className="inh-status-ico" aria-hidden="true">
+                <Icon name={statusIcon} size={18} />
+              </span>
+              <div>
+                <p className="inh-status-title">{statusTitle}</p>
+                <p className="inh-status-note">{calculation.statusNote}</p>
+              </div>
             </div>
 
             {calculation.heirs.length > 0 && (
@@ -1000,7 +1182,7 @@ export default function InheritanceCalculator() {
                   <li key={idx} className="inh-heir">
                     <div className="inh-heir-main">
                       <span className="inh-chip" data-t={idx % 3} aria-hidden="true">{idx + 1}</span>
-                      <div>
+                      <div className="inh-heir-text">
                         <div className="inh-heir-title">
                           <h3>{h.title}</h3>
                           <span className="inh-tag">{h.shareLabel}</span>
@@ -1026,7 +1208,10 @@ export default function InheritanceCalculator() {
 
             {calculation.blockedHeirs.length > 0 && (
               <div className="inh-blocked">
-                <h3 className="inh-blocked-title">المحجوبون من الميراث شرعاً (حجب حرمان)</h3>
+                <h3 className="inh-blocked-title">
+                  <Icon name="xcircle" size={18} />
+                  <span>المحجوبون من الميراث شرعاً (حجب حرمان)</span>
+                </h3>
                 <ul>
                   {calculation.blockedHeirs.map((b, i) => (
                     <li key={i}>
@@ -1054,8 +1239,13 @@ export default function InheritanceCalculator() {
             </div>
           </section>
 
-          <aside className="inh-disclaimer" aria-labelledby="inh-d">
-            <h3 id="inh-d" className="inh-disclaimer-title">تنبيه وإرشاد شرعي</h3>
+          <aside className="inh-disclaimer" aria-labelledby={`${uid}-d`}>
+            <h3 id={`${uid}-d`} className="inh-disclaimer-title">
+              <span className="inh-tile inh-tile-sm" aria-hidden="true">
+                <Icon name="shield" size={16} />
+              </span>
+              <span>تنبيه وإرشاد شرعي</span>
+            </h3>
             <p>
               بُنيت هذه الحاسبة على القواعد المعتمدة عند جمهور العلماء في علم الفرائض: الفروض المقدرة
               (النصف، الربع، الثمن، الثلثان، الثلث، السدس) والتعصيب والعول والرد.
@@ -1071,128 +1261,286 @@ export default function InheritanceCalculator() {
   );
 }
 
-// ─── Styles: Ink & Signal ──────────────────────────────────────────────────────
-// Colors read the site's --c-* tokens when present, with the palette as fallback.
-// Orange is only ever a background, always with black text.
+// ─── Styles: Qemlo (glossy orange + ink) ───────────────────────────────────────
+// Reads the site's tokens when present (--bg/--surface/--orange, or the older
+// --c-* set), with the palette as fallback. Orange is a background; text on it is black.
 const css = `
 .inh{
-  --i-bg:var(--c-bg,#F5F5F2);
-  --i-ink:var(--c-ink,#0D0D0D);
-  --i-mute:var(--c-mute,#55554F);
-  --i-soft:var(--c-soft,#DEDED8);
-  --i-accent:var(--c-accent,#FF6A1A);
-  --i-on-accent:#0D0D0D;
-  background:var(--i-bg);color:var(--i-ink);
-  max-width:72rem;margin:0 auto;padding:2rem 1rem 3rem;line-height:1.6;
+  --i-surface:var(--surface,#FFFFFF);
+  --i-surface-2:var(--surface-2,var(--c-soft,#ECECE7));
+  --i-border:var(--border,#D4D4CE);
+  --i-text:var(--text,var(--c-ink,#0D0D0D));
+  --i-text-2:var(--text-2,var(--c-mute,#55554F));
+  --i-muted:var(--muted,#6B6B66);
+  --i-ink:#0D0D0D;
+  --i-ink-text:#F5F5F2;
+  --i-orange:var(--orange,var(--c-accent,#FF5B04));
+  --i-on-orange:#0D0D0D;
+  --i-warning:#8A5A00;
+  --i-gloss:linear-gradient(180deg,#FF8A3D 0%,#FF5B04 52%,#E64F00 100%);
+  --i-gloss-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(0,0,0,.12),0 10px 22px -10px rgba(255,91,4,.65);
+  --i-ring:color-mix(in srgb,var(--i-orange) 22%,transparent);
+  color:var(--i-text);
+  max-width:1120px;margin:0 auto;line-height:1.6;
+  padding:clamp(16px,4vw,40px) clamp(14px,4vw,24px) 48px;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]) .inh{
-    --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
-    --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+    --i-surface:var(--surface,#161616);
+    --i-surface-2:var(--surface-2,var(--c-soft,#1D1D1D));
+    --i-border:var(--border,#2A2A2A);
+    --i-text:var(--text,var(--c-ink,#F5F5F2));
+    --i-text-2:var(--text-2,var(--c-mute,#B5B5B0));
+    --i-muted:var(--muted,#8E8E89);
+    --i-warning:#FBBF24;
   }
 }
 :root[data-theme="dark"] .inh{
-  --i-bg:var(--c-bg,#0D0D0D);--i-ink:var(--c-ink,#F5F5F2);
-  --i-mute:var(--c-mute,#B4B4AD);--i-soft:var(--c-soft,#2A2A27);
+  --i-surface:var(--surface,#161616);
+  --i-surface-2:var(--surface-2,var(--c-soft,#1D1D1D));
+  --i-border:var(--border,#2A2A2A);
+  --i-text:var(--text,var(--c-ink,#F5F5F2));
+  --i-text-2:var(--text-2,var(--c-mute,#B5B5B0));
+  --i-muted:var(--muted,#8E8E89);
+  --i-warning:#FBBF24;
 }
-.inh *{box-sizing:border-box}
+.inh *,.inh *::before,.inh *::after{box-sizing:border-box}
 .inh h1,.inh h2,.inh h3,.inh p,.inh dl,.inh dd,.inh ol,.inh ul{margin:0;padding:0}
 .inh ol,.inh ul{list-style:none}
 .inh button,.inh input,.inh select{font:inherit;color:inherit}
-.inh :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
+.inh :focus-visible{outline:2px solid var(--i-orange);outline-offset:3px}
 .inh bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
 
-.inh-head{margin-bottom:2rem;max-width:44rem}
-.inh-kicker{font-size:.85rem;font-weight:700;color:var(--i-mute);margin-bottom:.35rem}
-.inh-h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;line-height:1.15;margin-bottom:.75rem}
-.inh-lead{color:var(--i-mute);font-size:1rem;max-width:38rem}
-.inh-presets{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:1.25rem}
-.inh-presets-label{font-size:.8rem;font-weight:700;color:var(--i-mute)}
+/* Header */
+.inh-head{display:grid;justify-items:center;gap:12px;text-align:center;margin-bottom:24px}
+.inh-badge{
+  display:inline-flex;align-items:center;gap:8px;padding-block:5px;padding-inline:6px 14px;border-radius:999px;
+  background:var(--i-gloss);color:var(--i-on-orange);font-size:.8125rem;font-weight:800;box-shadow:var(--i-gloss-shadow);
+}
+.inh-badge-ico{width:26px;height:26px;border-radius:999px;flex:none;display:grid;place-items:center;background:var(--i-ink);color:var(--i-orange)}
+.inh-h1{font-size:clamp(1.75rem,5.5vw,2.75rem);font-weight:800;line-height:1.25;text-wrap:balance}
+.inh-lead{max-width:40rem;color:var(--i-text-2);font-size:clamp(.875rem,2.4vw,1rem);line-height:1.8;text-wrap:balance}
 
-.inh-grid{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
-@media (min-width:1024px){.inh-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start}}
-.inh-col{display:grid;gap:1.5rem;min-width:0}
+/* Presets */
+.inh-presets{margin-bottom:16px;padding:14px;border-radius:22px;background:var(--i-surface-2);border:1px solid var(--i-border)}
+.inh-presets-label{display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:.8125rem;font-weight:700;color:var(--i-muted)}
+.inh-chips{display:flex;flex-wrap:wrap;gap:8px}
+.inh-chip-btn{
+  min-height:40px;padding:0 14px;border-radius:14px;cursor:pointer;border:1px solid var(--i-border);
+  background:var(--i-surface);font-size:.8125rem;font-weight:600;transition:border-color .2s,transform .2s;
+}
+.inh-chip-btn:active{transform:scale(.97)}
+@media (hover:hover){.inh-chip-btn:hover{border-color:var(--i-orange)}}
 
-.inh-box{border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem}
-.inh-h2{display:flex;align-items:center;gap:.65rem;font-size:1.1rem;font-weight:700;margin-bottom:1rem}
+/* Layout */
+.inh-grid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.inh-col{display:grid;gap:16px;min-width:0;align-content:start}
+@media (min-width:1024px){
+  .inh-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px;align-items:start}
+}
+
+/* Cards */
+.inh-box{
+  background:var(--i-surface);border:1px solid var(--i-border);border-radius:26px;
+  padding:clamp(16px,3.5vw,24px);min-width:0;transition:border-color .2s,box-shadow .2s;
+}
+@media (hover:hover){
+  .inh-box:hover{border-color:color-mix(in srgb,var(--i-orange) 55%,var(--i-border));box-shadow:0 0 0 4px var(--i-ring)}
+}
+.inh-h2{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:1rem;line-height:1.5;font-weight:800}
 .inh-h2-flush{margin-bottom:0}
-.inh-num{display:inline-flex;flex:none;width:1.75rem;height:1.75rem;align-items:center;justify-content:center;background:var(--i-ink);color:var(--i-bg);font-size:.85rem;font-weight:700;border-radius:2px}
-.inh-stack{display:grid;gap:1rem}
-.inh-stack-lg{gap:1.25rem}
-.inh-two{display:grid;gap:.75rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+.inh-tile{
+  width:36px;height:36px;border-radius:12px;flex:none;display:grid;place-items:center;
+  background:var(--i-gloss);color:var(--i-on-orange);box-shadow:var(--i-gloss-shadow);
+}
+.inh-tile-sm{width:30px;height:30px;border-radius:10px}
+.inh-stack{display:grid;gap:16px}
+.inh-stack-lg{gap:20px}
+.inh-two{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:359px){.inh-two{grid-template-columns:minmax(0,1fr)}}
 
-.inh-label{display:block;font-size:.8rem;font-weight:700;margin-bottom:.35rem;padding:0}
+/* Fields */
+.inh-label{display:block;margin-bottom:6px;padding:0;font-size:.8125rem;font-weight:700;color:var(--i-text-2)}
 .inh-fieldset{border:0;margin:0;padding:0;min-width:0}
 .inh-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.inh-input{width:100%;border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.6rem .75rem;font-size:.95rem;font-weight:600;min-height:2.75rem}
-.inh-center{text-align:center}
+.inh-input{
+  width:100%;min-height:52px;padding:0 16px;border-radius:16px;border:1px solid var(--i-border);
+  background:var(--i-surface-2);color:var(--i-text);font-size:1rem;font-weight:700;font-variant-numeric:tabular-nums;
+  transition:border-color .2s,background .2s,box-shadow .2s;
+}
+.inh-input:focus{outline:none;background:var(--i-surface);border-color:var(--i-orange);box-shadow:0 0 0 4px var(--i-ring)}
+.inh-center{text-align:center;padding:0 8px}
 .inh-suffix-wrap{position:relative}
-.inh-suffix-wrap .inh-input{padding-inline-end:3.5rem}
-.inh-suffix{position:absolute;inset-inline-end:.75rem;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:var(--i-mute);pointer-events:none}
+.inh-suffix-wrap .inh-input{padding-inline-end:64px;text-align:start}
+.inh-suffix{position:absolute;inset-inline-end:14px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:.75rem;font-weight:800;color:var(--i-muted)}
+.inh-select-wrap{position:relative}
+.inh-select{appearance:none;-webkit-appearance:none;padding-inline-start:44px;text-overflow:ellipsis;cursor:pointer}
+.inh-select option{background:var(--i-surface);color:var(--i-text)}
+.inh-chev{position:absolute;inset-inline-start:14px;top:50%;transform:translateY(-50%);pointer-events:none;display:grid;color:var(--i-muted)}
+.inh input[type="number"]{-moz-appearance:textfield;appearance:textfield}
+.inh input[type="number"]::-webkit-outer-spin-button,.inh input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 
-.inh-btn{border:2px solid var(--i-ink);border-radius:4px;background:var(--i-bg);padding:.45rem .75rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:2.5rem}
-.inh-btn:hover{background:var(--i-soft)}
-.inh-btn[aria-pressed="true"]{background:var(--i-ink);color:var(--i-bg)}
-.inh-seg{display:grid;gap:.4rem}
-.inh-stepper{display:grid;grid-template-columns:2.75rem minmax(0,1fr) 2.75rem;gap:.4rem}
-.inh-stepper .inh-btn{padding:0;font-size:1.1rem}
-.inh-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;border-style:dashed;text-align:start}
-.inh-extended{display:grid;gap:1rem;margin-top:.75rem;border:2px solid var(--i-ink);border-radius:4px;padding:1rem}
-.inh-check{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:700;cursor:pointer}
-.inh-check input{width:1.2rem;height:1.2rem;accent-color:var(--i-accent)}
-.inh-small{font-size:.78rem;color:var(--i-mute)}
+/* Segmented */
+.inh-seg{display:grid;gap:6px}
+.inh-segbtn{
+  min-height:48px;padding:0 8px;border-radius:16px;cursor:pointer;border:1px solid var(--i-border);
+  background:var(--i-surface-2);font-size:.8125rem;font-weight:700;transition:border-color .2s,transform .2s;
+}
+.inh-segbtn:active{transform:scale(.97)}
+@media (hover:hover){.inh-segbtn[aria-pressed="false"]:hover{border-color:var(--i-orange)}}
+.inh-segbtn[aria-pressed="true"]{background:var(--i-gloss);border-color:transparent;color:var(--i-on-orange);box-shadow:var(--i-gloss-shadow)}
+
+/* Stepper */
+.inh-stepper{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:6px}
+.inh-sbtn{
+  height:52px;border-radius:16px;display:grid;place-items:center;cursor:pointer;
+  border:1px solid var(--i-border);background:var(--i-surface-2);color:var(--i-text);transition:border-color .2s,transform .2s,opacity .2s;
+}
+.inh-sbtn:active{transform:scale(.93)}
+.inh-sbtn:disabled{opacity:.4;cursor:not-allowed}
+@media (hover:hover){.inh-sbtn:not(:disabled):hover{border-color:var(--i-orange)}}
+
+/* Check card */
+.inh-check{
+  position:relative;display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px;border-radius:16px;cursor:pointer;
+  border:1px solid var(--i-border);background:var(--i-surface-2);font-size:.8125rem;font-weight:700;transition:border-color .2s,background .2s;
+}
+.inh-check input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.inh-check:focus-within{outline:2px solid var(--i-orange);outline-offset:3px}
+.inh-check-box{width:22px;height:22px;border-radius:8px;flex:none;display:grid;place-items:center;border:1.5px solid var(--i-border);background:var(--i-surface);color:var(--i-on-orange)}
+.inh-check.is-on{border-color:transparent;background:var(--i-gloss);color:var(--i-on-orange);box-shadow:var(--i-gloss-shadow)}
+.inh-check.is-on .inh-check-box{background:var(--i-ink);border-color:var(--i-ink);color:var(--i-orange)}
+
+/* Extended toggle */
+.inh-toggle{
+  display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding:0 16px;
+  border-radius:16px;cursor:pointer;text-align:start;border:1px dashed var(--i-border);background:transparent;
+  font-size:.875rem;font-weight:700;transition:border-color .2s;
+}
+@media (hover:hover){.inh-toggle:hover{border-color:var(--i-orange)}}
+.inh-toggle-state{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;color:var(--i-muted);flex:none}
+.inh-toggle-ico{display:grid;transition:transform .25s}
+.inh-toggle-ico.is-open{transform:rotate(180deg)}
+.inh-extended{display:grid;gap:16px;margin-top:12px;padding:16px;border-radius:20px;background:var(--i-surface-2);border:1px solid var(--i-border)}
+.inh-hint,.inh-note{
+  display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;font-size:.8125rem;line-height:1.7;
+  background:color-mix(in srgb,var(--i-orange) 10%,var(--i-surface));
+  border:1px solid color-mix(in srgb,var(--i-orange) 35%,var(--i-border));
+}
+.inh-hint svg,.inh-note svg{flex:none;margin-top:3px;color:var(--i-orange)}
+.inh-note{margin-top:10px;font-weight:700}
+
+.inh-small{font-size:.78rem;color:var(--i-text-2);line-height:1.7}
 .inh-bold{font-weight:700}
-.inh-note{margin-top:.5rem;border:2px dashed var(--i-ink);border-radius:4px;padding:.4rem .6rem;font-size:.8rem;font-weight:700}
 
-.inh-result{background:var(--i-accent);color:var(--i-on-accent);border:2px solid var(--i-ink);border-radius:4px;padding:1.25rem 1.5rem}
-.inh-result-label{font-size:.9rem;font-weight:700}
-.inh-result-big{font-size:clamp(2rem,6vw,3.25rem);font-weight:700;line-height:1.15;margin:.25rem 0 1rem}
-.inh-result-rows{border-top:2px solid var(--i-on-accent)}
-.inh-result-rows>div{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--i-on-accent);font-size:.9rem}
+/* Mobile summary bar */
+.inh-mini{
+  position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 12px 10px 14px;border-radius:20px;background:var(--i-ink);color:var(--i-ink-text);
+  border:1px solid #2A2A2A;box-shadow:0 14px 30px -12px rgba(0,0,0,.55);
+}
+.inh-mini-l{min-width:0}
+.inh-mini-k{display:block;font-size:.6875rem;opacity:.7}
+.inh-mini-v{display:block;font-size:1.0625rem;font-weight:800;color:var(--i-orange);overflow-wrap:anywhere}
+.inh-mini-a{
+  flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:14px;
+  background:var(--i-gloss);color:var(--i-on-orange);font-size:.8125rem;font-weight:800;text-decoration:none;
+}
+@media (min-width:1024px){.inh-mini{display:none}}
+
+/* Result */
+.inh-result{
+  position:relative;overflow:hidden;border-radius:26px;padding:clamp(18px,4vw,28px);scroll-margin-top:16px;
+  background:var(--i-gloss);color:var(--i-on-orange);
+  box-shadow:0 18px 40px -18px rgba(255,91,4,.6),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.inh-result::before{content:"";position:absolute;inset:0 0 55% 0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0))}
+.inh-result::after{content:"";position:absolute;inset-inline-end:-54px;top:-54px;width:170px;height:170px;border:30px solid rgba(13,13,13,.07);border-radius:999px;pointer-events:none}
+.inh-result > *{position:relative;z-index:1}
+.inh-result-label{font-size:.8125rem;font-weight:800}
+.inh-result-big{font-size:clamp(1.75rem,7vw,3rem);font-weight:800;line-height:1.15;letter-spacing:-.01em;margin:4px 0 16px;overflow-wrap:anywhere}
+.inh-result-rows{border-top:1.5px solid rgba(13,13,13,.35)}
+.inh-result-rows>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(13,13,13,.25);font-size:.875rem}
 .inh-result-rows>div:last-child{border-bottom:0;padding-bottom:0}
 .inh-result-rows dt{font-weight:600}
-.inh-result-rows dd{font-weight:700}
+.inh-result-rows dd{font-weight:800;text-align:end;overflow-wrap:anywhere}
 
-.inh-res-head{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:center;margin-bottom:1rem}
-.inh-status{border:2px solid var(--i-ink);border-radius:4px;padding:.9rem 1rem;font-size:.9rem;margin-bottom:1.25rem}
-.inh-status[data-k="awl"]{border-style:dashed;border-width:3px}
-.inh-status[data-k="radd"]{border-style:double;border-width:5px}
-.inh-status-title{font-weight:700;margin-bottom:.2rem}
+.inh-res-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.inh-copy{
+  display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:16px;border:0;cursor:pointer;
+  background:var(--i-ink);color:var(--i-ink-text);font-size:.8125rem;font-weight:800;transition:transform .2s;
+}
+.inh-copy:active{transform:scale(.97)}
+[data-theme="dark"] .inh-copy,:root:not([data-theme="light"]) .inh-copy{border:1px solid var(--i-border)}
 
-.inh-bar-wrap{margin-bottom:1.5rem}
-.inh-bar{display:flex;height:2.1rem;margin-top:.4rem;border:2px solid var(--i-ink);border-radius:4px;overflow:hidden}
-.inh-bar-seg{display:flex;align-items:center;justify-content:center;min-width:0;font-size:.75rem;font-weight:700;border-inline-start:2px solid var(--i-bg)}
-.inh-bar-seg:first-child{border-inline-start:0}
-[data-t="0"].inh-bar-seg,[data-t="0"].inh-chip{background:var(--i-ink);color:var(--i-bg)}
-[data-t="1"].inh-bar-seg,[data-t="1"].inh-chip{background:var(--i-accent);color:var(--i-on-accent)}
-[data-t="2"].inh-bar-seg,[data-t="2"].inh-chip{background:var(--i-soft);color:var(--i-ink)}
+/* Status */
+.inh-status{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:18px;margin-bottom:20px;font-size:.875rem;background:var(--i-surface-2);border:1px solid var(--i-border)}
+.inh-status-ico{width:30px;height:30px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--i-ink);color:var(--i-ink-text)}
+.inh-status[data-k="awl"]{background:color-mix(in srgb,var(--i-warning) 9%,var(--i-surface));border-color:color-mix(in srgb,var(--i-warning) 40%,var(--i-border))}
+.inh-status[data-k="awl"] .inh-status-ico{background:var(--i-warning);color:var(--i-surface)}
+.inh-status[data-k="radd"]{background:color-mix(in srgb,var(--i-orange) 10%,var(--i-surface));border-color:color-mix(in srgb,var(--i-orange) 40%,var(--i-border))}
+.inh-status[data-k="radd"] .inh-status-ico{background:var(--i-gloss);color:var(--i-on-orange)}
+.inh-status-title{font-weight:800;margin-bottom:2px}
+.inh-status-note{color:var(--i-text-2);line-height:1.7}
 
-.inh-empty{border:2px dashed var(--i-ink);border-radius:4px;padding:2.5rem 1rem;text-align:center;font-weight:700}
-.inh-list{display:grid;gap:.9rem}
-.inh-heir{display:grid;gap:.75rem;border:2px solid var(--i-ink);border-radius:4px;padding:1rem}
-@media (min-width:640px){.inh-heir{grid-template-columns:minmax(0,1fr) auto;align-items:center}}
-.inh-heir-main{display:flex;gap:.75rem;align-items:flex-start;min-width:0}
-.inh-chip{display:inline-flex;flex:none;width:1.9rem;height:1.9rem;align-items:center;justify-content:center;border:2px solid var(--i-ink);border-radius:2px;font-size:.85rem;font-weight:700}
-.inh-heir-title{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
-.inh-heir-title h3{font-size:1.05rem;font-weight:700}
-.inh-tag{display:inline-block;border:2px solid var(--i-ink);border-radius:2px;padding:0 .45rem;font-size:.75rem;font-weight:700;line-height:1.5;white-space:nowrap}
-.inh-sub{display:inline-block;margin-top:.4rem;border-inline-start:4px solid var(--i-ink);background:var(--i-soft);padding:.15rem .6rem;font-size:.75rem;font-weight:700}
-.inh-amount{text-align:start}
-@media (min-width:640px){.inh-amount{text-align:end}}
-.inh-amount-main{font-size:1.25rem;font-weight:700}
+/* Bar */
+.inh-bar-wrap{margin-bottom:24px}
+.inh-bar{display:flex;height:40px;margin-top:8px;border-radius:14px;overflow:hidden;background:var(--i-ink);padding:3px;gap:3px;border:1px solid var(--i-border)}
+.inh-bar-seg{display:flex;align-items:center;justify-content:center;min-width:0;border-radius:10px;font-size:.75rem;font-weight:800}
+[data-t="0"].inh-bar-seg,[data-t="0"].inh-chip{background:var(--i-gloss);color:var(--i-on-orange)}
+[data-t="1"].inh-bar-seg,[data-t="1"].inh-chip{background:var(--i-text);color:var(--i-surface)}
+[data-t="2"].inh-bar-seg,[data-t="2"].inh-chip{background:var(--i-surface-2);color:var(--i-text);box-shadow:inset 0 0 0 1px var(--i-border)}
 
-.inh-blocked{margin-top:1.5rem;border:2px dashed var(--i-ink);border-radius:4px;padding:1rem}
-.inh-blocked-title{font-size:.9rem;font-weight:700;margin-bottom:.6rem}
-.inh-blocked ul{display:grid;gap:.5rem}
-.inh-blocked li{display:flex;flex-wrap:wrap;gap:.5rem;align-items:baseline;font-size:.85rem}
+/* Heirs */
+.inh-empty{padding:40px 16px;text-align:center;font-weight:700;border-radius:20px;border:1px dashed var(--i-border);color:var(--i-text-2)}
+.inh-list{display:grid;gap:12px}
+.inh-heir{display:grid;gap:12px;padding:16px;border-radius:20px;background:var(--i-surface-2);border:1px solid var(--i-border);transition:border-color .2s}
+@media (hover:hover){.inh-heir:hover{border-color:var(--i-orange)}}
+@media (min-width:640px){.inh-heir{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:20px}}
+.inh-heir-main{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.inh-heir-text{min-width:0}
+.inh-chip{display:inline-flex;flex:none;width:32px;height:32px;align-items:center;justify-content:center;border-radius:11px;font-size:.8125rem;font-weight:800}
+.inh-heir-title{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:2px}
+.inh-heir-title h3{font-size:1rem;font-weight:800;overflow-wrap:anywhere}
+.inh-tag{display:inline-block;padding:1px 10px;border-radius:999px;font-size:.75rem;font-weight:800;line-height:1.7;white-space:nowrap;background:var(--i-ink);color:var(--i-ink-text)}
+.inh-sub{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:12px;font-size:.75rem;font-weight:700;line-height:1.7;background:var(--i-surface);border:1px solid var(--i-border);border-inline-start:4px solid var(--i-orange)}
+.inh-amount{padding-top:12px;border-top:1px dashed var(--i-border);text-align:start}
+@media (min-width:640px){.inh-amount{padding-top:0;border-top:0;text-align:end}}
+.inh-amount-main{font-size:1.25rem;font-weight:800;overflow-wrap:anywhere}
 
-.inh-metrics{display:grid;gap:.75rem;margin-top:1.75rem;padding-top:1.25rem;border-top:2px solid var(--i-ink);grid-template-columns:repeat(2,minmax(0,1fr))}
+/* Blocked */
+.inh-blocked{margin-top:20px;padding:16px;border-radius:20px;border:1px dashed var(--i-border)}
+.inh-blocked-title{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:.9rem;font-weight:800}
+.inh-blocked ul{display:grid;gap:10px}
+.inh-blocked li{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;font-size:.85rem;line-height:1.7}
+
+/* Metrics */
+.inh-metrics{display:grid;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--i-border);grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (min-width:640px){.inh-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.inh-metrics>div{border:2px solid var(--i-ink);border-radius:4px;padding:.7rem;text-align:center}
+.inh-metrics>div{padding:12px;border-radius:18px;text-align:center;background:var(--i-surface-2);border:1px solid var(--i-border);min-width:0}
 .inh-metrics>div:last-child{grid-column:span 2}
 @media (min-width:640px){.inh-metrics>div:last-child{grid-column:auto}}
-.inh-metric{font-size:.95rem;font-weight:700}
+.inh-metric{margin-top:2px;font-size:.95rem;font-weight:800;overflow-wrap:anywhere}
 
-.inh-disclaimer{border:2px solid var(--i-ink);border-inline-start-width:8px;border-radius:4px;padding:1rem 1.25rem;display:grid;gap:.5rem;font-size:.85rem}
-.inh-disclaimer-title{font-size:.95rem;font-weight:700}
+/* Disclaimer */
+.inh-disclaimer{
+  display:grid;gap:8px;padding:clamp(16px,3.5vw,22px);border-radius:26px;font-size:.85rem;line-height:1.8;color:var(--i-text-2);
+  background:var(--i-surface);border:1px solid var(--i-border);border-inline-start:6px solid var(--i-orange);
+}
+.inh-disclaimer-title{display:flex;align-items:center;gap:10px;font-size:.95rem;font-weight:800;color:var(--i-text)}
+
+@media (prefers-reduced-motion:reduce){
+  .inh *,.inh *::before,.inh *::after{transition:none!important;animation:none!important}
+}
+@media print{
+  .inh{padding:0;max-width:none}
+  .inh-noprint{display:none!important}
+  .inh-grid{display:block}
+  .inh-result{background:#fff!important;color:#000!important;border:1.5px solid #000;box-shadow:none!important;margin-bottom:12px}
+  .inh-result::before,.inh-result::after{display:none}
+  .inh-result-rows,.inh-result-rows>div{border-color:#000!important}
+  .inh-box,.inh-heir,.inh-disclaimer{break-inside:avoid;box-shadow:none!important}
+  .inh-tag,.inh-chip,.inh-bar-seg{background:#000!important;color:#fff!important;box-shadow:none!important}
+  .inh-bar{background:#fff!important}
+}
 `;

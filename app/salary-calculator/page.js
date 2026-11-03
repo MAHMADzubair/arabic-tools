@@ -67,12 +67,13 @@ const guideData = {
     },
   ],
   stepsTitle: "خطوات استخدام حاسبة الراتب:",
+  // Numbers removed from titles: ToolGuideSection renders its own numbered tile.
   steps: [
-    { title: "1. اختر الدولة", desc: "حدد الدولة التي تعمل بها لتطبيق نظامها الضريبي والتأميني المعتمد." },
-    { title: "2. أدخل الراتب الأساسي", desc: "أدخل راتبك الأساسي الشهري المنصوص عليه في عقد العمل." },
-    { title: "3. أضف البدلات", desc: "أدخل بدل السكن والنقل والطعام وأي بدلات نقدية أخرى تتقاضاها." },
-    { title: "4. أدخل الخصومات الإضافية", desc: "أضف أي خصومات طوعية أو أقساط قروض داخلية إن وجدت." },
-    { title: "5. اقرأ قسيمة الراتب المفصلة", desc: "شاهد صافي راتبك، وإجمالي الخصومات، والنسبة المئوية المستقطعة." },
+    { title: "اختر الدولة", desc: "حدد الدولة التي تعمل بها لتطبيق نظامها الضريبي والتأميني المعتمد." },
+    { title: "أدخل الراتب الأساسي", desc: "أدخل راتبك الأساسي الشهري المنصوص عليه في عقد العمل." },
+    { title: "أضف البدلات", desc: "أدخل بدل السكن والنقل والطعام وأي بدلات نقدية أخرى تتقاضاها." },
+    { title: "أدخل الخصومات الإضافية", desc: "أضف أي خصومات طوعية أو أقساط قروض داخلية إن وجدت." },
+    { title: "اقرأ قسيمة الراتب المفصلة", desc: "شاهد صافي راتبك، وإجمالي الخصومات، والنسبة المئوية المستقطعة." },
   ],
   example: {
     title: "مثال عملي بالأرقام: موظف سعودي في القطاع الخاص (النظام السابق)",
@@ -133,29 +134,168 @@ const guideData = {
   ],
 };
 
+// Same three links and the same wording as before; only the text after "—" is split into a desc line.
+const focusLinks = [
+  {
+    href: "/ar/sa/final-settlement-calculator",
+    chip: "SA",
+    title: "المخالصة النهائية في السعودية",
+    desc: "احسب مستحقات نهاية العمل",
+    icon: "file",
+  },
+  {
+    href: "/ar/sa/annual-leave-calculator",
+    chip: "SA",
+    title: "الإجازات السنوية في السعودية",
+    desc: "احسب رصيد الإجازات المتبقية",
+    icon: "calendar",
+  },
+  {
+    href: "/ar/ae/notice-period-calculator",
+    chip: "AE",
+    title: "فترة الإنذار في الإمارات",
+    desc: "احسب آخر يوم عمل وبدل الإنذار",
+    icon: "clock",
+  },
+];
+
+function TileIcon({ name }) {
+  const common = {
+    width: 24,
+    height: 24,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": "true",
+    focusable: "false",
+  };
+  if (name === "file") {
+    return (
+      <svg {...common}>
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+        <path d="M14 3v5h5" />
+        <path d="M9 13h6M9 17h4" />
+      </svg>
+    );
+  }
+  if (name === "calendar") {
+    return (
+      <svg {...common}>
+        <rect x="3" y="5" width="18" height="16" rx="3" />
+        <path d="M8 3v4M16 3v4M3 10h18" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </svg>
+  );
+}
+
+const focusCss = `
+.sal-focus{
+  --sf-bg:var(--surface,#FFFFFF);
+  --sf-ink:var(--ink,var(--text,#0D0D0D));
+  --sf-line:var(--line,var(--border,#D4D4CE));
+  --sf-signal:var(--signal,var(--orange,#FF5B04));
+  max-width:64rem;margin:0 auto;padding:20px 16px;
+}
+.sal-focus__panel{
+  background:var(--sf-bg);color:var(--sf-ink);
+  border:1px solid var(--sf-line);border-radius:26px;
+  padding:20px;
+}
+.sal-focus__title{margin:0 0 16px;font-size:1.125rem;line-height:1.5;font-weight:800;color:var(--sf-ink)}
+.sal-focus__grid{display:grid;grid-template-columns:1fr;gap:12px}
+.sal-focus__card{
+  display:flex;align-items:center;gap:14px;min-height:72px;
+  padding:14px;border:1px solid var(--sf-line);border-radius:16px;
+  background:var(--sf-bg);color:var(--sf-ink);text-decoration:none;
+  transition:border-color .15s ease,transform .15s ease;
+}
+.sal-focus__card:hover{border-color:var(--sf-signal)}
+.sal-focus__card:focus-visible{outline:3px solid var(--sf-ink);outline-offset:3px}
+.sal-focus__tile{
+  flex:0 0 auto;width:48px;height:48px;border-radius:14px;
+  display:grid;place-items:center;color:#0D0D0D;
+  background:linear-gradient(145deg,#FFA25C 0%,#FF5B04 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.55),0 6px 14px -6px rgba(255,91,4,.6);
+}
+.sal-focus__body{flex:1 1 auto;min-width:0}
+.sal-focus__row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sal-focus__chip{
+  display:inline-block;padding:2px 8px;border-radius:999px;
+  border:1px solid var(--sf-ink);font-size:.7rem;font-weight:800;
+  letter-spacing:.04em;line-height:1.5;color:var(--sf-ink);
+}
+.sal-focus__name{font-size:.95rem;font-weight:800;line-height:1.5;overflow-wrap:anywhere}
+.sal-focus__desc{display:block;margin-top:2px;font-size:.85rem;line-height:1.6;opacity:.75;overflow-wrap:anywhere}
+.sal-focus__arrow{flex:0 0 auto;color:var(--sf-ink);transform:scaleX(-1)}
+@media (min-width:640px){
+  .sal-focus__panel{padding:24px}
+  .sal-focus__grid{grid-template-columns:repeat(3,1fr)}
+  .sal-focus__card{flex-direction:column;align-items:flex-start;min-height:0;padding:18px;gap:12px}
+  .sal-focus__arrow{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .sal-focus__card{transition:none}
+}
+@media print{
+  .sal-focus{display:none}
+}
+`;
+
 export default function SalaryCalculatorPage() {
   return (
     <div className="py-6 sm:py-10">
+      <style>{focusCss}</style>
       <SalaryCalculator
         pageTitle="حاسبة الراتب الصافي — متعددة الدول"
         pageBadge="حاسبة الراتب الصافي"
         pageDesc="احسب راتبك الصافي بعد الضرائب والتأمينات الاجتماعية والبدلات — يدعم السعودية والإمارات ومصر وباكستان وبريطانيا وأمريكا."
       />
       {/* Focus-15: next steps for salary users; preserve the shared global related-tools list. */}
-      <nav aria-labelledby="salary-focus-links" className="mx-auto max-w-5xl px-4 py-5" dir="rtl">
-        <h2 id="salary-focus-links" className="mb-3 text-lg font-bold text-[var(--text,#0D0D0D)]">
-          بعد حساب الراتب: أدوات مستحقات الموظف ذات الصلة
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Link href="/ar/sa/final-settlement-calculator" className="rounded-xl border border-[var(--border,#D4D4CE)] bg-[var(--surface,#FFFFFF)] p-4 text-sm font-semibold text-[var(--text,#0D0D0D)] hover:border-[var(--orange,#FF5B04)] hover:underline">
-            المخالصة النهائية في السعودية — احسب مستحقات نهاية العمل
-          </Link>
-          <Link href="/ar/sa/annual-leave-calculator" className="rounded-xl border border-[var(--border,#D4D4CE)] bg-[var(--surface,#FFFFFF)] p-4 text-sm font-semibold text-[var(--text,#0D0D0D)] hover:border-[var(--orange,#FF5B04)] hover:underline">
-            الإجازات السنوية في السعودية — احسب رصيد الإجازات المتبقية
-          </Link>
-          <Link href="/ar/ae/notice-period-calculator" className="rounded-xl border border-[var(--border,#D4D4CE)] bg-[var(--surface,#FFFFFF)] p-4 text-sm font-semibold text-[var(--text,#0D0D0D)] hover:border-[var(--orange,#FF5B04)] hover:underline">
-            فترة الإنذار في الإمارات — احسب آخر يوم عمل وبدل الإنذار
-          </Link>
+      <nav aria-labelledby="salary-focus-links" className="sal-focus" dir="rtl">
+        <div className="sal-focus__panel">
+          <h2 id="salary-focus-links" className="sal-focus__title">
+            بعد حساب الراتب: أدوات مستحقات الموظف ذات الصلة
+          </h2>
+          <div className="sal-focus__grid">
+            {focusLinks.map((item) => (
+              <Link key={item.href} href={item.href} className="sal-focus__card">
+                <span className="sal-focus__tile">
+                  <TileIcon name={item.icon} />
+                </span>
+                <span className="sal-focus__body">
+                  <span className="sal-focus__row">
+                    <span className="sal-focus__chip">{item.chip}</span>
+                    <span className="sal-focus__name">{item.title}</span>
+                  </span>
+                  <span className="sal-focus__desc">{item.desc}</span>
+                </span>
+                <svg
+                  className="sal-focus__arrow"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </Link>
+            ))}
+          </div>
         </div>
       </nav>
       <ToolGuideSection {...guideData} />

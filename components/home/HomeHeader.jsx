@@ -175,11 +175,11 @@ export default function HomeHeader() {
           HEADER BAR — sticky, sits above everything
          ═══════════════════════════════════════════════════════════════════ */}
       <header
-        className={`sticky top-0 z-40 w-full px-3 pt-3 pb-2 sm:px-6 lg:px-8 sm:pt-4 transition-all duration-200 ${
-          scrolled ? "pt-2 pb-1 sm:pt-2" : ""
+        className={`sticky top-0 z-40 w-full px-3 pt-2 pb-2 sm:px-4 lg:px-6 transition-all duration-200 ${
+          scrolled ? "pt-1 pb-1" : ""
         }`}
       >
-        <div className="qemlo-glossy-pill mx-auto flex w-full max-w-[1400px] items-center justify-between rounded-full px-4 py-2 sm:px-6 sm:py-2.5">
+        <div className="qemlo-glossy-pill flex w-full items-center justify-between rounded-full px-4 py-2 sm:px-6 sm:py-2.5">
 
           {/* ── LOGO ──────────────────────────────────────────────────── */}
           <div className="flex items-center flex-shrink-0">
