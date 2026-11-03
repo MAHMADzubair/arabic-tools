@@ -6,7 +6,7 @@ import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export const metadata = {
-  title: "ما معنى LPO في الإمارات؟ مولد أمر شراء PO/LPO PDF | Qemlo",
+  title: "ما معنى LPO في الإمارات؟ مولد أمر شراء PO/LPO PDF",
   description:
     "ما معنى LPO في الإمارات؟ تعرّف على اختصار Local Purchase Order وأنشئ نموذج أمر شراء PO/LPO بالدرهم AED مع VAT 5% واحفظه PDF مجاناً.",
   keywords: [
