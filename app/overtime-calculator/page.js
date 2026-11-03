@@ -1,12 +1,22 @@
 import OvertimeCalculator from "@/components/OvertimeCalculator";
 import Link from "next/link";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 export const metadata = {
   title: "حاسبة العمل الإضافي (الأوفر تايم) 2026 | السعودية والإمارات والدول العربية",
   description:
-    "احسب أجر ساعات العمل الإضافي بدقة وفق المادة (107) من نظام العمل السعودي (150%) والمادة (19) من قانون العمل الإماراتي، مع ساعات العمل الليلية والعطلات.",
+    "احسب أجر العمل الإضافي وفق المادة (107) في السعودية والمادة (19) في الإمارات، مع توضيح أجر الساعة الفعلي والزيادة النظامية والعمل الليلي والعطلات.",
   alternates: { canonical: "/overtime-calculator" },
+  openGraph: {
+    title: "حاسبة العمل الإضافي 2026 | السعودية والإمارات | Qemlo",
+    description:
+      "احسب أجر ساعات العمل الإضافي وفق أنظمة العمل في السعودية والإمارات، مع شرح معدلات العمل الليلي والعطلات.",
+    url: `${SITE_URL}/overtime-calculator`,
+    type: "website",
+    locale: "ar_AR",
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 const guideData = {
