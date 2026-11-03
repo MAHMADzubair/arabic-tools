@@ -155,7 +155,7 @@ export default function SaudiAnnualLeavePage() {
           keyRule="21 يوماً سنوياً (أقل من 5 سنوات) — 30 يوماً (5 سنوات فأكثر) — وفق المادتين 109 و111"
           authority="وزارة الموارد البشرية والتنمية الاجتماعية"
           authorityUrl="https://hrsd.gov.sa"
-          lastReviewed="سبتمبر 2026"
+          lastReviewed="نوفمبر 2026"
           disclaimer="هذه الأداة تقديرية استرشادية. راجع عقد العمل ولوائح المنشأة للتحقق من الأجر الفعلي المعتمد."
         />
 

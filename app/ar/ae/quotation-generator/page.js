@@ -1,3 +1,4 @@
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import UaeQuotationGenerator from "@/components/UaeQuotationGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
@@ -9,6 +10,15 @@ export const metadata = {
   title: "مولد عرض سعر الإمارات 2026 | نموذج Quotation مجاني",
   description:
     "أنشئ عرض سعر احترافي بالعربية والإنجليزية في الإمارات، أضف المنتجات والخدمات والخصومات وضريبة VAT واطبع نموذجاً جاهزاً للعميل.",
+  keywords: [
+    "مولد عرض سعر الإمارات",
+    "نموذج عرض سعر الإمارات PDF",
+    "نموذج quotation عربي إنجليزي",
+    "عرض سعر مع ضريبة القيمة المضافة 5%",
+    "UAE quotation generator",
+    "quotation template UAE",
+    "عرض سعر للشركات والمستقلين",
+  ],
 
   alternates: {
     canonical: "/ar/ae/quotation-generator",
@@ -184,6 +194,16 @@ export default function UaeQuotationGeneratorPage() {
             <span>›</span>
             <span className="text-ink font-semibold">مولد عرض السعر</span>
           </nav>
+        <GeoAnswerSummary
+          whatItDoes="إنشاء عرض سعر تجاري بالعربية والإنجليزية مع المنتجات والخدمات والخصومات وضريبة VAT وشروط الدفع"
+          appliesTo="الإمارات العربية المتحدة — الشركات والمنشآت والمستقلون"
+          keyRule="عرض السعر يوضح السعر المتوقع قبل التوريد ولا يحل محل الفاتورة الضريبية؛ أضف VAT 5% عندما تكون المعاملة خاضعة والمنشأة ملزمة بتحصيلها"
+          authority="الهيئة الاتحادية للضرائب (FTA)"
+          authorityUrl="https://tax.gov.ae"
+          lastReviewed="نوفمبر 2026"
+          disclaimer="المستند المُنشأ عرض سعر تجاري وليس فاتورة ضريبية أو مستند امتثال إلكتروني."
+        />
+
         </div>
 
         {/* ── PART 1: Tool ── */}

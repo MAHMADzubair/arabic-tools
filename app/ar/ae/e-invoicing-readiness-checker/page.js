@@ -1,3 +1,4 @@
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import UaeEInvoicingChecker from "@/components/UaeEInvoicingChecker";
 import Link from "next/link";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -217,6 +218,16 @@ export default function UaeEInvoicingReadinessCheckerPage() {
             </li>
           </ol>
         </nav>
+        <GeoAnswerSummary
+          whatItDoes="تحديد جدول تطبيق الفوترة الإلكترونية وتقييم جاهزية الأنظمة والبيانات والتعاقد مع مزود خدمة معتمد ASP"
+          appliesTo="الإمارات العربية المتحدة — الأشخاص والمنشآت والجهات الحكومية ضمن نطاق المنظومة"
+          keyRule="للمنشآت الخاصة بإيرادات 50 مليون درهم فأكثر: تعيين ASP بحلول 30 أكتوبر 2026 والتطبيق 1 يناير 2027؛ وللأقل من 50 مليوناً: 31 مارس 2027 و1 يوليو 2027 على التوالي"
+          authority="وزارة المالية الإماراتية والهيئة الاتحادية للضرائب"
+          authorityUrl="https://mof.gov.ae/en/about-us/initiatives/einvoicing/"
+          lastReviewed="نوفمبر 2026"
+          disclaimer="المواعيد تخص الفئات والمعاملات الواقعة ضمن النطاق؛ تحقّق من أحدث القرارات والاستثناءات الرسمية قبل اتخاذ إجراء امتثال."
+        />
+
 
         {/* ── Hero Section ──────────────────────────────────────────────────── */}
         <header className="space-y-4">

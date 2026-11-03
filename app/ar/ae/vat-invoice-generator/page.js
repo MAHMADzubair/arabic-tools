@@ -1,3 +1,4 @@
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import UaeVatInvoiceGenerator from "@/components/UaeVatInvoiceGenerator";
 import Link from "next/link";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -197,6 +198,16 @@ export default function UaeVatInvoiceGeneratorPage() {
             <span aria-hidden="true">›</span>
             <span className="text-ink font-semibold">مولد الفاتورة الضريبية</span>
           </nav>
+        <GeoAnswerSummary
+          whatItDoes="إنشاء نموذج فاتورة ضريبية إماراتية كاملة أو مبسطة بالدرهم مع بيانات TRN وحساب VAT والطباعة أو PDF"
+          appliesTo="الإمارات العربية المتحدة — المنشآت التي تصدر فواتير ضريبية"
+          keyRule="المعدل القياسي لضريبة القيمة المضافة 5%؛ ويجب التمييز بين التوريدات الخاضعة للمعدل الصفري والمعفاة"
+          authority="الهيئة الاتحادية للضرائب (FTA)"
+          authorityUrl="https://tax.gov.ae"
+          lastReviewed="نوفمبر 2026"
+          disclaimer="هذا مولد نموذج قابل للطباعة وليس نظام فوترة إلكترونية معتمداً؛ ملف PDF وحده لا يُعد eInvoice ضمن المنظومة الإماراتية."
+        />
+
         </div>
 
         {/* ── Page Hero — H1 ─────────────────────────────────────────────── */}

@@ -257,7 +257,7 @@ export default function FinalSettlementPage() {
           keyRule="المادتان 84 و85 للمكافأة — المادة 111 للإجازات — المادتان 75 و76 لمهلة الإشعار"
           authority="وزارة الموارد البشرية والتنمية الاجتماعية"
           authorityUrl="https://hrsd.gov.sa"
-          lastReviewed="سبتمبر 2026"
+          lastReviewed="نوفمبر 2026"
           disclaimer="هذه الأداة تقديرية استرشادية — نتائجها لا تُعدّ مخالصة رسمية. راجع متخصصاً عند الحاجة."
         />
 

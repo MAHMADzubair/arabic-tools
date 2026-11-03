@@ -159,7 +159,7 @@ export default function UaeFinalSettlementPage() {
           keyRule="مكافأة نهاية الخدمة: 21 يوماً لكل سنة للسنوات الخمس الأولى ثم 30 يوماً للسنوات التالية — المرسوم 33 لسنة 2021 المادة 51"
           authority="وزارة الموارد البشرية والتوطين (MOHRE)"
           authorityUrl="https://www.mohre.gov.ae"
-          lastReviewed="سبتمبر 2026"
+          lastReviewed="نوفمبر 2026"
           disclaimer="هذه الأداة استرشادية — نتائجها تقديرية. للنزاعات العمالية راجع بوابة تسوية النزاعات في MOHRE."
         />
 
@@ -307,7 +307,7 @@ export default function UaeFinalSettlementPage() {
                 ))}
               </div>
               <p className="text-[11px] text-ink-muted pt-2 border-t border-gray-200">
-                آخر تحديث للمحتوى والقواعد: سبتمبر 2026م وفق قانون العمل الاتحادي رقم (33) لسنة 2021 والقرارات التنفيذية.
+                آخر تحديث للمحتوى والقواعد: نوفمبر 2026م وفق قانون العمل الاتحادي رقم (33) لسنة 2021 والقرارات التنفيذية.
               </p>
             </div>
           </div>

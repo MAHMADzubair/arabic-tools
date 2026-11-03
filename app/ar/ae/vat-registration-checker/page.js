@@ -232,7 +232,7 @@ export default function UaeVatRegistrationCheckerPage() {
           keyRule="التسجيل الإلزامي عند تجاوز 375,000 درهم — الاختياري من 187,500 درهم — وفق لوائح FTA المنشورة"
           authority="الهيئة الاتحادية للضرائب (FTA)"
           authorityUrl="https://tax.gov.ae"
-          lastReviewed="أكتوبر 2026"
+          lastReviewed="نوفمبر 2026"
           disclaimer="هذه الأداة تقديرية استرشادية — راجع بوابة EmaraTax أو مستشارك الضريبي للتحقق من الالتزام الرسمي."
         />
 

@@ -166,7 +166,7 @@ export default function EInvoiceGeneratorPage() {
           keyRule="فاتورة ضريبية للمعاملات بين الأعمال B2B — فاتورة مبسطة للمستهلك النهائي B2C — VAT 15%"
           authority="هيئة الزكاة والضريبة والجمارك (ZATCA)"
           authorityUrl="https://zatca.gov.sa"
-          lastReviewed="سبتمبر 2026"
+          lastReviewed="نوفمبر 2026"
           disclaimer="هذه الأداة تُنشئ نماذج إرشادية فقط ولا تُصدر فاتورة إلكترونية مبلّغاً عنها عبر منصة فاتورة (ZATCA). الامتثال الرسمي يستلزم حلول فوترة معتمدة."
         />
 
@@ -307,7 +307,7 @@ export default function EInvoiceGeneratorPage() {
                   </a>
                 ))}
               </div>
-              <p className="text-xs text-ink-muted mt-3">آخر مراجعة للمحتوى: سبتمبر 2026</p>
+              <p className="text-xs text-ink-muted mt-3">آخر مراجعة للمحتوى: نوفمبر 2026</p>
             </div>
           </div>
         </section>

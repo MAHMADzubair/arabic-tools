@@ -1,3 +1,4 @@
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 ﻿import SaudiQuotationGenerator from "@/components/SaudiQuotationGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
@@ -193,6 +194,16 @@ export default function SaudiQuotationGeneratorPage() {
             <span>›</span>
             <span className="text-ink font-semibold">مولد عرض السعر</span>
           </nav>
+        <GeoAnswerSummary
+          whatItDoes="إنشاء عرض سعر احترافي بالعربية والإنجليزية مع البنود والكميات والخصومات وضريبة القيمة المضافة، ثم طباعته أو حفظه PDF"
+          appliesTo="المملكة العربية السعودية — الشركات والمنشآت والمستقلون"
+          keyRule="عرض السعر مستند تجاري قبل التوريد وليس فاتورة ضريبية؛ تُعرض VAT بنسبة 15% عند انطباقها على منشأة مسجلة"
+          authority="هيئة الزكاة والضريبة والجمارك (ZATCA)"
+          authorityUrl="https://zatca.gov.sa"
+          lastReviewed="نوفمبر 2026"
+          disclaimer="النموذج أداة مساعدة ولا يصدر فاتورة إلكترونية معتمدة أو يتصل بمنصة فاتورة."
+        />
+
         </div>
 
         {/* ── PART 1: Tool ── */}

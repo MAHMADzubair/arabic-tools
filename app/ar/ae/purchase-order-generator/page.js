@@ -1,3 +1,4 @@
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import UaePurchaseOrderGenerator from "@/components/UaePurchaseOrderGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
@@ -175,6 +176,16 @@ export default function UaePurchaseOrderGeneratorPage() {
             <span aria-hidden="true">›</span>
             <span className="text-ink font-semibold">مولد نموذج أمر الشراء LPO</span>
           </nav>
+        <GeoAnswerSummary
+          whatItDoes="إنشاء أمر شراء PO أو LPO بالعربية والإنجليزية مع بيانات المورد والأصناف والكميات وشروط التسليم والضريبة"
+          appliesTo="الإمارات العربية المتحدة — فرق المشتريات والشركات والموردون"
+          keyRule="أمر الشراء وثيقة يصدرها المشتري لتأكيد الطلب؛ لا يُعد فاتورة ضريبية ولا يغني عن فاتورة المورد المستوفية لمتطلبات FTA"
+          authority="الهيئة الاتحادية للضرائب (FTA)"
+          authorityUrl="https://tax.gov.ae"
+          lastReviewed="نوفمبر 2026"
+          disclaimer="رقم PO/LPO مرجع داخلي تختاره المنشأة وليس رقم تسجيل حكومياً أو رقم TRN."
+        />
+
         </div>
 
         {/* ── Page Hero — H1 ─────────────────────────────────────────────── */}
