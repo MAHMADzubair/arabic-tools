@@ -180,18 +180,38 @@ export default function ToolGuideSection({
     })),
   };
 
+  // Finance tools: salary, gratuity, VAT, leave, settlement, tax, loan, etc.
+  // All others (religious, converters, BMI, generators): UtilitiesApplication.
+  const FINANCE_PATHS = new Set([
+    "/salary-calculator", "/salary-calculator/saudi", "/salary-calculator/uae",
+    "/salary-calculator/egypt", "/salary-calculator/kuwait", "/salary-calculator/qatar",
+    "/gratuity-calculator", "/gratuity-calculator/saudi", "/gratuity-calculator/uae",
+    "/gratuity-calculator/kuwait", "/gratuity-calculator/qatar", "/gratuity-calculator/egypt",
+    "/vat-calculator", "/vat-calculator/saudi", "/vat-calculator/uae",
+    "/overtime-calculator", "/overtime-calculator/saudi", "/overtime-calculator/uae",
+    "/ar/sa/final-settlement-calculator", "/ar/ae/final-settlement-calculator",
+    "/ar/sa/annual-leave-calculator", "/annual-leave-calculator",
+    "/ar/sa/article-77-calculator",
+    "/loan-calculator", "/mortgage-calculator", "/compound-interest",
+    "/profit-margin-calculator", "/roi-calculator",
+    "/ar/ae/notice-period-calculator", "/ar/ae/corporate-tax-calculator",
+    "/ar/ae/small-business-relief-checker", "/ar/ae/vat-registration-checker",
+    "/ar/sa/vat-registration-checker",
+  ]);
+
   const webAppSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: currentTool ? currentTool.title : aboutTitle,
     description: currentTool ? currentTool.desc : aboutTitle,
     url: `${SITE_URL}${currentPath}`,
-    applicationCategory: "UtilityApplication",
+    inLanguage: "ar",
+    applicationCategory: FINANCE_PATHS.has(currentPath) ? "FinanceApplication" : "UtilitiesApplication",
     operatingSystem: "All",
     browserRequirements: "Requires JavaScript. Requires HTML5.",
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     publisher: { "@id": SITE_ORG_ID },
   };
+  // Note: no offers, ratings, or reviews — free tool, no commercial transaction.
 
   return (
     <div className="tg-root" dir="rtl">
