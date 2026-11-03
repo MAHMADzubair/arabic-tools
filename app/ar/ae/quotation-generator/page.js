@@ -10,6 +10,15 @@ export const metadata = {
   title: "مولد عرض سعر الإمارات 2026 | نموذج Quotation مجاني",
   description:
     "أنشئ عرض سعر احترافي بالعربية والإنجليزية في الإمارات، أضف المنتجات والخدمات والخصومات وضريبة VAT واطبع نموذجاً جاهزاً للعميل.",
+  keywords: [
+    "مولد عرض سعر الإمارات",
+    "نموذج عرض سعر الإمارات PDF",
+    "نموذج quotation عربي إنجليزي",
+    "عرض سعر مع ضريبة القيمة المضافة 5%",
+    "UAE quotation generator",
+    "quotation template UAE",
+    "عرض سعر للشركات والمستقلين",
+  ],
 
   alternates: {
     canonical: "/ar/ae/quotation-generator",
