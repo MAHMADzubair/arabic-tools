@@ -6,9 +6,15 @@ import { usePathname } from "next/navigation";
 const TOOL_ROUTE = /(?:calculator|generator|checker|converter|compressor|resizer|editor|counter|planner|estimator)/i;
 
 function send(name, params = {}) {
-  if (typeof window !== "undefined" && typeof window.trackEvent === "function") {
+  if (typeof window === "undefined") return;
+  if (typeof window.trackEvent === "function") {
     window.trackEvent(name, params);
+    return;
   }
+
+  // GA4 loads after hydration; queue early interactions rather than dropping them.
+  window.__qemloPendingEvents = window.__qemloPendingEvents || [];
+  window.__qemloPendingEvents.push([name, params]);
 }
 
 function routeName(path) {
