@@ -189,7 +189,7 @@ export default function RootLayout({ children }) {
             id="google-adsense"
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}`}
-            strategy="beforeInteractive"
+            strategy="lazyOnload"
             crossOrigin="anonymous"
           />
         )}

@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import BrandValueGrid from "./BrandValueGrid";
-import HomeSearchDialog from "./HomeSearchDialog";
+
+// Lazy-load HomeSearchDialog: excluded from initial JS bundle.
+// The dialog only renders when searchOpen === true, so users who never open
+// search never download it. The Ctrl+K / Cmd+K listener below is tiny and
+// stays in the initial bundle so the keyboard shortcut always works.
+const HomeSearchDialog = dynamic(() => import("./HomeSearchDialog"), { ssr: false });
 
 const CHIP_CLASS =
   "qemlo-chip rounded-full px-3.5 py-1 font-semibold transition-colors bg-[#EAEAE5] text-[#444] lg:border lg:border-white/15 lg:bg-white/5 lg:text-[#DDD] hover:border-[#FF5B04] hover:text-[#FF5B04]";
@@ -109,6 +115,18 @@ const TOOL_CARDS = [
 
 export default function HomeHero({ toolCount = 15 }) {
   const [searchOpen, setSearchOpen] = useState(false);
+
+  // Global Ctrl+K / Cmd+K shortcut — tiny listener, always in initial bundle.
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <section
