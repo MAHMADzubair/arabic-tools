@@ -18,6 +18,22 @@ function toNum(v) {
   return isNaN(n) || n < 0 ? 0 : n;
 }
 
+function isInvalidNumericInput(value) {
+  const raw = String(value ?? "").trim().replace(/,/g, "");
+  if (!raw) return false;
+  const n = Number(raw);
+  return !Number.isFinite(n) || n < 0;
+}
+
+function currentLocalDateISO() {
+  const now = new Date();
+  return [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
 function fmt(n) {
   return Number(n || 0).toLocaleString("ar-AE", {
     minimumFractionDigits: 2,
@@ -110,8 +126,10 @@ export default function UaeNoticePeriodCalculator() {
   const [isPrivateSector, setIsPrivateSector] = useState("unsure");
   const [isExcludedCategory, setIsExcludedCategory] = useState("unsure");
   const [isDifcAdgm, setIsDifcAdgm] = useState("unsure");
-  // Probation
+  // Probation and statutory timing / exception gates
   const [isProbation, setIsProbation] = useState("unsure");
+  const [isTerminationDuringLeave, setIsTerminationDuringLeave] = useState("unsure");
+  const [isNoNoticeStatutoryCase, setIsNoNoticeStatutoryCase] = useState("unsure");
   // Core inputs
   const [terminationInitiator, setTerminationInitiator] = useState("unsure");
   const [nonCompliantParty, setNonCompliantParty] = useState("unsure");
@@ -215,11 +233,27 @@ export default function UaeNoticePeriodCalculator() {
         ? "فترة التجربة تخضع للمادة (9) وليس للمادة (43). تختلف المهلة حسب الحالة: 14 يوماً لإنهاء صاحب العمل، أو شهراً للانتقال إلى صاحب عمل آخر داخل الدولة، أو 14 يوماً للعامل الأجنبي الذي يغادر الدولة. هذه الحاسبة لا تصدر نتيجة لفترة التجربة."
         : "أكد أن فترة التجربة انتهت قبل استخدام حاسبة المادة (43). إذا لم تتأكد من حالة التجربة، لا تعتمد على هذا التقدير.";
     }
+    if (isTerminationDuringLeave !== "no") {
+      return isTerminationDuringLeave === "yes"
+        ? "وفق المادة (35)، إذا تم الإخطار بإنهاء العقد أثناء إجازة العامل، فلا تبدأ مهلة الإنذار إلا من اليوم التالي لموعد العودة المجدول، ما لم يتفق الطرفان على خلاف ذلك. هذه الحاسبة لا تحسب أثر الإجازة أو الاتفاق المختلف؛ راجع تاريخ العودة والاتفاق مع MOHRE قبل احتساب آخر يوم."
+        : "أكد أن إشعار إنهاء العقد لم يُقدّم أثناء إجازة العامل. إذا لم تكن متأكداً، لا تعتمد على تقدير المادة (43) قبل مراجعة المادة (35) والجهة المختصة.";
+    }
+    if (isNoNoticeStatutoryCase !== "no") {
+      return isNoNoticeStatutoryCase === "yes"
+        ? "قد تنطبق حالة إنهاء دون إنذار وفق المادة (44) أو مغادرة العمل دون إنذار وفق المادة (45). لهذه الحالات شروط وإجراءات مستقلة، ولا تقرر هذه الحاسبة انطباقها أو تحسب بدلها. راجع النص القانوني وMOHRE."
+        : "أكد أن الحالة لا تستند إلى حق إنهاء دون إنذار وفق المادة (44) أو المادة (45). إذا لم تتأكد، لا تستخدم تقدير المادة (43) قبل مراجعة الجهة المختصة.";
+    }
     if (isMutualWaiver) {
       return "عند الاتفاق الكتابي على الإعفاء أو تخفيض الإنذار، لا يعني ذلك تلقائياً أن بدل الإنذار يساوي صفراً؛ فالمادة (43/2) تشترط حفظ حقوق العامل. راجع نص الاتفاق وMOHRE، وهذه الحاسبة لا تحسب اتفاقات الإعفاء أو التسوية الخاصة.";
     }
-    if (nonCompliantParty === "unsure") {
-      return "حدد الطرف الذي لم يلتزم بإكمال فترة الإنذار. الطرف الذي بدأ إنهاء العقد ليس بالضرورة الطرف المخل؛ إذا لم تتأكد، راجع الإخطار والاتفاق أو استشر MOHRE قبل الاعتماد على أي مبلغ.";
+    if (contractNoticePreset === "custom" && isInvalidNumericInput(customNoticeDays)) {
+      return "أدخل مدة إنذار رقمية غير سالبة بالأيام، دون أحرف أو رموز غير رقمية.";
+    }
+    if (servedInputMode === "days" && isInvalidNumericInput(servedDaysInput)) {
+      return "أدخل عدد أيام منفذة رقمياً وبقيمة لا تقل عن صفر. لا يمكن أن تكون الأيام المنفذة سالبة.";
+    }
+    if (isInvalidNumericInput(lastWage)) {
+      return "أدخل آخر أجر شهري كقيمة رقمية غير سالبة.";
     }
     if (noticeValidation.msg) return noticeValidation.msg;
     if (!Number.isInteger(requiredNoticeDays)) {
@@ -241,22 +275,34 @@ export default function UaeNoticePeriodCalculator() {
     if (servedNoticeDays > requiredNoticeDays) {
       return "الأيام المنفذة لا يمكن أن تتجاوز مدة الإنذار المتفق عليها. راجع التاريخ أو عدد الأيام المدخل.";
     }
-    if (wage <= 0) return "أدخل آخر أجر شهري إجمالي أكبر من صفر.";
+    if (remainingNoticeDays > 0 && wage <= 0) {
+      return "أدخل آخر أجر شهري إجمالي أكبر من صفر لحساب بدل الأيام غير المنفذة.";
+    }
+    if (remainingNoticeDays > 0 && nonCompliantParty === "unsure") {
+      return "حدد الطرف الذي لم يلتزم بإكمال فترة الإنذار. الطرف الذي بدأ إنهاء العقد ليس بالضرورة الطرف المخل؛ إذا لم تتأكد، راجع الإخطار والاتفاق أو استشر MOHRE قبل الاعتماد على أي مبلغ.";
+    }
     return "";
   }, [
     isPrivateSector,
     isExcludedCategory,
     isDifcAdgm,
     isProbation,
+    isTerminationDuringLeave,
+    isNoNoticeStatutoryCase,
     nonCompliantParty,
     noticeValidation.msg,
     requiredNoticeDays,
+    contractNoticePreset,
+    customNoticeDays,
     noticeStartDate,
     servedInputMode,
+    servedDaysInput,
     actualLastWorkingDate,
     isActualDateInvalid,
     servedNoticeDays,
+    remainingNoticeDays,
     wage,
+    lastWage,
     isMutualWaiver,
   ]);
 
@@ -273,6 +319,11 @@ export default function UaeNoticePeriodCalculator() {
 
   // ── Presets / reset (unchanged) ──────────────────────────────────────────────
   const applyPreset = (presetNum) => {
+    setNoticeStartDate(currentLocalDateISO());
+    setActualLastWorkingDate("");
+    setCustomNoticeDays("");
+    setIsTerminationDuringLeave("no");
+    setIsNoNoticeStatutoryCase("no");
     if (presetNum === 1) {
       setTerminationInitiator("employee");
       setNonCompliantParty("employee");
@@ -317,6 +368,8 @@ export default function UaeNoticePeriodCalculator() {
     setIsExcludedCategory("unsure");
     setIsDifcAdgm("unsure");
     setIsProbation("unsure");
+    setIsTerminationDuringLeave("unsure");
+    setIsNoNoticeStatutoryCase("unsure");
     setTerminationInitiator("unsure");
     setNonCompliantParty("unsure");
     setNoticeStartDate("");
@@ -415,6 +468,18 @@ export default function UaeNoticePeriodCalculator() {
                 options={[{ id: "no", label: "لا" }, { id: "yes", label: "نعم" }, { id: "unsure", label: "غير متأكد" }]} />
               {isProbation !== "no" && (
                 <Note>لا تصدر الحاسبة نتيجة إلا بعد تأكيد انتهاء فترة التجربة؛ فحالات التجربة تخضع للمادة (9) لا للمادة (43).</Note>
+              )}
+
+              <Seg id="nc-leave" label="هل تم تقديم إشعار إنهاء العقد أثناء إجازة العامل؟" value={isTerminationDuringLeave} onChange={setIsTerminationDuringLeave}
+                options={[{ id: "no", label: "لا" }, { id: "yes", label: "نعم" }, { id: "unsure", label: "غير متأكد" }]} />
+              {isTerminationDuringLeave !== "no" && (
+                <Note>وفق المادة (35)، تبدأ مهلة الإنذار في اليوم التالي لموعد عودة العامل المجدول من الإجازة، ما لم يتفق الطرفان على خلاف ذلك. لا تصدر الحاسبة نتيجة آلية لهذه الحالة.</Note>
+              )}
+
+              <Seg id="nc-no-notice" label="هل تعتمد الحالة على حق إنهاء دون إنذار وفق المادة (44) أو (45)؟" value={isNoNoticeStatutoryCase} onChange={setIsNoNoticeStatutoryCase}
+                options={[{ id: "no", label: "لا" }, { id: "yes", label: "نعم" }, { id: "unsure", label: "غير متأكد" }]} />
+              {isNoNoticeStatutoryCase !== "no" && (
+                <Note>للمادة (44) شروط وإجراءات خاصة بإنهاء صاحب العمل دون إنذار، وللمادة (45) حالات محددة يستطيع فيها العامل مغادرة العمل دون إنذار مع الاحتفاظ بحقوقه. هذه الحاسبة لا تقرر انطباق تلك الحالات.</Note>
               )}
             </section>
 
@@ -559,7 +624,7 @@ export default function UaeNoticePeriodCalculator() {
                     <Row k="الطرف المستفيد" v={beneficiary} strong />
                   </dl>
 
-                  {terminationInitiator !== "employee" && (
+                  {terminationInitiator === "employer" && (
                     <div className="nc-white">
                       <p className="nc-small-b">ملاحظة (المادة 43 - البند 5)</p>
                       <p className="nc-small">إذا كان صاحب العمل هو من أنهى عقد العمل، يحق للعامل التغيب يوماً واحداً غير مدفوع الأجر أسبوعياً للبحث عن عمل، شريطة إخطار صاحب العمل قبل يوم الغياب بثلاثة أيام على الأقل. إذا لم تتأكد من الطرف الذي بدأ الإنهاء، تحقق من الإخطار المكتوب.</p>
@@ -647,7 +712,7 @@ export default function UaeNoticePeriodCalculator() {
         {/* Page disclaimer */}
         <aside className="nc-card nc-dash" aria-labelledby="nc-disc">
           <h3 id="nc-disc" className="nc-h3">إخلاء مسؤولية قانوني</h3>
-          <p className="nc-text">هذه الحاسبة تقديرية للموظفين بأجر شهري في القطاع الخاص الخاضع للقانون الاتحادي بعد فترة التجربة فقط. لا تحسب حالات DIFC أو ADGM أو القطاع الحكومي أو الأجور غير الشهرية أو اتفاقات الإعفاء والتخفيض الخاصة، ولا تمثل قراراً رسمياً من MOHRE أو حكماً قانونياً نهائياً. راجع عقد العمل والجهة المختصة قبل اتخاذ قرار.</p>
+          <p className="nc-text">هذه الحاسبة تقديرية للموظفين بأجر شهري في القطاع الخاص الخاضع للقانون الاتحادي بعد فترة التجربة فقط. لا تحسب حالات DIFC أو ADGM أو القطاع الحكومي أو الأجور غير الشهرية أو الإنهاء أثناء الإجازة وفق المادة (35) أو حالات المادتين (44) و(45) أو اتفاقات الإعفاء والتخفيض الخاصة، ولا تمثل قراراً رسمياً من MOHRE أو حكماً قانونياً نهائياً. راجع عقد العمل والجهة المختصة قبل اتخاذ قرار.</p>
         </aside>
       </div>
 
