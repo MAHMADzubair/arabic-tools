@@ -12,7 +12,9 @@ const noticeFaqs = noticeFaqMatch[1];
 test("UAE FAQ schema and visible content are built from one FAQ source", () => {
   assert.match(uae, /mainEntity: noticeFaqs\.map\(\(\{ q, a \}\) => \(\{/);
   assert.match(uae, /\{noticeFaqs\.map\(\(item, i\) => \(/);
-  assert.equal((noticeFaqs.match(/\bq: "/g) ?? []).length, 8);
+  assert.equal((noticeFaqs.match(/\bq: "/g) ?? []).length, 10);
+  assert.match(noticeFaqs, /كيف تؤثر الإجازة على بدء فترة الإنذار/);
+  assert.match(noticeFaqs, /هل تشمل الحاسبة حالات الفصل أو ترك العمل دون إنذار/);
   assert.match(noticeFaqs, /ما الفرق بين مدة الإنذار وبدل الإنذار في الإمارات/);
   assert.match(noticeFaqs, /noticeWaiverAnswer/);
   assert.match(noticeFaqs, /ما هي فترة الإنذار القانونية/);
