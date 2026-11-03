@@ -1,6 +1,7 @@
 import Script from "next/script";
 import { CATEGORIES, getCatalogToolsByCategory, getCatalogToolCount } from "@/lib/registry";
 import HomeHero from "@/components/home/HomeHero";
+import HomeSeoSections from "@/components/home/HomeSeoSections";
 import CategoryBrowseShowcase from "@/components/home/CategoryBrowseShowcase";
 import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
@@ -245,6 +246,9 @@ export default function HomePage() {
 
       {/* ── Features Strip ── */}
       <FeaturesStrip />
+
+      {/* ── SEO Answer-First, Curated Links & FAQ ── */}
+      <HomeSeoSections />
 
       <Script id="cat-strip" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: STRIP_SCRIPT }} />
     </div>
