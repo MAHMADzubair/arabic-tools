@@ -415,18 +415,18 @@ test("UAE Corporate Tax: QFZP non-qualifying income taxed at 9% without AED 375k
 
 // ─── 10. UAE Small Business Relief (SBR) Boundaries ──────────────────────────
 
-test("UAE SBR: Revenue <= 3,000,000 with tax period end on or before 2026-12-31 is eligible", () => {
+test("UAE SBR: Revenue <= 3,000,000 with tax period end on or before 2029-12-31 is eligible", () => {
   const res = evaluateSBR({
     currentRevenue: 2500000,
-    taxPeriodEnd: "2026-12-31",
+    taxPeriodEnd: "2029-12-31",
   });
   assert.equal(res.result, SBR_RESULT.POTENTIALLY_ELIGIBLE);
 });
 
-test("UAE SBR: Tax period end after 2026-12-31 is OUTSIDE_TIME_WINDOW", () => {
+test("UAE SBR: Tax period end after 2029-12-31 is OUTSIDE_TIME_WINDOW", () => {
   const res = evaluateSBR({
     currentRevenue: 2500000,
-    taxPeriodEnd: "2027-01-01",
+    taxPeriodEnd: "2030-01-01",
   });
   assert.equal(res.result, SBR_RESULT.OUTSIDE_TIME_WINDOW);
 });
