@@ -648,7 +648,7 @@ export default function UaeSbrChecker() {
 
           <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-xs text-[var(--text-2)] leading-relaxed">
 
-            الفترة الضريبية المدخلة تنتهي بعد 31 ديسمبر 2026 — خارج النطاق الزمني الحالي لتسهيلات الأعمال الصغيرة وفق القواعد الحالية.
+            الفترة الضريبية المدخلة تنتهي بعد 31 ديسمبر 2029 — خارج النطاق الزمني الحالي لتسهيلات الأعمال الصغيرة وفق القواعد الحالية.
 
           </div>
 
@@ -656,7 +656,7 @@ export default function UaeSbrChecker() {
 
         {periodEnd && periodEnd <= SBR_END_DATE && (
 
-          <p className="text-[11px] sbr-success-text font-bold">الفترة تنتهي في أو قبل 31 ديسمبر 2026</p>
+          <p className="text-[11px] sbr-success-text font-bold">الفترة تنتهي في أو قبل 31 ديسمبر 2029</p>
 
         )}
 
