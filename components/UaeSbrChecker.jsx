@@ -410,7 +410,7 @@ export default function UaeSbrChecker() {
 
       else if (id === "ex4") { setPersonType(PERSON_TYPE.FREE_ZONE); setIsQFZP(TRI.YES); setPeriodStart("2024-01-01"); setPeriodEnd("2024-12-31"); }
 
-      else if (id === "ex5") { setPeriodStart("2026-04-01"); setPeriodEnd("2027-03-31"); setCurrentRev("1500000"); }
+      else if (id === "ex5") { setPeriodStart("2029-04-01"); setPeriodEnd("2030-03-31"); setCurrentRev("1500000"); }
 
     }, 0);
 
@@ -478,7 +478,7 @@ export default function UaeSbrChecker() {
 
           </div>
 
-          <span className="shrink-0 rounded-full bg-[var(--surface)]/20 border border-[var(--orange)] px-3 py-1 text-xs font-bold whitespace-nowrap">محدث سبتمبر 2026 — FTA</span>
+          <span className="shrink-0 rounded-full bg-[var(--surface)]/20 border border-[var(--orange)] px-3 py-1 text-xs font-bold whitespace-nowrap">محدث نوفمبر 2026 — FTA</span>
 
         </div>
 
@@ -494,7 +494,7 @@ export default function UaeSbrChecker() {
 
         <p className="text-xs sbr-warning-text leading-relaxed">
 
-          <strong>تنبيه:</strong> وفق التوجيهات الحالية لـ FTA، تسهيلات الأعمال الصغيرة تسري على الفترات الضريبية التي <strong>تنتهي في أو قبل 31 ديسمبر 2026</strong>. يُنصح بمراجعة أحدث إرشادات الهيئة الاتحادية للضرائب.
+          <strong>تنبيه:</strong> وفق التوجيهات الحالية لـ FTA، بموجب القرار الوزاري رقم (131) لسنة 2026، تسري تسهيلات الأعمال الصغيرة على الفترات الضريبية التي <strong>تنتهي في أو قبل 31 ديسمبر 2029</strong>.
 
         </p>
 
@@ -520,7 +520,7 @@ export default function UaeSbrChecker() {
 
             { id:"ex4", label:"QFZP (غير مؤهل)",                   cls:"sbr-preset"   },
 
-            { id:"ex5", label:"فترة تنتهي مارس 2027",              cls:"sbr-preset"      },
+            { id:"ex5", label:"فترة تنتهي مارس 2030",              cls:"sbr-preset"      },
 
           ].map(p => (
 
