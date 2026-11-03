@@ -162,7 +162,7 @@ export default function VatRegistrationCheckerPage() {
           keyRule="التسجيل الإلزامي عند تجاوز 375,000 ريال — الاختياري من 187,500 ريال — وفق لوائح ZATCA المنشورة"
           authority="هيئة الزكاة والضريبة والجمارك (ZATCA)"
           authorityUrl="https://zatca.gov.sa"
-          lastReviewed="سبتمبر 2026"
+          lastReviewed="نوفمبر 2026"
           disclaimer="هذه الأداة تقديرية استرشادية — راجع بوابة ZATCA أو مستشارك الضريبي للتحقق من الالتزام الرسمي."
         />
 
