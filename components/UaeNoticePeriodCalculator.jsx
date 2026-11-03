@@ -10,7 +10,7 @@
  * close, only the summary prints), direction/validity never rely on colour
  * alone, and the unused `Link` import is gone.
  */
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 
 // ─── Helpers (unchanged) ───────────────────────────────────────────────────────
 function toNum(v) {
