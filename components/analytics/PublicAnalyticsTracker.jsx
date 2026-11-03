@@ -12,7 +12,8 @@ function send(name, params = {}) {
 }
 
 function routeName(path) {
-  return String(path || "/").split("/").filter(Boolean).pop() || "home";
+  const segments = String(path || "/").split("/").filter(Boolean);
+  return [...segments].reverse().find((segment) => TOOL_ROUTE.test(segment)) || segments.at(-1) || "home";
 }
 
 /**
