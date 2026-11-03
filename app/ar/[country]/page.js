@@ -209,6 +209,14 @@ const COUNTRY_HUBS = {
     guideTitle: "الدليل الشامل للأنظمة المالية وحقوق العمل في المملكة العربية السعودية",
     guideIntro:
       "تتميز بيئة الأعمال في المملكة العربية السعودية بأنظمة عمالية ومالية منشورة تهدف إلى حماية حقوق أطراف الإنتاج وتسهيل ممارسة الأعمال تماشياً مع رؤية السعودية 2030. تعكس حاسباتنا القواعد الواردة في هذه الأنظمة وفق المصادر الرسمية المتاحة.",
+    guideLinks: [
+      { href: "/salary-calculator/saudi", title: "صافي الراتب وخصومات GOSI", desc: "انتقل من مراجعة الاستحقاقات إلى تقدير الراتب بعد التأمينات وساند." },
+      { href: "/gratuity-calculator/saudi", title: "مكافأة نهاية الخدمة", desc: "احسب المكافأة الأساسية قبل مراجعة إجمالي المخالصة النهائية." },
+      { href: "/overtime-calculator/saudi", title: "أجر العمل الإضافي", desc: "قدّر مقابل الساعات الإضافية وفق المادة 107." },
+      { href: "/ar/sa/annual-leave-calculator", title: "رصيد الإجازات السنوية", desc: "احسب رصيد الإجازة والتعويض النقدي ذي الصلة بالتصفية." },
+      { href: "/ar/sa/final-settlement-calculator", title: "المخالصة النهائية", desc: "اجمع الراتب الأخير ومكافأة الخدمة والإجازات وبقية المستحقات." },
+      { href: "/ar/sa/article-77-calculator", title: "تعويض المادة 77", desc: "راجع تقدير التعويض عند إنهاء العقد لسبب غير مشروع." },
+    ],
     geoSummary: {
       whatItDoes: "مجمع أدوات مالية وعمالية مخصصة للمملكة العربية السعودية: حاسبة الراتب والتأمينات، مكافأة نهاية الخدمة، العمل الإضافي، وضريبة القيمة المضافة 15%",
       appliesTo: "المملكة العربية السعودية — موظفو القطاعين الخاص والحكومي وأصحاب الأعمال",
@@ -427,12 +435,12 @@ const COUNTRY_HUBS = {
         badge: "SBR — 3 مليون درهم",
         badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold",
         href: "/ar/ae/small-business-relief-checker",
-        desc: "تحقق من أهليتك لتسهيلات الأعمال الصغيرة في ضريبة الشركات: حد 3,000,000 درهم، الفترات السابقة، QFZP، وانتهاء المدة 31 ديسمبر 2026.",
+        desc: "تحقق من أهليتك لتسهيلات الأعمال الصغيرة في ضريبة الشركات: حد 3,000,000 درهم، الفترات السابقة، واستمرار الأهلية للفترات المنتهية حتى 31 ديسمبر 2029.",
         highlights: [
           "حد الإيرادات 3,000,000 درهم",
           "فحص الفترات الضريبية السابقة",
           "استبعاد QFZP والمجموعات الكبيرة",
-          "تسري حتى 31 ديسمبر 2026",
+          "تمتد حتى 31 ديسمبر 2029",
         ],
       },
       {
@@ -515,6 +523,16 @@ const COUNTRY_HUBS = {
     guideTitle: "دليل تشريعات العمل والضرائب في دولة الإمارات العربية المتحدة",
     guideIntro:
       "تتميز دولة الإمارات العربية المتحدة ببيئة أعمال وعمالة دولية جاذبة، وتشريعات عمالية ومالية تهدف إلى حفظ حقوق الموظفين وأصحاب الشركات. تعكس حاسباتنا القواعد المنشورة في المصادر الرسمية المتاحة لعام 2026.",
+    guideLinks: [
+      { href: "/salary-calculator/uae", title: "صافي الراتب في الإمارات", desc: "ابدأ بتقدير الراتب والبدلات قبل حساب مستحقات نهاية الخدمة." },
+      { href: "/gratuity-calculator/uae", title: "مكافأة نهاية الخدمة", desc: "احسب مكافأة الخدمة وفق قواعد القطاع الخاص قبل إعداد المخالصة." },
+      { href: "/ar/ae/notice-period-calculator", title: "فترة الإنذار وبدل الإشعار", desc: "تحقق من مدة الإشعار والأيام المتبقية والتعويض المحتمل." },
+      { href: "/ar/ae/final-settlement-calculator", title: "المخالصة النهائية", desc: "اجمع مكافأة الخدمة ورصيد الإجازات والراتب وبدل الإنذار." },
+      { href: "/ar/ae/corporate-tax-calculator", title: "حاسبة ضريبة الشركات", desc: "قدّر ضريبة الشركات وقارن المعالجة العامة بتسهيلات الأعمال الصغيرة." },
+      { href: "/ar/ae/e-invoicing-readiness-checker", title: "جاهزية الفوترة الإلكترونية", desc: "راجع مواعيد التطبيق ومتطلبات البيانات ومزود الخدمة المعتمد." },
+      { href: "/ar/ae/vat-registration-checker", title: "أهلية التسجيل في VAT", desc: "تحقق من حدود التسجيل الإلزامي والاختياري لدى FTA." },
+      { href: "/ar/ae/quotation-generator", title: "إنشاء عرض سعر", desc: "أنشئ عرض سعر تجارياً مع بنود وأسعار وضريبة القيمة المضافة." },
+    ],
     geoSummary: {
       whatItDoes: "مجمع أدوات مالية وأدوات أعمال مخصصة للإمارات: حاسبة الراتب، مكافأة نهاية الخدمة (قانون 33)، العمل الإضافي، ضريبة 5%، وضريبة الشركات 9%",
       appliesTo: "دولة الإمارات العربية المتحدة — القطاع الخاص والمناطق الحرة وأصحاب الأعمال",
@@ -944,6 +962,24 @@ export default async function CountryPage({ params }) {
                 </div>
               ))}
             </div>
+
+            {/* Contextual links connect related tasks within each country topic cluster. */}
+            {hub.guideLinks?.length > 0 && (
+              <nav aria-label={`روابط ذات صلة بـ ${country.nameAr}`} className="rounded-2xl border border-brand-border bg-brand-surface/30 p-5 sm:p-6 space-y-4">
+                <div>
+                  <h3 className="text-base font-bold text-ink">خطوات وأدوات مرتبطة بهذا الدليل</h3>
+                  <p className="mt-1 text-xs text-ink-muted">انتقل مباشرة إلى الحاسبة أو الأداة المناسبة للخطوة التالية.</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {hub.guideLinks.map((link) => (
+                    <a key={link.href} href={link.href} className="group rounded-xl border border-brand-border bg-white p-4 transition hover:border-brand hover:shadow-sm">
+                      <span className="text-sm font-bold text-brand-dark group-hover:text-brand">{link.title} ←</span>
+                      <span className="mt-1 block text-xs leading-relaxed text-ink-secondary">{link.desc}</span>
+                    </a>
+                  ))}
+                </div>
+              </nav>
+            )}
 
             {/* Numerical Example Case */}
             {hub.example && (
