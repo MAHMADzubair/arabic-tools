@@ -611,7 +611,11 @@ export async function generateMetadata({ params }) {
   const description = hub ? hub.seoDesc : country.metaDesc;
   const canonical = `${BASE_URL}/ar/${country.code}`;
 
-  return {
+  // Thin hub pages with no country-specific tools yet — noindex until real content exists.
+  // Re-index by removing this condition once the hub has ≥2 country-specific tools and unique content.
+  const THIN_HUBS = new Set(["qa", "kw", "om", "bh"]);
+
+  const result = {
     title,
     description,
     alternates: { canonical },
@@ -625,6 +629,12 @@ export async function generateMetadata({ params }) {
       images: [DEFAULT_OG_IMAGE],
     },
   };
+
+  if (THIN_HUBS.has(resolvedParams.country)) {
+    result.robots = { index: false, follow: true };
+  }
+
+  return result;
 }
 
 // ─── Page Component ───────────────────────────────────────────────────────────

@@ -65,9 +65,9 @@ export default function sitemap() {
     priority: 1.0,
   };
 
-  // Country landing pages (/ar/sa, /ar/ae, etc.)
-  // Matches generateStaticParams in app/ar/[country]/page.js — codes: sa, ae, qa, kw, om, bh
-  const countryPages = ["sa", "ae", "qa", "kw", "om", "bh"].map((code) => ({
+  // Country landing pages (/ar/sa, /ar/ae only — qa/kw/om/bh are noindexed thin hubs).
+  // Add a country code back here once its hub has ≥2 country-specific tools and unique content.
+  const countryPages = ["sa", "ae"].map((code) => ({
     url: `${SITE_URL}/ar/${code}`,
     changeFrequency: "weekly",
     priority: 0.95,
