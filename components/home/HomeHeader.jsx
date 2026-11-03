@@ -42,9 +42,6 @@ export default function HomeHeader() {
   const profileRef = useRef(null);
   const isHomePage = pathname === "/";
 
-  // ── hide on admin/internal routes ────────────────────────────────────────
-  if (shouldHideHeader(pathname)) return null;
-
   // ── Theme: sync from localStorage / html attr ────────────────────────────
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
@@ -168,6 +165,9 @@ export default function HomeHeader() {
     setSearchCountry(null);
     setSearchOpen(true);
   };
+
+  // Keep hook order stable across route transitions; hide only after all hooks run.
+  if (shouldHideHeader(pathname)) return null;
 
   return (
     <>
