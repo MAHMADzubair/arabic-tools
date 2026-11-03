@@ -84,7 +84,7 @@ const faqs = [
   },
   {
     q: "متى يجب تقديم إقرار ضريبة الشركات؟",
-    a: "عموماً، يجب تقديم الإقرار الضريبي وسداد الضريبة المستحقة خلال 9 أشهر من نهاية الفترة الضريبية. مثال: إذا انتهت الفترة الضريبية في 31 ديسمبر 2025، يكون الموعد النهائي للتقديم في 30 سبتمبر 2026. تحقق من التواريخ الدقيقة عبر بوابة EmaraTax.",
+    a: "عموماً، يجب تقديم الإقرار الضريبي وسداد الضريبة المستحقة خلال 9 أشهر من نهاية الفترة الضريبية. مثال: إذا انتهت الفترة الضريبية في 31 ديسمبر 2026، يكون الموعد النهائي للتقديم في 30 سبتمبر 2027. تحقق من التواريخ الدقيقة عبر بوابة EmaraTax.",
   },
   {
     q: "هل أحتاج إلى التسجيل لضريبة الشركات حتى لو كانت الضريبة صفر؟",
@@ -224,7 +224,7 @@ export default function UaeCorporateTaxPage() {
           keyRule="0% على الدخل الخاضع حتى 375,000 درهم — 9% على ما يزيد — SBR لإيرادات ≤ 3,000,000 درهم (ممتدة حتى 31 ديسمبر 2029)"
           authority="الهيئة الاتحادية للضرائب (FTA) + وزارة المالية الإماراتية"
           authorityUrl="https://tax.gov.ae"
-          lastReviewed="أكتوبر 2026"
+          lastReviewed="نوفمبر 2026"
           disclaimer="هذه الأداة تقديرية استرشادية — راجع بوابة EmaraTax أو مستشارك الضريبي للالتزام الرسمي."
         />
 
@@ -529,11 +529,11 @@ export default function UaeCorporateTaxPage() {
               <div className="text-xs text-indigo-800 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="font-bold">الفترة الضريبية تنتهي:</span>
-                  <span>31 ديسمبر 2025</span>
+                  <span>31 ديسمبر 2026</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold">الموعد النهائي للإقرار والسداد:</span>
-                  <span>30 سبتمبر 2026</span>
+                  <span>30 سبتمبر 2027</span>
                 </div>
               </div>
             </div>
@@ -633,7 +633,7 @@ export default function UaeCorporateTaxPage() {
                 },
                 {
                   title: "وزارة المالية — القرار الوزاري رقم (131) لسنة 2026 (تمديد SBR حتى 2029)",
-                  url: "https://mof.gov.ae/en/news/ministry-of-finance-extends-small-business-relief-for-corporate-tax/",
+                  url: "https://mof.gov.ae/en/news/ministry-of-finance-announces-extension-of-small-business-relief-for-corporate-tax-purposes-until-31-december-2029/",
                   desc: "الإعلان الرسمي عن تمديد تسهيلات الأعمال الصغيرة من 31 ديسمبر 2026 إلى 31 ديسمبر 2029.",
                 },
                 {
