@@ -1,7 +1,7 @@
 import PublicFooterGate from "@/components/admin/PublicFooterGate";
 import "./globals.css";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
-import Header from "../components/Header";
+import HomeHeader from "../components/home/HomeHeader";
 import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
@@ -233,7 +233,7 @@ export default function RootLayout({ children }) {
         )}
 
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-[var(--orange)] focus:px-4 focus:py-2 focus:font-bold focus:text-[var(--on-orange)]">انتقل إلى المحتوى</a>
-        <Header />
+        <HomeHeader />
         <main id="main" className="flex-1">{children}</main>
         <PublicFooterGate><Footer /></PublicFooterGate>
         <script dangerouslySetInnerHTML={{ __html: FOOTER_SCRIPT }} />

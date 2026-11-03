@@ -2,27 +2,56 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
-import { getCatalogTools } from "@/lib/registry";
+import { getCatalogTools, CATEGORIES } from "@/lib/registry";
 
-export default function HomeSearchDialog({ isOpen, onClose }) {
+// Country filter tabs shown at the top of the search dialog
+const COUNTRY_TABS = [
+  { code: null, label: "الكل" },
+  { code: "sa",  label: "🇸🇦 السعودية" },
+  { code: "ae",  label: "🇦🇪 الإمارات" },
+  { code: "qa",  label: "🇶🇦 قطر" },
+  { code: "kw",  label: "🇰🇼 الكويت" },
+  { code: "om",  label: "🇴🇲 عُمان" },
+  { code: "bh",  label: "🇧🇭 البحرين" },
+];
+
+export default function HomeSearchDialog({ isOpen, onClose, defaultCountry = null }) {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  // Country filter: null = all, "sa" / "ae" / etc.
+  const [activeCountry, setActiveCountry] = useState(defaultCountry);
   const inputRef = useRef(null);
   const resultsRef = useRef(null);
+  const tabsRef = useRef(null);
 
   const tools = useMemo(() => getCatalogTools(), []);
 
+  // When dialog opens, reset to defaultCountry
+  useEffect(() => {
+    if (isOpen) {
+      setActiveCountry(defaultCountry);
+    }
+  }, [isOpen, defaultCountry]);
+
+  // ── Tools filtered by country tab + text query ────────────────────────────
+  const countryFiltered = useMemo(() => {
+    if (!activeCountry) return tools;
+    return tools.filter(
+      (t) => t.countries.length === 0 || t.countries.includes(activeCountry)
+    );
+  }, [tools, activeCountry]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return tools.slice(0, 10);
-    return tools.filter(
+    if (!q) return countryFiltered.slice(0, 12);
+    return countryFiltered.filter(
       (t) =>
         t.nameAr.toLowerCase().includes(q) ||
         (t.descAr && t.descAr.toLowerCase().includes(q)) ||
         (t.nameEn && t.nameEn.toLowerCase().includes(q)) ||
         (t.badge && t.badge.toLowerCase().includes(q))
     );
-  }, [tools, query]);
+  }, [countryFiltered, query]);
 
   useEffect(() => {
     if (isOpen) {
@@ -37,6 +66,11 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
       document.body.style.overflow = "";
     };
   }, [isOpen]);
+
+  // Reset selectedIndex when filtered list changes
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [filtered.length, activeCountry]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -61,6 +95,8 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  const activeTabLabel = COUNTRY_TABS.find((t) => t.code === activeCountry)?.label ?? "الكل";
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 sm:pt-24 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
@@ -73,7 +109,7 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
         className="w-full max-w-2xl overflow-hidden rounded-3xl border border-[var(--border,#333)] bg-[#161616] text-[#F5F5F2] shadow-2xl transition-all"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Search Input Bar */}
+        {/* ── Search Input Bar ── */}
         <div className="relative flex items-center border-b border-[#2A2A2A] px-4 py-3 sm:px-6">
           <svg
             className="h-5 w-5 text-[#8E8E89] shrink-0 ms-1 me-3"
@@ -95,7 +131,7 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder={`ابحث بين ${tools.length} أداة وحاسبة: الراتب، العمرة، فترة الإنذار...`}
+            placeholder={`ابحث بين ${countryFiltered.length} أداة${activeCountry ? ` (${activeTabLabel})` : ""}...`}
             className="w-full bg-transparent text-base sm:text-lg text-[#F5F5F2] placeholder-[#666] outline-none"
             aria-label="ابحث في الأدوات"
           />
@@ -112,15 +148,48 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Results List */}
+        {/* ── Country Filter Tabs ── */}
+        <div
+          ref={tabsRef}
+          className="flex gap-1.5 overflow-x-auto px-3 pt-3 pb-2 scrollbar-none"
+          style={{ scrollbarWidth: "none" }}
+          role="tablist"
+          aria-label="تصفية حسب الدولة"
+        >
+          {COUNTRY_TABS.map((tab) => {
+            const isActive = tab.code === activeCountry;
+            return (
+              <button
+                key={tab.code ?? "all"}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveCountry(tab.code)}
+                className={`flex-none rounded-full px-3 py-1.5 text-xs font-bold whitespace-nowrap transition-all ${
+                  isActive
+                    ? "bg-[#FF5B04] text-[#0D0D0D]"
+                    : "bg-white/[0.07] text-[#B5B5B0] hover:bg-white/15 hover:text-white"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ── Results List ── */}
         <div
           ref={resultsRef}
-          className="max-h-[60vh] overflow-y-auto p-2 sm:p-3 divide-y divide-[#222]"
+          className="max-h-[52vh] overflow-y-auto p-2 sm:p-3 divide-y divide-[#222]"
         >
           {filtered.length === 0 ? (
-            <div className="py-12 text-center text-[#888]">
-              <p className="text-base font-semibold">لم نعثر على أداة مطابقة لبحثك</p>
-              <p className="mt-1 text-sm text-[#666]">جرّب كلمة بحث أخرى مثل «راتب» أو «زكاة» أو «فاتورة»</p>
+            <div className="py-10 text-center text-[#888]">
+              <p className="text-base font-semibold">لم نعثر على أداة مطابقة</p>
+              <p className="mt-1 text-sm text-[#666]">
+                {activeCountry
+                  ? `جرّب تغيير الدولة أو كلمة بحث أخرى`
+                  : `جرّب كلمة مثل «راتب» أو «زكاة» أو «فاتورة»`}
+              </p>
             </div>
           ) : (
             filtered.map((tool, idx) => {
@@ -141,13 +210,19 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
                     {tool.icon}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold text-[15px] sm:text-base leading-snug">
                         {tool.nameAr}
                       </span>
                       {tool.badge && (
                         <span className="rounded-full bg-[#FF5B04]/20 px-2 py-0.5 text-[11px] font-bold text-[#FF5B04]">
                           {tool.badge}
+                        </span>
+                      )}
+                      {/* Country tags */}
+                      {!activeCountry && tool.countries.length > 0 && tool.countries.length <= 3 && (
+                        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-[#8E8E89] uppercase">
+                          {tool.countries.join(" · ")}
                         </span>
                       )}
                     </div>
@@ -166,9 +241,12 @@ export default function HomeSearchDialog({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* Footer shortcuts */}
+        {/* ── Footer ── */}
         <div className="flex items-center justify-between border-t border-[#222] bg-[#121212] px-4 py-2.5 text-xs text-[#777]">
-          <span>{filtered.length} نتيجة متاحة</span>
+          <span>
+            {filtered.length} نتيجة
+            {activeCountry ? ` · ${activeTabLabel}` : ""}
+          </span>
           <div className="hidden sm:flex items-center gap-3">
             <span>↑↓ للتنقل</span>
             <span>↵ للاختيار</span>
