@@ -1,3 +1,4 @@
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import UaeQuotationGenerator from "@/components/UaeQuotationGenerator";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
@@ -184,6 +185,16 @@ export default function UaeQuotationGeneratorPage() {
             <span>›</span>
             <span className="text-ink font-semibold">مولد عرض السعر</span>
           </nav>
+        <GeoAnswerSummary
+          whatItDoes="إنشاء عرض سعر تجاري بالعربية والإنجليزية مع المنتجات والخدمات والخصومات وضريبة VAT وشروط الدفع"
+          appliesTo="الإمارات العربية المتحدة — الشركات والمنشآت والمستقلون"
+          keyRule="عرض السعر يوضح السعر المتوقع قبل التوريد ولا يحل محل الفاتورة الضريبية؛ أضف VAT 5% عندما تكون المعاملة خاضعة والمنشأة ملزمة بتحصيلها"
+          authority="الهيئة الاتحادية للضرائب (FTA)"
+          authorityUrl="https://tax.gov.ae"
+          lastReviewed="نوفمبر 2026"
+          disclaimer="المستند المُنشأ عرض سعر تجاري وليس فاتورة ضريبية أو مستند امتثال إلكتروني."
+        />
+
         </div>
 
         {/* ── PART 1: Tool ── */}
