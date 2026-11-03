@@ -227,6 +227,13 @@ export default function RootLayout({ children }) {
                     gtag('event', eventName, params || {});
                   }
                 };
+
+                // Flush public engagement events queued before the afterInteractive GA4 script ran.
+                const pendingQemloEvents = window.__qemloPendingEvents || [];
+                pendingQemloEvents.forEach(([eventName, params]) => {
+                  window.trackEvent(eventName, params);
+                });
+                window.__qemloPendingEvents = [];
               `}
             </Script>
           </>
