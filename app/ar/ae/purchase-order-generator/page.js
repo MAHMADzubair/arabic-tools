@@ -6,9 +6,9 @@ import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export const metadata = {
-  title: "نموذج أمر شراء الإمارات (PO/LPO) | مولد PDF جاهز 2026",
+  title: "ما معنى LPO في الإمارات؟ مولد أمر شراء PO/LPO PDF | Qemlo",
   description:
-    "أنشئ نموذج أمر شراء (PO/LPO) في الإمارات بالدرهم AED، مع بيانات المورد والأصناف وضريبة القيمة المضافة وشروط التسليم. اطبعه أو احفظه PDF مجاناً وبدون تسجيل.",
+    "ما معنى LPO في الإمارات؟ تعرّف على اختصار Local Purchase Order وأنشئ نموذج أمر شراء PO/LPO بالدرهم AED مع VAT 5% واحفظه PDF مجاناً.",
   keywords: [
     "نموذج أمر شراء الإمارات",
     "LPO الإمارات",
@@ -23,9 +23,9 @@ export const metadata = {
     canonical: "/ar/ae/purchase-order-generator",
   },
   openGraph: {
-    title: "نموذج أمر شراء الإمارات (PO/LPO) | مولد PDF جاهز 2026",
+    title: "ما معنى LPO في الإمارات؟ مولد أمر شراء PO/LPO PDF | Qemlo",
     description:
-      "أنشئ نموذج أمر شراء (PO/LPO) في الإمارات بالدرهم AED، مع بيانات المورد والأصناف وضريبة القيمة المضافة وشروط التسليم. اطبعه أو احفظه PDF مجاناً وبدون تسجيل.",
+      "ما معنى LPO في الإمارات؟ تعرّف على اختصار Local Purchase Order وأنشئ نموذج أمر شراء PO/LPO بالدرهم AED مع VAT 5% واحفظه PDF مجاناً.",
     url: `${SITE_URL}/ar/ae/purchase-order-generator`,
     type: "website",
     locale: "ar_AE",
@@ -238,6 +238,21 @@ export default function UaePurchaseOrderGeneratorPage() {
             </p>
           </div>
         </div>
+
+        {/* ── Direct answer: LPO meaning (informational search intent) ── */}
+        <section className="mx-auto max-w-3xl px-4 pb-3" aria-labelledby="lpo-meaning-quick-answer">
+          <div className="rounded-2xl border border-brand-border bg-white p-5 shadow-card">
+            <h2 id="lpo-meaning-quick-answer" className="text-lg font-bold text-ink">
+              ما معنى LPO في الإمارات؟
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-secondary">
+              LPO هو اختصار لـ Local Purchase Order، ويعني أمر الشراء المحلي.
+              تصدره الشركة المشترية إلى المورد لتأكيد السلع أو الخدمات والكميات
+              والأسعار وشروط التوريد. استخدم المولد أدناه لإنشاء نموذج PO/LPO
+              بالدرهم الإماراتي وحفظه بصيغة PDF.
+            </p>
+          </div>
+        </section>
 
         {/* ── PART 1: Tool ── */}
         <UaePurchaseOrderGenerator />
