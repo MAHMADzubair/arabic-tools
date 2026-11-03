@@ -60,6 +60,40 @@ test("date calculations use timezone-independent Gregorian day math and require 
   assert.match(calculator, /Date\.UTC\(sy, sm - 1, sd\)/);
 });
 
+test("Article 35 leave timing and Articles 44–45 no-notice cases are explicitly gated", () => {
+  assert.match(calculator, /const \[isTerminationDuringLeave, setIsTerminationDuringLeave\] = useState\("unsure"\)/);
+  assert.match(calculator, /if \(isTerminationDuringLeave !== "no"\)/);
+  assert.match(calculator, /وفق المادة \(35\)/);
+  assert.match(calculator, /const \[isNoNoticeStatutoryCase, setIsNoNoticeStatutoryCase\] = useState\("unsure"\)/);
+  assert.match(calculator, /if \(isNoNoticeStatutoryCase !== "no"\)/);
+  assert.match(calculator, /المادة \(44\).*المادة \(45\)/);
+  assert.match(page, /كيف تؤثر الإجازة على بدء فترة الإنذار/);
+  assert.match(page, /هل تشمل الحاسبة حالات الفصل أو ترك العمل دون إنذار/);
+});
+
+test("negative and malformed user-entered numbers are rejected before calculation", () => {
+  assert.match(calculator, /function isInvalidNumericInput\(value\)/);
+  assert.match(calculator, /isInvalidNumericInput\(servedDaysInput\)/);
+  assert.match(calculator, /isInvalidNumericInput\(lastWage\)/);
+  assert.match(calculator, /لا يمكن أن تكون الأيام المنفذة سالبة/);
+});
+
+test("full notice completion does not require a breach-party choice or wage for a zero allowance", () => {
+  assert.match(calculator, /remainingNoticeDays > 0 && nonCompliantParty === "unsure"/);
+  assert.match(calculator, /remainingNoticeDays > 0 && wage <= 0/);
+});
+
+test("the Article 43(5) job-search absence note is shown only for employer termination", () => {
+  assert.match(calculator, /\{terminationInitiator === "employer" && \(/);
+  assert.doesNotMatch(calculator, /\{terminationInitiator !== "employee" && \(/);
+});
+
+test("example presets provide a real local notice date and clear stale date-mode inputs", () => {
+  assert.match(calculator, /function currentLocalDateISO\(\)/);
+  assert.match(calculator, /setNoticeStartDate\(currentLocalDateISO\(\)\)/);
+  assert.match(calculator, /setActualLastWorkingDate\("+"\)/);
+});
+
 test("shared footer no longer advertises empty Coming Soon categories", () => {
   assert.doesNotMatch(layout, /قريباً في المنصة|upcoming\.map/);
 });
