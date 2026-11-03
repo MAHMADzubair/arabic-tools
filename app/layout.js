@@ -2,10 +2,8 @@ import PublicFooterGate from "@/components/admin/PublicFooterGate";
 import "./globals.css";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import Header from "../components/Header";
-import Image from "next/image";
-import { CATEGORIES, getToolsByCategory, getToolCount } from "@/lib/registry";
-import Script from "next/script";
 import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 
 // ─── Font: IBM Plex Sans Arabic via next/font (self-hosted, no blocking request) ──
@@ -245,97 +243,414 @@ export default function RootLayout({ children }) {
   );
 }
 
-// Mobile/tablet: collapsible group (<details>). Desktop (>=1024px): always open.
-// Server render is open (no flash on desktop, links always in the DOM); FOOTER_SCRIPT collapses it on small screens.
-function FooterGroup({ title, children, className = "" }) {
-  return (
-    <details suppressHydrationWarning open data-fg className={`group border-b border-[var(--foot-line)] lg:border-0 ${className}`}>
-      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 py-3 text-base font-bold marker:hidden [&::-webkit-details-marker]:hidden lg:min-h-0 lg:cursor-default lg:border-b lg:border-dotted lg:border-[var(--foot-muted)] lg:pb-2 lg:pt-0">
-        <span>{title}</span>
-        <svg aria-hidden="true" viewBox="0 0 20 20" className="h-5 w-5 shrink-0 text-[var(--foot-muted)] transition-transform group-open:rotate-180 lg:hidden" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 8 5 5 5-5" /></svg>
-      </summary>
-      <div className="pb-4 lg:pb-0 lg:pt-3">{children}</div>
-    </details>
-  );
-}
+// ─── Footer ───────────────────────────────────────────────────────────────────
+//
+// Design: compact pill footer (matches PDF mockup).
+//
+//  Desktop  — two-row pill inside a padded wrapper:
+//    Row 1 (nav bar):  Qemlo mark + tagline  |  category links  |  "جميع الأدوات ←"
+//    Row 2 (meta bar): scroll-up button + country badges  |  copyright  |  legal links
+//
+//  Mobile   — rounded card:
+//    mark + tagline + scroll-up button  →  country badges  →  divider  →
+//    2-col category links  →  divider  →  legal links  →  copyright
+//
+// The pill uses the dark warm-brown background from the PDF (--foot-pill-bg),
+// with light text on top, matching both dark and light host themes.
+// ─────────────────────────────────────────────────────────────────────────────
 
-const FOOTER_SCRIPT = `(function(){var m=window.matchMedia("(min-width:1024px)");function s(){document.querySelectorAll("details[data-fg]").forEach(function(d){d.open=m.matches})}s();m.addEventListener("change",function(e){if(e.matches)s()});document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("details[data-fg] > summary");if(t&&m.matches)e.preventDefault()})})();`;
+const FOOTER_SCRIPT = ``;  // no accordion needed for new design
 
-const NUM_LOCALE = "ar-EG"; // change to "en" for Western digits (35)
-
-const linkCls =
-  "inline-block rounded py-1.5 text-[14px] leading-6 font-normal text-[var(--foot-muted)] underline-offset-4 transition-colors hover:text-[var(--foot-hover)] hover:underline hover:decoration-2 focus-visible:text-[var(--foot-hover)]";
-
-const LEGAL = [
-  ["/about", "عن الموقع والرسالة"],
-  ["/privacy", "سياسة الخصوصية"],
-  ["/terms", "شروط الاستخدام"],
-  ["/disclaimer", "إخلاء المسؤولية"],
-  ["/contact", "تواصل معنا"],
+// Country hubs shown in the footer
+const FOOTER_COUNTRIES = [
+  { code: "SA", href: "/ar/sa" },
+  { code: "AE", href: "/ar/ae" },
+  { code: "QA", href: "/ar/qa" },
+  { code: "KW", href: "/ar/kw" },
+  { code: "OM", href: "/ar/om" },
+  { code: "BH", href: "/ar/bh" },
 ];
 
+const LEGAL_LINKS = [
+  ["/about",      "عن Qemlo"],
+  ["/contact",    "تواصل معنا"],
+  ["/privacy",    "سياسة الخصوصية"],
+  ["/terms",      "الشروط والأحكام"],
+  ["/disclaimer", "إخلاء المسؤولية"],
+];
+
+// Category nav items shown in the footer nav bar
+const FOOT_NAV_CATS = [
+  { id: "gulf",     label: "الرواتب والعمل" },
+  { id: "finance",  label: "المال والاستثمار" },
+  { id: "islamic",  label: "الأدوات الإسلامية" },
+  { id: "everyday", label: "الحياة اليومية" },
+  { id: "business", label: "الأعمال" },
+];
+
+// Inline CSS for the pill footer
+const FOOT_CSS = `
+/* ── pill footer tokens ── */
+:root{
+  --fp-bg:#2B1A0F;
+  --fp-text:#F5F5F2;
+  --fp-muted:rgba(245,245,242,.55);
+  --fp-border:rgba(245,245,242,.12);
+  --fp-badge:rgba(245,245,242,.14);
+  --fp-badge-hover:rgba(245,245,242,.22);
+  --fp-link-hover:#FF7A33;
+}
+/* outer wrapper — keeps original page bg visible around the pill */
+.fp-wrap{
+  width:100%;
+  padding:0 12px 20px;
+  margin-top:40px;
+}
+@media(min-width:640px){.fp-wrap{padding:0 20px 28px;margin-top:56px}}
+@media(min-width:1024px){.fp-wrap{padding:0 24px 32px;margin-top:72px}}
+
+/* the pill shell */
+.fp-pill{
+  max-width:1200px;
+  margin:0 auto;
+  background:var(--fp-bg);
+  border-radius:24px;
+  overflow:hidden;
+  color:var(--fp-text);
+}
+@media(min-width:768px){.fp-pill{border-radius:28px}}
+
+/* ── DESKTOP layout (≥ 768 px) ── */
+/* nav row */
+.fp-nav-row{
+  display:none;
+}
+@media(min-width:768px){
+  .fp-nav-row{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    padding:14px 24px;
+    border-bottom:1px solid var(--fp-border);
+  }
+}
+.fp-logo-link{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:var(--fp-text);
+  flex:none;
+  margin-inline-end:16px;
+}
+.fp-logo-link:hover .fp-mark{transform:scale(1.07)}
+.fp-mark{
+  width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s;
+  flex-shrink:0;
+}
+.fp-mark img{width:100%;height:100%;object-fit:contain}
+.fp-tagline{
+  font-size:13px;font-weight:600;line-height:1.35;
+  white-space:nowrap;
+  color:var(--fp-text);
+}
+/* category nav links */
+.fp-cat-link{
+  flex:none;
+  font-size:13px;font-weight:600;
+  color:var(--fp-muted);
+  text-decoration:none;
+  padding:7px 11px;
+  border-radius:10px;
+  white-space:nowrap;
+  transition:background .15s,color .15s;
+}
+.fp-cat-link:hover,.fp-cat-link:focus-visible{
+  background:var(--fp-badge-hover);
+  color:var(--fp-text);
+}
+/* "جميع الأدوات" CTA */
+.fp-all-link{
+  flex:none;
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;
+  color:var(--fp-text);
+  text-decoration:none;
+  padding:7px 14px;
+  border-radius:10px;
+  border:1px solid var(--fp-border);
+  transition:background .15s,border-color .15s;
+  margin-inline-start:auto;
+}
+.fp-all-link:hover,.fp-all-link:focus-visible{
+  background:var(--fp-badge-hover);
+  border-color:var(--fp-badge-hover);
+}
+
+/* meta row (bottom bar) */
+.fp-meta-row{
+  display:none;
+}
+@media(min-width:768px){
+  .fp-meta-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 24px;
+    flex-wrap:wrap;
+  }
+}
+/* scroll-up button */
+.fp-up-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;
+  border-radius:50%;
+  background:#FF5B04;
+  color:#0D0D0D;
+  border:none;cursor:pointer;
+  flex-shrink:0;
+  transition:background .15s,transform .15s;
+  text-decoration:none;
+}
+.fp-up-btn:hover,.fp-up-btn:focus-visible{background:#FF7A33;transform:translateY(-2px)}
+.fp-up-btn svg{width:16px;height:16px}
+/* country badges */
+.fp-country{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:36px;height:36px;padding:0 8px;
+  border-radius:50%;
+  background:var(--fp-badge);
+  color:var(--fp-text);
+  font-size:11px;font-weight:800;letter-spacing:.5px;
+  text-decoration:none;
+  transition:background .15s;
+  flex-shrink:0;
+}
+.fp-country:hover,.fp-country:focus-visible{background:var(--fp-badge-hover)}
+/* copyright */
+.fp-copy{
+  font-size:12px;font-weight:400;
+  color:var(--fp-muted);
+  margin-inline-start:4px;
+  margin-inline-end:auto;
+}
+/* legal links (desktop) */
+.fp-legal-link{
+  font-size:12px;font-weight:500;
+  color:var(--fp-muted);
+  text-decoration:none;
+  white-space:nowrap;
+  padding:4px 6px;
+  border-radius:6px;
+  transition:color .15s;
+}
+.fp-legal-link:hover,.fp-legal-link:focus-visible{color:var(--fp-link-hover)}
+
+/* ── MOBILE layout (< 768 px) ── */
+.fp-mobile{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  padding:20px 20px 24px;
+}
+@media(min-width:768px){.fp-mobile{display:none}}
+
+/* mobile top: mark + tagline + scroll-up */
+.fp-mob-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:20px;
+}
+.fp-mob-brand{display:flex;align-items:center;gap:10px;}
+.fp-mob-tagline{
+  font-size:15px;font-weight:700;line-height:1.35;
+  color:var(--fp-text);
+}
+/* mobile country row */
+.fp-mob-countries{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.fp-mob-divider{
+  height:1px;
+  background:var(--fp-border);
+  margin-bottom:20px;
+}
+/* mobile category grid */
+.fp-mob-cats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px 12px;
+  margin-bottom:20px;
+}
+.fp-mob-cat-link{
+  font-size:14px;font-weight:600;
+  color:var(--fp-muted);
+  text-decoration:none;
+  padding:8px 2px;
+  border-radius:8px;
+  transition:color .15s;
+  white-space:nowrap;
+}
+.fp-mob-cat-link:hover,.fp-mob-cat-link:focus-visible{color:var(--fp-text)}
+/* "جميع الأدوات" full-width on mobile */
+.fp-mob-all{
+  grid-column:1/-1;
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:14px;font-weight:700;
+  color:var(--fp-text);
+  text-decoration:none;
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid var(--fp-border);
+  transition:background .15s;
+  margin-top:4px;
+}
+.fp-mob-all:hover,.fp-mob-all:focus-visible{background:var(--fp-badge-hover)}
+/* mobile legal links */
+.fp-mob-legal{
+  display:flex;flex-wrap:wrap;gap:4px 0;
+  margin-bottom:16px;
+}
+.fp-mob-legal-link{
+  font-size:13px;font-weight:500;
+  color:var(--fp-muted);
+  text-decoration:none;
+  padding:6px 8px;
+  border-radius:6px;
+  transition:color .15s;
+}
+.fp-mob-legal-link:hover,.fp-mob-legal-link:focus-visible{color:var(--fp-link-hover)}
+/* mobile copyright */
+.fp-mob-copy{
+  font-size:12px;
+  color:var(--fp-muted);
+  text-align:center;
+}
+
+/* focus rings */
+.fp-pill a:focus-visible,.fp-pill button:focus-visible{
+  outline:2px solid #FF5B04;outline-offset:2px;
+}
+`;
+
 function Footer() {
-  const totalTools = getToolCount();
-  const active = CATEGORIES.map((c) => ({ ...c, tools: getToolsByCategory(c.id) })).filter((c) => c.tools.length > 0);
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-16 border-t border-[var(--foot-line)] bg-[var(--foot-bg)] text-[var(--foot-text)] sm:mt-20">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-14">
-        {/* Brand strip */}
-        <div className="flex flex-col gap-5 pb-8 lg:flex-row lg:items-center lg:justify-between lg:pb-10">
-          <div className="flex items-center gap-3">
-            <div aria-hidden="true" className="relative h-11 w-11 shrink-0">
-              <img
-                src="/brand/qemlo-mark.svg"
-                alt=""
-                width="44"
-                height="44"
-                className="h-full w-full object-contain"
-              />
-            </div>
-            <div>
-              <span className="block text-lg font-bold leading-7">Qemlo</span>
-              <span className="block text-sm font-normal tabular-nums text-[var(--foot-muted)]">{totalTools.toLocaleString(NUM_LOCALE)} أداة وحاسبة متخصصة</span>
-            </div>
+    <footer aria-label="تذييل الصفحة">
+      <style dangerouslySetInnerHTML={{ __html: FOOT_CSS }} />
+      <div className="fp-wrap">
+        <div className="fp-pill">
+
+          {/* ══ DESKTOP ══════════════════════════════════════════════════════ */}
+
+          {/* Row 1 — nav bar */}
+          <nav className="fp-nav-row" aria-label="روابط التنقل الرئيسية">
+            {/* Logo + tagline */}
+            <a href="/" className="fp-logo-link" aria-label="Qemlo — الصفحة الرئيسية">
+              <span className="fp-mark" aria-hidden="true">
+                <img src="/brand/qemlo-mark.svg" alt="" width="38" height="38" />
+              </span>
+              <span className="fp-tagline">حاسبات وأدوات عربية مجانية للخليج</span>
+            </a>
+
+            {/* Category links */}
+            {FOOT_NAV_CATS.map((c) => (
+              <a key={c.id} href={`/#${c.id}`} className="fp-cat-link">{c.label}</a>
+            ))}
+
+            {/* All tools CTA */}
+            <a href="/" className="fp-all-link">
+              جميع الأدوات
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{width:14,height:14}}>
+                <path d="M13 5l-6 5 6 5" />
+              </svg>
+            </a>
+          </nav>
+
+          {/* Row 2 — meta bar */}
+          <div className="fp-meta-row" aria-label="معلومات الموقع">
+            {/* Back to top */}
+            <a href="#main" className="fp-up-btn" aria-label="العودة إلى أعلى الصفحة">
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12l5-5 5 5" />
+              </svg>
+            </a>
+
+            {/* Country badges */}
+            {FOOTER_COUNTRIES.map((c) => (
+              <a key={c.code} href={c.href} className="fp-country" aria-label={`أدوات ${c.code}`}>{c.code}</a>
+            ))}
+
+            {/* Copyright */}
+            <span className="fp-copy">© {year} Qemlo. جميع الحقوق محفوظة.</span>
+
+            {/* Legal links */}
+            {LEGAL_LINKS.map(([href, label]) => (
+              <a key={href} href={href} className="fp-legal-link">{label}</a>
+            ))}
           </div>
-          <p className="max-w-xl text-[14.5px] font-normal leading-relaxed text-[var(--foot-muted)]">
-            الأدوات الأساسية مجانية 100% وبدون تسجيل، مع خدمات متقدمة قادمة للأعمال.
-          </p>
-        </div>
 
-        {/* Link groups: accordion < lg, columns >= lg */}
-        <div className="grid items-start border-t border-[var(--foot-line)] md:grid-cols-2 md:gap-x-10 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-10 lg:pt-10">
-          {active.map((cat) => {
-            const wide = cat.tools.length > 8;
-            return (
-              <FooterGroup key={cat.id} title={cat.nameAr} className={wide ? "lg:col-span-2" : ""}>
-                <ul className={wide ? "lg:columns-2 lg:gap-x-8" : ""}>
-                  {cat.tools.map((t) => (
-                    <li key={t.id} className="break-inside-avoid">
-                      <a href={t.href} className={linkCls}>{t.nameAr}</a>
-                    </li>
-                  ))}
-                </ul>
-              </FooterGroup>
-            );
-          })}
+          {/* ══ MOBILE ═══════════════════════════════════════════════════════ */}
+          <div className="fp-mobile">
 
-          <FooterGroup title="معلومات وقانونية">
-            <ul>
-              {LEGAL.map(([href, label]) => (
-                <li key={href}><a href={href} className={linkCls}>{label}</a></li>
+            {/* Top: brand + scroll-up */}
+            <div className="fp-mob-top">
+              <div className="fp-mob-brand">
+                <span style={{width:44,height:44,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}} aria-hidden="true">
+                  <img src="/brand/qemlo-mark.svg" alt="" width="44" height="44" style={{width:"100%",height:"100%",objectFit:"contain"}} />
+                </span>
+                <span className="fp-mob-tagline">حاسبات وأدوات عربية<br />مجانية للخليج</span>
+              </div>
+              <a href="#main" className="fp-up-btn" aria-label="العودة إلى أعلى الصفحة">
+                <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12l5-5 5 5" />
+                </svg>
+              </a>
+            </div>
+
+            {/* Country badges */}
+            <div className="fp-mob-countries" role="list" aria-label="دول الخليج">
+              {FOOTER_COUNTRIES.map((c) => (
+                <a key={c.code} href={c.href} className="fp-country" role="listitem" aria-label={`أدوات ${c.code}`}>{c.code}</a>
               ))}
-            </ul>
-          </FooterGroup>
-        </div>
+            </div>
 
-        {/* Bottom row */}
-        <div className="flex flex-col gap-3 border-t border-[var(--foot-line)] pt-6 text-sm text-[var(--foot-muted)] sm:flex-row sm:items-center sm:justify-between lg:mt-10">
-          <span>© {new Date().getFullYear()} Qemlo — جميع الحقوق محفوظة</span>
-          <a href="#main" className="inline-flex min-h-11 items-center gap-2 self-start rounded-lg border border-[var(--foot-muted)] px-4 font-bold text-[var(--foot-text)] hover:border-[var(--foot-hover)] hover:text-[var(--foot-hover)] sm:self-auto">
-            العودة للأعلى
-            <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5-5 5 5" /></svg>
-          </a>
+            <div className="fp-mob-divider" aria-hidden="true" />
+
+            {/* Category grid */}
+            <nav className="fp-mob-cats" aria-label="أقسام الأدوات">
+              {FOOT_NAV_CATS.map((c) => (
+                <a key={c.id} href={`/#${c.id}`} className="fp-mob-cat-link">{c.label}</a>
+              ))}
+              <a href="/" className="fp-mob-all">
+                جميع الأدوات
+                <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{width:14,height:14}}>
+                  <path d="M13 5l-6 5 6 5" />
+                </svg>
+              </a>
+            </nav>
+
+            <div className="fp-mob-divider" aria-hidden="true" />
+
+            {/* Legal links */}
+            <nav className="fp-mob-legal" aria-label="روابط قانونية">
+              {LEGAL_LINKS.map(([href, label]) => (
+                <a key={href} href={href} className="fp-mob-legal-link">{label}</a>
+              ))}
+            </nav>
+
+            {/* Copyright */}
+            <p className="fp-mob-copy">© {year} Qemlo. جميع الحقوق محفوظة.</p>
+          </div>
+
         </div>
       </div>
     </footer>

@@ -117,6 +117,15 @@ export default function UaeVatPage() {
         disclaimer="هذه الأداة استرشادية — للالتزام الضريبي الرسمي راجع بوابة EmaraTax أو مستشارك الضريبي."
       />
       <ToolGuideSection {...guideData} />
+      <div className="mx-auto max-w-2xl px-4 mt-4 text-center">
+        <a
+          href="/ar/ae"
+          className="text-orange-700 hover:text-orange-800 hover:underline text-sm font-semibold"
+          title="أدوات وحاسبات الإمارات"
+        >
+          🇦🇪 تصفح جميع حاسبات وأدوات الإمارات 2026 ←
+        </a>
+      </div>
     </div>
   );
 }
