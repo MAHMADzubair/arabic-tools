@@ -5,6 +5,10 @@
  * Qemlo tool style: glossy orange + ink, SVG icons, 26px cards, 16px controls,
  * light/dark, mobile-first. Data tables, multipliers and the cost formula are
  * unchanged; only presentation and component structure were improved.
+ *
+ * SEO/accuracy edits: Western digits (en-US), H1 "حاسبة تكلفة العمرة",
+ * extra shopping clamped to >= 0, aria-live on the result, Hajj-season notice,
+ * children-pricing note in the footer.
  */
 
 import { useState, useMemo, useId } from "react";
@@ -23,7 +27,7 @@ const COUNTRIES = [
 const SEASONS = [
   { id: "regular", name: "العادي (الموسم العادي)", flightMult: 1, hotelMult: 1 },
   { id: "ramadan", name: "رمضان", flightMult: 2.2, hotelMult: 3.5 },
-  { id: "dhul_hijja", name: "ذو الحجة (العطلة الأخيرة)", flightMult: 1.6, hotelMult: 2.2 },
+  { id: "dhul_hijja", name: "موسم الحج (ذو الحجة)", flightMult: 1.6, hotelMult: 2.2 },
   { id: "last_10", name: "آخر 10 أيام (الموسم الأخير)", flightMult: 3.0, hotelMult: 5.0 },
 ];
 
@@ -48,7 +52,7 @@ const FLIGHT_CLASSES = [
 const SAR_TO = { pk: 75, eg: 13, sa: 1, ae: 3.6725 / 3.75, gb: 0.21, us: 0.27, my: 1.26, bd: 32 };
 
 function fmt(num, symbol) {
-  return `${symbol} ${Math.round(num).toLocaleString("ar-EG")}`;
+  return `${symbol} ${Math.round(num).toLocaleString("en-US")}`;
 }
 
 /* ─── Icons (SVG) ─────────────────────────────────────────────────────────── */
@@ -487,7 +491,7 @@ export default function UmrahCalculator() {
     const hotelCost = hotelSAR * sarRate * Math.ceil(travelers / 2);
     const foodCost = country.dailyFood * meal.mult * days * travelers;
     const transportCost = country.transport * days * travelers;
-    const shoppingCost = country.shopping + Number(extraShopping);
+    const shoppingCost = country.shopping + Math.max(0, Number(extraShopping) || 0);
     const total = flightCost + visaCost + hotelCost + foodCost + transportCost + shoppingCost;
     return {
       flight: flightCost,
@@ -524,9 +528,9 @@ export default function UmrahCalculator() {
           </span>
           <span>تكلفة العمرة المتوقعة</span>
         </div>
-        <h1 className="uc-h1">أداة حساب تكلفة العمرة</h1>
+        <h1 className="uc-h1">حاسبة تكلفة العمرة</h1>
         <p className="uc-sub">
-          احسب تكلفة رحلتك للعمرة مع جميع المتغيرات مثل الطيران، الفنادق، الطعام، والتسوق.
+          احسب تكلفة رحلتك للعمرة حسب بلد السفر والموسم والفندق وعدد المسافرين: الطيران والتأشيرة والإقامة والطعام والنقل.
         </p>
       </header>
 
@@ -618,7 +622,7 @@ export default function UmrahCalculator() {
                     <span className="uc-opt-name">{h.name}</span>
                     <span className="uc-opt-desc">{h.desc}</span>
                     <span className="uc-meta">
-                      <span className="uc-pill">{h.sarPerNight.toLocaleString("ar-EG")} ر.س / ليلة</span>
+                      <span className="uc-pill">{h.sarPerNight.toLocaleString("en-US")} ر.س / ليلة</span>
                     </span>
                   </button>
                 );
@@ -727,7 +731,7 @@ export default function UmrahCalculator() {
 
         {/* Results */}
         <aside className="uc-aside" aria-label="النتيجة">
-          <div className="uc-result" id={`${uid}-results`}>
+          <div className="uc-result" id={`${uid}-results`} aria-live="polite">
             <p className="uc-rlabel">النتيجة الإجمالية</p>
             <p className="uc-total">{result ? fmt(result.total, sym) : "—"}</p>
             <p className="uc-rsub">
@@ -791,8 +795,10 @@ export default function UmrahCalculator() {
                   <p>• قد تصل تكلفة الفندق إلى {season.hotelMult} أضعاف السعر في الموسم العادي</p>
                 )}
                 {seasonId === "ramadan" && <p>• في شهر رمضان قد ترتفع أسعار الطيران والفنادق</p>}
-                <p>• يرجى مراجعة الأسعار قبل الحجز</p>
-                <p>• يرجى مراجعة الشروط والأحكام قبل الحجز</p>
+                {seasonId === "dhul_hijja" && (
+                  <p>• قد تُعلَّق تصاريح العمرة خلال موسم الحج وفق إعلانات وزارة الحج والعمرة، فتحقق من توفر المواعيد قبل الحجز</p>
+                )}
+                <p>• الأسعار تقديرية، فتحقق من الأسعار والشروط لدى مزود الخدمة قبل الحجز</p>
               </div>
             </section>
           )}
@@ -807,7 +813,9 @@ export default function UmrahCalculator() {
 
       <p className="uc-foot uc-noprint">
         <Icon name="info" size={14} />
-        <span>ملاحظة: الأسعار تقديرية وقد تختلف حسب تغير أسعار الصرف.</span>
+        <span>
+          ملاحظة: الأسعار وأسعار الصرف تقديرية وقد تتغير. يُحتسب الأطفال بنفس تكلفة البالغين للطيران والتأشيرة والطعام، وقد تتوفر خصومات لدى شركات الطيران.
+        </span>
       </p>
     </div>
   );

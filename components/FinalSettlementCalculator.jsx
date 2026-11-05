@@ -1,9 +1,21 @@
 "use client";
 
+/**
+ * components/FinalSettlementCalculator.jsx  (Saudi Arabia)
+ * Qemlo style: glossy orange tiles, 26px cards, 16px controls, mobile sticky
+ * result bar. The calculation (useMemo `calc`), helpers, REASONS, the notice
+ * and termination handlers and the printable document structure are UNCHANGED.
+ * Changes: CSS only + (1) default demo values match the example on the page
+ * so the server-rendered result is meaningful, (2) Arabic hamza typos fixed,
+ * (3) notice-period text reflects the 2025 amendments to Art. 75,
+ * (4) Escape closes the document, (5) rel=noopener on WhatsApp share,
+ * (6) mobile sticky result bar.
+ */
+
 import React, { useState, useMemo, useEffect, useRef, useId } from "react";
 import { SITE_URL } from "../lib/siteConfig";
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
+// ─── Helpers (unchanged) ───────────────────────────────────────────────────────
 function toNum(v) {
   const n = parseFloat(String(v));
   return isNaN(n) || n < 0 ? 0 : n;
@@ -69,71 +81,104 @@ const REASONS = [
   { id: "female_special", label: "استثناء المرأة (م/87)" },
 ];
 
-// ─── Styles (tokens: --c-* with fallbacks) ─────────────────────────────────────
+// ─── Styles (Qemlo: tokens --c-* with fallbacks) ───────────────────────────────
 const CSS = `
-.fs{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#0D0D0D);--er:var(--error,#B42318);color:var(--ink);font-size:15px;line-height:1.6}
-@media (prefers-color-scheme:dark){.fs{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2);--er:var(--error,#FF8A80)}}
-.fs *{box-sizing:border-box}
-.fs h1,.fs h2,.fs h3{margin:0;line-height:1.25}
-.fs-stack{display:flex;flex-direction:column;gap:20px}
-.fs-card{background:var(--sf);border:2px solid var(--ln);padding:20px;display:flex;flex-direction:column;gap:16px}
-.fs-head{display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--ln);padding-bottom:12px}
-.fs-num{width:32px;height:32px;flex:none;display:grid;place-items:center;background:var(--ink);color:var(--bg);font-weight:700;font-size:14px}
-.fs-head h2{font-size:18px;font-weight:700}
-.fs-grid{display:grid;gap:12px;grid-template-columns:1fr}
+.fs{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#D9D9D3);--er:var(--error,#B42318);--g:linear-gradient(160deg,#FF9B63 0%,#FF6A1A 55%,#EE5A0B 100%);color:var(--ink);font-size:15px;line-height:1.7;padding-bottom:5.5rem}
+@media(min-width:960px){.fs{padding-bottom:0}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fs{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F);--er:var(--error,#FF8A80)}}
+:root[data-theme="dark"] .fs{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F);--er:var(--error,#FF8A80)}
+.fs *,.fs *::before,.fs *::after{box-sizing:border-box}
+.fs h1,.fs h2,.fs h3{margin:0;line-height:1.3}
+.fs-stack{display:flex;flex-direction:column;gap:1rem}
+
+/* Cards */
+.fs-card{background:var(--sf);border:1px solid var(--ln);border-radius:26px;padding:1.1rem;display:flex;flex-direction:column;gap:1.1rem;min-width:0}
+@media(min-width:640px){.fs-card{padding:1.5rem}}
+.fs-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.75rem}
+.fs-top h1{font-size:clamp(1.35rem,4.6vw,1.9rem);font-weight:800}
+.fs-top p{margin:.4rem 0 0;font-size:.92rem;color:var(--mu)}
+.fs-badge{border:1px solid var(--ln);border-radius:10px;padding:.2rem .65rem;font-size:.76rem;font-weight:800;white-space:nowrap;background:var(--bg)}
+
+/* Section head: number sits in a glossy tile */
+.fs-head{display:flex;align-items:center;gap:.75rem}
+.fs-num{flex:none;width:40px;height:40px;display:grid;place-items:center;border-radius:13px;color:#0D0D0D;background:var(--g);font-weight:800;font-size:15px;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(0,0,0,.12),0 4px 10px -4px rgba(238,90,11,.55)}
+.fs-head h2{font-size:1.05rem;font-weight:800}
+
+/* Fields */
+.fs-grid{display:grid;gap:.9rem;grid-template-columns:1fr}
 @media(min-width:640px){.fs-g2{grid-template-columns:1fr 1fr}.fs-g3{grid-template-columns:1fr 1fr 1fr}}
-.fs-label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
-.fs-note-s{margin:6px 0 0;font-size:12px;color:var(--mu)}
-.fs-in{width:100%;border:1px solid var(--ln);background:var(--bg);color:var(--ink);padding:10px 12px;font:inherit;font-size:15px;border-radius:0;min-height:44px}
-.fs-in:focus-visible,.fs-btn:focus-visible,.fs-tg:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
-.fs-tgrid{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+.fs-label{display:block;font-size:.88rem;font-weight:700;margin-bottom:.4rem}
+.fs-note-s{margin:.4rem 0 0;font-size:.8rem;line-height:1.7;color:var(--mu)}
+.fs-in{width:100%;min-width:0;min-height:52px;padding:.6rem .9rem;font:inherit;font-size:17px;font-weight:700;color:var(--ink);background:var(--sf);border:2px solid var(--ln);border-radius:16px}
+.fs-in:hover{border-color:var(--mu)}
+.fs-in[type="number"],.fs-in[type="date"]{direction:ltr;text-align:center;font-variant-numeric:tabular-nums}
+.fs-in:focus-visible,.fs-btn:focus-visible,.fs-tg:focus-visible,.fs-exp:focus-visible,.fs-sbar-b:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+/* Toggle buttons */
+.fs-tgrid{display:grid;gap:.6rem;grid-template-columns:1fr 1fr}
 @media(min-width:640px){.fs-t3{grid-template-columns:1fr 1fr 1fr}}
-.fs-tg{border:1px solid var(--ln);background:var(--sf);color:var(--ink);padding:10px 12px;text-align:right;font:inherit;font-size:13px;font-weight:600;cursor:pointer;min-height:44px}
-.fs-tg small{display:block;font-weight:400;font-size:11px;color:var(--mu);margin-top:2px}
-.fs-tg[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
-.fs-tg[aria-pressed="true"] small{color:var(--bg);opacity:.8}
-.fs-note{border:1px solid var(--ln);padding:12px 14px;font-size:13px}
+.fs-tg{border:2px solid var(--ln);border-radius:16px;background:var(--sf);color:var(--ink);padding:.7rem .8rem;text-align:start;font:inherit;font-size:.88rem;font-weight:800;cursor:pointer;min-height:48px;transition:border-color .15s}
+.fs-tg:hover{border-color:var(--ink)}
+.fs-tg small{display:block;font-weight:600;font-size:.74rem;color:var(--mu);margin-top:2px;line-height:1.5}
+.fs-tg[aria-pressed="true"]{background:var(--g);color:#0D0D0D;border-color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.fs-tg[aria-pressed="true"] small{color:#0D0D0D;opacity:.85}
+
+/* Notes and boxes */
+.fs-note{border:1px solid var(--ln);border-radius:16px;background:var(--bg);padding:.75rem .9rem;font-size:.85rem;line-height:1.8}
 .fs-note.warn{border-style:dashed}
-.fs-note.bad{border-width:3px;border-color:var(--er);color:var(--er);font-weight:700}
-.fs-note.fix{border-width:3px}
-.fs-box{border:1px solid var(--ln);background:var(--bg);padding:14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
-.fs-row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.fs-note.bad{border:2px solid var(--er);color:var(--er);font-weight:700}
+.fs-note.fix{border:2px solid var(--ink)}
+.fs-box{border:1px solid var(--ln);border-radius:18px;background:var(--bg);padding:.9rem 1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.9rem}
+.fs-row{display:flex;justify-content:space-between;gap:.75rem;align-items:baseline}
 .fs-row b{white-space:nowrap}
-.fs-total{border:2px solid var(--ln);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:700}
-.fs-total span:last-child{font-size:22px;font-weight:700}
-.fs-sub{font-size:13px;font-weight:700;margin:0 0 10px}
+.fs-total{border:2px solid var(--ink);border-radius:16px;padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center;gap:.75rem;font-weight:800}
+.fs-total span:last-child{font-size:1.35rem;font-weight:800}
+.fs-sub{font-size:.88rem;font-weight:800;margin:0 0 .6rem}
 .fs-sub.ded{color:var(--er)}
-.fs-res{border:2px solid var(--ln);background:var(--sf)}
-.fs-hero{background:var(--ac);color:#0D0D0D;padding:24px;border-bottom:2px solid var(--ln)}
+
+/* Result: glossy orange hero */
+.fs-res{border:1px solid var(--ln);border-radius:26px;background:var(--sf);overflow:hidden;scroll-margin-top:1rem}
+.fs-hero{background:var(--g);color:#0D0D0D;padding:1.4rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -3px 0 rgba(0,0,0,.1)}
+@media(min-width:640px){.fs-hero{padding:1.7rem}}
 .fs-hero p{margin:0}
-.fs-hero .big{font-size:clamp(34px,8vw,52px);font-weight:700;line-height:1.1;margin-top:6px}
-.fs-hero .big span{font-size:22px;font-weight:700}
-.fs-bd{padding:20px;display:flex;flex-direction:column;gap:6px}
-.fs-line{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ln)}
-.fs-line .t{font-weight:700;font-size:14px}
-.fs-line .s{font-size:12px;color:var(--mu);margin-top:2px}
-.fs-line .a{font-weight:700;white-space:nowrap}
-.fs-line.gross{border-top:2px solid var(--ln);border-bottom:2px solid var(--ln);background:var(--bg);padding-inline:10px}
+.fs-hero .big{font-size:clamp(2.2rem,9vw,3.2rem);font-weight:800;line-height:1.15;margin-top:.4rem;direction:ltr;unicode-bidi:isolate;text-align:start}
+.fs-hero .big span{font-size:1.1rem;font-weight:800}
+.fs-bd{padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:.25rem}
+.fs-line{display:flex;justify-content:space-between;gap:.75rem;padding:.7rem 0;border-bottom:1px solid var(--ln)}
+.fs-line .t{font-weight:800;font-size:.9rem}
+.fs-line .s{font-size:.78rem;color:var(--mu);margin-top:2px;line-height:1.6}
+.fs-line .a{font-weight:800;white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+.fs-line.gross{border:1px solid var(--ln);border-radius:14px;background:var(--bg);padding-inline:.8rem;margin-top:.4rem}
 .fs-line.ded .t,.fs-line.ded .a{color:var(--er)}
-.fs-line.net{background:var(--ac);color:#0D0D0D;border:2px solid var(--ln);padding:14px 12px;margin-top:8px}
-.fs-line.net .t,.fs-line.net .a{font-size:17px;font-weight:700;color:#0D0D0D}
-.fs-acts{display:flex;flex-wrap:wrap;gap:10px;padding:16px 20px 20px;border-top:2px solid var(--ln)}
-.fs-btn{border:2px solid var(--ln);background:var(--sf);color:var(--ink);padding:10px 16px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;min-height:44px}
-.fs-btn:hover{background:var(--ink);color:var(--bg)}
-.fs-btn.pri{background:var(--ac);color:#0D0D0D}
-.fs-btn.pri:hover{background:var(--ink);color:var(--bg)}
-.fs-exp{width:100%;text-align:right;background:none;border:0;border-top:2px solid var(--ln);color:var(--ink);padding:14px 20px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;min-height:44px}
-.fs-exp:focus-visible{outline:3px solid var(--ac);outline-offset:-3px}
-.fs-calcs{padding:0 20px 20px;display:flex;flex-direction:column;gap:10px}
-.fs-calc{border:1px solid var(--ln);padding:12px;background:var(--bg)}
+.fs-line.net{background:var(--g);color:#0D0D0D;border:2px solid var(--ink);border-radius:16px;padding:.9rem .9rem;margin-top:.6rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.fs-line.net .t,.fs-line.net .a{font-size:1.05rem;font-weight:800;color:#0D0D0D}
+.fs-acts{display:flex;flex-wrap:wrap;gap:.6rem;padding:1rem 1.25rem 1.25rem;border-top:1px solid var(--ln)}
+.fs-btn{border:2px solid var(--ln);border-radius:16px;background:var(--sf);color:var(--ink);padding:.6rem 1.1rem;font:inherit;font-size:.92rem;font-weight:800;cursor:pointer;min-height:48px}
+.fs-btn:hover{border-color:var(--ink)}
+.fs-btn.pri{background:var(--g);color:#0D0D0D;border-color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.fs-btn.pri:hover{opacity:.92}
+.fs-exp{width:100%;text-align:start;background:none;border:0;border-top:1px solid var(--ln);color:var(--ink);padding:.9rem 1.25rem;font:inherit;font-size:.92rem;font-weight:800;cursor:pointer;display:flex;justify-content:space-between;min-height:48px}
+.fs-exp:focus-visible{outline-offset:-3px}
+.fs-calcs{padding:0 1.25rem 1.25rem;display:flex;flex-direction:column;gap:.6rem}
+.fs-calc{border:1px solid var(--ln);border-radius:16px;padding:.8rem .9rem;background:var(--bg)}
 .fs-calc p{margin:0}
-.fs-calc .f{font-size:12px;margin:4px 0;word-break:break-word}
-.fs-calc .l{font-size:12px;color:var(--mu)}
-.fs-disc{margin:0 20px 16px;border:1px dashed var(--ln);padding:12px 14px;font-size:12px}
+.fs-calc .f{font-size:.8rem;margin:.3rem 0;word-break:break-word;direction:rtl}
+.fs-calc .l{font-size:.78rem;color:var(--mu)}
+.fs-disc{margin:0 1.25rem 1rem;border:1px dashed var(--ln);border-radius:16px;padding:.8rem .95rem;font-size:.78rem;line-height:1.8;color:var(--mu)}
+
+/* Mobile sticky result bar */
+.fs-sbar{position:fixed;inset-inline:0;bottom:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.65rem 1rem calc(.65rem + env(safe-area-inset-bottom,0px));background:var(--sf);border-top:1px solid var(--ln);box-shadow:0 -8px 24px -12px rgba(0,0,0,.25)}
+@media(min-width:960px){.fs-sbar{display:none}}
+.fs-sbar-t{display:grid;min-width:0}
+.fs-sbar-t span{font-size:.76rem;font-weight:600;color:var(--mu)}
+.fs-sbar-t b{font-size:1.2rem;font-weight:800;line-height:1.3;direction:ltr;unicode-bidi:isolate;text-align:start}
+.fs-sbar-b{flex:none;min-height:48px;padding:.5rem 1.1rem;font:inherit;font-size:.92rem;font-weight:800;color:#0D0D0D;background:var(--g);border:2px solid var(--ink);border-radius:16px;cursor:pointer}
+
+/* Document modal: always ink on white for clean print */
 .fs-modal{position:fixed;inset:0;z-index:50;background:rgba(13,13,13,.75);overflow-y:auto;padding:16px;display:flex;justify-content:center;align-items:flex-start}
-.fs-sheet{width:100%;max-width:720px;background:#fff;color:#0D0D0D;border:2px solid #0D0D0D}
+.fs-sheet{width:100%;max-width:720px;background:#fff;color:#0D0D0D;border:2px solid #0D0D0D;border-radius:20px;overflow:hidden}
 .fs-bar{position:sticky;top:0;background:#fff;border-bottom:2px solid #0D0D0D;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;z-index:2;flex-wrap:wrap}
-.fs-bar .fs-btn{background:#fff;color:#0D0D0D;border-color:#0D0D0D;padding:6px 12px;min-height:40px}
+.fs-bar .fs-btn{background:#fff;color:#0D0D0D;border-color:#0D0D0D;padding:6px 12px;min-height:40px;border-radius:12px}
 .fs-bar .fs-btn.pri{background:#FF6A1A}
 .fs-bar .fs-btn:hover{background:#0D0D0D;color:#fff}
 .fs-paper{padding:28px;display:flex;flex-direction:column;gap:22px;color:#0D0D0D;background:#fff;font-size:14px}
@@ -147,15 +192,17 @@ const CSS = `
 .fs-info small{display:block;font-size:11px;font-weight:700;color:#55554F}
 .fs-sig{display:grid;grid-template-columns:1fr 1fr;gap:40px;text-align:center;font-size:12px}
 .fs-sig .ln{border-bottom:2px solid #0D0D0D;height:44px;margin:8px 8px 6px}
+
 @media print{
   body *{visibility:hidden}
   #settlement-document,#settlement-document *{visibility:visible}
   #settlement-document{position:absolute;inset:0;width:100%;padding:12mm}
+  .fs-sbar{display:none!important}
 }
-@media (prefers-reduced-motion:reduce){.fs *{transition:none!important}}
+@media (prefers-reduced-motion:reduce){.fs *{transition:none!important;scroll-behavior:auto!important}}
 `;
 
-// ─── Sub-components ────────────────────────────────────────────────────────────
+// ─── Sub-components (unchanged) ────────────────────────────────────────────────
 function SectionHeader({ num, title }) {
   return (
     <div className="fs-head">
@@ -262,6 +309,8 @@ function DocRow({ label, value, cls }) {
 
 // ─── Main ──────────────────────────────────────────────────────────────────────
 export default function FinalSettlementCalculator() {
+  const resultRef = useRef(null);
+
   const [employeeName, setEmployeeName] = useState("");
   const [employerName, setEmployerName] = useState("");
   const [employeeId, setEmployeeId] = useState("");
@@ -269,8 +318,10 @@ export default function FinalSettlementCalculator() {
 
   const [contractType, setContractType] = useState("indefinite");
   const [terminationReason, setTerminationReason] = useState("terminate");
-  const [joiningDate, setJoiningDate] = useState("2021-01-01");
-  const [lastWorkingDate, setLastWorkingDate] = useState("");
+  // Demo defaults = the worked example on the page (6 years 4 months, 15 days
+  // in the last month). Fixed dates keep the server-rendered result stable.
+  const [joiningDate, setJoiningDate] = useState("2020-01-15");
+  const [lastWorkingDate, setLastWorkingDate] = useState("2026-05-15");
   const [customLastMonthDays, setCustomLastMonthDays] = useState("");
 
   const [basicSalary, setBasicSalary] = useState("8000");
@@ -279,7 +330,7 @@ export default function FinalSettlementCalculator() {
   const [otherAllowances, setOtherAllowances] = useState("0");
   const [monthlyDivisor, setMonthlyDivisor] = useState("30");
 
-  const [unusedLeaveDays, setUnusedLeaveDays] = useState("0");
+  const [unusedLeaveDays, setUnusedLeaveDays] = useState("18");
   const [leaveWageBase, setLeaveWageBase] = useState("actual");
 
   const [noticeRequired, setNoticeRequired] = useState("60");
@@ -300,11 +351,20 @@ export default function FinalSettlementCalculator() {
   const [copied, setCopied] = useState(false);
   const [calcDate, setCalcDate] = useState("");
 
-  // Client-only dates (avoids hydration mismatch and UTC off-by-one)
+  // Client-only date label (avoids hydration mismatch)
   useEffect(() => {
-    setLastWorkingDate(todayLocal());
     setCalcDate(new Date().toLocaleDateString("ar-SA-u-nu-latn", { year: "numeric", month: "long", day: "numeric" }));
   }, []);
+
+  // Escape closes the printable document
+  useEffect(() => {
+    if (!showDocument) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setShowDocument(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [showDocument]);
 
   const handleTerminationChange = (rId) => {
     setTerminationReason(rId);
@@ -323,7 +383,17 @@ export default function FinalSettlementCalculator() {
     }
   };
 
-  // ─── Calculation (unchanged except daysWorked cap) ───────────────────────────
+  const scrollToResult = () => {
+    const el = resultRef.current;
+    if (!el) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  };
+
+  // ─── Calculation (unchanged) ─────────────────────────────────────────────────
   const calc = useMemo(() => {
     const basic = toNum(basicSalary);
     const totalWage = basic + toNum(housingAllowance) + toNum(transportAllowance) + toNum(otherAllowances);
@@ -381,10 +451,10 @@ export default function FinalSettlementCalculator() {
       else
         noticeNote =
           noticeBeneficiary === "employee"
-            ? `${missedDays} يوم اشعار غير مخدوم — تعويض للموظف (+)`
-            : `${missedDays} يوم اشعار غير مخدوم — خصم لصاحب العمل (-)`;
+            ? `${missedDays} يوم إشعار غير مخدوم — تعويض للموظف (+)`
+            : `${missedDays} يوم إشعار غير مخدوم — خصم لصاحب العمل (-)`;
     } else {
-      noticeNote = "عقد محدد المدة — احكام مهلة الاشعار (م/75) لا تنطبق";
+      noticeNote = "عقد محدد المدة — أحكام مهلة الإشعار (م/75) لا تنطبق";
     }
 
     const noticeAddition = contractType === "indefinite" && noticeBeneficiary === "employee" ? noticePay : 0;
@@ -459,25 +529,21 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
   const reasonLabel = REASONS.find((r) => r.id === terminationReason)?.label || "";
   const gratuityStatus =
     calc.esobPercent === 1 ? { cls: "", mark: "✓ مستحقة كاملة" } :
-    calc.esobPercent === 0 ? { cls: "bad", mark: "✗ غير مستحقة" } :
-    { cls: "warn", mark: "! مستحقة جزئياً" };
+      calc.esobPercent === 0 ? { cls: "bad", mark: "✗ غير مستحقة" } :
+        { cls: "warn", mark: "! مستحقة جزئياً" };
 
   return (
     <div className="fs fs-stack">
       <style>{CSS}</style>
 
       {/* Header */}
-      <div className="fs-card" style={{ borderWidth: 3 }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
+      <div className="fs-card">
+        <div className="fs-top">
           <div>
-            <h1 style={{ fontSize: "clamp(22px,4vw,30px)", fontWeight: 700 }}>حاسبة المخالصة النهائية في السعودية</h1>
-            <p style={{ margin: "8px 0 0", fontSize: 14, color: "var(--mu)" }}>
-              تصفية كاملة لجميع مستحقات العامل وفق المواد 75 و84 و85 و111 من نظام العمل
-            </p>
+            <h1>حاسبة المخالصة النهائية في السعودية</h1>
+            <p>تصفية كاملة لجميع مستحقات العامل وفق المواد 75 و84 و85 و111 من نظام العمل</p>
           </div>
-          <span style={{ border: "1px solid var(--ln)", padding: "4px 10px", fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" }}>
-            محدث 2026 — نظام العمل السعودي
-          </span>
+          <span className="fs-badge">محدث 2026 — نظام العمل السعودي</span>
         </div>
       </div>
 
@@ -523,7 +589,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
         {calc.serviceMonths > 0 && (
           <div className="fs-box fs-row" style={{ flexDirection: "row", justifyContent: "space-between" }}>
             <span style={{ fontWeight: 600 }}>مدة الخدمة المحتسبة</span>
-            <span style={{ textAlign: "right" }}>
+            <span style={{ textAlign: "end" }}>
               <b>{calc.serviceDurationLabel}</b>
               <span className="fs-note-s" style={{ display: "block", margin: 0 }}>({calc.serviceYears.toFixed(3)} سنة)</span>
             </span>
@@ -564,7 +630,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
             ["الأجر اليومي", calc.daily, false],
             ["أجر الساعة (÷8)", calc.daily / 8, false],
           ].map(([l, v, hi]) => (
-            <div key={l} className="fs-box" style={{ borderWidth: hi ? 3 : 1, gap: 2 }}>
+            <div key={l} className="fs-box" style={{ borderColor: hi ? "var(--ink)" : undefined, borderWidth: hi ? 2 : 1, gap: 2 }}>
               <span style={{ fontSize: 12, color: "var(--mu)" }}>{l}</span>
               <b style={{ fontSize: 16 }}>{fmt(v)} ر.س</b>
             </div>
@@ -650,7 +716,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
         ) : (
           <>
             <div className="fs-note">
-              <b>المادة (75):</b> للعقد غير المحدد مع الراتب الشهري — مهلة الاشعار 30 يوماً (استقالة الموظف) او 60 يوماً (انهاء صاحب العمل). الطرف المخل بالمهلة يلتزم بتعويض الطرف الاخر بأجر المدة غير المخدومة.
+              <b>المادة (75) بعد تعديلات 2025:</b> للعقد غير المحدد المدة مع الأجر الشهري، مهلة الإشعار 30 يوماً على الأقل عند إنهاء العامل للعقد و60 يوماً على الأقل عند إنهاء صاحب العمل. والطرف المخل بالمهلة يلتزم بتعويض الطرف الآخر بأجر المدة غير المخدومة (م/76).
             </div>
 
             <ToggleGroup
@@ -658,31 +724,31 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
               value={noticeBeneficiary}
               onChange={setNoticeBeneficiary}
               options={[
-                { id: "employee", label: "للموظف (اضافة +)", desc: "عند انهاء المنشأة للعقد دون اعطاء الموظف مهلة الاشعار كاملة" },
-                { id: "employer", label: "لصاحب العمل (خصم −)", desc: "عند استقالة الموظف وتركه العمل فوراً قبل انقضاء مهلة الاشعار" },
+                { id: "employee", label: "للموظف (إضافة +)", desc: "عند إنهاء المنشأة للعقد دون إعطاء الموظف مهلة الإشعار كاملة" },
+                { id: "employer", label: "لصاحب العمل (خصم −)", desc: "عند استقالة الموظف وتركه العمل فوراً قبل انقضاء مهلة الإشعار" },
               ]}
             />
 
             <div className="fs-grid fs-g2">
               <NumInput
-                label="مهلة الاشعار المطلوبة نظاماً (بالايام)"
+                label="مهلة الإشعار المطلوبة نظاماً (بالأيام)"
                 value={noticeRequired}
                 onChange={setNoticeRequired}
-                note="30 يوماً للاستقالة — 60 يوماً لانهاء صاحب العمل (الحد الادنى)"
+                note="30 يوماً لإنهاء العامل — 60 يوماً لإنهاء صاحب العمل (الحد الأدنى للأجر الشهري)"
               />
-              <NumInput label="فترة الاشعار المخدومة فعلياً (بالايام)" value={noticeServed} onChange={setNoticeServed} />
+              <NumInput label="فترة الإشعار المخدومة فعلياً (بالأيام)" value={noticeServed} onChange={setNoticeServed} />
             </div>
 
             {calc.missedDays > 0 ? (
               <div className={`fs-note ${noticeBeneficiary === "employer" ? "fix" : ""}`}>
-                <div className="fs-row"><span>ايام الاشعار غير المخدومة</span><b>{calc.missedDays} يوم</b></div>
+                <div className="fs-row"><span>أيام الإشعار غير المخدومة</span><b>{calc.missedDays} يوم</b></div>
                 <div className="fs-row" style={{ marginTop: 6 }}>
                   <span>{noticeBeneficiary === "employee" ? "تعويض يُضاف لمستحقات الموظف (+)" : "تعويض يُخصم من مستحقات الموظف (−)"}</span>
                   <b style={{ fontSize: 17 }}>{noticeBeneficiary === "employer" ? "−" : "+"}{fmt(calc.noticePay)} ر.س</b>
                 </div>
               </div>
             ) : (
-              <div className="fs-note"><b>✓</b> {calc.noticeNote || "فترة الاشعار خُدمت كاملة"}</div>
+              <div className="fs-note"><b>✓</b> {calc.noticeNote || "فترة الإشعار خُدمت كاملة"}</div>
             )}
           </>
         )}
@@ -700,7 +766,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
             <NumInput label="إضافات أخرى (ر.س)" value={otherAdditions} onChange={setOtherAdditions} />
           </div>
         </div>
-        <div style={{ borderTop: "2px solid var(--ln)", paddingTop: 16 }}>
+        <div style={{ borderTop: "1px solid var(--ln)", paddingTop: 16 }}>
           <p className="fs-sub ded">خصومات واستقطاعات (−)</p>
           <div className="fs-grid fs-g2">
             <NumInput label="سلف وقروض مستحقة للشركة (ر.س)" value={loans} onChange={setLoans} />
@@ -711,9 +777,9 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
       </section>
 
       {/* Results */}
-      <section className="fs-res" aria-live="polite">
+      <section className="fs-res" ref={resultRef} aria-live="polite" aria-label="النتيجة">
         <div className="fs-hero">
-          <p style={{ fontSize: 14, fontWeight: 700 }}>إجمالي المخالصة النهائية الصافية</p>
+          <p style={{ fontSize: 14, fontWeight: 800 }}>إجمالي المخالصة النهائية الصافية</p>
           <p className="big">{fmt(calc.netSettlement)} <span>ر.س</span></p>
         </div>
 
@@ -725,14 +791,14 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
             sub={calc.leaveDays > 0 ? `${calc.leaveDays} يوم × ${fmt(calc.leaveDailyRate)} ر.س` : "لم تُدخل أيام إجازة"}
             amount={calc.leavePay}
           />
-          {calc.noticeAddition > 0 && <Line label="بدل مهلة الاشعار (لصالح الموظف)" sub={calc.noticeNote} amount={calc.noticeAddition} />}
-          {calc.noticePay === 0 && <Line label="بدل مهلة الاشعار" sub={calc.noticeNote} amount={0} />}
-          {calc.addTotal > 0 && <Line label="مستحقات اخرى" amount={calc.addTotal} />}
-          <Line label="اجمالي المستحقات" amount={calc.grossDues} type="gross" />
+          {calc.noticeAddition > 0 && <Line label="بدل مهلة الإشعار (لصالح الموظف)" sub={calc.noticeNote} amount={calc.noticeAddition} />}
+          {calc.noticePay === 0 && <Line label="بدل مهلة الإشعار" sub={calc.noticeNote} amount={0} />}
+          {calc.addTotal > 0 && <Line label="مستحقات أخرى" amount={calc.addTotal} />}
+          <Line label="إجمالي المستحقات" amount={calc.grossDues} type="gross" />
           {calc.noticeDeduction > 0 && (
-            <Line label="خصم مهلة الاشعار غير المخدومة (لصاحب العمل)" sub={`${calc.missedDays} يوماً غير مخدومة`} amount={calc.noticeDeduction} type="deduct" />
+            <Line label="خصم مهلة الإشعار غير المخدومة (لصاحب العمل)" sub={`${calc.missedDays} يوماً غير مخدومة`} amount={calc.noticeDeduction} type="deduct" />
           )}
-          {calc.dedBase > 0 && <Line label="اجمالي الخصومات الاخرى" sub="سلف وعهد مستحقة" amount={calc.dedBase} type="deduct" />}
+          {calc.dedBase > 0 && <Line label="إجمالي الخصومات الأخرى" sub="سلف وعهد مستحقة" amount={calc.dedBase} type="deduct" />}
           <Line label="صافي المخالصة النهائية المستحقة" amount={calc.netSettlement} type="net" />
         </div>
 
@@ -749,9 +815,8 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
             />
             <CalcExplain
               title="2. مكافأة نهاية الخدمة"
-              formula={`أول 5 سنوات: ${fmt(calc.totalWage)} × 0.5 × ${calc.y1.toFixed(2)} = ${fmt(calc.y1Full)} ر.س${
-                calc.y2 > 0 ? ` | بعد 5 سنوات: ${fmt(calc.totalWage)} × 1.0 × ${calc.y2.toFixed(2)} = ${fmt(calc.y2Full)} ر.س` : ""
-              } | نسبة الاستحقاق ${(calc.esobPercent * 100).toFixed(1)}٪ → ${fmt(calc.eosb)} ر.س`}
+              formula={`أول 5 سنوات: ${fmt(calc.totalWage)} × 0.5 × ${calc.y1.toFixed(2)} = ${fmt(calc.y1Full)} ر.س${calc.y2 > 0 ? ` | بعد 5 سنوات: ${fmt(calc.totalWage)} × 1.0 × ${calc.y2.toFixed(2)} = ${fmt(calc.y2Full)} ر.س` : ""
+                } | نسبة الاستحقاق ${(calc.esobPercent * 100).toFixed(1)}٪ → ${fmt(calc.eosb)} ر.س`}
               law="المادة (84) للحساب الأساسي — المادة (85) لتدرج الاستقالة — المادة (87) لاستثناء المرأة"
             />
             <CalcExplain
@@ -767,15 +832,15 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
               />
             )}
             <CalcExplain
-              title="5. الاجمالي والصافي"
-              formula={`اجمالي المستحقات ${fmt(calc.grossDues)} - اجمالي الخصومات ${fmt(calc.dedTotal)} = صافي المخالصة ${fmt(calc.netSettlement)} ر.س`}
-              law="التصفية الاجمالية النهائية لجميع حقوق ومديونيات الطرفين"
+              title="5. الإجمالي والصافي"
+              formula={`إجمالي المستحقات ${fmt(calc.grossDues)} - إجمالي الخصومات ${fmt(calc.dedTotal)} = صافي المخالصة ${fmt(calc.netSettlement)} ر.س`}
+              law="التصفية الإجمالية النهائية لجميع حقوق ومديونيات الطرفين"
             />
           </div>
         )}
 
         <div className="fs-disc">
-          <b>ملاحظة وإخلاء مسؤولية قانوني:</b> هذه الحاسبة تقديرية واسترشادية لتصفية مستحقات العامل وفق المواد (75، 84، 85، 111) من نظام العمل السعودي الصادر بالمرسوم الملكي (م/51) وتعديلاته. ليست بديلاً عن الاستشارة القانونية أو التسوية الرسمية المعتمدة من جهة العمل. للنزاعات العمالية، يُرجى الرجوع لمنصة <b>ودي</b> التابعة لوزارة الموارد البشرية والتنمية الاجتماعية (hrsd.gov.sa). <b>تاريخ آخر مراجعة:</b> 2026م.
+          <b>ملاحظة وإخلاء مسؤولية قانوني:</b> هذه الحاسبة تقديرية واسترشادية لتصفية مستحقات العامل وفق المواد (75، 84، 85، 111) من نظام العمل السعودي الصادر بالمرسوم الملكي (م/51) وتعديلاته. ليست بديلاً عن الاستشارة القانونية أو التسوية الرسمية المعتمدة من جهة العمل. للنزاعات العمالية، يُرجى الرجوع لمنصة <b>ودي</b> التابعة لوزارة الموارد البشرية والتنمية الاجتماعية (hrsd.gov.sa). <b>آخر تحديث للمحتوى:</b> 2026م.
         </div>
 
         <div className="fs-acts">
@@ -793,7 +858,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
             طباعة
           </button>
           <button type="button" className="fs-btn" onClick={() => {
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank");
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
             track("share_clicked", { tool: "final-settlement", method: "whatsapp" });
           }}>
             مشاركة عبر واتساب
@@ -810,6 +875,17 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
           </button>
         </div>
       </section>
+
+      {/* Mobile sticky result bar */}
+      {!showDocument && (
+        <div className="fs-sbar" role="region" aria-label="ملخص النتيجة">
+          <div className="fs-sbar-t">
+            <span>صافي المخالصة</span>
+            <b>{fmt(calc.netSettlement)} ر.س</b>
+          </div>
+          <button type="button" className="fs-sbar-b" onClick={scrollToResult}>التفاصيل ↓</button>
+        </div>
+      )}
 
       {/* Document modal (always black on white for clean print) */}
       {showDocument && (
