@@ -162,6 +162,22 @@ const COUNTRY_HUBS = {
         ],
       },
       {
+        id: "zatca-wave-checker",
+        nameAr: "حاسبة موجات زاتكا (المجموعات)",
+        nameEn: "ZATCA Wave Eligibility Checker",
+        icon: "🌊",
+        badge: "المجموعات 23–25",
+        badgeColor: "bg-orange-50 text-orange-700 border-orange-200 font-bold",
+        href: "/ar/sa/zatca-wave-checker",
+        desc: "تحقق من المجموعة المشمولة بها منشأتك في المرحلة الثانية للفوترة الإلكترونية وتاريخ بدء الربط مع منصة فاتورة بناءً على إيرادات 2022–2025.",
+        highlights: [
+          "فحص المجموعات 23 و24 و25",
+          "اعتماد معيار التجاوز الصارم (أكثر من)",
+          "تحديد السنة الموجبة للربط بدقة",
+          "حساب فوري وتلقائي على المتصفح بالكامل",
+        ],
+      },
+      {
         id: "e-invoice-generator",
         nameAr: "مولد الفاتورة الإلكترونية السعودية",
         nameEn: "Saudi E-Invoice Generator",

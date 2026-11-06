@@ -3,6 +3,7 @@ import { CATEGORIES, getCatalogToolsByCategory, getCatalogToolCount } from "@/li
 import HomeHero from "@/components/home/HomeHero";
 import HomeSeoSections from "@/components/home/HomeSeoSections";
 import CategoryBrowseShowcase from "@/components/home/CategoryBrowseShowcase";
+import WorldClockSection from "@/components/home/WorldClockSection";
 import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 export const metadata = {
@@ -196,6 +197,9 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <HomeHero toolCount={totalTools} />
+
+      {/* ── World Clock — live times for Gulf + global cities ── */}
+      <WorldClockSection />
 
       {/* ── Category Browse Showcase (Interactive Desktop & Mobile Component) ── */}
       <CategoryBrowseShowcase />

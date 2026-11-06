@@ -4,8 +4,10 @@
  * components/InheritanceCalculator.jsx
  * Qemlo tool style: glossy orange + ink, SVG icons, 26px cards, 16px controls,
  * light/dark, mobile-first. The inheritance calculation (useMemo block),
- * presets and copy-report text are unchanged; only presentation and
- * accessibility were redesigned.
+ * presets and copy-report text are unchanged except for ONE fix: full brothers
+ * were silently dropped when daughters existed (no father/grandfather/son).
+ * They are now asaba (section 5: `else if (!hasChildren || fullBrothers > 0)`).
+ * The extended-relatives hint now states the Hanafi position on the grandfather.
  */
 
 import { useState, useMemo, useId, useRef } from "react";
@@ -307,7 +309,7 @@ export default function InheritanceCalculator() {
     }
   };
 
-  // Calculation logic (unchanged)
+  // Calculation logic (unchanged except the section-5 fix noted above)
   const calculation = useMemo(() => {
     const gross = toNumber(totalEstate);
     const debtVal = toNumber(debts);
@@ -550,7 +552,8 @@ export default function InheritanceCalculator() {
           isAsaba: true,
           reason: "عصبة مع الغير لوجودهن مع البنات (اجعلوا الأخوات مع البنات عصبة)",
         });
-      } else if (!hasChildren) {
+      } else if (!hasChildren || fullBrothers > 0) {
+        // FIX: الإخوة الأشقاء عصبة حتى مع وجود البنات (بعد فرض البنات)
         if (fullBrothers > 0) {
           heirs.push({
             id: "brothers_asaba",
@@ -563,7 +566,9 @@ export default function InheritanceCalculator() {
             shareLabel: "الباقي (عصبة بالغير)",
             isAsaba: true,
             isSiblingsAsaba: true,
-            reason: "عصبة بالغير للذكر مثل حظ الأنثيين لعدم وجود فرع وارث ولا أب",
+            reason: hasChildren
+              ? "عصبة لباقي التركة بعد فرض البنات (للذكر مثل حظ الأنثيين)"
+              : "عصبة بالغير للذكر مثل حظ الأنثيين لعدم وجود فرع وارث ولا أب",
           });
         } else if (fullSisters > 0) {
           const share = fullSisters === 1 ? 1 / 2 : 2 / 3;
@@ -1080,7 +1085,7 @@ export default function InheritanceCalculator() {
                   <div id={`${uid}-extended`} className="inh-extended">
                     <p className="inh-hint">
                       <Icon name="info" size={16} />
-                      <span>ملاحظة شرعية: يُحجب الإخوة والأخوات بوجود الأب أو الابن الذكر، ويُحجب الأجداد بوجود الآباء.</span>
+                      <span>ملاحظة شرعية: يُحجب الإخوة والأخوات بوجود الأب أو الابن، وتأخذ الحاسبة حجبهم بالجد أيضاً وفق قول الحنفية. ويُحجب الجد بالأب والجدة بالأم.</span>
                     </p>
 
                     <div className="inh-two">

@@ -80,7 +80,7 @@ function getToolSvg(id) {
       </svg>
     );
   }
-  if (id.includes("vat") || id.includes("tax") || id.includes("invoice")) {
+  if (id.includes("vat") || id.includes("tax") || id.includes("invoice") || id.includes("zatca") || id.includes("wave")) {
     return (
       <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="4" y="2" width="16" height="20" rx="2" />

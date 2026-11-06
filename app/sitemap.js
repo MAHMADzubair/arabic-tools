@@ -37,6 +37,7 @@ export default function sitemap() {
     "/ar/sa/annual-leave-calculator",
     "/ar/sa/article-77-calculator",
     "/ar/sa/vat-registration-checker",
+    "/ar/sa/zatca-wave-checker",
     "/ar/sa/e-invoice-generator",
     "/ar/sa/quotation-generator",
   ];

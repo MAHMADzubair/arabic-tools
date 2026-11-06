@@ -127,7 +127,7 @@ const CSS = `
 .hd-mark{width:34px;height:34px;font-size:16px;border-radius:10px}
 .hd-name{font-size:15px;font-weight:700}
 .hd-quick,.hd-prog{display:none}
-.hd-mob .hd-all,.hd-mob .hd-all:hover{min-height:38px;padding:0 12px;background:transparent;color:var(--text);border:2px solid var(--border)}
+.hd-mob .hd-all,.hd-mob .hd-all:hover{min-height:34px;width:34px;padding:0;background:transparent;color:var(--text);border:2px solid var(--border);border-radius:50%;display:grid;place-items:center}
 .hd-mob .hd-all b{display:none}
 .hd-back,.hd-drawer{animation:none}
 .hd-over{height:100dvh}
@@ -135,6 +135,11 @@ const CSS = `
 .hd-df{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 .hd-df a span{display:none}
 .hd *{-webkit-tap-highlight-color:transparent}
+/* Mobile country switcher */
+.hd-mob-seg{display:flex;align-items:center;gap:4px}
+.hd-mob-country{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border:1.5px solid var(--border);border-radius:999px;color:var(--text);text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap;background:var(--surface);transition:background .15s,border-color .15s}
+.hd-mob-country:active{background:var(--bg)}
+.hd-mob-country-name{display:inline}
 }
 @media print{.hd-bar{display:none}}
 `;
@@ -313,7 +318,16 @@ export default function Header() {
               </nav>
 
               {/* Mobile menu button */}
-              <div className="hd-mob">
+              <div className="hd-mob" style={{display:"flex",alignItems:"center",gap:6}}>
+                {/* Country switcher – visible on mobile */}
+                <div className="hd-mob-seg">
+                  {COUNTRIES.map((c) => (
+                    <Link key={c.id} href={c.href} className="hd-mob-country" onClick={() => track(c.id, "header_mobile_pill")}>
+                      <span aria-hidden="true">{c.flag}</span>
+                      <span className="hd-mob-country-name">{c.label}</span>
+                    </Link>
+                  ))}
+                </div>
                 <button
                   ref={menuBtnRef}
                   type="button"
@@ -322,8 +336,6 @@ export default function Header() {
                   aria-expanded={mobileMenuOpen}
                   onClick={() => setMobileMenuOpen(true)}
                 >
-                  الأدوات
-                  <b>{count}</b>
                   <svg className="hd-bars" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
                     <path d="M4 7h16M4 12h16M4 17h10" />
                   </svg>
