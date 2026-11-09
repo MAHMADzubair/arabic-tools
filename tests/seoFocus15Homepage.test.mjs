@@ -20,10 +20,10 @@ test("curated catalog still has 15 and full active registry retains 37", () => {
 });
 
 test("homepage category showcase also uses only the curated 15", () => {
-  assert.match(categoryBrowse, /getCatalogToolsByCategory\\(cat\\.id\\)/);
-  assert.match(categoryBrowse, /getCatalogToolCount\\(\\)/);
-  assert.doesNotMatch(categoryBrowse, /getToolsByCategory\\(/);
-  assert.doesNotMatch(categoryBrowse, /getToolCount\\(/);
+  assert.ok(categoryBrowse.includes("getCatalogToolsByCategory(cat.id)"));
+  assert.ok(categoryBrowse.includes("getCatalogToolCount()"));
+  assert.equal(categoryBrowse.includes("getToolsByCategory("), false);
+  assert.equal(categoryBrowse.includes("getToolCount("), false);
   assert.match(categoryBrowse, /القائمة المختارة/);
 });
 
@@ -38,7 +38,8 @@ test("homepage hero and mobile header do not advertise old 36 count", () => {
   assert.match(header, /getCatalogToolCount\(\)/);
   assert.doesNotMatch(hero, /36\s*\}/);
   assert.doesNotMatch(header, /ابحث في 36 أداة/);
-  assert.match(home, /15 أداة عربية مجانية/);
+  assert.ok(home.includes("getCatalogToolCount()"));
+  assert.ok(home.includes("getCatalogToolsByCategory"));
 });
 
 test("hero's promoted tools all belong to focus 15 catalog", () => {
