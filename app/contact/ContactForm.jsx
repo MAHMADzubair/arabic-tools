@@ -1,32 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const CONTACT_EMAIL = "contact@qemlo.com";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+export const CONTACT_TOPICS = [
+  "خطأ في نتيجة حاسبة",
+  "نسبة أو موعد تغيّر رسمياً",
+  "أداة تحتاجها ولا تجدها",
+  "شراكة أو إعلان",
+  "شيء آخر",
+];
+
 const fieldCls =
-  "w-full rounded-xl border-2 border-[var(--text-3)] bg-[var(--surface)] px-4 py-3 text-base text-[var(--text)] placeholder:text-[var(--text-3)] transition-colors focus:border-[var(--text)] focus:outline-none";
-const labelCls = "mb-1.5 block text-sm font-bold text-[var(--text)]";
-const reqCls = "text-[var(--error)]";
+  "w-full rounded-none border-0 border-b-2 border-[var(--text-3)] bg-transparent px-0 py-2.5 text-lg text-[var(--text)] placeholder:text-[var(--text-3)] transition-colors focus:border-[var(--orange)] focus:outline-none focus-visible:outline-none";
+const labelCls = "block text-sm font-semibold text-[var(--text)]";
 
 export default function ContactForm() {
+  const emailRef = useRef(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "استفسار عام",
+    subject: CONTACT_TOPICS[0],
+    toolUrl: "",
     message: "",
   });
+  const [emailError, setEmailError] = useState(false);
+  const [opened, setOpened] = useState(false);
+
+  const set = (key) => (event) => {
+    setFormData({ ...formData, [key]: event.target.value });
+    if (key === "email" && emailError) setEmailError(!EMAIL_RE.test(event.target.value.trim()));
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!EMAIL_RE.test(formData.email.trim())) {
+      setEmailError(true);
+      emailRef.current?.focus();
+      return;
+    }
 
     const body = [
       `الاسم: ${formData.name}`,
       `البريد الإلكتروني: ${formData.email}`,
       `الموضوع: ${formData.subject}`,
+      formData.toolUrl ? `رابط الأداة: ${formData.toolUrl}` : null,
       "",
       "الرسالة:",
       formData.message,
-    ].join("\n");
+    ]
+      .filter((line) => line !== null)
+      .join("\n");
 
     const mailtoUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
       `[Qemlo] ${formData.subject}`
@@ -35,99 +61,101 @@ export default function ContactForm() {
     // Hand the prepared message to the visitor's configured email application.
     // The visitor reviews it and presses Send; the website never claims it was sent.
     window.location.href = mailtoUrl;
+    setOpened(true);
   };
 
   return (
-    <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-10">
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="cf-name" className={labelCls}>
-              الاسم الكامل <span className={reqCls}>*</span>
-            </label>
-            <input
-              id="cf-name"
-              type="text"
-              required
-              autoComplete="name"
-              placeholder="مثال: أحمد محمد"
-              value={formData.name}
-              onChange={(event) => setFormData({ ...formData, name: event.target.value })}
-              className={fieldCls}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="cf-email" className={labelCls}>
-              البريد الإلكتروني <span className={reqCls}>*</span>
-            </label>
-            <input
-              id="cf-email"
-              type="email"
-              required
-              autoComplete="email"
-              placeholder="name@example.com"
-              value={formData.email}
-              onChange={(event) => setFormData({ ...formData, email: event.target.value })}
-              className={`${fieldCls} text-left`}
-              dir="ltr"
-            />
-          </div>
-        </div>
-
+    <form onSubmit={handleSubmit} noValidate className="mt-7 flex flex-col gap-7">
+      <div className="grid gap-7 sm:grid-cols-2 sm:gap-x-8">
         <div>
-          <label htmlFor="cf-subject" className={labelCls}>
-            موضوع الرسالة
-          </label>
-          <select
-            id="cf-subject"
-            value={formData.subject}
-            onChange={(event) => setFormData({ ...formData, subject: event.target.value })}
-            className={fieldCls}
-          >
-            <option value="استفسار عام">استفسار عام</option>
-            <option value="اقتراح أداة جديدة">اقتراح أداة أو ميزة جديدة</option>
-            <option value="إبلاغ عن خطأ حسابي">إبلاغ عن خطأ أو تعديل في القوانين</option>
-            <option value="شراكات وإعلانات">شراكات وإعلانات</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="cf-message" className={labelCls}>
-            نص الرسالة <span className={reqCls}>*</span>
-          </label>
-          <textarea
-            id="cf-message"
+          <label htmlFor="cf-name" className={labelCls}>اسمك</label>
+          <input
+            id="cf-name"
+            type="text"
             required
-            rows={5}
-            placeholder="اكتب تفاصيل رسالتك أو ملاحظاتك هنا..."
-            value={formData.message}
-            onChange={(event) => setFormData({ ...formData, message: event.target.value })}
-            className={`${fieldCls} resize-y`}
+            autoComplete="name"
+            value={formData.name}
+            onChange={set("name")}
+            className={fieldCls}
           />
         </div>
+        <div>
+          <label htmlFor="cf-email" className={labelCls}>بريدك للرد</label>
+          <input
+            id="cf-email"
+            ref={emailRef}
+            type="email"
+            required
+            dir="ltr"
+            autoComplete="email"
+            aria-invalid={emailError ? "true" : "false"}
+            aria-describedby={emailError ? "cf-email-error" : undefined}
+            value={formData.email}
+            onChange={set("email")}
+            className={`${fieldCls} text-left ${emailError ? "!border-[var(--error)]" : ""}`}
+          />
+          {emailError && (
+            <p id="cf-email-error" role="alert" className="mt-1.5 text-[13px] leading-7 text-[var(--error)]">
+              اكتب بريداً صحيحاً حتى نستطيع الرد عليك، مثل name@example.com
+            </p>
+          )}
+        </div>
+      </div>
 
+      <div className="grid gap-7 sm:grid-cols-2 sm:gap-x-8">
+        <div>
+          <label htmlFor="cf-subject" className={labelCls}>الموضوع</label>
+          <select id="cf-subject" value={formData.subject} onChange={set("subject")} className={fieldCls}>
+            {CONTACT_TOPICS.map((topic) => (
+              <option key={topic} value={topic}>{topic}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="cf-tool" className={labelCls}>
+            رابط الأداة <span className="font-normal text-[var(--text-2)]">(إن وُجد)</span>
+          </label>
+          <input
+            id="cf-tool"
+            type="url"
+            dir="ltr"
+            placeholder="qemlo.com/…"
+            value={formData.toolUrl}
+            onChange={set("toolUrl")}
+            className={`${fieldCls} text-left`}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="cf-message" className={labelCls}>رسالتك</label>
+        <textarea
+          id="cf-message"
+          required
+          rows={5}
+          value={formData.message}
+          onChange={set("message")}
+          className={`${fieldCls} resize-y leading-8`}
+        />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
         <button
           type="submit"
-          className="w-full rounded-xl bg-[var(--orange)] py-3.5 text-base font-bold text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
+          className="min-h-[54px] rounded-xl bg-[var(--orange)] px-8 text-[17px] font-bold text-[var(--on-orange)] transition-colors hover:bg-[var(--orange-hover)] active:bg-[var(--orange-press)]"
         >
-          متابعة عبر البريد الإلكتروني
+          جهّز الرسالة في بريدك
         </button>
-        <p className="text-center text-xs leading-7 text-[var(--text-2)]" role="note">
-          سيتم فتح تطبيق البريد الإلكتروني مع تجهيز رسالتك. راجع التفاصيل ثم اضغط إرسال؛ لن تُرسل الرسالة تلقائياً من الموقع.
+        <p className="min-w-[240px] flex-1 text-sm leading-7 text-[var(--text-2)]" role="note">
+          سيُفتح تطبيق البريد ورسالتك جاهزة. راجعها ثم اضغط إرسال؛ لن تُرسل الرسالة تلقائياً من الموقع.
         </p>
-      </form>
-
-      <div className="mt-10 space-y-2 border-t border-dashed border-[var(--border)] pt-6 text-center text-xs text-[var(--text-3)] sm:text-sm">
-        <p>أو راسلنا مباشرة عبر البريد الإلكتروني:</p>
-        <a
-          href={`mailto:${CONTACT_EMAIL}`}
-          className="font-mono text-sm font-bold text-[var(--text)] underline underline-offset-4 sm:text-base"
-          dir="ltr"
-        >
-          {CONTACT_EMAIL}
-        </a>
       </div>
-    </div>
+
+      {opened && (
+        <p role="status" className="border-t-[3px] border-[var(--success)] bg-[var(--surface)] p-5 text-[15px] leading-8 text-[var(--text)]">
+          جهّزنا رسالتك في تطبيق البريد. اضغط «إرسال» هناك لتصلنا، ونرد خلال 24 ساعة في أيام العمل. إن لم يُفتح التطبيق، انسخ البريد من أعلى الصفحة وراسلنا مباشرة.
+        </p>
+      )}
+    </form>
   );
 }

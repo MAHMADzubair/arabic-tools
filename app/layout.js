@@ -27,7 +27,7 @@ const TOKENS_CSS = `
   --card-border:#2A2A2A; --card-field:#1A1A1A; --card-field-text:#FFFFFF;
   --tab-hover:rgba(255,255,255,.10);
   --orange:#FF5B04; --orange-hover:#FF7A33; --orange-press:#E64F00; --on-orange:#0D0D0D;
-  --success:#137A47; --warning:#8A5A00; --error:#C8321F;
+  --success:#137A47; --warning:#8A5A00; --error:#C8321F; --accent-text:#C2410C;
   --foot-bg:#FFFFFF; --foot-text:var(--text); --foot-muted:var(--text-2); --foot-line:var(--border); --foot-hover:var(--orange-press);
 
   /* ── Typography & Hierarchy Tokens (Sprint 5A) ── */
@@ -50,7 +50,7 @@ const TOKENS_CSS = `
     --card:#CFCFCA; --card-text:#0D0D0D; --card-muted:#4A4A47;
     --card-border:#A9A9A4; --card-field:#E6E6E1; --card-field-text:#0D0D0D;
     --tab-hover:rgba(13,13,13,.10);
-    --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B;
+    --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B; --accent-text:#FF8B52;
     --foot-bg:#0D0D0D; --foot-hover:var(--orange-hover);
   }
 }
@@ -60,7 +60,7 @@ const TOKENS_CSS = `
   --card:#CFCFCA; --card-text:#0D0D0D; --card-muted:#4A4A47;
   --card-border:#A9A9A4; --card-field:#E6E6E1; --card-field-text:#0D0D0D;
   --tab-hover:rgba(13,13,13,.10);
-  --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B;
+  --success:#4ADE80; --warning:#FBBF24; --error:#FF7A6B; --accent-text:#FF8B52;
   --foot-bg:#0D0D0D; --foot-hover:var(--orange-hover);
 }
 html,body{
@@ -302,6 +302,7 @@ const FOOTER_TOOLS = [
 const FOOTER_COMPANY = [
   { href: "/about",       label: "عن Qemlo" },
   { href: "/contact",     label: "تواصل معنا" },
+  { href: "/changelog",   label: "سجل التحديثات" },
   { href: "/privacy",     label: "سياسة الخصوصية" },
   { href: "/terms",       label: "الشروط والأحكام" },
   { href: "/disclaimer",  label: "إخلاء المسؤولية" },
