@@ -1,0 +1,34 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const config = readFileSync(new URL("../lib/zatcaWaveConfig.js", import.meta.url), "utf8");
+const component = readFileSync(new URL("../components/ZatcaWaveChecker.jsx", import.meta.url), "utf8");
+const page = readFileSync(new URL("../app/ar/sa/zatca-wave-checker/page.js", import.meta.url), "utf8");
+
+test("Wave 25 countdown date is exported from the canonical wave record", () => {
+  assert.match(
+    config,
+    /export const WAVE25_START_ISO = `\$\{WAVES\.find\(\(wave\) => wave\.number === 25\)\.mandateDate\}T00:00:00\+03:00`;/,
+  );
+  assert.match(component, /Date\.parse\(WAVE25_START_ISO\)/);
+});
+
+test("Wave 25 is presented as a deadline, not a start date", () => {
+  assert.ok(config.includes('mandateLabel: "آخر موعد للربط مع منصة فاتورة"'));
+  assert.ok(page.includes("آخر موعد للربط مع منصة فاتورة في 1 فبراير 2027"));
+  assert.ok(page.includes("في موعد أقصاه 1 فبراير 2027"));
+  assert.equal(page.includes("يبدأ اعتباراً من 1 فبراير 2027"), false);
+});
+
+test("An unregistered answer is not presented as an exemption", () => {
+  assert.ok(component.includes("لا تعتبر"));
+  assert.ok(component.includes("إعفاءً من التسجيل أو الفوترة الإلكترونية"));
+  assert.ok(page.includes("عدم التسجيل وحده لا يكفي"));
+});
+
+test("VAT thresholds use taxable supplies/expenses and a 12-month period", () => {
+  assert.ok(page.includes("375,000 ريال خلال أي فترة 12 شهراً"));
+  assert.ok(page.includes("187,500 ريال خلال 12 شهراً"));
+  assert.ok(page.includes("غير المقيمين الملزمون بسداد ضريبة القيمة المضافة"));
+});
