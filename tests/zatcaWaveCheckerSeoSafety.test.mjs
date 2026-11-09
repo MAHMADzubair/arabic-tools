@@ -16,7 +16,7 @@ test("Wave 25 countdown date is exported from the canonical wave record", () => 
 
 test("Wave 25 uses neutral wording for the published integration date", () => {
   assert.ok(config.includes('mandateLabel: "موعد الربط المعلن مع منصة فاتورة"'));
-  assert.ok(page.includes("موعد الربط المعلن مع منصة فاتورة في 1 فبراير 2027"));
+  assert.ok(page.includes("موعد الربط المعلن للموجة 25 في 1 فبراير 2027"));
   assert.ok(page.includes("يبدأ اعتباراً من 1 فبراير 2027م"));
   assert.equal(page.includes("آخر موعد للموجة 25"), false);
   assert.equal(page.includes("في موعد أقصاه 1 فبراير 2027"), false);
@@ -31,7 +31,7 @@ test("An unregistered answer is not presented as an exemption", () => {
 });
 
 test("VAT thresholds use taxable supplies/expenses and a 12-month period", () => {
-  assert.ok(page.includes("375,000 ريال خلال أي فترة 12 شهراً"));
+  assert.ok(page.includes("375,000 ريال خلال فترة 12 شهراً"));
   assert.ok(page.includes("187,500 ريال خلال 12 شهراً"));
   assert.ok(page.includes("غير المقيمين الملزمون بسداد ضريبة القيمة المضافة"));
   assert.equal(page.includes("متوقعاً أن تتجاوزها"), false);
