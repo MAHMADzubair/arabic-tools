@@ -35,3 +35,8 @@ test("VAT thresholds use taxable supplies/expenses and a 12-month period", () =>
   assert.ok(page.includes("187,500 ريال خلال 12 شهراً"));
   assert.ok(page.includes("غير المقيمين الملزمون بسداد ضريبة القيمة المضافة"));
 });
+test("ZATCA page metadata targets Wave 25 Arabic search intent", () => {
+  assert.ok(page.includes("حاسبة موجة زاتكا 25"));
+  assert.ok(page.includes("فحص المجموعات 23–25"));
+  assert.ok(page.includes("الإيرادات الخاضعة للضريبة للأعوام 2022–2025"));
+});
