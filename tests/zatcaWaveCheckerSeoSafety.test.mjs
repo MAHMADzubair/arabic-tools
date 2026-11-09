@@ -15,15 +15,18 @@ test("Wave 25 countdown date is exported from the canonical wave record", () => 
 });
 
 test("Wave 25 is presented as a deadline, not a start date", () => {
-  assert.ok(config.includes('mandateLabel: "آخر موعد للربط مع منصة فاتورة"'));
-  assert.ok(page.includes("آخر موعد للربط مع منصة فاتورة في 1 فبراير 2027"));
-  assert.ok(page.includes("في موعد أقصاه 1 فبراير 2027"));
-  assert.equal(page.includes("يبدأ اعتباراً من 1 فبراير 2027"), false);
+  assert.ok(config.includes('mandateLabel: "موعد الربط المعلن مع منصة فاتورة"'));
+  assert.ok(page.includes("موعد الربط المعلن مع منصة فاتورة في 1 فبراير 2027"));
+  assert.ok(page.includes("يبدأ اعتباراً من 1 فبراير 2027م"));
+  assert.equal(page.includes("آخر موعد للموجة 25"), false);
+  assert.equal(page.includes("في موعد أقصاه 1 فبراير 2027"), false);
 });
 
 test("An unregistered answer is not presented as an exemption", () => {
   assert.ok(component.includes("لا تعتبر"));
   assert.ok(component.includes("إعفاءً من التسجيل أو الفوترة الإلكترونية"));
+  assert.ok(component.includes("إيرادات خاضعة للضريبة {year}م"));
+  assert.ok(component.includes("لا صافي الربح أو"));
   assert.ok(page.includes("عدم التسجيل وحده لا يكفي"));
 });
 
