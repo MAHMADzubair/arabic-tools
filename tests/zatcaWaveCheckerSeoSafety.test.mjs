@@ -41,4 +41,8 @@ test("ZATCA page metadata targets Wave 25 Arabic search intent", () => {
   assert.ok(page.includes("حاسبة موجة زاتكا 25"));
   assert.ok(page.includes("فحص المجموعات 23–25"));
   assert.ok(page.includes("الإيرادات الخاضعة للضريبة للأعوام 2022–2025"));
+  assert.ok(page.includes("إعلان زاتكا للموجة 25"));
+  assert.ok(page.includes("دليل التسجيل في VAT"));
+  assert.ok(config.includes("ZATCA_WAVE25_ANNOUNCEMENT_URL"));
+  assert.ok(config.includes("ZATCA_VAT_REGISTRATION_GUIDE_URL"));
 });
