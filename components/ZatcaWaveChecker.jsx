@@ -393,8 +393,10 @@ export default function ZatcaWaveChecker({ theme = "light", showReferenceTable =
   const [daysLeft, setDaysLeft] = useState(null);
 
   useEffect(() => {
-    const ms = new Date(WAVE25_START_ISO).getTime() - Date.now();
-    setDaysLeft(Math.ceil(ms / 86400000));
+    const deadlineMs = Date.parse(WAVE25_START_ISO);
+    if (Number.isFinite(deadlineMs)) {
+      setDaysLeft(Math.ceil((deadlineMs - Date.now()) / 86400000));
+    }
   }, []);
 
   const handleVat = useCallback((val) => setIsVatRegistered(val), []);
@@ -590,11 +592,12 @@ export default function ZatcaWaveChecker({ theme = "light", showReferenceTable =
             <div className="mt-5 space-y-4">
               {result.status === "not_registered" && (
                 <div className="zc-info rounded-2xl p-4">
-                  <p className="mb-1.5 font-bold">الربط والتكامل يخص المنشآت المسجلة في الضريبة</p>
+                  <p className="mb-1.5 font-bold">تحقق من وضع التسجيل قبل استبعاد منشأتك</p>
                   <p className="text-sm leading-relaxed">
-                    بحسب ما أدخلته، منشأتك غير مسجلة في ضريبة القيمة المضافة، فلا يظهر ما يُلزمها بالربط
-                    حالياً. إن كنت مسجلاً اختيارياً أو سجّلت حديثاً فاختر «نعم» وأدخل إيراداتك. وللتأكد من
-                    وضعك النظامي راجع{" "}
+                    بناءً على إجابتك، لا يمكن لهذه الحاسبة تأكيد موجة الربط لمنشأة غير مسجلة حالياً. لا تعتبر
+                    هذه النتيجة إعفاءً من التسجيل أو الفوترة الإلكترونية؛ فقد يلزم المقيم التسجيل عند تجاوز
+                    التوريدات الخاضعة للضريبة حد 375,000 ريال خلال 12 شهراً أو توقع تجاوزه، كما توجد قواعد
+                    خاصة لغير المقيمين الملزمين بسداد الضريبة. تحقق من وضع منشأتك لدى زاتكا قبل استبعادها من النطاق. راجع{" "}
                     <a href={ZATCA_PORTAL_URL} target="_blank" rel="noopener noreferrer" className="zc-link">
                       بوابة زاتكا
                     </a>
