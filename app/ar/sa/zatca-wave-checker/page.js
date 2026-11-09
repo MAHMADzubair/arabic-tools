@@ -17,7 +17,8 @@ import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 import {
-  ZATCA_FATOORA_URL,
+  ZATCA_WAVE25_ANNOUNCEMENT_URL,
+  ZATCA_VAT_REGISTRATION_GUIDE_URL,
   ZATCA_PORTAL_URL,
   WAVE_DATA_LAST_VERIFIED,
   WAVES,
@@ -26,13 +27,14 @@ import {
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
   title:
-    "حاسبة موجات زاتكا (المجموعات) | هل منشأتك مشمولة بالمرحلة الثانية للفوترة الإلكترونية؟",
+    "حاسبة موجة زاتكا 25 | فحص المجموعات 23–25 للفوترة الإلكترونية",
   description:
-    "اكتشف في أي موجة من الفوترة الإلكترونية أنت مع زاتكا. أدخل إيراداتك لسنوات 2022–2025 واعرف حكمك في المجموعات 23–25 وتاريخ بدء الربط مع منصة فاتورة من 1 فبراير 2027.",
+    "اعرف في أي موجة من الفوترة الإلكترونية أنت: أدخل الإيرادات الخاضعة للضريبة للأعوام 2022–2025، وافحص المجموعات 23–25 وموعد الربط المعلن للموجة 25 في 1 فبراير 2027.",
   keywords: [
     "في أي موجة أنا زاتكا",
     "حاسبة موجات زاتكا",
     "حاسبة المجموعة 25 زاتكا",
+    "حاسبة موجة زاتكا 25",
     "الموجة 25 الفوترة الإلكترونية",
     "هل منشأتي مشمولة بالمرحلة الثانية",
     "كيف أعرف الموجة الخاصة بي زاتكا",
@@ -49,9 +51,9 @@ export const metadata = {
   },
   openGraph: {
     title:
-      "حاسبة موجات زاتكا (المجموعات) | هل منشأتك مشمولة بالمرحلة الثانية؟",
+      "حاسبة موجة زاتكا 25 | هل منشأتك مشمولة؟ | Qemlo",
     description:
-      "أداة مجانية لتحديد موجة الفوترة الإلكترونية الخاصة بمنشأتك — أدخل إيراداتك 2022–2025 واعرف المجموعة 23 أو 24 أو 25 وموعد الربط مع منصة فاتورة.",
+      "أداة مجانية لفحص المجموعات 23–25 وفق الإيرادات الخاضعة للضريبة للأعوام 2022–2025، مع توضيح موعد الربط المعلن للموجة 25.",
     url: `${SITE_URL}/ar/sa/zatca-wave-checker`,
     type: "website",
     locale: "ar_SA",
@@ -114,7 +116,7 @@ const faqJsonLd = {
       name: "منشأتي غير مسجلة في ضريبة القيمة المضافة — هل تشملني الموجة 25؟",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "لا، المرحلة الثانية من الفوترة الإلكترونية (الربط والتكامل) تنطبق على المنشآت المسجلة في ضريبة القيمة المضافة فقط. إذا كانت إيراداتك تتجاوز 375,000 ريال، يلزمك التسجيل الإلزامي. وإذا تجاوزت 187,500 ريال، يحق لك التسجيل الاختياري.",
+        text: "عدم التسجيل وحده لا يكفي للحكم بأن المنشأة خارج نطاق الالتزام. هذه الحاسبة تحدد الموجة بعد التحقق من وضع التسجيل؛ فالمقيم الذي تجاوزت توريداته الخاضعة للضريبة 375,000 ريال خلال فترة 12 شهراً يلزمه التسجيل الإلزامي. ويكون التسجيل الاختياري متاحاً عند تجاوز التوريدات الخاضعة للضريبة أو النفقات الخاضعة للضريبة 187,500 ريال خلال 12 شهراً. أما غير المقيمين الملزمون بسداد ضريبة القيمة المضافة في المملكة فتسري عليهم قواعد تسجيل خاصة دون حد مالي. تحقق من وضع منشأتك مباشرة لدى زاتكا قبل اعتبارها خارج النطاق.",
       },
     },
     {
@@ -130,7 +132,7 @@ const faqJsonLd = {
       name: "ما موعد بدء الربط الإلزامي مع منصة فاتورة للموجة 25؟",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "حددت هيئة الزكاة والضريبة والجمارك أن الربط والتكامل مع منصة فاتورة للمجموعة الخامسة والعشرين (الموجة 25) يبدأ اعتباراً من 1 فبراير 2027. يُنصح بالبدء في التجهيز الفني والتقني مبكراً لضمان الجاهزية والامتثال في الموعد المحدد.",
+        text: "أعلنت هيئة الزكاة والضريبة والجمارك أن الربط والتكامل للمجموعة الخامسة والعشرين (الموجة 25) مع نظام فاتورة يبدأ اعتباراً من 1 فبراير 2027م. استخدم هذا التاريخ للتخطيط، وراجع إشعار الهيئة الرسمي الخاص بمنشأتك؛ فهذه الحاسبة تقديرية ولا تحل محل الإشعار.",
       },
     },
     {
@@ -172,7 +174,7 @@ const faqJsonLd = {
 const webAppJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "حاسبة موجات زاتكا — أداة فحص الموجة والمجموعة للفوترة الإلكترونية",
+  name: "حاسبة موجة زاتكا 25 — أداة فحص المجموعات 23–25 للفوترة الإلكترونية",
   applicationCategory: "BusinessApplication",
   operatingSystem: "All",
   browserRequirements: "Requires JavaScript",
@@ -289,7 +291,7 @@ export default function ZatcaWaveCheckerPage() {
         <GeoAnswerSummary
           whatItDoes="تحدد الموجة (المجموعة) الخاصة بمنشأتك في المرحلة الثانية للفوترة الإلكترونية بناءً على إيراداتها الخاضعة لضريبة القيمة المضافة في الأعوام 2022–2025"
           appliesTo="المملكة العربية السعودية — المنشآت المسجلة في ضريبة القيمة المضافة"
-          keyRule="الموجة 25 (المجموعة الخامسة والعشرون): إيرادات تتجاوز 187,500 ريال في أي من 2022–2025 — يبدأ الربط اعتباراً من 1 فبراير 2027"
+          keyRule="الموجة 25 (المجموعة الخامسة والعشرون): إيرادات خاضعة للضريبة تتجاوز 187,500 ريال في أي من 2022–2025 — موعد الربط المعلن يبدأ من 1 فبراير 2027"
           authority="هيئة الزكاة والضريبة والجمارك (ZATCA)"
           authorityUrl={ZATCA_PORTAL_URL}
           lastReviewed={WAVE_DATA_LAST_VERIFIED}
@@ -405,7 +407,7 @@ export default function ZatcaWaveCheckerPage() {
             <H2 id="fatoora-mandate">🔗 موعد الربط مع منصة فاتورة وما الفرق بين البداية والموعد النهائي؟</H2>
             <div className="space-y-3 text-sm leading-relaxed text-ink-secondary dark:text-[#BFB8B0]">
               <p>
-                آخر موعد للموجة 25 هو <strong className="text-ink dark:text-[#F5F5F2]">1 فبراير 2027</strong>. يعني ذلك أن منشأتك يجب أن تُكمل الربط الكامل مع منصة فاتورة وتبدأ إصدار الفواتير الإلكترونية الموافقة للمرحلة الثانية بحلول هذا التاريخ.
+                موعد الربط المعلن للموجة 25 هو <strong className="text-ink dark:text-[#F5F5F2]">1 فبراير 2027</strong>. أعلنت الهيئة أن الربط والتكامل يبدأ اعتباراً من هذا التاريخ؛ جهّز نظام الفوترة واتبع إشعار الهيئة الرسمي الخاص بمنشأتك.
               </p>
               <div className="rounded-xl border border-blue-300 bg-blue-50 p-4 dark:bg-blue-950/20 dark:border-blue-800">
                 <p className="text-xs font-bold text-blue-800 dark:text-blue-200 mb-2">لماذا البدء المبكر مهم؟</p>
@@ -445,23 +447,23 @@ export default function ZatcaWaveCheckerPage() {
               </div>
             </div>
 
-            {/* Source & last verified */}
-            <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-xs text-ink-muted flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 dark:bg-white/[0.03] dark:border-white/10">
+            {/* Official sources & last verified */}
+            <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-xs text-ink-muted flex flex-col gap-3 dark:bg-white/[0.03] dark:border-white/10">
               <div className="flex items-center gap-2">
                 <span className="text-base" aria-hidden="true">🏛️</span>
                 <p>
-                  <strong className="text-ink dark:text-[#F5F5F2]">المصدر الرسمي:</strong>{" "}
-                  هيئة الزكاة والضريبة والجمارك (ZATCA) — صفحة موجات الفوترة الإلكترونية
+                  <strong className="text-ink dark:text-[#F5F5F2]">المصادر الرسمية:</strong>{" "}
+                  إعلان زاتكا للموجة 25، ودليل الهيئة للمجموعات الضريبية (الإصدار الثالث، مايو 2026) الذي يتضمن أقسام التسجيل في ضريبة القيمة المضافة.
                 </p>
               </div>
-              <a
-                href={ZATCA_FATOORA_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand font-bold underline hover:text-brand-dark shrink-0 dark:text-[#FF8A3D]"
-              >
-                بوابة فاتورة ←
-              </a>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                <a href={ZATCA_WAVE25_ANNOUNCEMENT_URL} target="_blank" rel="noopener noreferrer" className="text-brand font-bold underline hover:text-brand-dark dark:text-[#FF8A3D]">
+                  إعلان زاتكا للموجة 25 ←
+                </a>
+                <a href={ZATCA_VAT_REGISTRATION_GUIDE_URL} target="_blank" rel="noopener noreferrer" className="text-brand font-bold underline hover:text-brand-dark dark:text-[#FF8A3D]">
+                  دليل المجموعات الضريبية وحدود التسجيل في VAT (English; العربية هي المرجع) ←
+                </a>
+              </div>
             </div>
             <div className="text-[11px] text-ink-muted border-t border-slate-200 dark:border-white/10 pt-3 flex items-center justify-between">
               <span>📅 آخر مراجعة وتحقق من البيانات: {WAVE_DATA_LAST_VERIFIED}</span>
@@ -509,7 +511,7 @@ export default function ZatcaWaveCheckerPage() {
                 href: "/ar/sa/vat-registration-checker",
                 icon: "📋",
                 title: "حاسبة أهلية التسجيل في ضريبة القيمة المضافة",
-                desc: "هل تجاوزت حد الـ 375,000 ريال؟ تحقق من إلزامية التسجيل في ضريبة القيمة المضافة أو حقك في التسجيل الاختياري.",
+                desc: "تحقق من حد التسجيل الإلزامي أو الاختياري بناءً على التوريدات أو النفقات الخاضعة للضريبة خلال 12 شهراً.",
                 badge: "ZATCA",
                 badgeColor: "bg-blue-100 text-blue-700",
               },
