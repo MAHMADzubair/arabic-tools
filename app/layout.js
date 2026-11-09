@@ -110,6 +110,13 @@ const organizationJsonLd = {
     "@type": "ImageObject",
     url: `${BASE_URL}/brand/qemlo-logo.svg`,
   },
+  email: "contact@qemlo.com",
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "contact@qemlo.com",
+    availableLanguage: ["ar", "en"],
+  },
 };
 
 const websiteJsonLd = {
