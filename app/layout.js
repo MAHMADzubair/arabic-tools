@@ -3,6 +3,7 @@ import "./globals.css";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import HomeHeader from "../components/home/HomeHeader";
 import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
+import { getToolCount } from "@/lib/registry";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -854,7 +855,7 @@ function Footer() {
           {/* Stats row */}
           <div className="ft-stats" role="list" aria-label="إحصائيات المنصة">
             <div className="ft-stat" role="listitem">
-              <span className="ft-stat-num">٧٠+</span>
+              <span className="ft-stat-num">{new Intl.NumberFormat("ar-SA").format(getToolCount())}</span>
               <span>أداة مجانية</span>
             </div>
             <div className="ft-stat" role="listitem">
