@@ -5,7 +5,8 @@ import { getCatalogTools } from "../lib/registry.js";
 const content = fs.readFileSync("app/inheritance-calculator/page.js", "utf8");
 test("inheritance search snippet is concise, relevant and caveated", () => {
   assert.match(content, /حاسبة الميراث الشرعية 2026 \| حساب نصيب الورثة وتقسيم التركة/);
-  assert.match(content, /نتائج إرشادية، وراجع المختص/);
+  assert.match(content, /أنصبة إرشادية/);
+  assert.match(content, /راجع المختص في الحالات المعقدة/);
   assert.doesNotMatch(content, /دقة فائقة وفق أحكام القرآن الكريم وإجماع المذاهب الأربعة/);
 });
 test("canonical stays unchanged and inheritance remains in focus catalog", () => {
