@@ -17,7 +17,8 @@ import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 import {
-  ZATCA_FATOORA_URL,
+  ZATCA_WAVE25_ANNOUNCEMENT_URL,
+  ZATCA_VAT_REGISTRATION_GUIDE_URL,
   ZATCA_PORTAL_URL,
   WAVE_DATA_LAST_VERIFIED,
   WAVES,
@@ -446,23 +447,23 @@ export default function ZatcaWaveCheckerPage() {
               </div>
             </div>
 
-            {/* Source & last verified */}
-            <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-xs text-ink-muted flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 dark:bg-white/[0.03] dark:border-white/10">
+            {/* Official sources & last verified */}
+            <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-xs text-ink-muted flex flex-col gap-3 dark:bg-white/[0.03] dark:border-white/10">
               <div className="flex items-center gap-2">
                 <span className="text-base" aria-hidden="true">🏛️</span>
                 <p>
-                  <strong className="text-ink dark:text-[#F5F5F2]">المصدر الرسمي:</strong>{" "}
-                  هيئة الزكاة والضريبة والجمارك (ZATCA) — صفحة موجات الفوترة الإلكترونية
+                  <strong className="text-ink dark:text-[#F5F5F2]">المصادر الرسمية:</strong>{" "}
+                  إعلان زاتكا للموجة 25، ودليل الهيئة للتسجيل في ضريبة القيمة المضافة (الإصدار الثالث، مايو 2026).
                 </p>
               </div>
-              <a
-                href={ZATCA_FATOORA_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand font-bold underline hover:text-brand-dark shrink-0 dark:text-[#FF8A3D]"
-              >
-                بوابة فاتورة ←
-              </a>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                <a href={ZATCA_WAVE25_ANNOUNCEMENT_URL} target="_blank" rel="noopener noreferrer" className="text-brand font-bold underline hover:text-brand-dark dark:text-[#FF8A3D]">
+                  إعلان زاتكا للموجة 25 ←
+                </a>
+                <a href={ZATCA_VAT_REGISTRATION_GUIDE_URL} target="_blank" rel="noopener noreferrer" className="text-brand font-bold underline hover:text-brand-dark dark:text-[#FF8A3D]">
+                  دليل التسجيل في VAT (English; العربية هي المرجع) ←
+                </a>
+              </div>
             </div>
             <div className="text-[11px] text-ink-muted border-t border-slate-200 dark:border-white/10 pt-3 flex items-center justify-between">
               <span>📅 آخر مراجعة وتحقق من البيانات: {WAVE_DATA_LAST_VERIFIED}</span>
