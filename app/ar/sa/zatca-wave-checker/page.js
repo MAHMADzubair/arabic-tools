@@ -453,7 +453,7 @@ export default function ZatcaWaveCheckerPage() {
                 <span className="text-base" aria-hidden="true">🏛️</span>
                 <p>
                   <strong className="text-ink dark:text-[#F5F5F2]">المصادر الرسمية:</strong>{" "}
-                  إعلان زاتكا للموجة 25، ودليل الهيئة للتسجيل في ضريبة القيمة المضافة (الإصدار الثالث، مايو 2026).
+                  إعلان زاتكا للموجة 25، ودليل الهيئة للمجموعات الضريبية (الإصدار الثالث، مايو 2026) الذي يتضمن أقسام التسجيل في ضريبة القيمة المضافة.
                 </p>
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-2">
@@ -461,7 +461,7 @@ export default function ZatcaWaveCheckerPage() {
                   إعلان زاتكا للموجة 25 ←
                 </a>
                 <a href={ZATCA_VAT_REGISTRATION_GUIDE_URL} target="_blank" rel="noopener noreferrer" className="text-brand font-bold underline hover:text-brand-dark dark:text-[#FF8A3D]">
-                  دليل التسجيل في VAT (English; العربية هي المرجع) ←
+                  دليل المجموعات الضريبية وحدود التسجيل في VAT (English; العربية هي المرجع) ←
                 </a>
               </div>
             </div>
