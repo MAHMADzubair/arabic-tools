@@ -11,11 +11,20 @@ const read = (file) => fs.readFileSync(file, "utf8");
 const hero = read("components/home/HomeHero.jsx");
 const header = read("components/home/HomeHeader.jsx");
 const search = read("components/home/HomeSearchDialog.jsx");
+const categoryBrowse = read("components/home/CategoryBrowseShowcase.jsx");
 const home = read("app/page.js");
 
 test("curated catalog still has 15 and full active registry retains 37", () => {
   assert.equal(getCatalogToolCount(), 15);
   assert.equal(getActiveTools().length, 37);
+});
+
+test("homepage category showcase also uses only the curated 15", () => {
+  assert.match(categoryBrowse, /getCatalogToolsByCategory\\(cat\\.id\\)/);
+  assert.match(categoryBrowse, /getCatalogToolCount\\(\\)/);
+  assert.doesNotMatch(categoryBrowse, /getToolsByCategory\\(/);
+  assert.doesNotMatch(categoryBrowse, /getToolCount\\(/);
+  assert.match(categoryBrowse, /القائمة المختارة/);
 });
 
 test("homepage search modal only lists the curated 15", () => {
