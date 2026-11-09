@@ -448,3 +448,7 @@ body:has(#admin-root) a[href="#main"] {
 #admin-root * {
   box-sizing: border-box;
 }
+
+/* Editorial trust pages (Contact, Changelog): fonts load via lib/editorialFonts.js */
+.q-serif{font-family:var(--font-qnaskh),"Noto Naskh Arabic",var(--font-arabic),serif}
+.q-mono{font-family:var(--font-qmono),"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
