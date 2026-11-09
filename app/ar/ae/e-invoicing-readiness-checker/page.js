@@ -6,6 +6,8 @@ import {
   MOF_EINVOICING_URL_EN,
   MOF_EINVOICING_URL_AR,
   MOF_ASP_DIRECTORY_URL,
+  MOF_ASP_ACCREDITATION_FRAMEWORK_URL,
+  FTA_EINVOICING_DEADLINE_NOTICE_URL,
   FTA_PORTAL_URL,
 } from "@/lib/uaeEInvoicingConfig";
 
@@ -14,7 +16,7 @@ import {
 export const metadata = {
   title: "حاسبة جاهزية الفوترة الإلكترونية في الإمارات 2026-2027",
   description:
-    "تحقق من موعد تطبيق الفوترة الإلكترونية على شركتك في الإمارات، واعرف موعد اختيار مزود الخدمة المعتمد ASP ومستوى جاهزية نظامك وفق المتطلبات الرسمية الحالية.",
+    "تحقق من جاهزية الفوترة الإلكترونية في الإمارات: انقضى موعد تعيين ASP للمنشآت بإيرادات 50 مليون درهم فأكثر في 30 أكتوبر 2026، والتطبيق يبدأ 1 يناير 2027؛ وبقية الفئات لها مواعيد 2027.",
   keywords: [
     "الفوترة الإلكترونية في الإمارات",
     "الفاتورة الإلكترونية الإمارات",
@@ -39,7 +41,7 @@ export const metadata = {
   openGraph: {
     title: "حاسبة جاهزية الفوترة الإلكترونية في الإمارات 2026-2027 | Qemlo",
     description:
-      "تحقق من موعد تطبيق الفوترة الإلكترونية على شركتك في الإمارات، وموعد اختيار مزود الخدمة المعتمد ASP، ومستوى الجاهزية التشغيلية للأنظمة والبيانات.",
+      "اعرف موعد ASP والتطبيق الإلزامي لكل فئة: 50 مليون درهم فأكثر يبدأ تطبيقها 1 يناير 2027، وبقية المنشآت 1 يوليو 2027، والجهات الحكومية 1 أكتوبر 2027.",
     url: `${SITE_URL}/ar/ae/e-invoicing-readiness-checker`,
     type: "website",
     locale: "ar_AE",
@@ -77,7 +79,7 @@ const softwareAppJsonLd = {
   url: `${SITE_URL}/ar/ae/e-invoicing-readiness-checker`,
 };
 
-// 10 Comprehensive FAQs — Mirrored in Visible Accordion & Schema
+// 11 Comprehensive FAQs — Mirrored in Visible Accordion & Schema
 const faqs = [
   {
     q: "ما هي الفوترة الإلكترونية في الإمارات؟",
@@ -106,6 +108,10 @@ const faqs = [
   {
     q: "ما هو مزود الخدمة المعتمد ASP وما هو دوره؟",
     a: "مزود الخدمة المعتمد (Accredited Service Provider - ASP) هو كيان تقني مرخص رسمياً من وزارة المالية يعمل كنقطة وصول (Access Point) لربط النظام المحاسبي للمنشأة بشبكة Peppol ونظام الفوترة الوطني. يتولى الـ ASP التحقق من صحة الفاتورة وهيكليتها وتشفيرها ونقلها الآمن بين البائع والمشتري والإبلاغ الضريبي.",
+  },
+  {
+    q: "ما الذي تغيّر في اعتماد مزودي ASP اعتباراً من 1 أكتوبر 2026؟",
+    a: "أعلنت وزارة المالية أن القرار الوزاري رقم 168 لسنة 2026 دخل حيز التنفيذ في 1 أكتوبر 2026، وحل محل القرار 64 لسنة 2025 وتعديلاته. ألغى مرحلة الموافقة المبدئية وانتقل إلى اعتماد مباشر بعد استكمال التقييم والاختبارات. قبل التعاقد، تحقق من إدراج مزود الخدمة في قائمة ASP الرسمية الحالية. ينظم هذا القرار اعتماد المزودين؛ أما موعد تطبيق منشأتك فيُحدد وفق فئتها والجدول الرسمي أدناه.",
   },
   {
     q: "ما هو نظام Peppol وكيف يُستخدم في الإمارات؟",
@@ -238,7 +244,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
             </span>
             <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[11px] font-bold text-[var(--text-2)]">
               <span>🗓️</span>
-              <span>محدّث وفق المتطلبات الرسمية المتاحة — أكتوبر 2026</span>
+              <span>محدّث وفق المتطلبات الرسمية المتاحة — نوفمبر 2026</span>
             </span>
           </div>
 
@@ -642,6 +648,30 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   </span>
                   <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
                     القرارات المحددة للجدول الزمني الإلزامي وتمديد مهلة تعيين ASP للمنشآت الكبرى إلى 30 أكتوبر 2026، وهو موعد انقضى.
+                  </span>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2">
+                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <div>
+                  <a href={MOF_ASP_ACCREDITATION_FRAMEWORK_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4">
+                    القرار الوزاري رقم 168 لسنة 2026 — اعتماد مزودي خدمات الفوترة الإلكترونية (وزارة المالية)
+                  </a>
+                  <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
+                    دخل حيز التنفيذ في 1 أكتوبر 2026، وحل محل القرار 64 لسنة 2025 وتعديلاته، ونقل اعتماد مزودي الخدمة إلى مسار مباشر بعد التقييم والاختبارات.
+                  </span>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2">
+                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <div>
+                  <a href={FTA_EINVOICING_DEADLINE_NOTICE_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4">
+                    تنبيه الهيئة الاتحادية للضرائب بشأن المواعيد القانونية للفوترة الإلكترونية — 25 أكتوبر 2026
+                  </a>
+                  <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
+                    يؤكد موعد تعيين ASP للمنشآت ذات الإيرادات 50 مليون درهم فأكثر في 30 أكتوبر 2026، والتطبيق في 1 يناير 2027، ومواعيد الفئات الأخرى خلال 2027.
                   </span>
                 </div>
               </li>
