@@ -34,6 +34,6 @@ test("contact form prepares an email and does not claim a message was received",
 test("About and Contact pages use the same published support address", () => {
   const about = read("app/about/page.js");
   const contact = read("app/contact/ContactForm.jsx");
-  assert.match(about, /CONTACT_EMAIL = "support@arabic-tools\.com"/);
-  assert.match(contact, /CONTACT_EMAIL = "support@arabic-tools\.com"/);
+  assert.match(about, /CONTACT_EMAIL = "contact@qemlo\.com"/);
+  assert.match(contact, /CONTACT_EMAIL = "contact@qemlo\.com"/);
 });

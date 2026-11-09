@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const CONTACT_EMAIL = "support@arabic-tools.com";
+const CONTACT_EMAIL = "contact@qemlo.com";
 const fieldCls =
   "w-full rounded-xl border-2 border-[var(--text-3)] bg-[var(--surface)] px-4 py-3 text-base text-[var(--text)] placeholder:text-[var(--text-3)] transition-colors focus:border-[var(--text)] focus:outline-none";
 const labelCls = "mb-1.5 block text-sm font-bold text-[var(--text)]";

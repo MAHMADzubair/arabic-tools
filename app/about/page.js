@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 // Keep this aligned with the existing public email destination on the Contact page.
-const CONTACT_EMAIL = "support@arabic-tools.com";
+const CONTACT_EMAIL = "contact@qemlo.com";
 
 // Same Ink & Signal tokens as the homepage. Once they live in layout/globals,
 // delete this constant and the <style> tag below.
