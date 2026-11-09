@@ -29,8 +29,9 @@ export const metadata = {
     locale: "ar_SA",
     images: [DEFAULT_OG_IMAGE],
   },
+  // Noindexed 9 Nov 2026: thin pilot page outside the calculator focus (AdSense low-value review).
   robots: {
-    index: true,
+    index: false,
     follow: true,
   },
 };

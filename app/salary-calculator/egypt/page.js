@@ -6,6 +6,8 @@ export const metadata = {
   description:
     "احسب صافي مرتبك في مصر بدقة بعد خصم ضريبة كسب العمل والشرائح التصاعدية وفق تعديلات القانون رقم 7 لسنة 2024 وتأمينات القانون 148 لسنة 2019.",
   alternates: { canonical: "/salary-calculator/egypt" },
+  // Noindexed 9 Nov 2026: no search impressions and outside the Saudi/UAE focus (AdSense low-value review).
+  robots: { index: false, follow: true },
 };
 
 const guideData = {
