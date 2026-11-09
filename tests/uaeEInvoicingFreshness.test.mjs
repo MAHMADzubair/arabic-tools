@@ -21,6 +21,13 @@ test("UAE e-invoicing sources include the FTA October 2026 deadline reminder", (
   assert.ok(page.includes("1 يناير 2027"));
 });
 
+test("UAE e-invoicing FAQ states the official monthly-delay penalty", () => {
+  assert.ok(page.includes("5,000 درهم"));
+  assert.ok(page.includes("عن كل شهر أو جزء منه"));
+  assert.ok(page.includes("عدم تعيين مزود خدمة معتمد"));
+  assert.ok(config.includes("FTA_EINVOICING_DEADLINE_NOTICE_URL"));
+});
+
 test("UAE e-invoicing content is marked reviewed in November 2026", () => {
   assert.ok(config.includes("Last Regulatory Review: November 2026"));
   assert.ok(page.includes("نوفمبر 2026"));
