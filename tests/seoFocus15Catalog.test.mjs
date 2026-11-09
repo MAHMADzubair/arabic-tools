@@ -24,10 +24,21 @@ test("catalog contains exactly 15 unique, live, registered tools", () => {
 });
 
 test("other tools stay active, available by URL and registered for SEO", () => {
-  assert.equal(TOOLS.length, 36);
-  assert.equal(getActiveTools().length, 36);
-  assert.equal(TOOLS.filter((t) => !CATALOG_TOOL_IDS.includes(t.id)).length, 21);
+  assert.equal(TOOLS.length, 37);
+  assert.equal(getActiveTools().length, 37);
+  assert.equal(TOOLS.filter((t) => !CATALOG_TOOL_IDS.includes(t.id)).length, 22);
   assert.ok(TOOLS.every((tool) => tool.status === "active" && tool.href.startsWith("/")));
+});
+
+test("ZATCA Wave 25 remains live and discoverable through Saudi SEO routes, not the focus-15 search catalog", () => {
+  const waveTool = getActiveTools().find((tool) => tool.id === "zatca-wave-checker");
+  assert.ok(waveTool);
+  assert.equal(CATALOG_TOOL_IDS.includes("zatca-wave-checker"), false);
+  assert.equal(waveTool.href, "/ar/sa/zatca-wave-checker");
+  const sitemap = fs.readFileSync("app/sitemap.js", "utf8");
+  const saudiHub = fs.readFileSync("app/ar/[country]/page.js", "utf8");
+  assert.ok(sitemap.includes("/ar/sa/zatca-wave-checker"));
+  assert.ok(saudiHub.includes("/ar/sa/zatca-wave-checker"));
 });
 
 test("each catalog category only includes focus tools", () => {
