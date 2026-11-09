@@ -8,6 +8,7 @@ import {
   MOF_ASP_DIRECTORY_URL,
   MOF_ASP_ACCREDITATION_FRAMEWORK_URL,
   FTA_EINVOICING_DEADLINE_NOTICE_URL,
+  FTA_EINVOICING_FAQ_URL,
   FTA_PORTAL_URL,
 } from "@/lib/uaeEInvoicingConfig";
 
@@ -106,8 +107,8 @@ const faqs = [
     a: "قطعاً لا. ملفات PDF والمستندات المطبوعة والمسحوبة ضوئياً (Scanned) ورسائل البريد الإلكتروني لا تُعتبر فواتير إلكترونية بموجب النظام الإماراتي المعتمد. يجب أن تكون الفاتورة صادرة بتنسيق بيانات منظمة وقابلة للقراءة الآلية آلياً عبر الحواسيب بصيغة XML المتوافقة مع معيار PINT-AE.",
   },
   {
-    q: "هل الفوترة الإلكترونية إلزامية لمعاملات B2C مع الأفراد؟",
-    a: "معاملات الأعمال مع المستهلكين الأفراد (B2C) تقع حالياً خارج النطاق الإلزامي لمنظومة الفوترة الإلكترونية في المرحلة الحالية حتى يصدر قرار وزاري يحدد موعد وضوابط شمولها. ولا يُعد هذا إعفاءً دائماً بل مرحلياً، وقد تتغير المتطلبات مستقبلاً بقرار من الوزير.",
+    q: "هل يكفي أن تكون مبيعات المنشأة B2C فقط للخروج من نطاق الفوترة الإلكترونية؟",
+    a: "لا. توضح الهيئة الاتحادية للضرائب أن الشخص الذي يتلقى سلعاً أو خدمات من منشآت أخرى يُعد منخرطاً في معاملات تجارية حتى لو كانت جميع مبيعاته موجهة للأفراد (B2C). لذلك قد تظل المنشأة مطالبة بتعيين مزود خدمة معتمد وتطبيق النظام بحسب معاملات الشراء والضوابط السارية. تحقق من نطاق منشأتك عبر المصدر الرسمي قبل اتخاذ قرار امتثال.",
   },
   {
     q: "ما هو مزود الخدمة المعتمد ASP وما هو دوره؟",
@@ -286,9 +287,9 @@ export default function UaeEInvoicingReadinessCheckerPage() {
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3.5 text-center">
               <span className="text-[11px] font-bold text-[var(--text-3)] block mb-0.5">
-                نطاق المستهلكين B2C
+                مبيعات B2C
               </span>
-              <span className="text-sm font-bold text-[var(--text-2)]">مؤجل حالياً</span>
+              <span className="text-sm font-bold text-[var(--text-2)]">لا تحسم النطاق وحدها</span>
             </div>
           </div>
         </header>
@@ -386,18 +387,18 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   </tr>
                   <tr className="hover:bg-[var(--bg)]/50 transition-colors bg-amber-50/30">
                     <td className="p-3.5 sm:p-4 font-bold text-[var(--text)]">
-                      معاملات المستهلكين الأفراد (B2C)
+                      مبيعات المستهلكين الأفراد (B2C)
                     </td>
                     <td className="p-3.5 sm:p-4">نقاط البيع والتجزئة المباشرة للأفراد</td>
                     <td className="p-3.5 sm:p-4 font-bold text-amber-700" colSpan={2}>
-                      خارج النطاق الإلزامي حالياً حتى يصدر قرار وزاري يحدد ذلك
+                      المبيعات نفسها لا تحسم نطاق المنشأة؛ فقد تظل المنشأة ملزمة إذا تلقت سلعاً أو خدمات من منشآت أخرى
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <p className="text-xs text-[var(--text-3)]">
-              * ملاحظة هامة: المنشآت التي تمارس نشاطاً مختلطاً (B2B و B2C) تكون ملزمة بتطبيق النظام على معاملاتها مع الشركات والجهات الحكومية في المواعيد المقررة أعلاه.
+              * ملاحظة هامة: المنشآت التي تمارس نشاطاً مختلطاً (B2B وB2C) تلتزم بمتطلبات المعاملات الداخلة في النطاق مع الشركات والجهات الحكومية. كما أن المنشأة التي تبيع للأفراد فقط قد تظل ضمن النطاق إذا كانت تتلقى سلعاً أو خدمات من منشآت أخرى، وفق توضيح الهيئة الاتحادية للضرائب.
             </p>
           </article>
 
@@ -640,6 +641,18 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   </a>
                   <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
                     الجهة الاتحادية المسؤولة عن إدارة وتحصيل الضرائب وضريبة القيمة المضافة وضريبة الشركات.
+                  </span>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-2">
+                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <div>
+                  <a href={FTA_EINVOICING_FAQ_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4">
+                    الأسئلة الشائعة الرسمية للهيئة الاتحادية للضرائب حول نطاق الفوترة الإلكترونية ومعاملات B2C
+                  </a>
+                  <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
+                    توضح أن المنشأة التي تبيع للأفراد فقط قد تظل مطالبة بتعيين ASP وتطبيق النظام إذا كانت تتلقى سلعاً أو خدمات من منشآت أخرى.
                   </span>
                 </div>
               </li>
