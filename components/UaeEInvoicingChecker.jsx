@@ -248,8 +248,9 @@ const TX_OPTIONS = [
     id: TRANSACTION_TYPE.B2C,
     abbr: "B2C",
     title: "شركة إلى مستهلك",
-    desc: "البيع المباشر للأفراد والمستهلكين النهائيين: نقاط بيع، تجارة تجزئة، متاجر إلكترونية.",
+    desc: "البيع المباشر للأفراد والمستهلكين النهائيين. مبيعات B2C وحدها لا تحسم نطاق المنشأة إذا كانت تتلقى سلعاً أو خدمات من منشآت أخرى.",
     inScope: false,
+    scopeReview: true,
   },
 ];
 
@@ -746,10 +747,13 @@ export default function UaeEInvoicingChecker() {
       window.trackEvent("einvoice_checker_completed", {
         score_band: result.bandLabelAr,
         score_total: result.scores.total,
-        is_in_scope: result.inScope,
+        is_in_scope: result.scopeNeedsReview ? null : result.inScope,
+        scope_needs_review: result.scopeNeedsReview,
       });
 
-      if (!result.inScope) {
+      if (result.scopeNeedsReview) {
+        window.trackEvent("einvoice_result_b2c_scope_review", {});
+      } else if (!result.inScope) {
         window.trackEvent("einvoice_result_b2c_only", {});
       } else if (businessType === BUSINESS_TYPE.PRIVATE && parseFloat(revenue) >= REVENUE_THRESHOLD_LARGE_BUSINESS) {
         window.trackEvent("einvoice_result_large_business", {});
@@ -757,7 +761,7 @@ export default function UaeEInvoicingChecker() {
         window.trackEvent("einvoice_result_small_business", {});
       }
     }
-  }, [result.bandLabelAr, result.scores.total, result.inScope, businessType, revenue]);
+  }, [result.bandLabelAr, result.scores.total, result.inScope, result.scopeNeedsReview, businessType, revenue]);
 
   // ── Navigation helpers (UI only) ───────────────────────────────────────────
   const cardRef = useRef(null);
@@ -1051,12 +1055,14 @@ export default function UaeEInvoicingChecker() {
                                 <span
                                   className={cx(
                                     "rounded-full px-2.5 py-0.5 text-xs font-semibold",
-                                    tx.inScope
-                                      ? "bg-[var(--qm-subtle)] text-[var(--qm-text-2)]"
-                                      : "bg-[var(--qm-warning-tint)] text-[var(--qm-warning)]"
+                                    tx.scopeReview
+                                      ? "bg-[var(--qm-warning-tint)] text-[var(--qm-warning)]"
+                                      : tx.inScope
+                                        ? "bg-[var(--qm-subtle)] text-[var(--qm-text-2)]"
+                                        : "bg-[var(--qm-warning-tint)] text-[var(--qm-warning)]"
                                   )}
                                 >
-                                  {tx.inScope ? "نطاق إلزامي" : "خارج النطاق حالياً"}
+                                  {tx.scopeReview ? "يتطلب التحقق" : tx.inScope ? "نطاق إلزامي" : "خارج النطاق حالياً"}
                                 </span>
                               </span>
                               <span className="mt-0.5 block text-sm leading-6 text-[var(--qm-text-2)]">{tx.desc}</span>
@@ -1070,7 +1076,7 @@ export default function UaeEInvoicingChecker() {
 
                 {transactionTypes.length === 1 && transactionTypes[0] === TRANSACTION_TYPE.B2C && (
                   <Callout title="توضيح تنظيمي لمعاملات B2C">
-                    المعاملات مع المستهلكين الأفراد (<Ltr>B2C</Ltr>) تقع حالياً خارج النطاق الإلزامي لمنظومة الفوترة الإلكترونية في المرحلة الحالية، ولا يُعد هذا إعفاءً دائماً؛ إذ قد تتغير المتطلبات مستقبلاً بقرار من الوزير.
+                    لا يكفي أن تكون جميع المبيعات موجهة للأفراد (<Ltr>B2C</Ltr>) للخروج من النطاق. توضح الهيئة الاتحادية للضرائب أن المنشأة التي تتلقى سلعاً أو خدمات من منشآت أخرى قد تظل ملزمة بتعيين مزود خدمة معتمد وتطبيق النظام. تحقق من معاملات الشراء قبل اعتماد النتيجة.
                   </Callout>
                 )}
 
@@ -1339,7 +1345,7 @@ export default function UaeEInvoicingChecker() {
           <div className="qm-avoid-break rounded-[24px] border border-[var(--qm-border)] bg-[var(--qm-surface)] p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0 max-w-2xl">
-                <p className="text-sm font-semibold text-[var(--qm-text-3)]">الجدول الزمني والنطاق التنظيمي</p>
+                <p className="text-sm font-semibold text-[var(--qm-text-3)]">{result.scopeNeedsReview ? "الجدول الزمني المحتمل — تحقق من النطاق" : "الجدول الزمني والنطاق التنظيمي"}</p>
                 <h3 className="mt-1 text-xl font-bold leading-9 text-[var(--qm-text)] sm:text-2xl">
                   {result.categoryLabelAr}
                 </h3>
@@ -1353,7 +1359,7 @@ export default function UaeEInvoicingChecker() {
                     : "bg-[var(--qm-subtle)] text-[var(--qm-text-2)]"
                 )}
               >
-                {result.inScope ? "خاضع للإلزام التدريجي" : "خارج النطاق الإلزامي حالياً"}
+                {result.scopeNeedsReview ? "يتطلب التحقق من النطاق" : result.inScope ? "خاضع للإلزام التدريجي" : "خارج النطاق الإلزامي حالياً"}
               </span>
             </div>
 
@@ -1412,10 +1418,10 @@ export default function UaeEInvoicingChecker() {
               </div>
             )}
 
-            {!result.inScope && (
+            {result.scopeNeedsReview && (
               <div className="mt-6">
-                <Callout title="معاملات المستهلكين الأفراد (B2C)">
-                  لا توجد مواعيد إلزامية محددة حالياً لمعاملات المستهلكين الأفراد (<Ltr>B2C</Ltr>). يُنصح بمتابعة القرارات التنظيمية القادمة لوزارة المالية التي ستحدد آليات ونطاق شمول هذه المعاملات مستقبلاً.
+                <Callout title="تحقق من نطاق معاملات B2C">
+                  لا تعتبر مبيعات الأفراد وحدها إعفاءً تلقائياً. إذا كانت المنشأة تتلقى سلعاً أو خدمات من منشآت أخرى، فقد تظل ضمن نطاق الفوترة الإلكترونية وفق توضيح الهيئة الاتحادية للضرائب. راجع معاملات الشراء والمصدر الرسمي قبل اعتماد النتيجة.
                 </Callout>
               </div>
             )}
