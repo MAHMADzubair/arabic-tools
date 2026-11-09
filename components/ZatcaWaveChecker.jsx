@@ -241,7 +241,7 @@ function RevenueField({ year, value, error, onChange, onBlur }) {
   return (
     <div className="min-w-0 space-y-1.5">
       <label htmlFor={id} className="zc-text block text-sm font-bold">
-        إيرادات {year}م
+        إيرادات خاضعة للضريبة {year}م
         <span className="zc-muted ms-2 text-xs font-normal">(يناير – ديسمبر)</span>
       </label>
       <div dir="ltr" className="relative">
@@ -569,8 +569,9 @@ export default function ZatcaWaveChecker({ theme = "light", showReferenceTable =
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
               <p className="zc-muted text-xs leading-relaxed">
-                اترك السنة فارغة إن لم تتوفر بياناتها؛ تُحسب النتيجة على السنوات المُدخلة فقط. يكفي
-                إدخال سنة واحدة.
+                أدخل الإيرادات الخاضعة لضريبة القيمة المضافة كما وردت في إقراراتك، لا صافي الربح أو
+                المبيعات المعفاة. اترك السنة فارغة إن لم تتوفر بياناتها؛ تُحسب النتيجة على السنوات المُدخلة فقط.
+                يكفي إدخال سنة واحدة.
               </p>
               {!anyTyped && (
                 <button
