@@ -19,7 +19,7 @@ function nextStepLinks(source, headingId) {
 
 test("all context links are unique members of the selected 15 and do not self-link", () => {
   assert.equal(getCatalogTools().length, 15);
-  assert.equal(getActiveTools().length, 36);
+  assert.equal(getActiveTools().length, 37);
   for (const [source,id,currentPath] of [
     [salary,"salary-focus-links","/salary-calculator"],
     [overtime,"overtime-focus-links","/overtime-calculator"],
