@@ -1,6 +1,6 @@
 /**
  * SEO Focus 15 — homepage discoverability regression checks.
- * These assertions protect curated navigation only; other 21 live URLs remain accessible.
+ * These assertions protect curated navigation only; other 22 live URLs remain accessible.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -13,9 +13,9 @@ const header = read("components/home/HomeHeader.jsx");
 const search = read("components/home/HomeSearchDialog.jsx");
 const home = read("app/page.js");
 
-test("curated catalog still has 15 and full active registry retains 36", () => {
+test("curated catalog still has 15 and full active registry retains 37", () => {
   assert.equal(getCatalogToolCount(), 15);
-  assert.equal(getActiveTools().length, 36);
+  assert.equal(getActiveTools().length, 37);
 });
 
 test("homepage search modal only lists the curated 15", () => {
