@@ -24,11 +24,8 @@ export default function sitemap() {
     "/gratuity-calculator/uae",
     "/overtime-calculator/uae",
     "/vat-calculator/uae",
-    // Kuwait, Qatar & Egypt
-    "/gratuity-calculator/kuwait",
-    "/gratuity-calculator/qatar",
+    // Egypt (Kuwait/Qatar gratuity and Egypt salary noindexed 9 Nov 2026)
     "/gratuity-calculator/egypt",
-    "/salary-calculator/egypt",
   ];
 
   // Saudi /ar/sa/ deep-linked tool pages
@@ -57,7 +54,6 @@ export default function sitemap() {
 
   // Business tool pages
   const businessPages = [
-    "/ar/business/ai-sales-closer",
   ];
 
   const homePage = {
