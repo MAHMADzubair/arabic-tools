@@ -36,9 +36,10 @@ test("Saudi FAQ distinguishes full settlement from the gratuity component", () =
 
 test("SEO canonicals, software application URLs and calculators stay intact", () => {
   assert.match(uae, /canonical: "\/ar\/ae\/notice-period-calculator"/);
-  assert.match(saudi, /canonical: "\/ar\/sa\/final-settlement-calculator"/);
+  assert.match(saudi, /const PATH = "\/ar\/sa\/final-settlement-calculator"/);
+  assert.match(saudi, /alternates: \{ canonical: PATH \}/);
   assert.match(uae, /url: \`\$\{SITE_URL\}\/ar\/ae\/notice-period-calculator\`/);
-  assert.match(saudi, /url: \`\$\{SITE_URL\}\/ar\/sa\/final-settlement-calculator\`/);
+  assert.ok(saudi.includes('url: `${SITE_URL}${PATH}`'));
   assert.match(uae, /<UaeNoticePeriodCalculator \/>/);
   assert.match(saudi, /<FinalSettlementCalculator \/>/);
   assert.match(uae, /href="\/ar\/ae\/final-settlement-calculator"/);
