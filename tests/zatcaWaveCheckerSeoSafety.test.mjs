@@ -34,6 +34,8 @@ test("VAT thresholds use taxable supplies/expenses and a 12-month period", () =>
   assert.ok(page.includes("375,000 ريال خلال أي فترة 12 شهراً"));
   assert.ok(page.includes("187,500 ريال خلال 12 شهراً"));
   assert.ok(page.includes("غير المقيمين الملزمون بسداد ضريبة القيمة المضافة"));
+  assert.equal(page.includes("متوقعاً أن تتجاوزها"), false);
+  assert.equal(component.includes("توقع تجاوزه"), false);
 });
 test("ZATCA page metadata targets Wave 25 Arabic search intent", () => {
   assert.ok(page.includes("حاسبة موجة زاتكا 25"));
