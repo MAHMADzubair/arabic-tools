@@ -19,7 +19,8 @@ test("changelog entries are complete, newest first, and point to real tool route
     ids.add(e.id);
     assert.equal(Boolean(e.before), Boolean(e.after), `${e.id} must have both before and after, or neither`);
     if (i > 0) assert.ok(CHANGELOG[i - 1].date >= e.date, `${e.id} is out of order`);
-    assert.ok(existsSync(new URL(`../app${e.href}/page.js`, import.meta.url)), `${e.id} links to missing route ${e.href}`);
+    const file = /^\/ar\/(sa|ae)$/.test(e.href) ? "../app/ar/[country]/page.js" : `../app${e.href}/page.js`;
+    assert.ok(existsSync(new URL(file, import.meta.url)), `${e.id} links to missing route ${e.href}`);
   }
 });
 
