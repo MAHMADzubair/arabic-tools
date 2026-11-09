@@ -14,6 +14,12 @@ function nextStepLinks(source, headingId) {
   assert.ok(start > 0, "Missing contextual focus navigation " + headingId);
   const end = source.indexOf("</nav>", start);
   assert.ok(end > start, "Missing close of focus navigation");
+  if (headingId === "salary-focus-links") {
+    const linksStart = source.indexOf("const focusLinks = [");
+    const linksEnd = source.indexOf("\n];", linksStart);
+    assert.ok(linksStart >= 0 && linksEnd > linksStart, "Missing salary focus-links data");
+    return [...source.slice(linksStart, linksEnd).matchAll(/href:\s*"(\/[^"]+)"/g)].map(m => m[1]);
+  }
   return [...source.slice(start, end).matchAll(/<Link href="(\/[^"]+)"/g)].map(m => m[1]);
 }
 
