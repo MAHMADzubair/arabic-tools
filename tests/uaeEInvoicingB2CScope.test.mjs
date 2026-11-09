@@ -20,7 +20,7 @@ test("B2C-only sales are flagged for scope review, not declared exempt", () => {
   assert.equal(result.inScope, true);
   assert.equal(result.scopeNeedsReview, true);
   assert.equal(result.timeline.id, "phase2_small");
-  assert.match(result.scopeNoteAr, /تتلقى سلعاً أو خدمات من منشآت أخرى/);
+  assert.match(result.scopeNoteAr, /يتلقى سلعاً أو خدمات من منشآت أخرى/);
 });
 
 test("B2C-only businesses above AED 50m receive a potential phase-one timeline with a scope warning", () => {
