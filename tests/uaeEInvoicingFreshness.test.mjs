@@ -27,6 +27,12 @@ test("UAE e-invoicing content is marked reviewed in November 2026", () => {
   assert.ok(component.includes("آخر مراجعة (نوفمبر 2026)"));
 });
 
+test("related SBR tool card reflects the official 2029 extension", () => {
+  assert.ok(page.includes('badge: "SBR 2029"'));
+  assert.ok(page.includes("tax periods ending up to 31 December 2029"));
+  assert.equal(page.includes('badge: "SBR 2026"'), false);
+});
+
 test("registry no longer labels the UAE e-invoicing checker as newly launched in 2026", () => {
   assert.ok(registry.includes('badge: "إلزام 2026–2027"'));
   assert.equal(registry.includes('badge: "جديد 2026"'), false);
