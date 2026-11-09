@@ -10,8 +10,8 @@ test("release: root layout uses proven public shell without request-header pathn
   const layout = source("app/layout.js");
   assert.ok(!layout.includes("x-nextjs-pathname"));
   assert.ok(!layout.includes("require('next/headers')"));
-  assert.ok(layout.includes("<Header />"));
-  assert.ok(layout.includes("<Footer />"));
+  assert.ok(layout.includes("<HomeHeader />"));
+  assert.ok(layout.includes("<PublicFooterGate><Footer /></PublicFooterGate>"));
   assert.ok(layout.includes('lang="ar" dir="rtl"'));
 });
 
