@@ -363,10 +363,9 @@ export default function VatCalculator({
                   value={amountInput}
                   onChange={(e) => setAmountInput(e.target.value)}
                   placeholder="مثال: 1000"
-                  className={`${fieldBase} h-14 px-4 pe-20 text-xl tabular-nums`}
+                  className={`${fieldBase} h-14 ps-4 pe-20 text-xl tabular-nums`}
                 />
                 <span
-                  dir="ltr"
                   className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 rounded-full bg-black/[0.06] px-3 py-1 text-xs font-bold text-[#55554F] dark:bg-white/10 dark:text-[#E9E6E0]"
                 >
                   {currency}
@@ -399,7 +398,7 @@ export default function VatCalculator({
                     value={customRateInput}
                     onChange={(e) => handleCustomRateChange(e.target.value)}
                     placeholder="أدخل النسبة المئوية (مثال: 15)"
-                    className={`${fieldBase} h-12 px-4 pe-12 text-base tabular-nums`}
+                    className={`${fieldBase} h-12 ps-4 pe-12 text-base tabular-nums`}
                   />
                   <span className="pointer-events-none absolute end-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[#55554F] dark:text-[#BFB8B0]">
                     %

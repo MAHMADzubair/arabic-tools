@@ -1,5 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // `dark:` follows the site theme toggle (data-theme) and falls back to the OS setting.
+  darkMode: [
+    "variant",
+    [
+      '@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) & }',
+      ':root[data-theme="dark"] &',
+    ],
+  ],
   content: [
     "./app/**/*.{js,jsx}",
     "./components/**/*.{js,jsx}",
