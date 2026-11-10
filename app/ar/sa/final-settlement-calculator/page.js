@@ -140,7 +140,7 @@ const CHAIN = [
 
 const RELATED = [
   { href: "/ar/sa/article-77-calculator", title: "حاسبة تعويض المادة 77", desc: "تعويض الفصل التعسفي والإنهاء غير المشروع", badge: "المادة 77" },
-  { href: "/overtime-calculator/saudi", title: "حاسبة الأوفر تايم", desc: "أجر الساعات الإضافية 150٪ وفق المادة 107", badge: "150%" },
+  { href: "/overtime-calculator/saudi", title: "حاسبة الأوفر تايم", desc: "أجر الساعة الفعلي مع البدلات + 50٪ من الأساسي وفق المادة 107", badge: "م/107" },
   { href: "/vat-calculator/saudi", title: "حاسبة ضريبة القيمة المضافة", desc: "ضريبة القيمة المضافة 15٪ في السعودية", badge: "15% VAT" },
   { href: "/ar/sa", title: "أدوات المملكة العربية السعودية", desc: "جميع الحاسبات المالية والعمالية للسعودية في مكان واحد", badge: "" },
 ];

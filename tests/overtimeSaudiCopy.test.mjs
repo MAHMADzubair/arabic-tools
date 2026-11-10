@@ -25,7 +25,15 @@ test("Saudi overtime page no longer presents 150% of basic as the rule", () => {
   assert.doesNotMatch(guide, /السعودية وفق المادة \(107\) من نظام العمل بنسبة 150%/);
 });
 
-test("calculator keeps the Article 107 formula and Saudi rate label", () => {
-  assert.match(component, /actualHourlyWage \+ 0\.5 \* basicHourlyWage/);
+test("calculator uses the shared Article 107 function and Saudi rate label", () => {
+  assert.match(component, /calculateOvertime\(/);
+  assert.match(component, /from "@\/lib\/overtimeCalc"/);
   assert.match(component, /أجر فعلي \+ 50% أساسي/);
+});
+
+test("Saudi related-tool labels elsewhere do not claim a flat 150%", () => {
+  const leave = readFileSync(new URL("../app/ar/sa/annual-leave-calculator/page.js", import.meta.url), "utf8");
+  const settlement = readFileSync(new URL("../app/ar/sa/final-settlement-calculator/page.js", import.meta.url), "utf8");
+  assert.doesNotMatch(leave, /الأوفر تايم بنسبة 150%/);
+  assert.doesNotMatch(settlement, /الإضافية 150٪ وفق المادة 107/);
 });
