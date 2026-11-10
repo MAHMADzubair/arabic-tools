@@ -9,25 +9,29 @@
 
 import { useState, useMemo, useId, useRef } from "react";
 
-// Official approximate cash value recommendations by fatwa authorities per person
+// Indicative cash value per person. Only UAE is an official figure we verified (UAE Fatwa Council, 1447H/2026).
+// Saudi Arabia: the Permanent Committee requires food, not cash; the SAR value is a rice-price estimate for agency (tawkeel).
+// Other countries: earlier-year figures; the user can override the amount.
 const countryCashRates = [
-  { code: "KSA", country: "السعودية", flag: "🇸🇦", value: 25, currency: "SAR", note: "متوسط قيمة صاع الأرز الجيد (20 - 30 ر.س)" },
-  { code: "UAE", country: "الإمارات", flag: "🇦🇪", value: 25, currency: "AED", note: "المعتمد رسمياً لدى الهيئة العامة للشؤون الإسلامية" },
-  { code: "EGY", country: "مصر", flag: "🇪🇬", value: 35, currency: "EGP", note: "الحد الأدنى المعلن من دار الإفتاء المصرية" },
-  { code: "QAR", country: "قطر", flag: "🇶🇦", value: 20, currency: "QAR", note: "إدارة صندوق الزكاة القطرية" },
-  { code: "KWD", country: "الكويت", flag: "🇰🇼", value: 2.5, currency: "KWD", note: "بيت الزكاة الكويتي (ديناران ونصف)" },
-  { code: "JOR", country: "الأردن", flag: "🇯🇴", value: 2.0, currency: "JOD", note: "دائرة الإفتاء العام الأردنية" },
-  { code: "OMN", country: "عمان", flag: "🇴🇲", value: 2.5, currency: "OMR", note: "وزارة الأوقاف والشؤون الدينية" },
-  { code: "GLOBAL", country: "أوروبا / أمريكا", flag: "🌍", value: 12, currency: "USD", note: "المجالس الإسلامية في المهجر (10 - 15 دولار)" },
+  { code: "KSA", country: "السعودية", flag: "🇸🇦", value: 25, currency: "SAR", note: "تقدير لثمن صاع الأرز (20 - 30 ر.س) عند توكيل جهة تشتريه عنك. اللجنة الدائمة للإفتاء تنص على إخراجها طعاماً لا نقداً." },
+  { code: "UAE", country: "الإمارات", flag: "🇦🇪", value: 25, currency: "AED", note: "تقدير مجلس الإمارات للإفتاء الشرعي لعام 1447هـ / 2026. قيمة 2027 لم تُعلن بعد." },
+  { code: "EGY", country: "مصر", flag: "🇪🇬", value: 35, currency: "EGP", note: "قيمة استرشادية من عام سابق (الحد الأدنى المعلن من دار الإفتاء المصرية). تحقق من إعلان هذا العام وعدّل المبلغ." },
+  { code: "QAR", country: "قطر", flag: "🇶🇦", value: 20, currency: "QAR", note: "قيمة استرشادية من عام سابق (إدارة صندوق الزكاة القطرية). تحقق من إعلان هذا العام وعدّل المبلغ." },
+  { code: "KWD", country: "الكويت", flag: "🇰🇼", value: 2.5, currency: "KWD", note: "قيمة استرشادية من عام سابق (بيت الزكاة الكويتي (ديناران ونصف)). تحقق من إعلان هذا العام وعدّل المبلغ." },
+  { code: "JOR", country: "الأردن", flag: "🇯🇴", value: 2.0, currency: "JOD", note: "قيمة استرشادية من عام سابق (دائرة الإفتاء العام الأردنية). تحقق من إعلان هذا العام وعدّل المبلغ." },
+  { code: "OMN", country: "عمان", flag: "🇴🇲", value: 2.5, currency: "OMR", note: "قيمة استرشادية من عام سابق (وزارة الأوقاف والشؤون الدينية). تحقق من إعلان هذا العام وعدّل المبلغ." },
+  { code: "GLOBAL", country: "أوروبا / أمريكا", flag: "🌍", value: 12, currency: "USD", note: "قيمة استرشادية من عام سابق (المجالس الإسلامية في المهجر (10 - 15 دولار)). تحقق من إعلان هذا العام وعدّل المبلغ." },
 ];
 
-// Average weight of 1 Prophetic Sa'a (صاع نبوي) by staple food type
+// Weight of one sa' per person: Saudi Permanent Committee estimate (~3 kg of any staple).
+const SA_SA_KG = 3;
+const SA_NOTE = "بتقدير اللجنة الدائمة للإفتاء في السعودية: الصاع نحو 3 كغ من الأرز أو غيره من قوت البلد.";
 const stapleFoodTypes = [
-  { id: "rice", name: "أرز (قوت أهل الخليج الأغلب)", saWeightKg: 2.7, note: "الصاع يعادل 2.5 إلى 3 كجم من الأرز حسب الحبة" },
-  { id: "wheat", name: "قمح / دقيق (بر)", saWeightKg: 2.4, note: "الصاع يعادل 2.25 إلى 2.5 كجم من الحنطة" },
-  { id: "dates", name: "تمر", saWeightKg: 2.2, note: "الصاع يعادل 2.0 إلى 2.4 كجم من التمر الجاف" },
-  { id: "raisins", name: "زبيب", saWeightKg: 2.1, note: "الصاع يعادل 2.0 إلى 2.3 كجم من الزبيب" },
-  { id: "barley", name: "شعير", saWeightKg: 2.2, note: "الصاع يعادل 2.0 إلى 2.2 كجم" },
+  { id: "rice", name: "أرز (قوت أهل الخليج الأغلب)", saWeightKg: SA_SA_KG, note: `${SA_NOTE} وفي الإمارات حدّد مجلس الإفتاء الشرعي 2.5 كغ من الأرز عن الفرد.` },
+  { id: "wheat", name: "قمح / دقيق (بر)", saWeightKg: SA_SA_KG, note: SA_NOTE },
+  { id: "dates", name: "تمر", saWeightKg: SA_SA_KG, note: SA_NOTE },
+  { id: "raisins", name: "زبيب", saWeightKg: SA_SA_KG, note: SA_NOTE },
+  { id: "barley", name: "شعير", saWeightKg: SA_SA_KG, note: SA_NOTE },
 ];
 
 function formatNumber(n, decimals = 1) {

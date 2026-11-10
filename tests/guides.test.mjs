@@ -32,3 +32,14 @@ test("zakat al-fitr 2027 guide: sourced figures, honest 2027 status, schema", ()
     assert.ok(existsSync(new URL(`../app${href}/page.js`, import.meta.url)), href);
   }
 });
+
+test("zakat al-fitr calculator matches the guide's sourced figures", () => {
+  const calc = read("components/ZakatFitrCalculator.jsx");
+  assert.match(calc, /SA_SA_KG = 3;/);
+  assert.doesNotMatch(calc, /saWeightKg: 2\./);
+  assert.match(calc, /مجلس الإمارات للإفتاء الشرعي/);
+  assert.doesNotMatch(calc, /الهيئة العامة للشؤون الإسلامية/);
+  const page = read("app/zakat-al-fitr/page.js");
+  assert.doesNotMatch(page, /13\.5/);
+  assert.match(page, /guides\/zakat-al-fitr-2027/);
+});
