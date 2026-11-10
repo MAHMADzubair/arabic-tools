@@ -7,184 +7,9 @@
  * Theme: uses global tokens (--bg, --surface, --border, --text, --text-2, --text-3,
  * --orange, --orange-hover, --on-orange) and falls back to prefers-color-scheme.
  */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { calculateGOSI } from "@/lib/gosiEngine";
-
-/* ─── Country Tax Configs ────────────────────────────────────────────────── */
-const COUNTRIES = [
-  {
-    id: "sa", code: "SA", name: "السعودية", currency: "SAR", symbol: "ر.س",
-    taxName: "ضريبة الدخل", socialName: "التأمينات الاجتماعية (GOSI)",
-    hasTax: false, socialRate: 0.0975, socialCap: 45000,
-    allowances: { housing: 0.25, transport: 800, food: 500 },
-    note: "لا توجد ضريبة دخل على الرواتب في السعودية",
-  },
-  {
-    id: "ae", code: "AE", name: "الإمارات", currency: "AED", symbol: "د.إ",
-    taxName: "ضريبة الدخل", socialName: "الضمان الاجتماعي",
-    hasTax: false, socialRate: 0, socialCap: 0,
-    allowances: { housing: 0.25, transport: 600, food: 400 },
-    note: "لا توجد ضريبة دخل على الرواتب في الإمارات",
-  },
-  {
-    id: "eg", code: "EG", name: "مصر", currency: "EGP", symbol: "ج.م",
-    taxName: "ضريبة الدخل", socialName: "التأمين الاجتماعي (NOSI)",
-    hasTax: true,
-    // Law 148/2019 (NOSI): 11% employee, capped at EGP 16,700/month (2026)
-    socialRate: 0.11, socialCap: 16700,
-    allowances: { housing: 0.20, transport: 500, food: 300 },
-    // Personal exemption EGP 20,000/yr (Law 91/2005 Art.13, as amended)
-    personalExemptionAnnual: 20000,
-    // Source: Egyptian Tax Authority / PwC Egypt 2026; Law 91/2005 as amended by Law 7/2024
-    annualBrackets: [
-      { limit: 40000, rate: 0 },
-      { limit: 55000, rate: 0.10 },
-      { limit: 70000, rate: 0.15 },
-      { limit: 200000, rate: 0.20 },
-      { limit: 400000, rate: 0.225 },
-      { limit: 1200000, rate: 0.25 },
-      { limit: Infinity, rate: 0.275 },
-    ],
-    note: "شرائح ضريبية مصر 2026 — قانون 91/2005 معدلاً بقانون 7/2024. الإعفاء الشخصي 20,000 جنيه سنوياً.",
-  },
-  {
-    id: "pk", code: "PK", name: "باكستان", currency: "PKR", symbol: "₨",
-    taxName: "ضريبة الدخل", socialName: "EOBI",
-    hasTax: true, socialRate: 0, socialFixed: 370, socialCap: 0,
-    allowances: { housing: 0.45, transport: 0.10, food: 0 },
-    brackets: [
-      { limit: 50000, rate: 0 },
-      { limit: 100000, rate: 0.05 },
-      { limit: 183333, rate: 0.125 },
-      { limit: 266667, rate: 0.225 },
-      { limit: 341667, rate: 0.275 },
-      { limit: Infinity, rate: 0.35 },
-    ],
-    note: "شرائح ضريبية 2024-25 (سنوي / 12)",
-  },
-  {
-    // UK — England, Wales & NI. Scotland has different bands (not covered).
-    // Source: HMRC rates and thresholds 2026-27 (6 Apr 2026 – 5 Apr 2027)
-    id: "gb", code: "GB", name: "المملكة المتحدة", currency: "GBP", symbol: "£",
-    taxName: "ضريبة الدخل (إنجلترا/ويلز/أيرلندا الشمالية)", socialName: "التأمين الوطني (NI Class 1)",
-    hasTax: true,
-    allowances: { housing: 0, transport: 0, food: 0 },
-    personalAllowanceAnnual: 12570,
-    paFullTaperAt: 125140,
-    paTaperStart: 100000,
-    annualBrackets: [
-      { limit: 37700, rate: 0.20 },
-      { limit: 112570, rate: 0.40 },
-      { limit: Infinity, rate: 0.45 },
-    ],
-    niPrimaryThresholdAnnual: 12570,
-    niUpperEarningsLimitAnnual: 50270,
-    niRateMain: 0.08,
-    niRateAboveUEL: 0.02,
-    note: "إنجلترا/ويلز/أيرلندا الشمالية فقط — اسكتلندا لها شرائح مختلفة. ضريبة الدخل + NI 2026-27 (HMRC).",
-  },
-  {
-    // US — Federal only, single filer. State/local taxes not included.
-    id: "us", code: "US", name: "الولايات المتحدة", currency: "USD", symbol: "$",
-    taxName: "ضريبة الدخل الفيدرالية (Single Filer)", socialName: "الضمان الاجتماعي + Medicare (فيدرالي)",
-    hasTax: true,
-    allowances: { housing: 0, transport: 0, food: 0 },
-    standardDeductionAnnual: 16100,
-    annualBrackets: [
-      { limit: 12400, rate: 0.10 },
-      { limit: 50400, rate: 0.12 },
-      { limit: 105700, rate: 0.22 },
-      { limit: 201775, rate: 0.24 },
-      { limit: 256225, rate: 0.32 },
-      { limit: 640600, rate: 0.35 },
-      { limit: Infinity, rate: 0.37 },
-    ],
-    ssRate: 0.062,
-    ssWageBaseAnnual: 184500,
-    medicareRate: 0.0145,
-    additionalMedicareRate: 0.009,
-    additionalMedicareThresholdAnnual: 200000,
-    note: "فيدرالي فقط — ضريبة الدخل الفيدرالية (Single Filer 2026) + SS 6.2% (حد $184,500) + Medicare 1.45%. لا تشمل ضرائب الولايات.",
-  },
-];
-
-/* ─── Tax Calculation Helpers (unchanged logic) ─────────────────────────── */
-function applyAnnualBrackets(taxableAnnual, brackets) {
-  if (!brackets || taxableAnnual <= 0) return 0;
-  let tax = 0;
-  let prev = 0;
-  for (const bracket of brackets) {
-    if (taxableAnnual <= prev) break;
-    const inBracket = Math.min(taxableAnnual, bracket.limit) - prev;
-    tax += inBracket * bracket.rate;
-    prev = bracket.limit;
-    if (bracket.limit === Infinity) break;
-  }
-  return Math.max(0, tax);
-}
-
-function calcTaxPK(monthlyGross, country) {
-  if (!country.hasTax || !country.brackets) return 0;
-  let tax = 0;
-  let prev = 0;
-  for (const bracket of country.brackets) {
-    if (monthlyGross <= prev) break;
-    const inBracket = Math.min(monthlyGross, bracket.limit) - prev;
-    tax += inBracket * bracket.rate;
-    prev = bracket.limit;
-    if (bracket.limit === Infinity) break;
-  }
-  return Math.max(0, tax);
-}
-
-function calcUKIncomeTax(annualGross, country) {
-  let pa = country.personalAllowanceAnnual;
-  if (annualGross > country.paTaperStart) {
-    const excess = annualGross - country.paTaperStart;
-    pa = Math.max(0, pa - Math.floor(excess / 2));
-  }
-  const taxable = Math.max(0, annualGross - pa);
-  return applyAnnualBrackets(taxable, country.annualBrackets);
-}
-
-function calcUKNI(annualGross, country) {
-  const pt = country.niPrimaryThresholdAnnual;
-  const uel = country.niUpperEarningsLimitAnnual;
-  let ni = 0;
-  if (annualGross > pt) ni += (Math.min(annualGross, uel) - pt) * country.niRateMain;
-  if (annualGross > uel) ni += (annualGross - uel) * country.niRateAboveUEL;
-  return Math.max(0, ni);
-}
-
-function calcUSPayroll(annualGross, country) {
-  const ssBase = Math.min(annualGross, country.ssWageBaseAnnual);
-  const ss = ssBase * country.ssRate;
-  const medicare = annualGross * country.medicareRate;
-  const additionalMedicare =
-    annualGross > country.additionalMedicareThresholdAnnual
-      ? (annualGross - country.additionalMedicareThresholdAnnual) * country.additionalMedicareRate
-      : 0;
-  const taxable = Math.max(0, annualGross - country.standardDeductionAnnual);
-  const federalTax = applyAnnualBrackets(taxable, country.annualBrackets);
-  return {
-    federalTax,
-    ss,
-    medicare: medicare + additionalMedicare,
-    total: federalTax + ss + medicare + additionalMedicare,
-  };
-}
-
-function calcEGIncomeTax(annualGross, annualSocialInsurance, country) {
-  const taxable = Math.max(0, annualGross - annualSocialInsurance - country.personalExemptionAnnual);
-  return applyAnnualBrackets(taxable, country.annualBrackets);
-}
-
-function calcSocial(monthlyGross, country) {
-  if (country.socialFixed) return country.socialFixed;
-  if (!country.socialRate) return 0;
-  const base = country.socialCap ? Math.min(monthlyGross, country.socialCap) : monthlyGross;
-  return base * country.socialRate;
-}
+import { COUNTRIES, calcUKIncomeTax, calcUKNI, calcUSPayroll, calcEGIncomeTax, calcPKIncomeTax, calcSocial } from "@/lib/salaryTax";
 
 const nn = (v) => Math.max(0, Number(v) || 0);
 
@@ -317,6 +142,25 @@ export default function SalaryCalculator({
 
   const country = COUNTRIES.find((c) => c.id === countryId);
 
+  // Mobile result bar: visible only while the result card is still below the screen.
+  const resultRef = useRef(null);
+  const [barOn, setBarOn] = useState(true);
+  useEffect(() => {
+    const el = resultRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return undefined;
+    const io = new IntersectionObserver(([entry]) => {
+      setBarOn(!entry.isIntersecting && entry.boundingClientRect.top > 0);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const scrollToResult = () => {
+    const el = resultRef.current;
+    if (!el) return;
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  };
+
   const handleCountryChange = (id) => {
     const c = COUNTRIES.find((x) => x.id === id);
     if (!c) return;
@@ -367,7 +211,8 @@ export default function SalaryCalculator({
       });
       incomeTax = 0;
     } else if (country.id === "gb") {
-      const annualGross = gross * 12;
+      // Cash allowances are taxable pay, so tax runs on the total, not the basic alone.
+      const annualGross = totalGross * 12;
       incomeTax = calcUKIncomeTax(annualGross, country) / 12;
       const monthlyNI = calcUKNI(annualGross, country) / 12;
       gosi = {
@@ -378,7 +223,7 @@ export default function SalaryCalculator({
         breakdown: monthlyNI > 0 ? [{ label: country.socialName, value: monthlyNI }] : [],
       };
     } else if (country.id === "us") {
-      const annualGross = gross * 12;
+      const annualGross = totalGross * 12;
       const usPayroll = calcUSPayroll(annualGross, country);
       incomeTax = usPayroll.federalTax / 12;
       const monthlySocial = (usPayroll.ss + usPayroll.medicare) / 12;
@@ -394,8 +239,9 @@ export default function SalaryCalculator({
         breakdown: socialBreakdown,
       };
     } else if (country.id === "eg") {
-      const monthlySI = calcSocial(gross, country);
-      incomeTax = calcEGIncomeTax(gross * 12, monthlySI * 12, country) / 12;
+      // Egypt: insurable wage and taxable salary both include cash allowances.
+      const monthlySI = calcSocial(totalGross, country);
+      incomeTax = calcEGIncomeTax(totalGross * 12, monthlySI * 12, country) / 12;
       gosi = {
         employeeTotal: monthlySI,
         employerTotal: 0,
@@ -404,8 +250,9 @@ export default function SalaryCalculator({
         breakdown: monthlySI > 0 ? [{ label: country.socialName, value: monthlySI }] : [],
       };
     } else {
-      incomeTax = calcTaxPK(gross, country);
-      const socialInsurance = calcSocial(gross, country);
+      // Pakistan (and any other country): annual slabs on total taxable salary.
+      incomeTax = country.annualBrackets ? calcPKIncomeTax(totalGross * 12, country) / 12 : 0;
+      const socialInsurance = calcSocial(totalGross, country);
       gosi = {
         employeeTotal: socialInsurance,
         employerTotal: 0,
@@ -682,7 +529,7 @@ export default function SalaryCalculator({
         </div>
 
         {/* ─── Results ─── */}
-        <div className="sc-col sc-sticky">
+        <div className="sc-col sc-sticky" ref={resultRef}>
           <section className="sc-result" aria-live="polite" aria-labelledby="sc-res-title">
             <h2 id="sc-res-title" className="sc-result-label">
               صافي الراتب ({period === "monthly" ? "شهرياً" : "سنوياً"})
@@ -841,6 +688,16 @@ export default function SalaryCalculator({
           الأرقام تقديرية للأغراض التخطيطية والاسترشادية فقط. تختلف الخصومات الفعلية بحسب تاريخ التسجيل بالتأمينات والتصنيف النظامي للمنشأة والبدلات المسجلة في عقد العمل الموثق.
         </span>
       </p>
+      {/* Mobile result bar */}
+      {result && (
+        <div className={`sc-mbar${barOn ? "" : " sc-mbar-off"}`} role="region" aria-label="ملخص الراتب الصافي">
+          <div className="sc-mbar-text">
+            <span className="sc-mbar-l">صافي الراتب ({period === "monthly" ? "شهرياً" : "سنوياً"})</span>
+            <span className="sc-mbar-v"><Num>{fmt(result.netPay)}</Num></span>
+          </div>
+          <button type="button" className="sc-mbar-btn" onClick={scrollToResult}>التفاصيل ↓</button>
+        </div>
+      )}
     </div>
   );
 }
@@ -858,12 +715,18 @@ function SalaryStyles() {
         --f-soft:rgba(13,13,13,.04); --f-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 12px 32px -18px rgba(13,13,13,.28);
         --f-amber-bg:#FFF4E8; --f-amber-bd:#FFD9B8; --f-amber-tx:#9A3412;
       }
+      /* Dark follows the site toggle (data-theme) first, then the OS setting. */
       @media (prefers-color-scheme:dark){
-        .sc-root{
+        :root:not([data-theme="light"]) .sc-root{
           --f-bg:#0D0D0D; --f-surface:#171717; --f-line:#2A2A27; --f-ink:#F5F5F2; --f-t2:#B4B4AC; --f-t3:#7C7C75;
           --f-soft:rgba(255,255,255,.04); --f-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 16px 36px -20px rgba(0,0,0,.9);
           --f-amber-bg:#2A1A0E; --f-amber-bd:#5A3517; --f-amber-tx:#FDBA74;
         }
+      }
+      :root[data-theme="dark"] .sc-root{
+          --f-bg:#0D0D0D; --f-surface:#171717; --f-line:#2A2A27; --f-ink:#F5F5F2; --f-t2:#B4B4AC; --f-t3:#7C7C75;
+          --f-soft:rgba(255,255,255,.04); --f-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 16px 36px -20px rgba(0,0,0,.9);
+          --f-amber-bg:#2A1A0E; --f-amber-bd:#5A3517; --f-amber-tx:#FDBA74;
       }
       .sc-root{
         --sc-ink:var(--text,var(--f-ink)); --sc-text2:var(--text-2,var(--f-t2)); --sc-text3:var(--text-3,var(--f-t3));
@@ -877,6 +740,19 @@ function SalaryStyles() {
       @media (min-width:640px){ .sc-root{ padding:3rem 1.5rem; } }
 
       .sc-ltr{ direction:ltr; unicode-bidi:isolate; display:inline-block; }
+      /* Mobile result bar */
+      .sc-mbar{ position:fixed; inset-inline:0; bottom:0; z-index:20; display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+        padding:.65rem 1rem calc(.65rem + env(safe-area-inset-bottom,0px)); background:var(--sc-surface); color:var(--sc-ink);
+        border-top:1px solid var(--sc-line); box-shadow:0 -8px 24px -12px rgba(0,0,0,.25); transition:transform .2s ease; }
+      .sc-mbar-off{ transform:translateY(110%); visibility:hidden; }
+      .sc-mbar-text{ display:grid; min-width:0; }
+      .sc-mbar-l{ font-size:.76rem; font-weight:600; color:var(--sc-text2); }
+      .sc-mbar-v{ font-size:1.2rem; font-weight:800; overflow-wrap:anywhere; }
+      .sc-mbar-btn{ flex:none; min-height:48px; padding:.5rem 1.1rem; font:inherit; font-size:.9rem; font-weight:800; color:var(--sc-on);
+        background:var(--sc-gloss); border:0; border-radius:16px; box-shadow:var(--sc-gloss-shadow); cursor:pointer; }
+      .sc-mbar-btn:focus-visible{ outline:3px solid var(--sc-ink); outline-offset:2px; }
+      @media (min-width:1024px){ .sc-mbar{ display:none; } }
+      @media print{ .sc-mbar{ display:none !important; } }
       .sc-sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
       .sc-root :focus-visible{ outline:3px solid var(--sc-orange); outline-offset:2px; }
 
@@ -892,7 +768,7 @@ function SalaryStyles() {
       .sc-grid{ display:grid; grid-template-columns:minmax(0,1fr); gap:1.5rem; }
       @media (min-width:1024px){ .sc-grid{ grid-template-columns:minmax(0,3fr) minmax(0,2fr); gap:2rem; align-items:start; } }
       .sc-col{ display:grid; gap:1.25rem; min-width:0; }
-      @media (min-width:1024px){ .sc-sticky{ position:sticky; top:1rem; } }
+      @media (min-width:1024px){ .sc-sticky{ position:sticky; top:5rem; } }
 
       /* Cards */
       .sc-card{
@@ -1037,7 +913,8 @@ function SalaryStyles() {
         width:1.75rem; height:1.75rem; flex:none; display:inline-flex; align-items:center; justify-content:center;
         border-radius:10px; background:#0D0D0D; color:#FF7A33;
       }
-      @media (prefers-color-scheme:dark){ .sc-mark{ background:#2A2A27; } }
+      @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .sc-mark{ background:#2A2A27; } }
+      :root[data-theme="dark"] .sc-mark{ background:#2A2A27; }
       .sc-employer-block{ background:var(--f-soft); }
       .sc-employer-header{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; flex-wrap:wrap; }
       .sc-employer-badge{
