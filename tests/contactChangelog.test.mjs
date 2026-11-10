@@ -53,3 +53,14 @@ test("contact page publishes honest contact details and schema", () => {
   assert.match(page, /href="\/changelog"/);
   assert.doesNotMatch(page, /\[مدة الرد\]|\[اسم/);
 });
+
+test("about page: schema, real links, no placeholders", () => {
+  const page = read("app/about/page.js");
+  assert.match(page, /"@type": "AboutPage"/);
+  assert.match(page, /CONTACT_EMAIL = "contact@qemlo\.com"/);
+  assert.match(page, /href="\/changelog#sa-overtime-page-copy"/);
+  assert.ok(CHANGELOG.some((e) => e.id === "sa-overtime-page-copy"));
+  assert.doesNotMatch(page, /\[مسودة|\[سطر|صورة المؤسس/);
+  // Receipt example must match Article 107: (12000/240) + 0.5*(9600/240) = 70; 70*16 = 1120
+  assert.equal((12000 / 240 + 0.5 * (9600 / 240)) * 16, 1120);
+});
