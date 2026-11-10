@@ -14,12 +14,20 @@ function nextStepLinks(source, headingId) {
   assert.ok(start > 0, "Missing contextual focus navigation " + headingId);
   const end = source.indexOf("</nav>", start);
   assert.ok(end > start, "Missing close of focus navigation");
-  return [...source.slice(start, end).matchAll(/<Link href="(\/[^"]+)"/g)].map(m => m[1]);
+  const nav = source.slice(start, end);
+  const literal = [...nav.matchAll(/<Link href="(\/[^"]+)"/g)].map(m => m[1]);
+  if (literal.length) return literal;
+  // Data-driven nav (focusLinks.map(...)): read the hrefs from the focusLinks array literal.
+  assert.ok(nav.includes("focusLinks.map"), "Focus nav has neither literal links nor focusLinks.map");
+  const arrStart = source.indexOf("const focusLinks = [");
+  assert.ok(arrStart > -1, "Missing focusLinks array");
+  const arrEnd = source.indexOf("\n];", arrStart);
+  return [...source.slice(arrStart, arrEnd).matchAll(/href: "(\/[^"]+)"/g)].map(m => m[1]);
 }
 
-test("all context links are unique members of the selected 15 and do not self-link", () => {
-  assert.equal(getCatalogTools().length, 15);
-  assert.equal(getActiveTools().length, 36);
+test("all context links are unique members of the selected catalog and do not self-link", () => {
+  assert.equal(getCatalogTools().length, 16);
+  assert.equal(getActiveTools().length, 37);
   for (const [source,id,currentPath] of [
     [salary,"salary-focus-links","/salary-calculator"],
     [overtime,"overtime-focus-links","/overtime-calculator"],
@@ -28,7 +36,7 @@ test("all context links are unique members of the selected 15 and do not self-li
     assert.equal(links.length, 3, "Three meaningful next-step links expected for " + id);
     assert.equal(new Set(links).size, links.length, "Duplicate focus link");
     assert.ok(!links.includes(currentPath), "No self links");
-    for (const href of links) assert.ok(focusLinks.has(href), "Link outside selected 15: " + href);
+    for (const href of links) assert.ok(focusLinks.has(href), "Link outside selected catalog: " + href);
   }
 });
 

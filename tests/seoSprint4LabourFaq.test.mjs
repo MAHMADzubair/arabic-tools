@@ -29,16 +29,18 @@ test("UAE copy does not imply official government approval", () => {
 });
 
 test("Saudi FAQ distinguishes full settlement from the gratuity component", () => {
-  assert.match(saudi, /ما الفرق بين المخالصة النهائية ومكافأة نهاية الخدمة في السعودية/);
+  assert.match(saudi, /ما الفرق بين المخالصة النهائية ومكافأة نهاية الخدمة؟/);
   assert.match(saudi, /مكافأة نهاية الخدمة بند واحد من بنود المخالصة النهائية/);
-  assert.match(saudi, /\{faqJsonLd\.mainEntity\.map\(\(faq\) => \(/);
+  assert.match(saudi, /mainEntity: FAQ\.map\(\(\{ q, a \}\) => \(\{/);
+  assert.match(saudi, /\{FAQ\.map\(/);
 });
 
 test("SEO canonicals, software application URLs and calculators stay intact", () => {
   assert.match(uae, /canonical: "\/ar\/ae\/notice-period-calculator"/);
-  assert.match(saudi, /canonical: "\/ar\/sa\/final-settlement-calculator"/);
+  assert.match(saudi, /const PATH = "\/ar\/sa\/final-settlement-calculator"/);
+  assert.match(saudi, /alternates: \{ canonical: PATH \}/);
   assert.match(uae, /url: \`\$\{SITE_URL\}\/ar\/ae\/notice-period-calculator\`/);
-  assert.match(saudi, /url: \`\$\{SITE_URL\}\/ar\/sa\/final-settlement-calculator\`/);
+  assert.match(saudi, /url: `\$\{SITE_URL\}\$\{PATH\}`/);
   assert.match(uae, /<UaeNoticePeriodCalculator \/>/);
   assert.match(saudi, /<FinalSettlementCalculator \/>/);
   assert.match(uae, /href="\/ar\/ae\/final-settlement-calculator"/);

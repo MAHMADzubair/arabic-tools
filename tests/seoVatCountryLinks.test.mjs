@@ -8,8 +8,8 @@ const uae = fs.readFileSync("app/vat-calculator/uae/page.js", "utf8");
 
 test("main VAT page links to existing canonical Saudi/UAE VAT calculators", () => {
   assert.match(vat, /import Link from "next\/link"/);
-  assert.match(vat, /href="\/vat-calculator\/saudi"/);
-  assert.match(vat, /href="\/vat-calculator\/uae"/);
+  assert.match(vat, /href: "\/vat-calculator\/saudi"/);
+  assert.match(vat, /href: "\/vat-calculator\/uae"/);
   assert.match(saudi, /canonical: "\/vat-calculator\/saudi"/);
   assert.match(uae, /canonical: "\/vat-calculator\/uae"/);
 });

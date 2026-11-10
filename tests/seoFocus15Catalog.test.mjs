@@ -1,4 +1,7 @@
-/** 2026-10-31: focus top 15 GSC tool pages without deleting live routes. */
+/** Focus catalog: curated GSC-performing tool pages without deleting live routes.
+ *  2026-11: ZATCA Wave 25 checker joined the catalog (15 -> 16); registry now 37 active tools. */
+const CATALOG_SIZE = 16;
+const ACTIVE_SIZE = 37;
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -11,11 +14,11 @@ import {
   getCatalogToolCount,
 } from "../lib/registry.js";
 
-test("catalog contains exactly 15 unique, live, registered tools", () => {
-  assert.equal(getCatalogToolCount(), 15);
-  assert.equal(CATALOG_TOOL_IDS.length, 15);
-  assert.equal(new Set(CATALOG_TOOL_IDS).size, 15);
-  assert.equal(getCatalogTools().length, 15);
+test("catalog contains exactly 16 unique, live, registered tools", () => {
+  assert.equal(getCatalogToolCount(), CATALOG_SIZE);
+  assert.equal(CATALOG_TOOL_IDS.length, CATALOG_SIZE);
+  assert.equal(new Set(CATALOG_TOOL_IDS).size, CATALOG_SIZE);
+  assert.equal(getCatalogTools().length, CATALOG_SIZE);
   assert.ok(getCatalogTools().every((tool) => tool.status === "active"));
   assert.deepEqual(
     new Set(getCatalogTools().map((tool) => tool.id)),
@@ -24,9 +27,9 @@ test("catalog contains exactly 15 unique, live, registered tools", () => {
 });
 
 test("other tools stay active, available by URL and registered for SEO", () => {
-  assert.equal(TOOLS.length, 36);
-  assert.equal(getActiveTools().length, 36);
-  assert.equal(TOOLS.filter((t) => !CATALOG_TOOL_IDS.includes(t.id)).length, 21);
+  assert.equal(TOOLS.length, ACTIVE_SIZE);
+  assert.equal(getActiveTools().length, ACTIVE_SIZE);
+  assert.equal(TOOLS.filter((t) => !CATALOG_TOOL_IDS.includes(t.id)).length, ACTIVE_SIZE - CATALOG_SIZE);
   assert.ok(TOOLS.every((tool) => tool.status === "active" && tool.href.startsWith("/")));
 });
 
