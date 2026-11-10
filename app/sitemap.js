@@ -104,12 +104,18 @@ export default function sitemap() {
   // Static / legal / trust pages — lowest crawl priority
   // Note: /disclaimer added 2026-10 (was missing despite having a real page)
   const staticPages = [
-    "/about", "/contact", "/changelog", "/guides", "/guides/zakat-al-fitr-2027",
-    ...GUIDES.filter((g) => g.slug !== "zakat-al-fitr-2027").map((g) => g.href), "/privacy", "/terms", "/disclaimer",
+    "/about", "/contact", "/changelog", "/privacy", "/terms", "/disclaimer",
   ].map((route) => ({
     url: `${SITE_URL}${route}`,
     changeFrequency: "yearly",
     priority: 0.4,
+  }));
+
+  // Guides — evergreen editorial content, updated when rules change
+  const guidePages = ["/guides", ...GUIDES.map((g) => g.href)].map((route) => ({
+    url: `${SITE_URL}${route}`,
+    changeFrequency: "monthly",
+    priority: 0.7,
   }));
 
   // Priority order: home → country hubs → Saudi tools → UAE tools
@@ -122,6 +128,7 @@ export default function sitemap() {
     ...countryToolRoutes,
     ...businessRoutes,
     ...toolPages,
+    ...guidePages,
     ...staticPages,
   ];
 }
