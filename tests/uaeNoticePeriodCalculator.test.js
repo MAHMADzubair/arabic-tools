@@ -56,8 +56,12 @@ function blockedMessage(container) {
   return container.querySelector('.nc-result [role="status"]')?.textContent ?? "";
 }
 
+// The result header (.nc-result-head) is always rendered; it only carries a result title
+// (.nc-result-t) when a notice estimate was actually issued. While blocked it shows a
+// "waiting for valid data" line instead, so a missing title means "no result".
 function resultBanner(container) {
-  return container.querySelector(".nc-result .nc-banner");
+  const head = container.querySelector(".nc-result .nc-result-head");
+  return head?.querySelector(".nc-result-t") ? head : null;
 }
 
 test("negative days served are blocked instead of being silently treated as zero", () => {

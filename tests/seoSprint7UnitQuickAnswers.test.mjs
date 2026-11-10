@@ -17,9 +17,9 @@ function baseRate(id) {
   return Number(match[1]);
 }
 
-test("unit converter is still one of the 15 selected tools and all routes remain active", () => {
-  assert.equal(getCatalogTools().length, 15);
-  assert.equal(getActiveTools().length, 36);
+test("unit converter is still one of the selected catalog tools and all routes remain active", () => {
+  assert.equal(getCatalogTools().length, 16);
+  assert.equal(getActiveTools().length, 37);
   assert.ok(getCatalogTools().some(t => t.href === "/unit-converter"));
 });
 
@@ -41,7 +41,8 @@ test("displayed static factors match unchanged interactive unit definitions", ()
   assert.ok(Math.abs(baseRate("mi") / baseRate("km") - 1.609344) < 1e-10);
   assert.ok(Math.abs(baseRate("lb") / baseRate("kg") - 0.45359237) < 1e-10);
   assert.ok(Math.abs(baseRate("ha") / baseRate("m2") - 10000) < 1e-10);
-  assert.ok(Math.abs(baseRate("gal") / baseRate("L") - 3.78541) < 1e-10);
+  // 1 US gal = 3.785411784 L exactly; the page displays the rounded 3.78541.
+  assert.ok(Math.abs(baseRate("gal") / baseRate("L") - 3.78541) < 1e-5);
   for (const answer of [
     "1 in = 2.54 cm",
     "1 mi = 1.609344 km",

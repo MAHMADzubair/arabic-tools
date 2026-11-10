@@ -9,13 +9,14 @@ test("homepage no longer promotes unfinished Coming Soon categories", () => {
   assert.doesNotMatch(home, /قريباً في Qemlo|قيد التطوير|Compact Coming Soon Section/);
 });
 
-test("homepage explains the curated 15-tool entry point and the full 36-tool library", () => {
+test("homepage distinguishes the curated entry point from the full tool library", () => {
   const home = read("app/page.js");
   const browse = read("components/home/CategoryBrowseShowcase.jsx");
   const hero = read("components/home/HomeHero.jsx");
   const header = read("components/Header.jsx");
 
-  assert.match(home, /15 أداة عربية مجانية مختارة من مكتبة Qemlo التي تضم 36 أداة/);
+  // Counts are dynamic: curated count comes from the catalog, library count from the full registry.
+  assert.match(home, /const totalTools = getCatalogToolCount\(\)/);
   assert.match(browse, /getToolCount\(\)/);
   assert.match(browse, /تضم المكتبة \{totalTools\.toLocaleString\("ar-EG"\)\} أداة/);
   assert.match(hero, /أداة مختارة/);

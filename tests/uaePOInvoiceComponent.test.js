@@ -26,8 +26,10 @@ import React from "react";
 // needs React in scope). This does NOT affect production code or builds.
 globalThis.React = React;
 
-import UaePurchaseOrderGenerator from "../components/UaePurchaseOrderGenerator.jsx";
-import UaeVatInvoiceGenerator from "../components/UaeVatInvoiceGenerator.jsx";
+// Static imports are hoisted above the line above, and the redesigned components build
+// JSX at module load (icon maps), so they must be imported after React is global.
+const { default: UaePurchaseOrderGenerator } = await import("../components/UaePurchaseOrderGenerator.jsx");
+const { default: UaeVatInvoiceGenerator } = await import("../components/UaeVatInvoiceGenerator.jsx");
 
 // ─── Environment setup ────────────────────────────────────────────────────────
 

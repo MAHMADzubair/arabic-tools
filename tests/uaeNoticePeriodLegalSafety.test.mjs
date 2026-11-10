@@ -15,7 +15,7 @@ test("UAE notice estimates stop for unsupported legal scopes", () => {
   assert.match(calculator, /isExcludedCategory !== "no"/);
   assert.match(calculator, /isProbation === "yes"/);
   assert.match(calculator, /noticeValidation\.msg/);
-  assert.match(calculator, /calculationBlockReason \? \(/);
+  assert.match(calculator, /const blocked = Boolean\(calculationBlockReason\)/);
 });
 
 test("written waiver does not silently turn the allowance into zero", () => {

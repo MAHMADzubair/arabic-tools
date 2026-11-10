@@ -46,12 +46,12 @@ test("Homepage Hero: Exact verified H1 headline and copy structure", () => {
     "utf8"
   );
   assert.ok(
-    homeHeroCode.includes("حاسبات الخليج المجانية"),
-    "HomeHero must contain 'حاسبات الخليج المجانية'"
+    homeHeroCode.includes("حاسبات الرواتب ونهاية الخدمة والضرائب"),
+    "HomeHero must contain 'حاسبات الرواتب ونهاية الخدمة والضرائب'"
   );
   assert.ok(
-    homeHeroCode.includes("في مكان واحد"),
-    "HomeHero must contain 'في مكان واحد'"
+    homeHeroCode.includes("للسعودية والإمارات"),
+    "HomeHero must contain 'للسعودية والإمارات'"
   );
   assert.ok(
     homeHeroCode.includes("id=\"hero-title\""),

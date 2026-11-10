@@ -22,7 +22,10 @@ async function getUrlsFromSitemap() {
 async function main() {
   const urls = await getUrlsFromSitemap();
   // Expected total URLs (including all tools & static pages)
-  assert.equal(urls.length, 70, `Sitemap should contain 70 URLs, found ${urls.length}`);
+  // 67 = app/sitemap.js output (checked locally and live on 2026-11-10). It dropped from the
+  // earlier snapshot because thin Gulf hubs and four thin pages were noindexed and removed
+  // (3 and 9 Nov 2026). Update this number whenever the sitemap changes on purpose.
+  assert.equal(urls.length, 67, `Sitemap should contain 67 URLs, found ${urls.length}`);
 
   const priority = [
     "/ar/ae/quotation-generator",
