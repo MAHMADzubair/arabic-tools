@@ -11,20 +11,9 @@
  * reduced-motion support, and only the summary prints.
  */
 import React, { useState, useMemo, useEffect, useRef } from "react";
+import { toNum, isInvalidNumericInput, addDays, getDaysDiff, noticeCompensation } from "../lib/uaeNoticeCalc";
 
 // ─── Helpers (unchanged) ───────────────────────────────────────────────────────
-function toNum(v) {
-  const n = parseFloat(String(v).replace(/,/g, ""));
-  return isNaN(n) || n < 0 ? 0 : n;
-}
-
-function isInvalidNumericInput(value) {
-  const raw = String(value ?? "").trim().replace(/,/g, "");
-  if (!raw) return false;
-  const n = Number(raw);
-  return !Number.isFinite(n) || n < 0;
-}
-
 function currentLocalDateISO() {
   const now = new Date();
   return [
@@ -53,30 +42,6 @@ function formatDateAr(dateStr) {
     month: "long",
     day: "numeric",
   });
-}
-
-/** Add Gregorian calendar days to a date string without browser-timezone drift. */
-function addDays(dateStr, days) {
-  if (!dateStr) return "";
-  const [year, month, day] = dateStr.split("-").map(Number);
-  if (!year || !month || !day || !Number.isFinite(Number(days))) return "";
-  const d = new Date(Date.UTC(year, month - 1, day + Number(days)));
-  return [
-    d.getUTCFullYear(),
-    String(d.getUTCMonth() + 1).padStart(2, "0"),
-    String(d.getUTCDate()).padStart(2, "0"),
-  ].join("-");
-}
-
-/** Calculate Gregorian calendar day difference independent of browser timezone. */
-function getDaysDiff(startStr, endStr) {
-  if (!startStr || !endStr) return 0;
-  const [sy, sm, sd] = startStr.split("-").map(Number);
-  const [ey, em, ed] = endStr.split("-").map(Number);
-  if (![sy, sm, sd, ey, em, ed].every(Number.isFinite)) return 0;
-  const start = Date.UTC(sy, sm - 1, sd);
-  const end = Date.UTC(ey, em - 1, ed);
-  return Math.round((end - start) / 86400000);
 }
 
 // ─── Icons (inline SVG, no emoji) ──────────────────────────────────────────────
@@ -180,6 +145,8 @@ export default function UaeNoticePeriodCalculator() {
   const [employeeName, setEmployeeName] = useState("");
   const [employerName, setEmployerName] = useState("");
   const resultRef = useRef(null);
+  // Mobile bar is only useful while the result is still below the screen.
+  const [barOn, setBarOn] = useState(true);
   const printBtnRef = useRef(null);
 
   // ── Calculations (unchanged) ─────────────────────────────────────────────────
@@ -238,13 +205,12 @@ export default function UaeNoticePeriodCalculator() {
     return actualLastWorkingDate < noticeStartDate;
   }, [servedInputMode, noticeStartDate, actualLastWorkingDate]);
 
-  const remainingNoticeDays = useMemo(() => {
-    return Math.max(requiredNoticeDays - servedNoticeDays, 0);
-  }, [requiredNoticeDays, servedNoticeDays]);
-
+  // The money math lives in lib/uaeNoticeCalc.js so tests exercise the real code.
   const wage = toNum(lastWage);
-  const dailyWage = wage / 30;
-  const estimatedCompensation = remainingNoticeDays * dailyWage;
+  const { remainingDays: remainingNoticeDays, dailyWage, compensation: estimatedCompensation } = useMemo(
+    () => noticeCompensation({ requiredDays: requiredNoticeDays, servedDays: servedNoticeDays, monthlyWage: wage }),
+    [requiredNoticeDays, servedNoticeDays, wage]
+  );
 
   const calculationBlockReason = useMemo(() => {
     if (isPrivateSector !== "yes") {
@@ -443,6 +409,29 @@ export default function UaeNoticePeriodCalculator() {
   ].filter(Boolean).length;
 
   const blocked = Boolean(calculationBlockReason);
+  const scopeAllConfirmed = gatesPassed === 6;
+
+  // One tap for the common case: the person reads the six conditions and confirms
+  // they all apply. Each answer stays editable below.
+  const confirmAllScope = () => {
+    setIsPrivateSector("yes");
+    setIsExcludedCategory("no");
+    setIsDifcAdgm("no");
+    setIsProbation("no");
+    setIsTerminationDuringLeave("no");
+    setIsNoNoticeStatutoryCase("no");
+  };
+
+  // Hide the mobile bar once the result is on screen or already scrolled past
+  useEffect(() => {
+    const el = resultRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return undefined;
+    const io = new IntersectionObserver(([entry]) => {
+      setBarOn(!entry.isIntersecting && entry.boundingClientRect.top > 0);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const scrollToResult = () => {
     const el = resultRef.current;
@@ -554,6 +543,31 @@ export default function UaeNoticePeriodCalculator() {
                 فحص النطاق وجهة الاختصاص
               </SectionHead>
 
+              {!scopeAllConfirmed && (
+                <div className="nc-quick">
+                  <p className="nc-small-b">هل تنطبق عليك الشروط الستة التالية كلها؟</p>
+                  <ul className="nc-conds">
+                    <li>عقد عمل في القطاع الخاص يخضع لقانون العمل الاتحادي</li>
+                    <li>لست من العمالة المنزلية أو القوات المسلحة أو الشرطة أو الأمن</li>
+                    <li>لا تعمل في DIFC أو ADGM</li>
+                    <li>انتهت فترة التجربة</li>
+                    <li>لم يُقدَّم الإشعار أثناء إجازة العامل</li>
+                    <li>الحالة ليست إنهاءً أو تركاً للعمل دون إنذار (المادتان 44 و45)</li>
+                  </ul>
+                  <button type="button" className="nc-btn nc-btn-dark" onClick={confirmAllScope}>
+                    <Icon name="check" size={18} />
+                    نعم، تنطبق كلها
+                  </button>
+                  <p className="nc-small">إذا كان أحدها لا ينطبق أو لست متأكداً، أجب عن كل سؤال بالأسفل.</p>
+                </div>
+              )}
+              {scopeAllConfirmed && (
+                <p className="nc-ok"><Icon name="check" size={18} />تم تأكيد الشروط الستة. يمكنك مراجعة أي إجابة بالأسفل.</p>
+              )}
+
+              <details className="nc-scope">
+                <summary>{scopeAllConfirmed ? "مراجعة إجابات النطاق" : "الإجابة عن كل سؤال على حدة"}</summary>
+                <div className="nc-scope-body">
               <Seg id="nc-private" label="هل تعمل في القطاع الخاص الخاضع لقانون العمل الإماراتي؟" value={isPrivateSector} onChange={setIsPrivateSector} options={yesNoUnsure(true)} />
               {isPrivateSector !== "yes" && (
                 <Note title="تنبيه:">قد تختلف التشريعات المنظمة للقطاعات الحكومية وشبه الحكومية والمناطق ذات الأنظمة المستقلة عن أحكام المادة (43) من قانون العمل الاتحادي.</Note>
@@ -586,6 +600,8 @@ export default function UaeNoticePeriodCalculator() {
               {isNoNoticeStatutoryCase !== "no" && (
                 <Note>للمادة (44) شروط وإجراءات خاصة بإنهاء صاحب العمل دون إنذار، وللمادة (45) حالات محددة يستطيع فيها العامل مغادرة العمل دون إنذار مع الاحتفاظ بحقوقه. هذه الحاسبة لا تقرر انطباق تلك الحالات.</Note>
               )}
+                </div>
+              </details>
             </section>
 
             {/* 2: Notice details */}
@@ -834,7 +850,7 @@ export default function UaeNoticePeriodCalculator() {
       </div>
 
       {/* Mobile sticky result bar */}
-      <div className="nc-bar">
+      <div className={`nc-bar${barOn ? "" : " nc-bar-off"}`}>
         <div className="nc-bar-info">
           <span className="nc-bar-l">{blocked ? "النتيجة غير جاهزة" : dirTitle}</span>
           <span className="nc-bar-v">{blocked ? "—" : <><span className="nc-ltr">{fmt(estimatedCompensation)}</span> AED</>}</span>
@@ -1009,7 +1025,7 @@ function NoticeStyles() {
       @media (min-width:960px){
         .nc-grid{ grid-template-columns:minmax(0,1fr) 25rem; column-gap:1.25rem; align-items:start; }
         .nc-sticky{
-          position:sticky; top:1rem; max-height:calc(100vh - 2rem); max-height:calc(100dvh - 2rem);
+          position:sticky; top:5rem; max-height:calc(100vh - 6rem); max-height:calc(100dvh - 6rem);
           overflow-y:auto; overscroll-behavior:contain; padding:.25rem; margin:-.25rem;
         }
       }
@@ -1059,6 +1075,9 @@ function NoticeStyles() {
       .nc-btn-orange{ border-color:rgba(0,0,0,.22); }
       .nc-btn-orange:hover{ background:var(--nc-orange); filter:brightness(1.05); }
       .nc-btn-ink{ background:var(--nc-ink); color:var(--nc-on-ink); width:100%; }
+      /* ".nc-root button{color:inherit}" outranks a single class, which made the dark
+         buttons' text the same colour as their background; restate it with more weight. */
+      .nc-root .nc-btn-ink,.nc-root .nc-btn-dark{ color:var(--nc-on-ink); }
       .nc-btn-ink:hover{ background:var(--nc-ink); filter:brightness(1.2); }
       .nc-toggle{ justify-self:start; display:inline-flex; align-items:center; gap:.375rem; min-height:44px; padding:0; background:none; border:0; font-size:.9375rem; font-weight:800; text-decoration:underline; text-underline-offset:4px; cursor:pointer; }
       .nc-chev{ transition:transform .2s; }
@@ -1137,7 +1156,23 @@ function NoticeStyles() {
       .nc-bar-info{ display:grid; min-width:0; }
       .nc-bar-l{ font-size:.8125rem; font-weight:600; color:var(--nc-text2); }
       .nc-bar-v{ font-size:1.25rem; font-weight:800; overflow-wrap:anywhere; }
+      .nc-bar{ transition:transform .2s ease; }
+      .nc-bar-off{ transform:translateY(110%); visibility:hidden; }
       @media (min-width:960px){ .nc-bar{ display:none; } }
+
+      /* One-tap scope confirmation */
+      .nc-quick{ display:grid; gap:.75rem; padding:1rem; background:var(--nc-soft); border:1px solid var(--nc-line); border-radius:var(--nc-r-ctl); }
+      .nc-conds{ list-style:none; display:grid; gap:.4rem; font-size:.875rem; line-height:1.7; }
+      .nc-conds li{ display:flex; gap:.5rem; align-items:flex-start; }
+      .nc-conds li::before{ content:""; flex:none; width:.5rem; height:.5rem; margin-top:.55em; border-radius:3px; background:var(--nc-orange); }
+      .nc-btn-dark{ justify-self:start; background:var(--nc-ink); color:var(--nc-on-ink); border-color:var(--nc-ink); min-height:48px; padding-inline:1.25rem; font-weight:800; }
+      .nc-ok{ display:flex; gap:.5rem; align-items:center; padding:.75rem 1rem; font-size:.875rem; font-weight:700; border:1px solid var(--nc-line); border-inline-start:4px solid var(--nc-orange); border-radius:var(--nc-r-ctl); background:var(--nc-soft); }
+      .nc-scope{ border:1px dashed var(--nc-line); border-radius:var(--nc-r-ctl); }
+      .nc-scope summary{ list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:.75rem; min-height:48px; padding:.75rem 1rem; font-size:.9rem; font-weight:800; border-radius:var(--nc-r-ctl); }
+      .nc-scope summary::-webkit-details-marker{ display:none; }
+      .nc-scope summary::after{ content:"+"; flex:none; font-size:1.2rem; }
+      .nc-scope[open] summary::after{ content:"−"; }
+      .nc-scope-body{ display:grid; gap:.875rem; padding:0 1rem 1rem; }
 
       /* Dialog: bottom sheet on mobile */
       .nc-overlay{ position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.65); display:flex; align-items:flex-end; justify-content:center; padding:0; }

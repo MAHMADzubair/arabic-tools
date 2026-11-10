@@ -5,6 +5,8 @@ import fs from "node:fs";
 const calculator = fs.readFileSync("components/UaeNoticePeriodCalculator.jsx", "utf8");
 const page = fs.readFileSync("app/ar/ae/notice-period-calculator/page.js", "utf8");
 const layout = fs.readFileSync("app/layout.js", "utf8");
+// Date and number helpers moved to lib/uaeNoticeCalc.js (imported by the calculator).
+const calcLib = fs.readFileSync("lib/uaeNoticeCalc.js", "utf8");
 
 test("UAE notice estimates stop for unsupported legal scopes", () => {
   assert.match(calculator, /isPrivateSector !== "yes"/);
@@ -56,8 +58,8 @@ test("the calculator does not prefill assumed salary, notice length, service day
 test("date calculations use timezone-independent Gregorian day math and require the actual notice date", () => {
   assert.match(calculator, /const \[noticeStartDate, setNoticeStartDate\] = useState\("+"\)/);
   assert.match(calculator, /if \(!noticeStartDate\) return/);
-  assert.match(calculator, /Date\.UTC\(year, month - 1, day \+ Number\(days\)\)/);
-  assert.match(calculator, /Date\.UTC\(sy, sm - 1, sd\)/);
+  assert.match(calcLib, /Date\.UTC\(year, month - 1, day \+ Number\(days\)\)/);
+  assert.match(calcLib, /Date\.UTC\(sy, sm - 1, sd\)/);
 });
 
 test("Article 35 leave timing and Articles 44–45 no-notice cases are explicitly gated", () => {
@@ -72,7 +74,7 @@ test("Article 35 leave timing and Articles 44–45 no-notice cases are explicitl
 });
 
 test("negative and malformed user-entered numbers are rejected before calculation", () => {
-  assert.match(calculator, /function isInvalidNumericInput\(value\)/);
+  assert.match(calcLib, /function isInvalidNumericInput\(value\)/);
   assert.match(calculator, /isInvalidNumericInput\(servedDaysInput\)/);
   assert.match(calculator, /isInvalidNumericInput\(lastWage\)/);
   assert.match(calculator, /لا يمكن أن تكون الأيام المنفذة سالبة/);
