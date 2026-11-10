@@ -114,94 +114,30 @@ function saudiGratuityCalc(months, salary, reason) {
   };
 }
 
-// --- Extracted Calculation Functions matching components/FinalSettlementCalculator.jsx ---
-function calcServiceMonthsSettlement(startStr, endStr) {
-  const s = parseLocal(startStr);
-  const e = parseLocal(endStr);
-  if (isNaN(s) || isNaN(e) || e <= s) return 0;
-  const years = e.getFullYear() - s.getFullYear();
-  const months = e.getMonth() - s.getMonth();
-  const days = e.getDate() - s.getDate();
-  let totalMonths = years * 12 + months;
-  if (days >= 0) {
-    totalMonths += days / 30;
-  } else {
-    const dim = new Date(e.getFullYear(), e.getMonth(), 0).getDate();
-    totalMonths -= 1;
-    totalMonths += (dim + days) / dim;
-  }
-  return Math.max(0, totalMonths);
-}
+// --- Final settlement + overtime: these now call the REAL library code -------------------
+// (They used to be hand-copied here, so a bug in the real calculator could never fail a test.)
+// Only the gratuity helpers above are still local copies of components/GratuityCalculator.jsx,
+// because that logic lives inside the component's country config.
+import { calcServiceMonths as calcServiceMonthsSettlement, saudiEosb } from "../lib/finalSettlementCalc.js";
+import { calculateOvertime } from "../lib/overtimeCalc.js";
 
 function saudiFinalSettlementEosb(serviceYears, totalWage, terminationReason) {
   if (serviceYears <= 0 || totalWage <= 0) return { eosb: 0, fullGratuity: 0, esobPercent: 0 };
-
-  const y1 = Math.min(serviceYears, 5);
-  const y2 = Math.max(0, serviceYears - 5);
-  const fullGratuity = totalWage * 0.5 * y1 + totalWage * 1.0 * y2;
-
-  let esobPercent = 1.0;
-  if (["terminate", "retire", "mutual", "fixed_expired"].includes(terminationReason)) {
-    esobPercent = 1.0;
-  } else if (terminationReason === "female_special") {
-    esobPercent = 1.0;
-  } else if (terminationReason === "resign") {
-    if (serviceYears < 2) {
-      esobPercent = 0;
-    } else if (serviceYears <= 5) {
-      esobPercent = 1 / 3;
-    } else if (serviceYears < 10) {
-      esobPercent = 2 / 3;
-    } else {
-      esobPercent = 1.0;
-    }
-  }
-  const eosb = fullGratuity * esobPercent;
-  return { eosb: Math.round(eosb), fullGratuity: Math.round(fullGratuity), esobPercent };
+  const r = saudiEosb(serviceYears, totalWage, terminationReason);
+  return { eosb: Math.round(r.eosb), fullGratuity: Math.round(r.fullGratuity), esobPercent: r.esobPercent };
 }
 
-// --- Extracted Calculation Functions matching components/OvertimeCalculator.jsx ---
+// Country settings mirror the sa / ae entries in components/OvertimeCalculator.jsx.
+const OT_COUNTRIES = {
+  sa: { id: "sa", hoursDivisor: 240, dayMultiplier: 1.5, nightMultiplier: 1.5, weekendMultiplier: 1.5 },
+  ae: { id: "ae", hoursDivisor: 240, dayMultiplier: 1.25, nightMultiplier: 1.5, weekendMultiplier: 1.5 },
+};
+
 function calcOvertime(countryId, salary, allowances, dayHours, nightHours, weekendHours) {
-  const s = Math.max(0, Number(salary) || 0);
-  const allw = Math.max(0, Number(allowances) || 0);
-  const dH = Math.max(0, Number(dayHours) || 0);
-  const nH = Math.max(0, Number(nightHours) || 0);
-  const wH = Math.max(0, Number(weekendHours) || 0);
-
-  const hoursDivisor = 240;
-  let dayRate = 0, nightRate = 0, weekendRate = 0;
-  let actualMonthlyWage = s;
-
-  if (countryId === "sa") {
-    const actual = s + allw;
-    actualMonthlyWage = actual;
-    const basicHourlyWage = s > 0 ? s / hoursDivisor : 0;
-    const actualHourlyWage = actual > 0 ? actual / hoursDivisor : 0;
-
-    // Saudi Art. 107
-    const saudiOtRate = actualHourlyWage + 0.5 * basicHourlyWage;
-    dayRate = saudiOtRate;
-    nightRate = saudiOtRate;
-    weekendRate = saudiOtRate;
-  } else if (countryId === "ae") {
-    const hourlyWage = s > 0 ? s / hoursDivisor : 0;
-    dayRate = hourlyWage * 1.25;
-    nightRate = hourlyWage * 1.50;
-    weekendRate = hourlyWage * 1.50;
-  }
-
-  const dayAmount = dH * dayRate;
-  const nightAmount = nH * nightRate;
-  const weekendAmount = wH * weekendRate;
-  const totalOvertimePay = dayAmount + nightAmount + weekendAmount;
-
-  return {
-    dayRate,
-    nightRate,
-    weekendRate,
-    totalOvertimePay,
-    totalSalaryWithOvertime: actualMonthlyWage + totalOvertimePay,
-  };
+  return calculateOvertime({
+    country: OT_COUNTRIES[countryId],
+    salary, allowances, dayHours, nightHours, weekendHours,
+  });
 }
 
 // =============================================================================

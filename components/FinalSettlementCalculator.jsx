@@ -14,51 +14,11 @@
 
 import React, { useState, useMemo, useEffect, useRef, useId } from "react";
 import { SITE_URL } from "../lib/siteConfig";
+import { calculateFinalSettlement } from "../lib/finalSettlementCalc";
 
-// ─── Helpers (unchanged) ───────────────────────────────────────────────────────
-function toNum(v) {
-  const n = parseFloat(String(v));
-  return isNaN(n) || n < 0 ? 0 : n;
-}
-
+// ─── Helpers ───────────────────────────────────────────────────────────────────
 function fmt(n) {
   return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-/** Local (not UTC) YYYY-MM-DD */
-function todayLocal() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-/** Parse YYYY-MM-DD as a local date so timezone never shifts the day */
-function parseLocal(str) {
-  if (!str) return new Date(NaN);
-  const [y, m, d] = str.split("-").map(Number);
-  return new Date(y, (m || 1) - 1, d || 1);
-}
-
-function calcServiceMonths(startStr, endStr) {
-  const s = parseLocal(startStr);
-  const e = parseLocal(endStr);
-  if (isNaN(s) || isNaN(e) || e <= s) return 0;
-  const years = e.getFullYear() - s.getFullYear();
-  const months = e.getMonth() - s.getMonth();
-  const days = e.getDate() - s.getDate();
-  let totalMonths = years * 12 + months;
-  if (days >= 0) {
-    totalMonths += days / 30;
-  } else {
-    const dim = new Date(e.getFullYear(), e.getMonth(), 0).getDate();
-    totalMonths -= 1;
-    totalMonths += (dim + days) / dim;
-  }
-  return Math.max(0, totalMonths);
-}
-
-function getLastMonthDays(dateStr) {
-  const d = parseLocal(dateStr);
-  return isNaN(d) ? 0 : d.getDate();
 }
 
 function formatDuration(totalMonths) {
@@ -393,94 +353,16 @@ export default function FinalSettlementCalculator() {
     el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   };
 
-  // ─── Calculation (unchanged) ─────────────────────────────────────────────────
+  // ─── Calculation ─────────────────────────────────────────────────────────────
+  // The math lives in lib/finalSettlementCalc.js so tests exercise the real code.
   const calc = useMemo(() => {
-    const basic = toNum(basicSalary);
-    const totalWage = basic + toNum(housingAllowance) + toNum(transportAllowance) + toNum(otherAllowances);
-    const divisor = toNum(monthlyDivisor) || 30;
-    const dailyWage = totalWage / divisor;
-
-    const serviceMonths = calcServiceMonths(joiningDate, lastWorkingDate);
-    const serviceYears = serviceMonths / 12;
-
-    const defaultDaysWorked = Math.min(getLastMonthDays(lastWorkingDate), divisor);
-    const daysWorked = customLastMonthDays !== "" ? toNum(customLastMonthDays) : defaultDaysWorked;
-    const lastMonthPay = dailyWage * daysWorked;
-
-    const y1 = Math.min(serviceYears, 5);
-    const y2 = Math.max(0, serviceYears - 5);
-    const fullGratuity = totalWage * 0.5 * y1 + totalWage * 1.0 * y2;
-
-    let esobPercent = 1.0;
-    let esobNote = "";
-    if (["terminate", "retire", "mutual", "fixed_expired"].includes(terminationReason)) {
-      esobNote = "استحقاق كامل (100٪) وفق المادة (84) — يسري على الإنهاء الاعتيادي؛ الفصل التأديبي بموجب المادة (80) يُسقط المكافأة وخارج نطاق الحاسبة";
-    } else if (terminationReason === "female_special") {
-      esobNote = "استحقاق كامل استثنائي بموجب المادة (87) من نظام العمل";
-    } else if (terminationReason === "resign") {
-      if (serviceYears < 2) {
-        esobPercent = 0;
-        esobNote = "لا يستحق مكافأة — الاستقالة قبل اكتمال سنتين خدمة (م/85)";
-      } else if (serviceYears <= 5) {
-        esobPercent = 1 / 3;
-        esobNote = "ثلث المكافأة (33.3٪) — استقالة بين سنتين ولا تزيد على 5 سنوات (م/85)";
-      } else if (serviceYears < 10) {
-        esobPercent = 2 / 3;
-        esobNote = "ثلثا المكافأة (66.7٪) — استقالة أكثر من 5 سنوات وأقل من 10 سنوات (م/85)";
-      } else {
-        esobNote = "المكافأة كاملة (100٪) — الاستقالة بعد 10 سنوات أو أكثر (م/85)";
-      }
-    }
-    const eosb = fullGratuity * esobPercent;
-
-    const leaveDays = toNum(unusedLeaveDays);
-    const leaveBase = leaveWageBase === "basic" ? basic : totalWage;
-    const leaveDailyRate = leaveBase / divisor;
-    const leavePay = leaveDays * leaveDailyRate;
-
-    let noticePay = 0;
-    let noticeNote = "";
-    let missedDays = 0;
-    if (contractType === "indefinite") {
-      const required = toNum(noticeRequired);
-      const served = Math.min(toNum(noticeServed), required);
-      missedDays = Math.max(0, required - served);
-      noticePay = dailyWage * missedDays;
-      if (required === 0) noticeNote = "لم تُحدد مهلة إشعار";
-      else if (missedDays === 0) noticeNote = "فترة الإشعار خُدمت كاملة — لا تعويض إضافي";
-      else
-        noticeNote =
-          noticeBeneficiary === "employee"
-            ? `${missedDays} يوم إشعار غير مخدوم — تعويض للموظف (+)`
-            : `${missedDays} يوم إشعار غير مخدوم — خصم لصاحب العمل (-)`;
-    } else {
-      noticeNote = "عقد محدد المدة — أحكام مهلة الإشعار (م/75) لا تنطبق";
-    }
-
-    const noticeAddition = contractType === "indefinite" && noticeBeneficiary === "employee" ? noticePay : 0;
-    const noticeDeduction = contractType === "indefinite" && noticeBeneficiary === "employer" ? noticePay : 0;
-
-    const addTotal = toNum(unpaidSalary) + toNum(overtimeAmount) + toNum(bonuses) + toNum(otherAdditions);
-    const dedBase = toNum(loans) + toNum(companyAssets) + toNum(otherDeductions);
-    const totalDeductions = dedBase + noticeDeduction;
-
-    const grossDues = lastMonthPay + eosb + leavePay + noticeAddition + addTotal;
-    const netSettlement = grossDues - totalDeductions;
-
-    return {
-      totalWage, basic, daily: dailyWage, divisor,
-      serviceMonths, serviceYears, serviceDurationLabel: formatDuration(serviceMonths),
-      daysWorked, lastMonthPay,
-      eosb, fullGratuity, esobPercent, esobNote, y1, y2,
-      y1Full: totalWage * 0.5 * y1, y2Full: totalWage * 1.0 * y2,
-      leaveDays, leaveDailyRate, leavePay, leaveBase,
-      noticePay, noticeNote, missedDays, noticeAddition, noticeDeduction,
-      addTotal, dedBase, dedTotal: totalDeductions,
-      unpaidSalary: toNum(unpaidSalary), overtimeAmount: toNum(overtimeAmount),
-      bonuses: toNum(bonuses), otherAdditions: toNum(otherAdditions),
-      loans: toNum(loans), companyAssets: toNum(companyAssets), otherDeductions: toNum(otherDeductions),
-      grossDues, netSettlement,
-    };
+    const result = calculateFinalSettlement({
+      basicSalary, housingAllowance, transportAllowance, otherAllowances, monthlyDivisor,
+      joiningDate, lastWorkingDate, customLastMonthDays, terminationReason, contractType,
+      unusedLeaveDays, leaveWageBase, noticeRequired, noticeServed, noticeBeneficiary,
+      unpaidSalary, overtimeAmount, bonuses, otherAdditions, loans, companyAssets, otherDeductions,
+    });
+    return { ...result, serviceDurationLabel: formatDuration(result.serviceMonths) };
   }, [
     basicSalary, housingAllowance, transportAllowance, otherAllowances, monthlyDivisor,
     joiningDate, lastWorkingDate, customLastMonthDays, terminationReason, contractType,
