@@ -15,6 +15,7 @@ import ZatcaWaveChecker from "@/components/ZatcaWaveChecker";
 import Link from "next/link";
 import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
+import { NEXT_STEPS, NEXT_STEPS_FAQ } from "@/lib/wave25NextSteps";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 import {
   ZATCA_WAVE25_ANNOUNCEMENT_URL,
@@ -167,10 +168,18 @@ const faqJsonLd = {
         text: "تلتزم هيئة الزكاة والضريبة والجمارك بإرسال إشعارات رسمية للمنشآت المستهدفة قبل موعد الربط بـ 6 أشهر على الأقل، عبر البريد الإلكتروني المسجل في بوابة زاتكا. تأكد من تحديث بيانات الاتصال في حسابك على البوابة لاستلام الإشعارات في وقتها.",
       },
     },
+    ...NEXT_STEPS_FAQ.map(({ q, a }) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
   ],
 };
 
 // ─── JSON-LD: WebApplication ───────────────────────────────────────────────────
+const howToJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "ماذا تفعل إن كانت منشأتك مشمولة بالموجة 25 من الفوترة الإلكترونية",
+  step: NEXT_STEPS.map((st, i) => ({ "@type": "HowToStep", position: i + 1, name: st.name, text: st.text })),
+};
+
 const webAppJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -246,6 +255,10 @@ export default function ZatcaWaveCheckerPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <script
         type="application/ld+json"

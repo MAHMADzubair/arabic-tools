@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
+import Wave25NextSteps from "@/components/zatca/Wave25NextSteps";
 import {
   WAVES,
   ZATCA_PORTAL_URL,
@@ -719,6 +720,10 @@ export default function ZatcaWaveChecker({ theme = "light", showReferenceTable =
                     </li>
                   </ol>
                 </div>
+              )}
+
+              {result.status === "eligible" && (
+                <Wave25NextSteps triggerYears={result.earliestWaveTriggerYears || []} />
               )}
 
               {(result.status === "eligible" ||

@@ -34,6 +34,21 @@ export default function PrivacyPage() {
             </p>
           </section>
 
+          <section id="help-requests" className="space-y-3 scroll-mt-24">
+            <h2 className="text-lg font-bold text-ink flex items-center gap-2">
+              <span>📨</span>
+              <span>بيانات طلبات المساعدة (الفوترة الإلكترونية)</span>
+            </h2>
+            <p className="text-sm sm:text-base leading-relaxed text-ink-secondary">
+              الاستثناء الوحيد من المعالجة المحلية هو نموذج «تحتاج من يساعدك في الربط؟» في أداة التحقق من الموجة 25. حين ترسله نحفظ ما كتبته فيه فقط: اسمك، واسم المنشأة، ورقم الجوال، والبريد إن كتبته، ونوع نظام الفوترة، وسنوات الإيرادات التي ظهرت في نتيجتك. لا نحفظ أرقام إيراداتك ولا رقمك الضريبي.
+            </p>
+            <div className="rounded-2xl border border-brand-border/60 bg-brand-surface/30 p-4 text-xs sm:text-sm text-ink-secondary space-y-2">
+              <p>• نستخدم البيانات للتواصل معك بخصوص طلبك فقط، بموافقتك الصريحة.</p>
+              <p>• لا نشارك بياناتك مع أي طرف آخر إلا إذا وافقت على ذلك في خانة منفصلة، وحينها نشاركها مع مزوّد حلول معتمد أو مستشار واحد لغرض طلبك فقط.</p>
+              <p>• لا نبيع بياناتك ولا نستخدمها في رسائل تسويقية. لطلب حذفها راسلنا على contact@qemlo.com.</p>
+            </div>
+          </section>
+
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-ink flex items-center gap-2">
               <span>🍪</span>
