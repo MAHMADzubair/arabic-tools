@@ -21,7 +21,7 @@ test("trust bar data resolves for tools and stays empty elsewhere", () => {
   assert.equal(ei.updated, PAGE_UPDATED["/ar/ae/e-invoicing-readiness-checker"]);
   assert.ok(ei.source);
   assert.equal(ei.change.id, "uae-einvoicing-md197-cd173");
-  assert.equal(getToolTrust("/overtime-calculator/saudi").change, null);
+  assert.equal(getToolTrust("/overtime-calculator/saudi").change.id, "sa-overtime-page-copy");
   assert.equal(getToolTrust("/contact"), null);
   assert.equal(getToolTrust("/"), null);
   assert.equal(getToolTrust("/admin"), null);

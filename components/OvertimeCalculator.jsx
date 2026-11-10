@@ -69,7 +69,7 @@ function Icon({ name, size = 20 }) {
   );
 }
 
-function HoursField({ label, icon, value, onChange, multiplier }) {
+function HoursField({ label, icon, value, onChange, multiplier, rateLabel }) {
   const id = useId();
   return (
     <div className="ot-hour">
@@ -87,7 +87,7 @@ function HoursField({ label, icon, value, onChange, multiplier }) {
         aria-describedby={`${id}-m`}
         className="ot-input ot-center"
       />
-      <p className="ot-mult" id={`${id}-m`}>× <bdi>{Math.round(multiplier * 100)}%</bdi></p>
+      <p className="ot-mult" id={`${id}-m`}>{rateLabel || <>× <bdi>{Math.round(multiplier * 100)}%</bdi></>}</p>
     </div>
   );
 }
@@ -104,6 +104,7 @@ export default function OvertimeCalculator({ initialCountry = "sa" }) {
   const [weekendHours, setWeekendHours] = useState("0");
 
   const country = COUNTRIES.find((c) => c.id === countryId) || COUNTRIES[0];
+  const saRateLabel = country.id === "sa" ? "أجر فعلي + 50% أساسي" : null;
 
   const results = useMemo(() => {
     const s = toNum(salary);
@@ -252,9 +253,9 @@ export default function OvertimeCalculator({ initialCountry = "sa" }) {
         <fieldset className="ot-fieldset ot-hours">
           <legend className="ot-title"><span className="ot-tile"><Icon name="clock" /></span> ساعات العمل الإضافي المنجزة هذا الشهر</legend>
           <div className="ot-three">
-            <HoursField label="ساعات نهارية" icon="sun" value={dayHours} onChange={setDayHours} multiplier={country.dayMultiplier} />
-            <HoursField label="ساعات ليلية" icon="moon" value={nightHours} onChange={setNightHours} multiplier={country.nightMultiplier} />
-            <HoursField label="عطلات وأعياد" icon="calendar" value={weekendHours} onChange={setWeekendHours} multiplier={country.weekendMultiplier} />
+            <HoursField label="ساعات نهارية" icon="sun" value={dayHours} onChange={setDayHours} multiplier={country.dayMultiplier} rateLabel={saRateLabel} />
+            <HoursField label="ساعات ليلية" icon="moon" value={nightHours} onChange={setNightHours} multiplier={country.nightMultiplier} rateLabel={saRateLabel} />
+            <HoursField label="عطلات وأعياد" icon="calendar" value={weekendHours} onChange={setWeekendHours} multiplier={country.weekendMultiplier} rateLabel={saRateLabel} />
           </div>
         </fieldset>
 
