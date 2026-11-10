@@ -33,8 +33,9 @@ const COUNTRIES = [
     standardDays: 30,
     seniorDays: 30,
     seniorThresholdYears: 0,
+    firstYearDays: 24, // 2 days per month after 6 months of service (Art. 29)
     wageBasis: "الراتب الأساسي فقط لبدل الرصيد",
-    lawNote: "قانون العمل الإماراتي (م/29): 30 يوماً تقويمياً عن كل سنة خدمة كاملة",
+    lawNote: "قانون العمل الإماراتي (م/29): 30 يوماً عن كل سنة خدمة كاملة، ويومان عن كل شهر لمن أمضى أكثر من 6 أشهر وأقل من سنة. بدل الرصيد على الراتب الأساسي.",
   },
   {
     id: "kw",
@@ -55,8 +56,9 @@ const COUNTRIES = [
     standardDays: 21,
     seniorDays: 30, // لمن أمضى 10 سنوات أو تجاوز سن الخمسين
     seniorThresholdYears: 10,
+    firstYearDays: 15, // السنة الأولى من الخدمة (القانون 14 لسنة 2025)
     wageBasis: "الأجر الشامل",
-    lawNote: "قانون العمل المصري (م/47): 21 يوماً وتزاد إلى 30 يوماً لمن أمضى 10 سنوات أو بلغ سن الخمسين",
+    lawNote: "قانون العمل المصري رقم 14 لسنة 2025: 15 يوماً في السنة الأولى، و21 يوماً من السنة الثانية، و30 يوماً لمن أمضى 10 سنوات أو تجاوز الخمسين.",
   },
 ];
 
@@ -253,10 +255,12 @@ export default function AnnualLeaveCalculator({ lockedCountry, title, subtitle }
 
   const noWheel = (e) => e.currentTarget.blur();
 
-  const daysLabel = (c) =>
-    c.standardDays === c.seniorDays
-      ? `${c.standardDays} يوماً`
-      : `${c.standardDays}–${c.seniorDays} يوماً`;
+  // Chip label: Egypt shows its first-year 15 days; the UAE first-year figure is a
+  // monthly rule (2 days a month), so the chip keeps the yearly 30.
+  const daysLabel = (c) => {
+    const low = c.id === "eg" ? c.firstYearDays : c.standardDays;
+    return low === c.seniorDays ? `${c.seniorDays} يوماً` : `${low}–${c.seniorDays} يوماً`;
+  };
 
   return (
     <div className="alc">
