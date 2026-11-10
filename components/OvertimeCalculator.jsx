@@ -8,40 +8,9 @@
  * --orange, --on-orange) and the older --c-* tokens, with prefers-color-scheme fallback.
  */
 import { useState, useMemo, useId } from "react";
-import { calculateOvertime } from "@/lib/overtimeCalc";
+import { calculateOvertime, OVERTIME_COUNTRIES as COUNTRIES } from "@/lib/overtimeCalc";
 
-const COUNTRIES = [
-  {
-    id: "sa", code: "SA", name: "السعودية", currency: "SAR",
-    dayMultiplier: 1.5, nightMultiplier: 1.5, weekendMultiplier: 1.5,
-    lawNote: "نظام العمل السعودي (م/107): أجر الساعة + 50% من الأجر الأساسي",
-    hoursDivisor: 240,
-  },
-  {
-    id: "ae", code: "AE", name: "الإمارات", currency: "AED",
-    dayMultiplier: 1.25, nightMultiplier: 1.5, weekendMultiplier: 1.5,
-    lawNote: "قانون العمل الإماراتي (م/19): أجر الساعة + 25% نهاراً، و + 50% ليلاً والعطل",
-    hoursDivisor: 240,
-  },
-  {
-    id: "kw", code: "KW", name: "الكويت", currency: "KWD",
-    dayMultiplier: 1.25, nightMultiplier: 1.5, weekendMultiplier: 1.5,
-    lawNote: "قانون العمل الكويتي (م/34): أجر الساعة + 25% نهاراً و + 50% للعطل والليل",
-    hoursDivisor: 208,
-  },
-  {
-    id: "qa", code: "QA", name: "قطر", currency: "QAR",
-    dayMultiplier: 1.25, nightMultiplier: 1.5, weekendMultiplier: 1.5,
-    lawNote: "قانون العمل القطري (م/74): أجر الساعة + 25% نهاراً و + 50% ليلاً",
-    hoursDivisor: 240,
-  },
-  {
-    id: "eg", code: "EG", name: "مصر", currency: "EGP",
-    dayMultiplier: 1.35, nightMultiplier: 1.7, weekendMultiplier: 2.0,
-    lawNote: "قانون العمل المصري (م/85): أجر الساعة + 35% نهاراً، و + 70% ليلاً",
-    hoursDivisor: 240,
-  },
-];
+
 
 /* ─── Icons ─────────────────────────────────────────────────────────────── */
 const ICONS = {
@@ -251,11 +220,16 @@ const css = `
   --f-bg:#F5F5F2; --f-surface:#FFFFFF; --f-line:#E1E1DA; --f-ink:#0D0D0D; --f-t2:#55554F; --f-t3:#8A8A82;
   --f-soft:rgba(13,13,13,.04); --f-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 12px 32px -18px rgba(13,13,13,.28);
 }
+/* Dark follows the site toggle (data-theme) first, then the OS setting. */
 @media (prefers-color-scheme:dark){
-  .ot{
+  :root:not([data-theme="light"]) .ot{
     --f-bg:#0D0D0D; --f-surface:#171717; --f-line:#2A2A27; --f-ink:#F5F5F2; --f-t2:#B4B4AC; --f-t3:#7C7C75;
     --f-soft:rgba(255,255,255,.05); --f-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 16px 36px -20px rgba(0,0,0,.9);
   }
+}
+:root[data-theme="dark"] .ot{
+    --f-bg:#0D0D0D; --f-surface:#171717; --f-line:#2A2A27; --f-ink:#F5F5F2; --f-t2:#B4B4AC; --f-t3:#7C7C75;
+    --f-soft:rgba(255,255,255,.05); --f-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 16px 36px -20px rgba(0,0,0,.9);
 }
 .ot{
   --i-ink:var(--text,var(--c-ink,var(--f-ink)));
@@ -326,7 +300,8 @@ const css = `
 .ot-hour{display:grid;gap:.5rem;align-content:start}
 .ot-hour-label{display:flex;align-items:center;gap:.5rem;font-size:.875rem;font-weight:700}
 .ot-chip{flex:none;width:1.75rem;height:1.75rem;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:#0D0D0D;color:#FF7A33}
-@media (prefers-color-scheme:dark){.ot-chip{background:#2A2A27}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ot-chip{background:#2A2A27}}
+:root[data-theme="dark"] .ot-chip{background:#2A2A27}
 .ot-mult{text-align:center;font-size:.8125rem;font-weight:800;color:var(--i-orange)}
 
 /* Result */

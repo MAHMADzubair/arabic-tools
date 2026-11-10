@@ -43,3 +43,45 @@ test("bad input is treated as zero, other countries ignore allowances", () => {
   close(ae.dayRate, 46.875);
   close(ae.totalOvertimePay, 8 * 46.875 + 8 * 56.25);
 });
+
+// ── Country rules (lib/overtimeCalc.js OVERTIME_COUNTRIES) ──────────────────
+import { OVERTIME_COUNTRIES } from "../lib/overtimeCalc.js";
+const OT = Object.fromEntries(OVERTIME_COUNTRIES.map((c) => [c.id, c]));
+
+test("UAE Art. 19: basic hourly x1.25 day, x1.5 night (10pm-4am) and rest day", () => {
+  const r = calculateOvertime({ country: OT.ae, salary: 7200, dayHours: 10, nightHours: 2, weekendHours: 8 });
+  assert.equal(r.hourlyWage, 30);
+  assert.equal(r.dayAmount, 375);
+  assert.equal(r.nightAmount, 90);
+  assert.equal(r.weekendAmount, 360);
+});
+
+test("Kuwait Art. 66-67: divisor 208, +25%, rest day +50%, no extra night rate", () => {
+  const r = calculateOvertime({ country: OT.kw, salary: 416, dayHours: 4, nightHours: 4, weekendHours: 8 });
+  assert.equal(r.hourlyWage, 2);
+  assert.equal(r.dayRate, 2.5);
+  assert.equal(r.nightRate, 2.5);
+  assert.equal(r.weekendRate, 3);
+});
+
+test("Qatar Art. 74-75: +25% day, +50% night, rest day basic +150%", () => {
+  const r = calculateOvertime({ country: OT.qa, salary: 4800, dayHours: 1, nightHours: 1, weekendHours: 1 });
+  assert.equal(r.hourlyWage, 20);
+  assert.equal(r.dayRate, 25);
+  assert.equal(r.nightRate, 30);
+  assert.equal(r.weekendRate, 50);
+});
+
+test("Egypt Law 14/2025: +35% day, +70% night, double on rest days; law note cites the new law", () => {
+  const r = calculateOvertime({ country: OT.eg, salary: 9600, dayHours: 1, nightHours: 1, weekendHours: 1 });
+  assert.equal(r.hourlyWage, 40);
+  assert.equal(r.dayRate, 54);
+  assert.equal(r.nightRate, 68);
+  assert.equal(r.weekendRate, 80);
+  assert.match(OT.eg.lawNote, /14 لسنة 2025/);
+});
+
+test("Non-Saudi countries ignore allowances (overtime is on basic wage)", () => {
+  const a = calculateOvertime({ country: OT.ae, salary: 7200, allowances: 3000, dayHours: 10 });
+  assert.equal(a.dayAmount, 375);
+});
