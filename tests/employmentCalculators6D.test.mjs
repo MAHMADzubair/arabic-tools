@@ -127,11 +127,9 @@ function saudiFinalSettlementEosb(serviceYears, totalWage, terminationReason) {
   return { eosb: Math.round(r.eosb), fullGratuity: Math.round(r.fullGratuity), esobPercent: r.esobPercent };
 }
 
-// Country settings mirror the sa / ae entries in components/OvertimeCalculator.jsx.
-const OT_COUNTRIES = {
-  sa: { id: "sa", hoursDivisor: 240, dayMultiplier: 1.5, nightMultiplier: 1.5, weekendMultiplier: 1.5 },
-  ae: { id: "ae", hoursDivisor: 240, dayMultiplier: 1.25, nightMultiplier: 1.5, weekendMultiplier: 1.5 },
-};
+// Country settings come from the real lib (lib/overtimeCalc.js).
+import { OVERTIME_COUNTRIES } from "../lib/overtimeCalc.js";
+const OT_COUNTRIES = Object.fromEntries(OVERTIME_COUNTRIES.map((c) => [c.id, c]));
 
 function calcOvertime(countryId, salary, allowances, dayHours, nightHours, weekendHours) {
   return calculateOvertime({
