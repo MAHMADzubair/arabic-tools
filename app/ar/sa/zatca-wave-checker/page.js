@@ -365,7 +365,7 @@ export default function ZatcaWaveCheckerPage() {
                       السنوات المعتمدة
                     </th>
                     <th className="text-right p-3 font-bold text-ink dark:text-[#F5F5F2] border border-slate-200 dark:border-white/10 text-xs">
-                      آخر موعد للربط
+                      موعد الربط
                     </th>
                   </tr>
                 </thead>
@@ -404,10 +404,10 @@ export default function ZatcaWaveCheckerPage() {
             </p>
 
             {/* H2: موعد الربط مع منصة فاتورة */}
-            <H2 id="fatoora-mandate">🔗 موعد الربط مع منصة فاتورة وما الفرق بين البداية والموعد النهائي؟</H2>
+            <H2 id="fatoora-mandate">🔗 موعد الربط مع منصة فاتورة: متى يبدأ الإلزام؟</H2>
             <div className="space-y-3 text-sm leading-relaxed text-ink-secondary dark:text-[#BFB8B0]">
               <p>
-                موعد الربط المعلن للموجة 25 هو <strong className="text-ink dark:text-[#F5F5F2]">1 فبراير 2027</strong>. أعلنت الهيئة أن الربط والتكامل يبدأ اعتباراً من هذا التاريخ؛ جهّز نظام الفوترة واتبع إشعار الهيئة الرسمي الخاص بمنشأتك.
+                موعد الربط المعلن للموجة 25 هو <strong className="text-ink dark:text-[#F5F5F2]">1 فبراير 2027</strong>. ينص قرار الهيئة (1448-99-238) على الالتزام بالربط «بداية من تاريخ 1/2/2027م»، أي أن كل فاتورة تصدرها من ذلك اليوم يجب أن تمر عبر منصة فاتورة. فالمطلوب أن يكون نظامك مربوطاً ومختبراً قبله، لا أن تبدأ العمل عليه في ذلك اليوم.
               </p>
               <div className="rounded-xl border border-blue-300 bg-blue-50 p-4 dark:bg-blue-950/20 dark:border-blue-800">
                 <p className="text-xs font-bold text-blue-800 dark:text-blue-200 mb-2">لماذا البدء المبكر مهم؟</p>

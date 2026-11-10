@@ -14,8 +14,10 @@ test("Wave 25 countdown date is exported from the canonical wave record", () => 
   assert.match(component, /Date\.parse\(WAVE25_START_ISO\)/);
 });
 
-test("Wave 25 uses neutral wording for the published integration date", () => {
-  assert.ok(config.includes('mandateLabel: "موعد الربط المعلن مع منصة فاتورة"'));
+test("Wave 25 wording follows decision 1448-99-238 (obligation starts 1/2/2027)", () => {
+  assert.ok(config.includes('mandateLabel: "يبدأ الإلزام بالربط مع منصة فاتورة من"'));
+  assert.ok(page.includes("بداية من تاريخ 1/2/2027م"));
+  assert.equal(page.includes("آخر موعد للربط"), false);
   assert.ok(page.includes("موعد الربط المعلن للموجة 25 في 1 فبراير 2027"));
   assert.ok(page.includes("يبدأ اعتباراً من 1 فبراير 2027م"));
   assert.equal(page.includes("آخر موعد للموجة 25"), false);

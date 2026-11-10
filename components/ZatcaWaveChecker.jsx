@@ -519,6 +519,9 @@ export default function ZatcaWaveChecker({ theme = "light", showReferenceTable =
           <legend className="zc-text mb-3 text-sm font-bold">
             الخطوة 1: هل منشأتك مسجلة في ضريبة القيمة المضافة؟
           </legend>
+          <p className="zc-muted mb-3 text-xs leading-relaxed">
+            قرار الموجة 25 يشمل المسجلين قبل تاريخ نفاذه (24 يوليو 2026). إن سجّلت بعده فلا يشملك هذا القرار، وتابع إشعارات الهيئة للموجات اللاحقة.
+          </p>
           <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap">
             {[
               { val: true, label: "نعم، مسجلة" },
