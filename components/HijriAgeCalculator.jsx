@@ -130,7 +130,8 @@ const localStr = (d) =>
 /* ─── Styles (tokens: --c-* with fallbacks) ───────────────────────────────── */
 const CSS = `
 .ha{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#0D0D0D);--er:var(--error,#B42318);color:var(--ink);font-size:15px;line-height:1.6}
-@media (prefers-color-scheme:dark){.ha{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2);--er:var(--error,#FF8A80)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ha{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2);--er:var(--error,#FF8A80)}}
+:root[data-theme="dark"] .ha{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2);--er:var(--error,#FF8A80)}
 .ha *{box-sizing:border-box}
 .ha h1,.ha h2,.ha h3{margin:0;line-height:1.25}
 .ha-col{display:flex;flex-direction:column;gap:20px}

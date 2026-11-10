@@ -2,7 +2,7 @@ import LoanCalculator from "@/components/LoanCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 
 export const metadata = {
-  title: "حاسبة القروض والتمويل الإسلامي 2026 | قسط المرابحة والسداد المبكر",
+  title: "حاسبة القروض والتمويل 2026 | قسط المرابحة والسداد المبكر",
   description:
     "احسب قسط التمويل الشخصي والمرابحة الإسلامية والتمويل التقليدي، وإجمالي الأرباح، مع حاسبة التوفير عند السداد المبكر وفق لوائح البنك المركزي ساما ومصرف الإمارات.",
   alternates: { canonical: "/loan-calculator" },

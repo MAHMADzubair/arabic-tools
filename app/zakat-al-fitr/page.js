@@ -3,7 +3,7 @@ import ZakatFitrCalculator from "@/components/ZakatFitrCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 
 export const metadata = {
-  title: "حاسبة زكاة الفطر المباركة | احسب مقدار الصاع بالكيلو أو نقداً للأسرة",
+  title: "حاسبة زكاة الفطر | مقدار الصاع بالكيلو أو نقداً للأسرة",
   description:
     "احسب زكاة الفطر عنك وعن أسرتك سواء عيناً بالأرز والحبوب (بالصاع والكيلوجرام) أو نقداً بقيم استرشادية، وفق تقدير اللجنة الدائمة للإفتاء (3 كغ) ومجلس الإمارات للإفتاء الشرعي (25 درهماً في 2026).",
   alternates: { canonical: "/zakat-al-fitr" },

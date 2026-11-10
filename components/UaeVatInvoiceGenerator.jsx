@@ -2036,9 +2036,9 @@ export default function UaeVatInvoiceGenerator() {
 
       {/* ── e-Invoicing notice (always visible) ── */}
 
-      <div className="rounded-2xl border border-rose-200 sig-error-soft/60 p-5  no-print">
+      <div className="rounded-2xl border sig-error-soft p-5  no-print">
 
-        <h3 className="mb-2 flex items-center gap-2 text-sm font-bold text-[var(--sig-ink-text)]">
+        <h3 className="mb-2 flex items-center gap-2 text-sm font-bold text-[var(--sig-text)]">
 
           <span>📡</span> هذه الأداة ليست نظام فوترة إلكترونية
 
@@ -2062,7 +2062,7 @@ export default function UaeVatInvoiceGenerator() {
 
           <a href="https\://tax.gov.ae/en/e-invoicing" target="_blank" rel="noopener noreferrer"
 
-            className="inline-flex items-center gap-1 font-bold text-[var(--sig-ink-muted)] hover:text-[var(--sig-ink-muted)] underline">
+            className="inline-flex items-center gap-1 font-bold text-[var(--sig-text)] underline">
 
             اقرأ أكثر عن نظام الفوترة الإلكترونية الإماراتي ←
 

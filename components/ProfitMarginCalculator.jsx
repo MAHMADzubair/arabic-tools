@@ -441,7 +441,7 @@ const css = `
 .pm *{box-sizing:border-box}
 .pm h1,.pm h2,.pm p,.pm dl,.pm dd,.pm ul{margin:0;padding:0}
 .pm ul{list-style:none}
-.pm button,.pm input,.pm select{font:inherit;color:inherit}
+:where(.pm) :where(button,input,select){font:inherit;color:inherit}
 .pm :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
 .pm bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
 

@@ -212,14 +212,14 @@ export default function UaeVatInvoiceGeneratorPage() {
 
         {/* ── Page Hero — H1 ─────────────────────────────────────────────── */}
         <div className="mx-auto max-w-3xl px-4 pt-4 pb-2">
-          <div className="rounded-2xl bg-gradient-to-br from-indigo-700 to-violet-800 px-6 py-7 text-white shadow-lg">
+          <div className="rounded-2xl bg-gradient-to-br from-[#1C1917] to-[#0D0D0D] ring-1 ring-white/10 px-6 py-7 text-white shadow-lg">
             <div className="flex items-start gap-3">
               <span className="text-4xl shrink-0 mt-0.5">🧾</span>
               <div>
                 <h1 className="text-2xl font-bold leading-snug sm:text-3xl">
                   مولد فاتورة ضريبية في الإمارات — VAT 5% جاهزة للطباعة
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed text-indigo-100 max-w-xl">
+                <p className="mt-2 text-sm leading-relaxed text-[#D4D4CE] max-w-xl">
                   أنشئ نموذج فاتورة ضريبية بالدرهم الإماراتي — كاملة أو مبسطة — مع حساب ضريبة القيمة
                   المضافة 5% وفحص مبدئي لاكتمال الحقول وفق اللائحة التنفيذية. اطبعها أو احفظها PDF
                   مجاناً وبدون تسجيل.
@@ -237,7 +237,7 @@ export default function UaeVatInvoiceGeneratorPage() {
         {/* ── GEO Answer Summary ──────────────────────────────────────────── */}
         <div className="mx-auto max-w-3xl px-4 pb-2">
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 text-xs leading-relaxed shadow-sm" dir="rtl">
-            <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-wider mb-2">ملخص الأداة</p>
+            <p className="text-[11px] font-bold text-[var(--accent-text)] uppercase tracking-wider mb-2">ملخص الأداة</p>
             <div className="grid gap-2 sm:grid-cols-2">
               <div className="flex gap-2">
                 <span className="shrink-0 font-bold text-indigo-700 w-36">ماذا تفعل الأداة؟</span>
@@ -769,7 +769,7 @@ export default function UaeVatInvoiceGeneratorPage() {
                     className={`flex-1 rounded-xl border-2 ${step.color} p-2.5 text-center`}>
                     <p className="text-lg mb-0.5">{step.icon}</p>
                     <p className={`font-bold ${step.tc}`}>{step.label}</p>
-                    <p className="text-[10px] font-bold text-indigo-600">أنت هنا</p>
+                    <p className="text-[10px] font-bold text-[var(--accent-text)]">أنت هنا</p>
                   </div>
                 )
               )}
@@ -786,7 +786,7 @@ export default function UaeVatInvoiceGeneratorPage() {
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${tool.badgeColor}`}>{tool.badge}</span>
                     </div>
                     <p className="text-xs text-ink-muted leading-relaxed">{tool.desc}</p>
-                    {tool.cta && <p className="text-xs font-bold text-indigo-600 mt-1">{tool.cta}</p>}
+                    {tool.cta && <p className="text-xs font-bold text-[var(--accent-text)] mt-1">{tool.cta}</p>}
                   </div>
                 </Link>
               ))}

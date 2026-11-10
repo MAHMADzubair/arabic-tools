@@ -976,7 +976,7 @@ function NoticeStyles() {
       }
       .nc-root *,.nc-root *::before,.nc-root *::after{ box-sizing:border-box; }
       .nc-root h1,.nc-root h2,.nc-root h3,.nc-root p,.nc-root dl,.nc-root dd,.nc-root ul,.nc-root ol{ margin:0; padding:0; }
-      .nc-root button,.nc-root input{ font:inherit; color:inherit; }
+      :where(.nc-root) :where(button,input){ font:inherit; color:inherit; }
       .nc-root :focus-visible{ outline:3px solid var(--nc-orange); outline-offset:3px; }
       .nc-main{ display:grid; gap:1rem; min-width:0; }
       .nc-ltr{ direction:ltr; unicode-bidi:isolate; display:inline-block; }

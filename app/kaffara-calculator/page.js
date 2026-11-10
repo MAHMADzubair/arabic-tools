@@ -2,7 +2,7 @@ import KaffaraCalculator from "@/components/KaffaraCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 
 export const metadata = {
-  title: "حاسبة الكفارات والفدية الشرعية | كفارة اليمين وفدية الصيام والنذر",
+  title: "حاسبة الكفارات والفدية | كفارة اليمين وفدية الصيام",
   description:
     "احسب مقدار كفارة اليمين، فدية صيام رمضان للمريض وكبير السن، كفارة النذر، وفدية محظورات الإحرام بدقة سواء عيناً بالطعام والأرز أو نقداً بالريال والعملات.",
   alternates: { canonical: "/kaffara-calculator" },

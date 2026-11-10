@@ -1312,7 +1312,7 @@ const css = `
 .inh *,.inh *::before,.inh *::after{box-sizing:border-box}
 .inh h1,.inh h2,.inh h3,.inh p,.inh dl,.inh dd,.inh ol,.inh ul{margin:0;padding:0}
 .inh ol,.inh ul{list-style:none}
-.inh button,.inh input,.inh select{font:inherit;color:inherit}
+:where(.inh) :where(button,input,select){font:inherit;color:inherit}
 .inh :focus-visible{outline:2px solid var(--i-orange);outline-offset:3px}
 .inh bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
 

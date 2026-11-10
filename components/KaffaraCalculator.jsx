@@ -607,7 +607,7 @@ const css = `
 }
 .kf *,.kf *::before,.kf *::after{ box-sizing:border-box; }
 .kf h1,.kf h2,.kf h3,.kf p,.kf dl,.kf dd,.kf ul{ margin:0; padding:0; }
-.kf button,.kf input{ font:inherit; color:inherit; }
+:where(.kf) :where(button,input){ font:inherit; color:inherit; }
 .kf :focus-visible{ outline:3px solid var(--k-orange); outline-offset:3px; }
 .kf bdi{ unicode-bidi:isolate; font-variant-numeric:tabular-nums; }
 .kf-ico{ flex:none; display:block; }

@@ -1,6 +1,7 @@
 import PublicFooterGate from "@/components/admin/PublicFooterGate";
 import ToolTrustBar from "@/components/ToolTrustBar";
 import "./globals.css";
+import "./legacy-dark.css";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import HomeHeader from "../components/home/HomeHeader";
 import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
