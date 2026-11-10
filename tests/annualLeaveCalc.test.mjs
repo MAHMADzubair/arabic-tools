@@ -10,9 +10,9 @@ import fs from "node:fs";
 import { annualEntitlementDays, calculateAnnualLeave, leaveBalance, toNum } from "../lib/annualLeaveCalc.js";
 
 const SA = { standardDays: 21, seniorDays: 30, seniorThresholdYears: 5, monthDivisor: 30 };
-const AE = { standardDays: 30, seniorDays: 30, seniorThresholdYears: 0, monthDivisor: 30 };
+const AE = { standardDays: 30, seniorDays: 30, seniorThresholdYears: 0, firstYearDays: 24, monthDivisor: 30 };
 const KW = { standardDays: 30, seniorDays: 30, seniorThresholdYears: 0, monthDivisor: 26 };
-const EG = { standardDays: 21, seniorDays: 30, seniorThresholdYears: 10, monthDivisor: 30 };
+const EG = { standardDays: 21, seniorDays: 30, seniorThresholdYears: 10, firstYearDays: 15, monthDivisor: 30 };
 const near = (a, b, eps = 0.005) => assert.ok(Math.abs(a - b) < eps, `${a} !~ ${b}`);
 
 test("Saudi Art. 109: 21 days below five years, 30 days from five years", () => {
@@ -27,6 +27,22 @@ test("Other countries keep their own thresholds", () => {
   assert.equal(annualEntitlementDays(AE, 1), 30);
   assert.equal(annualEntitlementDays(EG, 9), 21);
   assert.equal(annualEntitlementDays(EG, 10), 30);
+});
+
+test("Egypt Law 14 of 2025: 15 days in the first year, 21 from the second", () => {
+  assert.equal(annualEntitlementDays(EG, 0.5), 15);
+  assert.equal(annualEntitlementDays(EG, 0.99), 15);
+  assert.equal(annualEntitlementDays(EG, 1), 21);
+});
+
+test("UAE Art. 29: under one year accrues 2 days a month (24 a year), then 30", () => {
+  assert.equal(annualEntitlementDays(AE, 0.75), 24);
+  assert.equal(annualEntitlementDays(AE, 1), 30);
+  near(leaveBalance({ entitlement: annualEntitlementDays(AE, 0.75), monthsWorked: 9 }).accrued, 18);
+});
+
+test("Saudi has no first-year rule: 21 days from day one", () => {
+  assert.equal(annualEntitlementDays(SA, 0.5), 21);
 });
 
 test("Saudi Art. 111: default example = 9,000 / 30 x 15 days = 4,500", () => {
@@ -123,4 +139,33 @@ test("Saudi page SEO: structured data, short title, description length, back-lin
   assert.ok(page.includes('href="/annual-leave-calculator"'));
   assert.ok(page.includes('href="/ar/sa"') && !page.includes('href="/ar/sa/"'));
   assert.ok(!page.includes('"ar-AE"'));
+});
+
+// ── Multi-country page guards ───────────────────────────────────────────────
+const globalPage = fs.readFileSync("app/annual-leave-calculator/page.js", "utf8");
+
+test("Multi-country page: Egypt cites Law 14 of 2025, not the repealed Law 12 of 2003 Art. 47", () => {
+  assert.match(globalPage, /قانون العمل 14 لسنة 2025/);
+  assert.doesNotMatch(globalPage, /المصري \(م\/47\)/);
+  assert.match(calc, /قانون العمل المصري رقم 14 لسنة 2025/);
+  assert.doesNotMatch(calc, /قانون العمل المصري \(م\/47\)/);
+});
+
+test("Multi-country page: UAE encashment on basic salary, Kuwait on 26 days", () => {
+  assert.match(globalPage, /basis: "الراتب الأساسي فقط"/);
+  assert.match(globalPage, /daily: "26"/);
+});
+
+test("Multi-country page: shared theme-aware design, structured data, snippet lengths, Saudi link", () => {
+  assert.match(globalPage, /TOOL_PAGE_CSS/);
+  assert.doesNotMatch(globalPage, /AnnualLeavePageStyles|ap-main/);
+  for (const ld of ["faqJsonLd", "breadcrumbJsonLd", "appJsonLd", "webPageJsonLd", "howToJsonLd"]) {
+    assert.ok(globalPage.includes(`JSON.stringify(${ld})`), `${ld} must be rendered`);
+  }
+  const title = globalPage.match(/const TITLE = "([^"]+)"/)[1];
+  const desc = globalPage.match(/const DESC =\s*"([^"]+)"/)[1];
+  assert.ok((title + " | Qemlo").length <= 62, `title length ${(title + " | Qemlo").length}`);
+  assert.ok(desc.length >= 110 && desc.length <= 160, `description length ${desc.length}`);
+  assert.ok(globalPage.includes('href: "/ar/sa/annual-leave-calculator"'));
+  assert.doesNotMatch(globalPage, /<h1/);
 });

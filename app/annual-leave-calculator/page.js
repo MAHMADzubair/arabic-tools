@@ -1,431 +1,369 @@
 import AnnualLeaveCalculator from "@/components/AnnualLeaveCalculator";
-import RelatedBusinessTools from "@/components/business/RelatedBusinessTools";
-import OfficialSource from "@/components/business/OfficialSource";
+import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import Link from "next/link";
-import { SITE_URL } from "@/lib/siteConfig";
+import { TOOL_PAGE_CSS } from "@/lib/toolPageCss";
+import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
-// ─── Metadata (unchanged) ─────────────────────────────────────────────────────
+const PATH = "/annual-leave-calculator";
+const LAST_REVIEWED = "نوفمبر 2026";
+const LAST_REVIEWED_ISO = "2026-11-10";
+const TITLE = "حاسبة بدل الإجازات السنوية 2026 | السعودية والإمارات";
+const DESC =
+  "احسب رصيد الإجازة السنوية وبدلها عند ترك العمل في السعودية والإمارات والكويت ومصر: الاستحقاق السنوي وأجر اليوم والتعويض، وفق قانون كل دولة. مجاناً.";
+
+// ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
-  title: "حاسبة بدل الإجازات السنوية 2026 | رصيد الإجازة والتعويض النقدي",
-  description:
-    "احسب رصيد إجازتك السنوية وأجر أيام الإجازة والتعويض النقدي عن الإجازات غير المستنفدة عند ترك العمل وفق قوانين العمل في السعودية (م/109 و111)، الإمارات، الكويت، ومصر.",
-  keywords: [
-    "حاسبة بدل الإجازات السنوية",
-    "حساب رصيد الإجازات",
-    "بدل الإجازة في نظام العمل السعودي",
-    "المادة 111 نظام العمل",
-    "تعويض الإجازات غير المستنفدة",
-    "رصيد الإجازات السنوية الإمارات",
-    "بدل الإجازة عند نهاية الخدمة",
-  ],
-  alternates: {
-    canonical: "/annual-leave-calculator",
-  },
+  title: TITLE,
+  description: DESC,
+  alternates: { canonical: PATH },
   openGraph: {
-    title: "حاسبة بدل الإجازات السنوية 2026 | رصيد الإجازة والتعويض النقدي",
-    description:
-      "احسب أجر الإجازة السنوية والتعويض النقدي عن رصيد الإجازات المتبقية بدقة وفق أنظمة العمل في السعودية والإمارات والكويت ومصر.",
+    title: TITLE,
+    description: DESC,
+    url: `${SITE_URL}${PATH}`,
+    siteName: SITE_NAME,
     type: "website",
     locale: "ar_AR",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESC,
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 
-// ─── JSON-LD (unchanged) ──────────────────────────────────────────────────────
+// ─── قواعد الدول (مصدر واحد للجدول والبيانات المنظمة) ─────────────────────────
+// الدولة، الاستحقاق، أساس البدل، أجر اليوم، السند
+const COUNTRY_RULES = [
+  {
+    code: "SA",
+    name: "السعودية",
+    days: "21 يوماً، و30 يوماً بعد 5 سنوات متصلة",
+    basis: "الأجر الفعلي (الأساسي + البدلات)",
+    daily: "30",
+    law: "نظام العمل، المادتان 109 و111",
+  },
+  {
+    code: "AE",
+    name: "الإمارات",
+    days: "30 يوماً عن كل سنة، ويومان عن كل شهر بين 6 و12 شهراً",
+    basis: "الراتب الأساسي فقط",
+    daily: "30",
+    law: "المرسوم بقانون 33 لسنة 2021، المادة 29",
+  },
+  {
+    code: "KW",
+    name: "الكويت",
+    days: "30 يوم عمل",
+    basis: "الأجر",
+    daily: "26",
+    law: "قانون العمل 6 لسنة 2010، المواد 70 إلى 74",
+  },
+  {
+    code: "EG",
+    name: "مصر",
+    days: "15 يوماً في السنة الأولى، و21 من الثانية، و30 بعد 10 سنوات أو سن الخمسين",
+    basis: "الأجر الشامل",
+    daily: "30",
+    law: "قانون العمل 14 لسنة 2025",
+  },
+];
+
+// ─── FAQ (مصدر واحد للقسم المرئي ولبيانات FAQPage) ────────────────────────────
+const FAQ = [
+  {
+    q: "كم عدد أيام الإجازة السنوية المستحقة للعامل في نظام العمل السعودي؟",
+    a: "وفق المادة (109) من نظام العمل السعودي: يستحق العامل إجازة سنوية مدفوعة الأجر لا تقل عن 21 يوماً، وتُزاد إلى ما لا يقل عن 30 يوماً إذا أمضى العامل 5 سنوات متصلة لدى صاحب العمل نفسه.",
+  },
+  {
+    q: "كيف يُحسب التعويض النقدي عن رصيد الإجازة السنوية غير المستنفدة؟",
+    a: "يُقسم الأجر الشهري المعتمد على عدد أيام الشهر في قانون الدولة للحصول على أجر اليوم (30 في السعودية والإمارات ومصر، و26 في الكويت)، ثم يُضرب أجر اليوم في عدد أيام الرصيد غير المستنفد. مثال سعودي: 12,000 ÷ 30 = 400 ريال، و18 يوماً × 400 = 7,200 ريال.",
+  },
+  {
+    q: "هل يُعتمد الراتب الأساسي أم الراتب الفعلي الشامل لحساب بدل الإجازة؟",
+    a: "يختلف ذلك بين الدول. في السعودية يُحسب على الأجر الفعلي الأخير (الأساسي مضافاً إليه البدلات الثابتة كالسكن والنقل). أما في الإمارات فيُحسب بدل الرصيد عند نهاية الخدمة على الراتب الأساسي فقط وفق المادة (29) من قانون العمل الاتحادي والمادة (19) من لائحته التنفيذية.",
+  },
+  {
+    q: "كم الإجازة السنوية في قانون العمل المصري الجديد؟",
+    a: "وفق قانون العمل رقم 14 لسنة 2025 المعمول به منذ 1 سبتمبر 2025: 15 يوماً في السنة الأولى من الخدمة، و21 يوماً اعتباراً من السنة الثانية، و30 يوماً لمن أمضى 10 سنوات في الخدمة أو تجاوز سن الخمسين، و45 يوماً للأشخاص ذوي الإعاقة. ولا تدخل العطلات الرسمية والأسبوعية ضمن الإجازة.",
+  },
+  {
+    q: "هل يستحق العامل في الإمارات إجازة قبل إتمام السنة الأولى؟",
+    a: "نعم. وفق المادة (29) يستحق العامل الذي أمضى أكثر من 6 أشهر وأقل من سنة يومين عن كل شهر. وبعد إتمام السنة يستحق 30 يوماً عن كل سنة. وعند ترك العمل يُصرف بدل الأيام غير المستخدمة، بما فيها كسور السنة، على أساس الراتب الأساسي.",
+  },
+  {
+    q: "لماذا يُقسم الراتب على 26 في الكويت؟",
+    a: "لأن الإجازة السنوية في قانون العمل الكويتي محسوبة بأيام العمل (30 يوم عمل)، فيُحسب أجر يوم العمل بقسمة الأجر الشهري على 26 يوماً، وهو ما تعتمده هذه الحاسبة لموظفي الكويت.",
+  },
+  {
+    q: "متى يجب على صاحب العمل دفع أجر الإجازة السنوية؟",
+    a: "تُلزم قوانين العمل في السعودية والإمارات والكويت صاحب العمل بدفع أجر الإجازة السنوية مقدماً قبل أن يبدأ العامل إجازته. أما بدل الرصيد غير المستنفد فيُصرف ضمن المخالصة النهائية عند انتهاء العلاقة العمالية.",
+  },
+  {
+    q: "هل يسقط حق العامل في بدل الإجازات السنوية إذا لم يطلبها؟",
+    a: "الأصل أن البدل يُستحق عند ترك العمل عن الأيام التي لم يستخدمها العامل. لكن بعض القوانين تضع قيوداً؛ فمثلاً ينص قانون العمل المصري الجديد على سقوط الحق في البدل إذا رفض العامل الإجازة كتابة. راجع قانون دولتك وعقد العمل.",
+  },
+];
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "كم عدد أيام الإجازة السنوية المستحقة للعامل في نظام العمل السعودي؟",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "وفق المادة (109) من نظام العمل السعودي: يستحق العامل إجازة سنوية مدفوعة الأجر لا تقل عن 21 يوماً عن كل سنة في السنوات الخمس الأولى من خدمته، وتُزاد إلى 30 يوماً كاملة إذا أمضى العامل 5 سنوات متصلة لدى نفس صاحب العمل.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "كيف يُحسب التعويض النقدي عن رصيد الإجازة السنوية غير المستنفدة؟",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "وفق المادة (111) من نظام العمل السعودي وما يماثلها في القوانين الخليجية: يستحق العامل عند انتهاء خدمته بدلاً نقدياً عن أيام الإجازات السنوية المتراكمة التي لم يستنفدها. يُحسب بقسمة الراتب الشهري المعتمد على 30 للحصول على الأجر اليومي، ثم ضرب الناتج في عدد أيام الرصيد المتبقية.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "هل يُعتمد الراتب الأساسي أم الراتب الفعلي الشامل لحساب بدل الإجازة؟",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "في السعودية، تنص المادة (111) ومستقر أحكام المحاكم العمالية على أن بدل الإجازة يُحسب على أساس 'الأجر الفعلي' الأخير (الراتب الأساسي مضافاً إليه البدلات الثابتة كالسكن والنقل). أما في دولة الإمارات فيُحسب بدل الرصيد عند نهاية الخدمة على أساس الراتب الأساسي فقط وفق المادة (29) من قانون العمل الاتحادي.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "متى يجب على صاحب العمل دفع أجر الإجازة السنوية؟",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "يُلزم نظام العمل صاحب العمل بدفع أجر الإجازة السنوية للعامل مقدماً قبل بداية تمتعه بالإجازة، وذلك لتغطية نفقات العامل وأسرته خلال فترة راحته السنوية.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "هل يسقط حق العامل في بدل الإجازات السنوية إذا لم يطلبها؟",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "لا يسقط حق العامل في التعويض المالي عن الإجازات غير المستنفدة طالما ظلت العلاقة العمالية قائمة، وعند ترك العمل أو انتهاء العقد يُلزم صاحب العمل بتسوية كامل الرصيد المتراكم نقداً ضمن المخالصة النهائية.",
-      },
-    },
-  ],
+  mainEntity: FAQ.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
 };
 
 const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "الرئيسية", item: `${SITE_URL}` },
-    { "@type": "ListItem", position: 2, name: "حاسبة بدل الإجازات السنوية", item: `${SITE_URL}/annual-leave-calculator` },
+    { "@type": "ListItem", position: 1, name: "الرئيسية", item: SITE_URL },
+    { "@type": "ListItem", position: 2, name: "حاسبة بدل الإجازات السنوية", item: `${SITE_URL}${PATH}` },
   ],
 };
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+const appJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "@id": `${SITE_URL}${PATH}#app`,
+  name: "حاسبة بدل الإجازات السنوية",
+  alternateName: ["حاسبة رصيد الإجازات", "حاسبة تعويض الإجازات", "حاسبة إجازة سنوية"],
+  url: `${SITE_URL}${PATH}`,
+  inLanguage: "ar",
+  operatingSystem: "All",
+  browserRequirements: "Requires JavaScript",
+  applicationCategory: "BusinessApplication",
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: DESC,
+  dateModified: LAST_REVIEWED_ISO,
+  areaServed: COUNTRY_RULES.map((c) => ({ "@type": "Country", name: c.code })),
+  featureList: [
+    "الاستحقاق السنوي حسب الدولة ومدة الخدمة",
+    "أجر اليوم: ÷ 30 أو ÷ 26 في الكويت",
+    "بدل رصيد الإجازة غير المستنفد",
+    "تقدير الرصيد المتراكم عن جزء من السنة",
+  ],
+  publisher: { "@id": SITE_ORG_ID },
+};
+
+const webPageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}${PATH}#webpage`,
+  url: `${SITE_URL}${PATH}`,
+  name: TITLE,
+  description: DESC,
+  inLanguage: "ar",
+  isPartOf: { "@id": SITE_WEBSITE_ID },
+  publisher: { "@id": SITE_ORG_ID },
+  dateModified: LAST_REVIEWED_ISO,
+  mainEntity: { "@id": `${SITE_URL}${PATH}#app` },
+  about: [
+    { "@type": "Thing", name: "الإجازة السنوية" },
+    { "@type": "Thing", name: "بدل الإجازات" },
+    ...COUNTRY_RULES.map((c) => ({ "@type": "Legislation", name: c.law, legislationJurisdiction: c.code })),
+  ],
+  speakable: { "@type": "SpeakableSpecification", cssSelector: [".fp-def", ".fp-quick"] },
+};
+
+// ─── Content data ─────────────────────────────────────────────────────────────
 const STEPS = [
-  "اختر دولة العمل لتطبيق القوانين الخاصة بها تلقائياً (السعودية، الإمارات، الكويت، مصر).",
-  "أدخل الراتب الشهري المعتمد (الراتب الفعلي الشامل للبدلات أو الراتب الأساسي وفق اشتراطات الدولة).",
-  "حدد سنوات الخدمة في المنشأة لمعرفة ما إذا كنت تستحق الشريحة العادية (21 يوماً) أو شريحة الأقدمية (30 يوماً).",
-  "أدخل عدد أيام رصيد الإجازات المتبقية التي لم تستنفدها.",
-  "تُظهر لك الحاسبة فوراً قيمة أجر اليوم، وقيمة إجازتك السنوية كاملة، وإجمالي التعويض النقدي المستحق الصرف.",
+  "اختر دولة العمل لتطبيق قانونها تلقائياً (السعودية، الإمارات، الكويت، مصر).",
+  "أدخل الراتب الشهري المعتمد: الأجر الفعلي في السعودية، أو الراتب الأساسي في الإمارات.",
+  "أدخل سنوات الخدمة ليتحدد الاستحقاق السنوي حسب قانون الدولة.",
+  "أدخل رصيد الإجازة المتبقي بالأيام، أو احسبه من «لا تعرف رصيدك؟ احسبه».",
+  "اقرأ النتيجة: أجر اليوم، أجر الإجازة السنوية الكاملة، وبدل الرصيد المتبقي.",
 ];
 
-const LAWS = [
-  {
-    code: "SA",
-    title: "نظام العمل السعودي (م/109 و111)",
-    desc: "21 يوماً للسنوات الـ 5 الأولى، وتزاد إلى 30 يوماً بعد 5 سنوات. يُحسب التعويض على الأجر الفعلي.",
-  },
-  {
-    code: "AE",
-    title: "قانون العمل الإماراتي (م/29)",
-    desc: "30 يوماً تقويمياً عن كل سنة خدمة كاملة. يُحسب تعويض الرصيد عند نهاية الخدمة على الراتب الأساسي.",
-  },
-  {
-    code: "KW",
-    title: "قانون العمل الكويتي (م/70)",
-    desc: "30 يوم عمل مدفوعة الأجر عن كل سنة. يُقسم الأجر الشهري على 26 يوماً لحساب أجر اليوم.",
-  },
-  {
-    code: "EG",
-    title: "قانون العمل المصري (م/47)",
-    desc: "21 يوماً، وتزاد إلى 30 يوماً لمن أمضى 10 سنوات في الخدمة أو تجاوز سن الخمسين عاماً.",
-  },
+const howToJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "كيف تحسب بدل الإجازة السنوية",
+  inLanguage: "ar",
+  step: STEPS.map((text, i) => ({ "@type": "HowToStep", position: i + 1, text })),
+};
+
+const EXAMPLE = [
+  ["الاستحقاق السنوي", "أكمل 5 سنوات متصلة", "30 يوماً"],
+  ["أجر اليوم الواحد", "12,000 ÷ 30", "400.00 ر.س"],
+  ["أجر الإجازة السنوية الكاملة", "30 × 400", "12,000.00 ر.س"],
 ];
 
 const RELATED = [
-  {
-    href: "/ar/sa/annual-leave-calculator",
-    title: "حاسبة بدل الإجازات السنوية بالسعودية",
-    desc: "احسب رصيد إجازتك السنوية وفق المادتين 109 و111 من نظام العمل السعودي بالأجر الفعلي",
-    badge: "نظام العمل السعودي",
-  },
-  {
-    href: "/ar/sa/final-settlement-calculator",
-    title: "حاسبة المخالصة النهائية",
-    desc: "تصفية شاملة لجميع مستحقات نهاية الخدمة والبدلات مع نموذج مخالصة نهائية قابل للطباعة",
-    badge: "شاملة",
-  },
-  {
-    href: "/gratuity-calculator",
-    title: "حاسبة مكافأة نهاية الخدمة",
-    desc: "احسب مكافأة نهاية الخدمة لـ 7 دول عربية وفق نصوص القوانين والاستقالة",
-    badge: "7 دول",
-  },
-  {
-    href: "/overtime-calculator",
-    title: "حاسبة الأوفرتايم",
-    desc: "احسب أجر الساعات الإضافية 125% و150% وفق أنظمة العمل الخليجية",
-    badge: "150%",
-  },
-  {
-    href: "/salary-calculator",
-    title: "حاسبة الراتب الصافي",
-    desc: "احسب صافي راتبك بعد التأمينات والضرائب لـ 6 دول عربية",
-    badge: "GOSI / تأمينات",
-  },
+  { href: "/ar/sa/annual-leave-calculator", title: "حاسبة بدل الإجازات السنوية بالسعودية", desc: "وفق المادتين 109 و111 من نظام العمل السعودي بالأجر الفعلي", tag: "السعودية" },
+  { href: "/ar/sa/final-settlement-calculator", title: "حاسبة المخالصة النهائية", desc: "تصفية شاملة لمستحقات نهاية الخدمة مع نموذج قابل للطباعة" },
+  { href: "/gratuity-calculator", title: "حاسبة مكافأة نهاية الخدمة", desc: "مكافأة نهاية الخدمة لعدة دول عربية حسب القانون وسبب الإنهاء" },
+  { href: "/overtime-calculator", title: "حاسبة العمل الإضافي", desc: "أجر الساعات الإضافية وفق أنظمة العمل الخليجية" },
+  { href: "/salary-calculator", title: "حاسبة الراتب الصافي", desc: "صافي الراتب بعد التأمينات لعدة دول عربية" },
 ];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// يُكمل الأنماط المشتركة: تثبيت لوحة النتيجة على الشاشات العريضة
+// (globals.css يضع overflow-x:hidden على html و body معاً فيتعطل position:sticky).
+const PAGE_CSS = `
+@media(min-width:960px){body{overflow-x:clip}}
+.fp .alc{max-width:none}
+.fp .alc-note{padding:.75rem .9rem}
+.fp .alc-legal{padding-inline:.4rem}
+.fp .alc-sec-hint{margin-top:.1rem}
+.fp .alc-sub{margin-top:.3rem}
+.fp .fp-fn{margin-top:10px}
+.fp-cr td:first-child{white-space:nowrap}
+.fp-cr td:last-child{white-space:normal;min-width:9rem}
+@media(max-width:640px){
+  .fp-cr thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .fp-cr tr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 14px;border-bottom:1px solid var(--ln)}
+  .fp-cr tr:last-child{border-bottom:0}
+  .fp-cr td{padding:0;border:0}
+  .fp-cr td:nth-child(2),.fp-cr td:nth-child(3),.fp-cr td:nth-child(5){grid-column:1/-1}
+  .fp-cr td:nth-child(3),.fp-cr td:nth-child(5){color:var(--mu);font-size:13px}
+  .fp-cr td:nth-child(4){grid-row:1;grid-column:2;font-weight:800}
+}
+`;
+
 export default function AnnualLeavePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      <AnnualLeavePageStyles />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }} />
 
-      <main className="ap-main" dir="rtl">
-        {/* Breadcrumb */}
-        <div className="ap-wrap ap-crumb-wrap">
-          <nav aria-label="مسار التنقل" className="ap-crumb">
-            <Link href="/">الرئيسية</Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page">حاسبة بدل الإجازات السنوية</span>
-          </nav>
-        </div>
+      <main className="fp" dir="rtl">
+        <style>{TOOL_PAGE_CSS}</style>
+        <style>{PAGE_CSS}</style>
 
-        {/* Calculator */}
-        <div className="ap-wrap">
+        <nav className="fp-wrap fp-wide fp-crumb" aria-label="مسار التنقل">
+          <ol>
+            <li><Link href="/">الرئيسية</Link></li>
+            <li aria-current="page">حاسبة بدل الإجازات السنوية</li>
+          </ol>
+        </nav>
+
+        {/* الحاسبة (تحتوي على H1 الصفحة الوحيد) */}
+        <div className="fp-wrap fp-wide" style={{ paddingTop: 16, paddingBottom: 16 }}>
           <AnnualLeaveCalculator />
         </div>
 
-        {/* Cross-link banner */}
-        <aside className="ap-wrap ap-gap-lg" aria-labelledby="ap-banner-title">
-          <div className="ap-banner">
-            <div className="ap-banner-text">
-              <p className="ap-kicker">تصفية شاملة لجميع مستحقاتك</p>
-              <h2 id="ap-banner-title" className="ap-banner-title">
-                هل تُنهي خدمتك وتحتاج لمخالصة نهائية كاملة؟
-              </h2>
-              <p className="ap-banner-desc">
-                احسب بدل الإجازة + مكافأة نهاية الخدمة + راتب آخر شهر + تعويض الإشعار مع إنشاء نموذج مخالصة نهائية قابل للطباعة.
+        <GeoAnswerSummary
+          whatItDoes="تحسب الاستحقاق السنوي من الإجازة وأجر اليوم وبدل رصيد الإجازة غير المستنفد عند ترك العمل"
+          appliesTo="عقود العمل في القطاع الخاص في السعودية والإمارات والكويت ومصر"
+          keyRule="بدل الإجازة = (الأجر الشهري المعتمد ÷ 30، أو ÷ 26 في الكويت) × أيام الرصيد غير المستنفد. أساس الأجر يختلف: الفعلي في السعودية، والأساسي في الإمارات."
+          authority="جهات العمل الرسمية في كل دولة"
+          lastReviewed={LAST_REVIEWED}
+          disclaimer="هذه الأداة تقديرية استرشادية. راجع عقد العمل ولوائح المنشأة وقانون دولتك قبل الاعتماد على الرقم."
+        />
+
+        {/* 1) التعريف + المعادلة + مقارنة الدول + الخطوات + المثال */}
+        <section className="fp-wrap fp-sec">
+          <div className="fp-card">
+            <div>
+              <h2 className="fp-h2">ما هو بدل الإجازات السنوية وكيف يُحسب؟</h2>
+              <p className="fp-p fp-def" style={{ marginTop: 14 }}>
+                <strong>بدل الإجازات السنوية</strong> هو المبلغ النقدي الذي يستحقه العامل عن أيام إجازته السنوية التي لم يستخدمها عند انتهاء علاقة العمل. يُحسب بقسمة الأجر الشهري المعتمد على عدد أيام الشهر في قانون الدولة (30، أو 26 في الكويت)، ثم ضرب أجر اليوم في عدد أيام الرصيد. ويختلف أساس الأجر: الأجر الفعلي في السعودية، والراتب الأساسي في الإمارات.
               </p>
             </div>
-            <Link href="/ar/sa/final-settlement-calculator" className="ap-btn">
-              حاسبة المخالصة النهائية
-            </Link>
-          </div>
-        </aside>
 
-        {/* Explanation */}
-        <section className="ap-wrap ap-gap-xl" aria-labelledby="ap-about-title">
-          <div className="ap-card">
-            <header className="ap-card-head">
-              <h2 id="ap-about-title" className="ap-h2">
-                ما هي حاسبة بدل الإجازات السنوية وما أهميتها القانونية؟
-              </h2>
-            </header>
+            <div className="fp-quick">
+              <b>معادلة بدل الإجازة</b>
+              <p>بدل الإجازة = (الأجر الشهري المعتمد ÷ أيام الشهر) × عدد أيام الرصيد غير المستنفد</p>
+            </div>
 
-            <div className="ap-body">
-              <div className="ap-prose">
-                <p>
-                  تُعدّ <strong>الإجازة السنوية مدفوعة الأجر</strong> حقاً إنسانياً وقانونياً جوهرياً كفلته جميع تشريعات العمل العربية والدولية. والهدف منها هو ضمان تجديد نشاط العامل وراحته الذهنية والبدنية بعد عام كامل من العمل والإنتاج. غير أن الكثير من العمال لا يتمكنون من استنفاد كامل أيام إجازاتهم خلال السنة التعاقدية لأسباب تتعلق بضغط العمل أو متطلبات المنشأة.
-                </p>
-                <p>
-                  عند انتهاء علاقة العمل أو الاستقالة، يُلزم القانون صاحب العمل بتعويض العامل نقدياً عن كامل رصيد الإجازات المتبقي لديه. توفر هذه الحاسبة أداة دقيقة لحساب استحقاقك السنوي من الأيام، وقيمة الأجر اليومي، وإجمالي المبلغ المستحق لك كبدل رصيد إجازات وفق نصوص أنظمة العمل في السعودية، الإمارات، الكويت، ومصر.
-                </p>
+            <div>
+              <h3 className="fp-h3">الإجازة السنوية وبدلها في كل دولة</h3>
+              <div className="fp-tw">
+                <table className="fp-t fp-cr">
+                  <thead>
+                    <tr><th>الدولة</th><th>الاستحقاق السنوي</th><th>أساس البدل</th><th>يُقسم الأجر على</th><th>السند</th></tr>
+                  </thead>
+                  <tbody>
+                    {COUNTRY_RULES.map((c) => (
+                      <tr key={c.code}>
+                        <td><b>{c.name}</b></td>
+                        <td>{c.days}</td>
+                        <td>{c.basis}</td>
+                        <td>{c.daily}</td>
+                        <td>{c.law}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+              <p className="fp-fn">العقد أو لائحة المنشأة قد يمنحان أياماً أكثر من الحد الأدنى القانوني.</p>
+            </div>
 
-              {/* Steps */}
-              <div>
-                <h3 className="ap-h3">كيفية استخدام الحاسبة خطوة بخطوة</h3>
-                <ol className="ap-steps">
-                  {STEPS.map((text, i) => (
-                    <li key={i} className="ap-step">
-                      <span className="ap-num" aria-hidden="true">{i + 1}</span>
-                      <span>{text}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+            <div>
+              <h3 className="fp-h3">كيفية الاستخدام — خطوة بخطوة</h3>
+              <ol className="fp-steps">
+                {STEPS.map((s) => (
+                  <li key={s}><span>{s}</span></li>
+                ))}
+              </ol>
+            </div>
 
-              {/* Example */}
-              <div className="ap-example">
-                <h3 className="ap-h3 ap-h3-flush">مثال عملي بالأرقام: موظف في الرياض</h3>
-                <p className="ap-prose-sm">
-                  <strong>البيانات:</strong> موظف يعمل في المملكة العربية السعودية براتب فعلي 12,000 ريال (أساسي + سكن + مواصلات)، أمضى في العمل 6 سنوات ولديه رصيد إجازات متبقٍ قدره 18 يوماً:
-                </p>
-                <dl className="ap-calc">
-                  <div className="ap-calc-row">
-                    <dt>الاستحقاق السنوي (خدمة أكثر من 5 سنوات م/109):</dt>
-                    <dd>30 يوماً / سنة</dd>
+            <div className="fp-ex">
+              <h3 className="fp-h3" style={{ marginBottom: 8 }}>مثال عملي بالأرقام: موظف في الرياض</h3>
+              <p className="fp-p" style={{ fontSize: 14 }}>
+                <strong>الحالة:</strong> أجره الفعلي 12,000 ريال (أساسي + سكن + مواصلات)، خدم 6 سنوات، وله رصيد 18 يوماً غير مستخدم عند انتهاء خدمته.
+              </p>
+              <div style={{ marginTop: 10 }}>
+                {EXAMPLE.map(([label, formula, amount]) => (
+                  <div key={label} className="fp-exr">
+                    <span>{label}<small dir={/[؀-ۿ]/.test(formula) ? "rtl" : "ltr"} style={{ textAlign: "right" }}>{formula}</small></span>
+                    <b>{amount}</b>
                   </div>
-                  <div className="ap-calc-row">
-                    <dt>قيمة أجر اليوم (12,000 ÷ 30):</dt>
-                    <dd>400.00 ر.س</dd>
-                  </div>
-                  <div className="ap-calc-row ap-calc-total">
-                    <dt>التعويض المستحق عن 18 يوماً (18 × 400):</dt>
-                    <dd>7,200.00 ر.س</dd>
-                  </div>
-                </dl>
+                ))}
               </div>
-
-              {/* Legal comparison */}
-              <div>
-                <h3 className="ap-h3">السند القانوني المقارن بين الدول</h3>
-                <ul className="ap-laws">
-                  {LAWS.map((item) => (
-                    <li key={item.code} className="ap-law">
-                      <p className="ap-law-title">
-                        <span className="ap-code" aria-hidden="true">{item.code}</span>
-                        <span>{item.title}</span>
-                      </p>
-                      <p className="ap-law-desc">{item.desc}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <div className="fp-net"><span>بدل رصيد 18 يوماً</span><span>7,200.00 ر.س</span></div>
+              <p className="fp-fn">* المثال توضيحي. لو كان الموظف في الإمارات لحُسب البدل على راتبه الأساسي وحده.</p>
             </div>
           </div>
         </section>
 
-        {/* FAQ */}
-        <section className="ap-wrap ap-gap-lg" aria-labelledby="ap-faq-title">
-          <div className="ap-card">
-            <header className="ap-card-head">
-              <h2 id="ap-faq-title" className="ap-h2">
-                الأسئلة الشائعة حول الإجازات السنوية وبدل الرصيد
-              </h2>
-            </header>
-            <div>
-              {faqJsonLd.mainEntity.map((faq, i) => (
-                <div key={i} className="ap-faq">
-                  <h3 className="ap-faq-q">{faq.name}</h3>
-                  <p className="ap-faq-a">{faq.acceptedAnswer.text}</p>
+        {/* 2) الأسئلة الشائعة */}
+        <section className="fp-wrap fp-sec">
+          <div className="fp-card">
+            <h2 className="fp-h2">الأسئلة الشائعة حول الإجازات السنوية وبدل الرصيد</h2>
+            <div className="fp-faq">
+              {FAQ.map((item) => (
+                <div key={item.q}>
+                  <h3>{item.q}</h3>
+                  <p>{item.a}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Related tools + source */}
-        <section className="ap-wrap ap-gap-lg ap-last">
-          <RelatedBusinessTools
-            tools={RELATED}
-            title="أدوات عمالية ومالية ذات صلة"
-            subtitle="استكمل حسابات مستحقاتك الوظيفية بهذه الأدوات الشاملة"
-          />
-          <OfficialSource
-            sourceText="أنظمة العمل الرسمية المقارنة في السعودية والإمارات والكويت ومصر"
-            lastUpdated="2026م"
-          />
+        {/* 3) أدوات مرتبطة + المراجعة */}
+        <section className="fp-wrap fp-sec fp-bot">
+          <div className="fp-card">
+            <div className="fp-chain">
+              <h2>أدوات عمالية ومالية ذات صلة</h2>
+              <p>استكمل حساب مستحقاتك الوظيفية بهذه الأدوات.</p>
+              <div className="fp-g2">
+                {RELATED.map((t) => (
+                  <Link key={t.href} href={t.href} className="fp-lk">
+                    <span className="t">{t.title}{t.tag ? <span className="fp-tag">{t.tag}</span> : null}</span>
+                    <p>{t.desc}</p>
+                    <span className="go">افتح الحاسبة ←</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="fp-rev">
+              <p>
+                <strong>آخر تحديث للمحتوى:</strong> <time dateTime={LAST_REVIEWED_ISO}>{LAST_REVIEWED}</time>. المراجع: نظام العمل السعودي (المادتان 109 و111)، والمرسوم بقانون اتحادي 33 لسنة 2021 في الإمارات (المادة 29) ولائحته التنفيذية (المادة 19)، وقانون العمل الكويتي 6 لسنة 2010 (المواد 70 إلى 74)، وقانون العمل المصري 14 لسنة 2025. الحاسبة استرشادية وليست بديلاً عن الجهات الرسمية أو المشورة القانونية.
+              </p>
+            </div>
+          </div>
         </section>
       </main>
     </>
-  );
-}
-
-// ─── Ink & Signal page styles ────────────────────────────────────────────────
-function AnnualLeavePageStyles() {
-  return (
-    <style>{`
-      .ap-main{
-        --ap-ink:#0a0a0a; --ap-paper:#ffffff; --ap-text2:#404040; --ap-orange:#ff5a1f;
-        min-height:100vh; background:var(--ap-paper); color:var(--ap-ink);
-        padding:1.5rem 0 0;
-      }
-      @media (min-width:640px){ .ap-main{ padding-top:2.5rem; } }
-      @media (prefers-color-scheme: dark){
-        :root:not([data-theme="light"]) .ap-main{
-          --ap-ink:#f5f5f5; --ap-paper:#0a0a0a; --ap-text2:#d4d4d4;
-        }
-      }
-      :root[data-theme="dark"] .ap-main{
-        --ap-ink:#f5f5f5; --ap-paper:#0a0a0a; --ap-text2:#d4d4d4;
-      }
-
-      .ap-wrap{ max-width:48rem; margin:0 auto; padding:0 1rem; }
-      .ap-gap-lg{ margin-top:2rem; }
-      .ap-gap-xl{ margin-top:2rem; }
-      .ap-last{ padding-bottom:3rem; display:grid; gap:1rem; }
-      .ap-main a:focus-visible{ outline:3px solid var(--ap-orange); outline-offset:2px; }
-
-      /* Breadcrumb */
-      .ap-crumb-wrap{ padding-bottom:1rem; }
-      .ap-crumb{ display:flex; gap:.5rem; align-items:center; font-size:.75rem; color:var(--ap-text2); }
-      .ap-crumb a{ color:var(--ap-ink); text-decoration:underline; text-underline-offset:3px; }
-      .ap-crumb [aria-current]{ font-weight:700; color:var(--ap-ink); }
-
-      /* Banner (orange panel, black text) */
-      .ap-banner{
-        display:flex; flex-direction:column; gap:1rem; align-items:flex-start;
-        background:var(--ap-orange); color:#0a0a0a;
-        border:2px solid var(--ap-ink); padding:1.25rem;
-      }
-      @media (min-width:640px){
-        .ap-banner{ flex-direction:row; align-items:center; justify-content:space-between; }
-      }
-      .ap-kicker{ margin:0; font-size:.6875rem; font-weight:700; letter-spacing:.04em; }
-      .ap-banner-title{ margin:.25rem 0 0; font-size:1.0625rem; font-weight:700; }
-      .ap-banner-desc{ margin:.5rem 0 0; font-size:.75rem; line-height:1.7; }
-      .ap-btn{
-        flex:none; display:inline-block; padding:.625rem 1rem;
-        background:#0a0a0a; color:#ffffff; border:2px solid #0a0a0a;
-        font-size:.75rem; font-weight:700; text-decoration:none;
-      }
-      .ap-btn:hover{ background:#ffffff; color:#0a0a0a; }
-      .ap-banner .ap-btn:focus-visible{ outline:3px solid #0a0a0a; outline-offset:3px; }
-
-      /* Cards */
-      .ap-card{ border:2px solid var(--ap-ink); background:var(--ap-paper); }
-      .ap-card-head{ padding:1rem 1.25rem; border-bottom:2px solid var(--ap-ink); }
-      .ap-h2{ margin:0; font-size:1.25rem; font-weight:700; line-height:1.5; }
-      .ap-h3{ margin:0 0 .75rem; font-size:1rem; font-weight:700; }
-      .ap-h3-flush{ margin-bottom:.5rem; }
-      .ap-body{ padding:1.25rem; display:grid; gap:1.75rem; }
-      @media (min-width:640px){ .ap-body{ padding:1.5rem 2rem; } .ap-card-head{ padding:1.25rem 2rem; } }
-
-      .ap-prose{ display:grid; gap:.75rem; font-size:.875rem; line-height:1.9; color:var(--ap-text2); }
-      .ap-prose p,.ap-prose-sm{ margin:0; }
-      .ap-prose strong,.ap-prose-sm strong{ color:var(--ap-ink); font-weight:700; }
-      .ap-prose-sm{ font-size:.8125rem; line-height:1.8; color:var(--ap-text2); }
-
-      /* Steps */
-      .ap-steps{ list-style:none; margin:0; padding:0; display:grid; gap:.625rem; }
-      .ap-step{ display:flex; gap:.75rem; align-items:flex-start; font-size:.875rem; line-height:1.8; color:var(--ap-text2); }
-      .ap-num{
-        flex:none; width:1.5rem; height:1.5rem; margin-top:.125rem;
-        display:inline-flex; align-items:center; justify-content:center;
-        border:2px solid var(--ap-ink); color:var(--ap-ink);
-        font-size:.75rem; font-weight:700;
-      }
-
-      /* Worked example */
-      .ap-example{ border:2px dashed var(--ap-ink); padding:1.25rem; }
-      .ap-calc{ margin:.75rem 0 0; display:grid; border:2px solid var(--ap-ink); }
-      .ap-calc-row{
-        display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
-        padding:.625rem .75rem; border-bottom:1px solid var(--ap-ink);
-        font-size:.75rem;
-      }
-      .ap-calc-row:last-child{ border-bottom:0; }
-      .ap-calc-row dt{ margin:0; color:var(--ap-text2); }
-      .ap-calc-row dd{ margin:0; font-weight:700; color:var(--ap-ink); }
-      .ap-calc-total{ background:var(--ap-orange); font-size:.875rem; }
-      .ap-calc-total dt,.ap-calc-total dd{ color:#0a0a0a; font-weight:700; }
-
-      /* Laws */
-      .ap-laws{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr; border:2px solid var(--ap-ink); }
-      .ap-law{ padding:.875rem; border-bottom:1px solid var(--ap-ink); }
-      .ap-law:last-child{ border-bottom:0; }
-      .ap-law-title{ margin:0; display:flex; gap:.5rem; align-items:center; font-size:.75rem; font-weight:700; }
-      .ap-code{
-        flex:none; padding:0 .375rem; border:2px solid var(--ap-ink);
-        font-size:.625rem; font-weight:700; letter-spacing:.04em; line-height:1.6;
-      }
-      .ap-law-desc{ margin:.375rem 0 0; font-size:.75rem; line-height:1.8; color:var(--ap-text2); }
-      @media (min-width:640px){
-        .ap-laws{ grid-template-columns:1fr 1fr; }
-        .ap-law:nth-child(odd){ border-inline-end:1px solid var(--ap-ink); }
-        .ap-law:nth-last-child(-n+2){ border-bottom:0; }
-      }
-
-      /* FAQ */
-      .ap-faq{ padding:1.125rem 1.25rem; border-bottom:1px solid var(--ap-ink); }
-      .ap-faq:last-child{ border-bottom:0; }
-      .ap-faq-q{ margin:0 0 .5rem; font-size:.875rem; font-weight:700; line-height:1.7;
-        border-inline-start:6px solid var(--ap-orange); padding-inline-start:.625rem; }
-      .ap-faq-a{ margin:0; font-size:.875rem; line-height:1.9; color:var(--ap-text2); }
-      @media (min-width:640px){ .ap-faq{ padding:1.25rem 2rem; } }
-
-      @media print{
-        .ap-banner{ background:none; border-color:#000; color:#000; }
-        .ap-banner .ap-btn,.ap-calc-total{ background:none; color:#000; }
-        .ap-main{ color:#000; }
-      }
-    `}</style>
   );
 }
