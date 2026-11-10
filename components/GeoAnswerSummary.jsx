@@ -25,7 +25,8 @@
 
 const CSS = `
 .geo{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#0D0D0D)}
-@media (prefers-color-scheme:dark){.geo{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .geo{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2)}}
+:root[data-theme="dark"] .geo{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#161616);--mu:var(--c-muted,#A8A8A0);--ln:var(--c-line,#F5F5F2)}
 .geo-box{display:flex;background:var(--sf);color:var(--ink);border:2px solid var(--ln);font-size:13px;line-height:1.7}
 .geo-bar{flex:none;width:8px;background:var(--ac);border-inline-end:2px solid var(--ln)}
 .geo-body{flex:1;min-width:0;padding:14px 16px}
