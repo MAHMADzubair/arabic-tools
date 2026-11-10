@@ -1,15 +1,20 @@
 import FinalSettlementCalculator from "@/components/FinalSettlementCalculator";
 import Link from "next/link";
 import GeoAnswerSummary from "@/components/GeoAnswerSummary";
-import { SITE_URL, SITE_ORG_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
+import { SITE_URL, SITE_NAME, SITE_ORG_ID, SITE_WEBSITE_ID, DEFAULT_OG_IMAGE } from "@/lib/siteConfig";
 
 // حدّث هذا التاريخ فقط بعد مراجعة فعلية للنصوص والنسب
 const LAST_REVIEWED = "نوفمبر 2026";
+const LAST_REVIEWED_ISO = "2026-11-10";
 
 const PATH = "/ar/sa/final-settlement-calculator";
-const TITLE = "حاسبة المخالصة النهائية في السعودية 2026 | نهاية الخدمة والإجازة";
+const TITLE = "حاسبة المخالصة النهائية ونهاية الخدمة في السعودية 2026";
 const DESC =
-  "احسب مخالصتك النهائية في السعودية: مكافأة نهاية الخدمة وبدل الإجازات وآخر راتب وبدل الإشعار، مع نموذج مخالصة قابل للطباعة. مجاني وبدون تسجيل.";
+  "احسب المخالصة (التسوية) النهائية في السعودية: مكافأة نهاية الخدمة، بدل الإجازات، آخر راتب وبدل الإشعار وفق نظام العمل، مع نموذج للطباعة. مجاناً وبدون تسجيل.";
+
+// المصادر الرسمية (تُعرض في الصفحة وتدخل في البيانات المنظمة)
+const HRSD_URL = "https://www.hrsd.gov.sa";
+const HRSD_EOSB_CALC_URL = "https://www.hrsd.gov.sa/ar/ministry-services/services/end-service-benefit-calculator";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
@@ -20,21 +25,32 @@ export const metadata = {
     title: TITLE,
     description: DESC,
     url: `${SITE_URL}${PATH}`,
+    siteName: SITE_NAME,
     type: "website",
     locale: "ar_SA",
     images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESC,
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 
 // ─── FAQ (single source for visible text AND JSON-LD) ─────────────────────────
 const FAQ = [
   {
+    q: "كيف أحسب المخالصة (التسوية) النهائية يدوياً؟",
+    a: "اجمع أربعة بنود: آخر راتب مستحق (الأجر اليومي × أيام العمل في الشهر الأخير)، ومكافأة نهاية الخدمة (نصف أجر شهر عن كل سنة من أول 5 سنوات وأجر شهر عن كل سنة بعدها، مع نسبة الاستقالة إن وُجدت)، وبدل رصيد الإجازات (الأجر اليومي × الأيام المتبقية)، وبدل الإشعار إن استُحق. ثم أضف أي مستحقات أخرى واطرح الخصومات. مثال: 5,500 + 42,166.67 + 6,600 + 22,000 = 76,266.67 ر.س.",
+  },
+  {
     q: "كيف تُحسب مكافأة نهاية الخدمة في السعودية وفق المادة 84؟",
     a: "وفق المادة (84) من نظام العمل السعودي: يستحق العامل نصف أجر شهري عن كل سنة من السنوات الخمس الأولى، وأجر شهر كامل عن كل سنة تزيد على ذلك. السنوات الكسرية تحتسب بالتناسب. مثال: موظف راتبه 10,000 ر.س وخدمته 7 سنوات = (10,000 × 0.5 × 5) + (10,000 × 1 × 2) = 25,000 + 20,000 = 45,000 ر.س.",
   },
   {
     q: "هل يستحق المستقيل مكافأة نهاية الخدمة كاملة في السعودية؟",
-    a: "وفق المادة (85): المستقيل قبل سنتين لا يستحق مكافأة. من سنتين إلى أقل من 5 سنوات يستحق ثلث المكافأة. من 5 إلى أقل من 10 سنوات يستحق ثلثيها. بعد 10 سنوات فأكثر يستحقها كاملة. أما في حالات الإنهاء من صاحب العمل أو انتهاء العقد فيستحق الموظف المكافأة كاملة بصرف النظر عن مدة الخدمة.",
+    a: "وفق المادة (85): المستقيل قبل إتمام سنتين لا يستحق مكافأة. من سنتين إلى خمس سنوات يستحق ثلث المكافأة. وإذا زادت خدمته على خمس سنوات ولم تبلغ عشراً يستحق ثلثيها. وإذا بلغت عشر سنوات فأكثر يستحقها كاملة. أما في حالات الإنهاء من صاحب العمل أو انتهاء العقد فيستحق الموظف المكافأة كاملة بصرف النظر عن مدة الخدمة.",
   },
   {
     q: "ما هي مدة مهلة الإشعار في نظام العمل السعودي؟",
@@ -51,6 +67,18 @@ const FAQ = [
   {
     q: "ما الفرق بين المخالصة النهائية ومكافأة نهاية الخدمة؟",
     a: "مكافأة نهاية الخدمة بند واحد من بنود المخالصة النهائية. أما المخالصة فتجمع المكافأة مع الراتب الأخير المستحق وبدل رصيد الإجازات وبدل مهلة الإشعار عند استحقاقه، إضافةً إلى أي مبالغ أخرى أو خصومات وفق العقد والأنظمة. تعرض الحاسبة هذه البنود منفصلة، والنتيجة تقديرية وليست وثيقة مخالصة رسمية.",
+  },
+  {
+    q: "متى يجب صرف المخالصة النهائية بعد انتهاء العقد؟",
+    a: "وفق المادة (88) من نظام العمل: يلتزم صاحب العمل بدفع أجر العامل وتصفية حقوقه خلال أسبوع على الأكثر من تاريخ انتهاء العلاقة العقدية. وإذا كان العامل هو من أنهى العقد فالمهلة لا تزيد على أسبوعين. ويجوز لصاحب العمل أن يحسم من المستحقات أي دين مستحق له بسبب العمل.",
+  },
+  {
+    q: "متى لا يستحق العامل مكافأة نهاية الخدمة؟",
+    a: "في حالتين رئيسيتين: الاستقالة قبل إتمام سنتين من الخدمة (المادة 85)، وفسخ العقد من صاحب العمل لإحدى الحالات المحددة في المادة (80) كالاعتداء أو الإخلال الجوهري بالالتزامات أو الغياب الطويل دون سبب مشروع. حالات المادة (80) خارج نطاق هذه الحاسبة لأنها تتوقف على الوقائع والإثبات.",
+  },
+  {
+    q: "هل هذه الحاسبة هي الحاسبة العمالية الرسمية؟",
+    a: "لا. هذه حاسبة مستقلة استرشادية من Qemlo وليست خدمة حكومية. الجهات الرسمية تتيح أدواتها الخاصة، مثل حاسبة مكافأة نهاية الخدمة لدى وزارة الموارد البشرية والتنمية الاجتماعية والحاسبة العمالية لدى وزارة العدل. ما تضيفه هذه الحاسبة هو جمع بنود المخالصة كلها في صفحة واحدة (المكافأة، آخر راتب، الإجازات، الإشعار، الخصومات) مع نموذج قابل للطباعة. وعند اختلاف الأرقام يُعتمد العقد والجهة الرسمية.",
   },
   {
     q: "كيف تتم الاستقالة بعد تعديلات نظام العمل 2025؟",
@@ -77,14 +105,51 @@ const faqJsonLd = {
 const appJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
+  "@id": `${SITE_URL}${PATH}#app`,
   name: "حاسبة المخالصة النهائية في السعودية",
+  alternateName: ["حاسبة التسوية النهائية", "حاسبة مستحقات نهاية الخدمة"],
   url: `${SITE_URL}${PATH}`,
   inLanguage: "ar",
   operatingSystem: "All",
+  browserRequirements: "Requires JavaScript",
   applicationCategory: "FinanceApplication",
   isAccessibleForFree: true,
   description: DESC,
+  dateModified: LAST_REVIEWED_ISO,
+  areaServed: { "@type": "Country", name: "SA" },
+  featureList: [
+    "مكافأة نهاية الخدمة وفق المادتين 84 و85",
+    "آخر راتب مستحق عن أيام الشهر الأخير",
+    "بدل رصيد الإجازة السنوية وفق المادة 111",
+    "بدل مهلة الإشعار وفق المادتين 75 و76",
+    "نموذج مخالصة نهائية قابل للطباعة",
+  ],
   publisher: { "@id": SITE_ORG_ID },
+};
+
+// صفحة الويب: تاريخ المراجعة، الموضوع، المصادر، والمقاطع المختصرة القابلة للاقتباس
+const webPageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}${PATH}#webpage`,
+  url: `${SITE_URL}${PATH}`,
+  name: TITLE,
+  description: DESC,
+  inLanguage: "ar-SA",
+  isPartOf: { "@id": SITE_WEBSITE_ID },
+  publisher: { "@id": SITE_ORG_ID },
+  dateModified: LAST_REVIEWED_ISO,
+  mainEntity: { "@id": `${SITE_URL}${PATH}#app` },
+  about: [
+    { "@type": "Thing", name: "المخالصة النهائية" },
+    { "@type": "Thing", name: "مكافأة نهاية الخدمة" },
+    { "@type": "Legislation", name: "نظام العمل السعودي (المرسوم الملكي م/51) وتعديلاته", legislationJurisdiction: "SA" },
+  ],
+  citation: [
+    { "@type": "CreativeWork", name: "وزارة الموارد البشرية والتنمية الاجتماعية — نظام العمل", url: HRSD_URL },
+    { "@type": "CreativeWork", name: "حاسبة مكافأة نهاية الخدمة — وزارة الموارد البشرية والتنمية الاجتماعية", url: HRSD_EOSB_CALC_URL },
+  ],
+  speakable: { "@type": "SpeakableSpecification", cssSelector: [".fp-def", ".fp-quick"] },
 };
 
 const breadcrumbJsonLd = {
@@ -99,14 +164,32 @@ const breadcrumbJsonLd = {
 
 // ─── Content data ─────────────────────────────────────────────────────────────
 const STEPS = [
-  "أدخل بيانات الموظف وجهة العمل للنموذج القابل للطباعة (اختياري للحساب).",
   "حدد نوع العقد (محدد / غير محدد) وسبب إنهاء الخدمة — هذان الخياران يحددان نسبة مكافأة نهاية الخدمة.",
   "أدخل تاريخَي الالتحاق وآخر يوم عمل لحساب مدة الخدمة تلقائياً.",
   "أدخل هيكل الراتب الكامل (أساسي + بدلات). اختر قاسم الشهر المناسب (÷30 الأكثر شيوعاً).",
   "أدخل رصيد الإجازة السنوية غير المستنفدة وأساس الاحتساب.",
   "أدخل مهلة الإشعار المطلوبة والمخدومة وحدد الطرف المستحق للتعويض.",
   "أضف أي مستحقات أخرى (رواتب متأخرة، أوفر تايم) أو خصومات (سلف، عهد).",
-  "اقرأ تفصيل المخالصة في لوحة النتائج، ثم أنشئ نموذج المخالصة القابل للطباعة والتوقيع.",
+  "اقرأ تفصيل المخالصة في لوحة النتائج وافتح «كيف تم الحساب؟» لمراجعة المعادلات.",
+  "أضف اسم الموظف وجهة العمل (اختياري)، ثم أنشئ نموذج المخالصة القابل للطباعة والتوقيع.",
+];
+
+const howToJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "كيف تحسب المخالصة النهائية في السعودية",
+  inLanguage: "ar",
+  step: STEPS.map((text, i) => ({ "@type": "HowToStep", position: i + 1, text })),
+};
+
+// بنود المخالصة: البند، طريقة الحساب، المادة
+const COMPONENTS = [
+  ["مكافأة نهاية الخدمة", "نصف أجر شهر عن كل سنة من أول 5 سنوات، وأجر شهر عن كل سنة بعدها، مع نسبة الاستقالة إن وُجدت", "المادتان 84 و85"],
+  ["آخر راتب مستحق", "الأجر اليومي × أيام العمل في الشهر الأخير", "المادة 88"],
+  ["بدل رصيد الإجازات", "الأجر اليومي × أيام الإجازة السنوية غير المستنفدة", "المادة 111"],
+  ["بدل مهلة الإشعار", "الأجر اليومي × أيام الإشعار غير المخدومة (يُضاف للعامل أو يُخصم منه)", "المادتان 75 و76"],
+  ["مستحقات أخرى", "رواتب متأخرة، أجر عمل إضافي، مكافآت متفق عليها", "عقد العمل"],
+  ["الخصومات", "ديون مستحقة لصاحب العمل بسبب العمل، كالسلف والعهد", "المادة 88"],
 ];
 
 // المثال يطابق الحاسبة: 6 سنوات و4 أشهر = 6.333 سنة
@@ -120,14 +203,16 @@ const EXAMPLE_NET = "76,266.67 ر.س";
 
 const RESIGN = [
   ["أقل من سنتين", "لا مكافأة", "0"],
-  ["من سنتين إلى أقل من 5 سنوات", "ثلث المكافأة", "1/3"],
-  ["من 5 إلى أقل من 10 سنوات", "ثلثا المكافأة", "2/3"],
+  ["من سنتين إلى 5 سنوات", "ثلث المكافأة", "1/3"],
+  ["أكثر من 5 سنوات وأقل من 10", "ثلثا المكافأة", "2/3"],
   ["10 سنوات فأكثر", "المكافأة كاملة", "1"],
 ];
 
 const ARTICLES = [
   { art: "المادة 84", title: "مكافأة نهاية الخدمة", desc: "نصف شهر عن كل سنة في أول 5 سنوات. شهر كامل عن كل سنة بعدها. السنوات الكسرية بالتناسب." },
-  { art: "المادة 85", title: "تدرج الاستقالة", desc: "قبل سنتين: لا مكافأة. 2-5 سنوات: ثلث. 5-10 سنوات: ثلثان. 10+ سنوات: كاملة." },
+  { art: "المادة 85", title: "تدرج الاستقالة", desc: "قبل سنتين: لا مكافأة. من سنتين إلى 5 سنوات: ثلث. أكثر من 5 وأقل من 10: ثلثان. 10 سنوات فأكثر: كاملة." },
+  { art: "المادة 87", title: "استحقاق كامل استثنائي", desc: "ترك العمل لقوة قاهرة، أو إنهاء العاملة العقد خلال 6 أشهر من زواجها أو 3 أشهر من وضعها." },
+  { art: "المادة 88", title: "موعد صرف المستحقات", desc: "خلال أسبوع من انتهاء العلاقة، أو أسبوعين إذا كان العامل هو من أنهى العقد." },
   { art: "المادة 111", title: "بدل الإجازة السنوية", desc: "تعويض نقدي عن الإجازات السنوية غير المستنفدة عند ترك العمل." },
   { art: "المادتان 75 و76", title: "مهلة الإشعار", desc: "30 يوماً (إشعار العامل) أو 60 يوماً (إنهاء صاحب العمل) للأجر الشهري، وبدل الإشعار عند عدم الالتزام." },
 ];
@@ -147,11 +232,29 @@ const RELATED = [
 
 // ─── Styles (متناسق مع تصميم Qemlo: بطاقات 26px، شارات برتقالية) ─────────────
 const CSS = `
-.fp{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#D9D9D3);background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.75}
-@media (prefers-color-scheme:dark){.fp{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F)}}
+.fp,.fp .geo{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#D9D9D3)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fp,:root:not([data-theme="light"]) .fp .geo{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F)}}
+:root[data-theme="dark"] .fp,:root[data-theme="dark"] .fp .geo{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F)}
+.fp{background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.75}
 .fp *{box-sizing:border-box}
 .fp h2,.fp h3,.fp h4,.fp p,.fp ol{margin:0;padding:0}
 .fp-wrap{max-width:48rem;margin:0 auto;padding-inline:16px}
+/* globals.css sets overflow-x:hidden on html AND body, which turns body into a scroll
+   container and silently disables position:sticky. clip keeps the no-sideways-scroll
+   guarantee without that side effect, so the result panel can stay pinned on desktop. */
+@media(min-width:960px){.fp-wide{max-width:72rem}body{overflow-x:clip}}
+.fp .geo{max-width:48rem;margin-top:8px}
+.fp .geo-box{border-width:1px;border-radius:26px;overflow:hidden;font-size:13.5px}
+.fp .geo-bar{border-inline-end:0}
+.fp .geo-body{padding:18px 20px}
+.fp .geo-note{border-top-width:1px}
+.fp-quick{border:1px solid var(--ln);border-inline-start:6px solid var(--ac);border-radius:18px;background:var(--bg);padding:14px 18px}
+.fp-quick b{display:block;font-size:12.5px;color:var(--mu);margin-bottom:4px}
+.fp-quick p{font-size:15px;font-weight:800;line-height:1.9}
+.fp-ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.fp-ul li{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.fp-ul li::before{content:"";flex:none;width:8px;height:8px;margin-top:.62em;border-radius:3px;background:var(--ac)}
+.fp-src{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
 .fp a{color:inherit}
 .fp a:focus-visible,.fp summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .fp-crumb{padding-top:16px;padding-bottom:4px}
@@ -163,7 +266,8 @@ const CSS = `
 @media(min-width:640px){.fp-card{padding:32px}}
 .fp-sec{padding-top:24px}
 .fp-h2{font-size:22px;font-weight:800;line-height:1.35;padding-bottom:12px;border-bottom:1px solid var(--ln)}
-.fp-h3{font-size:16px;font-weight:800;margin-bottom:12px}
+.fp .fp-h3{font-size:16px;font-weight:800;margin-bottom:12px}
+.fp-card>.fp-h2+.fp-p,.fp-card>div>.fp-h2+.fp-p{margin-top:0}
 .fp-p{font-size:14.5px}
 .fp-p+.fp-p{margin-top:12px}
 .fp-steps{list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:s}
@@ -179,7 +283,17 @@ const CSS = `
 .fp-t{width:100%;border-collapse:collapse;font-size:14px}
 .fp-t th,.fp-t td{padding:12px 14px;text-align:start;border-bottom:1px solid var(--ln)}
 .fp-t tr:last-child td{border-bottom:0}
-.fp-t th{background:var(--bg);font-weight:800}
+.fp-t th{background:var(--bg);font-weight:800;white-space:nowrap}
+.fp-t td:last-child{white-space:nowrap}
+.fp-t td:first-child{min-width:7.5rem}
+@media(max-width:560px){
+  .fp-ts thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .fp-ts tr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 14px;border-bottom:1px solid var(--ln)}
+  .fp-ts tr:last-child{border-bottom:0}
+  .fp-ts td{padding:0;border:0}
+  .fp-ts td:nth-child(2){grid-column:1/-1;grid-row:2;color:var(--mu);font-size:13.5px}
+  .fp-ts td:nth-child(3){font-size:12px;font-weight:800;border:1px solid var(--ln);border-radius:8px;padding:0 8px;align-self:start}
+}
 .fp-g2,.fp-g3{display:grid;gap:12px;grid-template-columns:1fr}
 @media(min-width:640px){.fp-g2{grid-template-columns:1fr 1fr}.fp-g3{grid-template-columns:repeat(3,1fr)}}
 .fp-art{border:1px solid var(--ln);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px}
@@ -215,11 +329,13 @@ export default function FinalSettlementPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }} />
 
       <main className="fp" dir="rtl">
         <style>{CSS}</style>
 
-        <nav className="fp-wrap fp-crumb" aria-label="مسار التنقل">
+        <nav className="fp-wrap fp-wide fp-crumb" aria-label="مسار التنقل">
           <ol>
             <li><Link href="/">الرئيسية</Link></li>
             <li><Link href="/ar/sa">أدوات السعودية</Link></li>
@@ -228,7 +344,7 @@ export default function FinalSettlementPage() {
         </nav>
 
         {/* الحاسبة (يجب أن يحتوي المكوّن على H1 واحد فقط: «حاسبة المخالصة النهائية في السعودية») */}
-        <div className="fp-wrap" style={{ paddingTop: 16, paddingBottom: 16 }}>
+        <div className="fp-wrap fp-wide" style={{ paddingTop: 16, paddingBottom: 16 }}>
           <FinalSettlementCalculator />
         </div>
 
@@ -237,7 +353,7 @@ export default function FinalSettlementPage() {
           appliesTo="المملكة العربية السعودية — عقود العمل في القطاع الخاص"
           keyRule="المادتان 84 و85 للمكافأة — المادة 111 للإجازات — المادتان 75 و76 لمهلة الإشعار"
           authority="وزارة الموارد البشرية والتنمية الاجتماعية"
-          authorityUrl="https://hrsd.gov.sa"
+          authorityUrl={HRSD_URL}
           lastReviewed={LAST_REVIEWED}
           disclaimer="هذه الأداة تقديرية استرشادية — نتائجها لا تُعدّ مخالصة رسمية. راجع متخصصاً عند الحاجة."
         />
@@ -248,12 +364,33 @@ export default function FinalSettlementPage() {
             <h2 className="fp-h2">ما هي المخالصة النهائية وكيف تُحسب؟</h2>
 
             <div>
-              <p className="fp-p">
-                <strong>المخالصة النهائية</strong> هي تسوية مستحقات العامل عند انتهاء علاقة العمل، وتشمل عادةً مكافأة نهاية الخدمة وآخر راتب مستحق وتعويض رصيد الإجازات وبدل الإشعار إن وجد. أدخل بيانات خدمتك لتحسب الحاسبة كل بند على حدة وتعرض الإجمالي، ثم اطبع نموذج المخالصة. النتيجة تقديرية وفق نظام العمل السعودي وليست بديلاً عن الجهة الرسمية أو عقد العمل.
+              <p className="fp-p fp-def">
+                <strong>المخالصة النهائية</strong> (وتُسمى أيضاً التسوية النهائية أو تصفية مستحقات نهاية الخدمة) هي تسوية مستحقات العامل عند انتهاء علاقة العمل، وتشمل عادةً مكافأة نهاية الخدمة وآخر راتب مستحق وتعويض رصيد الإجازات وبدل الإشعار إن وجد. أدخل بيانات خدمتك لتحسب الحاسبة كل بند على حدة وتعرض الإجمالي، ثم اطبع نموذج المخالصة. النتيجة تقديرية وفق نظام العمل السعودي وليست بديلاً عن الجهة الرسمية أو عقد العمل.
               </p>
               <p className="fp-p">
                 تستند الحاسبة إلى نظام العمل الصادر بالمرسوم الملكي (م/51) وتعديلاته، وتحديداً المادتين (84) و(85) لمكافأة نهاية الخدمة، والمادة (111) لبدل الإجازة السنوية، والمادتين (75) و(76) لمهلة الإشعار، مع مراعاة تعديلات فبراير 2025.
               </p>
+            </div>
+
+            <div className="fp-quick">
+              <b>معادلة المخالصة النهائية</b>
+              <p>صافي المخالصة = آخر راتب مستحق + مكافأة نهاية الخدمة + بدل رصيد الإجازات + بدل الإشعار (إن استُحق) + مستحقات أخرى − الخصومات</p>
+            </div>
+
+            <div>
+              <h3 className="fp-h3">ماذا تشمل المخالصة النهائية؟</h3>
+              <div className="fp-tw">
+                <table className="fp-t fp-ts">
+                  <thead>
+                    <tr><th>البند</th><th>طريقة الحساب</th><th>السند النظامي</th></tr>
+                  </thead>
+                  <tbody>
+                    {COMPONENTS.map(([item, how, art]) => (
+                      <tr key={item}><td><b>{item}</b></td><td>{how}</td><td>{art}</td></tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div>
@@ -307,6 +444,27 @@ export default function FinalSettlementPage() {
               مثال: أجر 10,000 ر.س وخدمة 6 سنوات، المكافأة الكاملة 35,000 ر.س (25,000 عن أول 5 سنوات + 10,000 عن السنة السادسة). عند الاستقالة يستحق ثلثيها، أي نحو 23,333.33 ر.س. للتفصيل استخدم{" "}
               <Link href="/gratuity-calculator/saudi" style={{ fontWeight: 800 }}>حاسبة مكافأة نهاية الخدمة</Link>.
             </p>
+          </div>
+        </section>
+
+        {/* 2ب) موعد الصرف + حالات خاصة */}
+        <section className="fp-wrap fp-sec">
+          <div className="fp-card">
+            <div>
+              <h2 className="fp-h2">متى تُصرف المخالصة النهائية؟</h2>
+              <p className="fp-p" style={{ marginTop: 14 }}>
+                وفق المادة (88) من نظام العمل: إذا انتهت خدمة العامل وجب على صاحب العمل دفع أجره وتصفية حقوقه خلال <strong>أسبوع على الأكثر</strong> من تاريخ انتهاء العلاقة العقدية. وإذا كان العامل هو من أنهى العقد فتُصفّى حقوقه كاملة خلال مدة <strong>لا تزيد على أسبوعين</strong>. ولصاحب العمل أن يحسم من المستحقات أي دين مستحق له بسبب العمل.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="fp-h3">حالات خاصة تغيّر استحقاق المكافأة</h3>
+              <ul className="fp-ul">
+                <li><span><strong>المادة 87 — استحقاق كامل:</strong> إذا ترك العامل العمل نتيجة قوة قاهرة خارجة عن إرادته، أو أنهت العاملة العقد خلال 6 أشهر من عقد زواجها أو 3 أشهر من وضعها. اختر في الحاسبة «استثناء المرأة (م/87)».</span></li>
+                <li><span><strong>المادة 81 — ترك العمل دون إشعار مع بقاء الحقوق:</strong> للعامل ذلك في حالات محددة، مثل إخلال صاحب العمل بالتزاماته الجوهرية أو الغش عند التعاقد أو الاعتداء عليه.</span></li>
+                <li><span><strong>المادة 80 — فسخ دون مكافأة أو إشعار:</strong> في حالات محددة حصراً كالاعتداء أو الإخلال الجوهري بالالتزامات أو الغياب الطويل دون سبب مشروع. هذه الحالات خارج نطاق الحاسبة.</span></li>
+              </ul>
+            </div>
           </div>
         </section>
 
@@ -395,10 +553,13 @@ export default function FinalSettlementPage() {
 
             <div className="fp-rev">
               <p>
-                <strong>آخر تحديث للمحتوى:</strong> {LAST_REVIEWED}. المرجع: نظام العمل السعودي الصادر بالمرسوم الملكي (م/51) وتعديلاته بالمرسوم (م/44) وتاريخ 8/2/1446هـ، السارية اعتباراً من 19 فبراير 2025م، ومنصات وزارة الموارد البشرية والتنمية الاجتماعية (
-                <a href="https://www.hrsd.gov.sa" target="_blank" rel="noopener noreferrer">hrsd.gov.sa</a>
-                ). الحاسبة استرشادية وليست بديلاً عن الجهات الرسمية أو المشورة القانونية.
+                <strong>آخر تحديث للمحتوى:</strong> <time dateTime={LAST_REVIEWED_ISO}>{LAST_REVIEWED}</time>. المرجع: نظام العمل السعودي الصادر بالمرسوم الملكي (م/51) وتعديلاته بالمرسوم (م/44) وتاريخ 8/2/1446هـ، السارية اعتباراً من 19 فبراير 2025م. الحاسبة استرشادية وليست بديلاً عن الجهات الرسمية أو المشورة القانونية.
               </p>
+              <p style={{ marginTop: 8 }}><strong>المصادر الرسمية:</strong></p>
+              <ul className="fp-src">
+                <li><a href={HRSD_URL} target="_blank" rel="noopener noreferrer">وزارة الموارد البشرية والتنمية الاجتماعية — نظام العمل (hrsd.gov.sa)</a></li>
+                <li><a href={HRSD_EOSB_CALC_URL} target="_blank" rel="noopener noreferrer">حاسبة مكافأة نهاية الخدمة الرسمية — وزارة الموارد البشرية</a></li>
+              </ul>
             </div>
           </div>
         </section>

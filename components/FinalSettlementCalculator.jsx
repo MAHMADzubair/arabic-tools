@@ -43,13 +43,26 @@ const REASONS = [
 
 // ─── Styles (Qemlo: tokens --c-* with fallbacks) ───────────────────────────────
 const CSS = `
-.fs{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#D9D9D3);--er:var(--error,#B42318);--g:linear-gradient(160deg,#FF9B63 0%,#FF6A1A 55%,#EE5A0B 100%);color:var(--ink);font-size:15px;line-height:1.7;padding-bottom:5.5rem}
-@media(min-width:960px){.fs{padding-bottom:0}}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fs{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F);--er:var(--error,#FF8A80)}}
-:root[data-theme="dark"] .fs{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F);--er:var(--error,#FF8A80)}
+.fs{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF6A1A);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#D9D9D3);--er:var(--error,#B42318);--g:linear-gradient(160deg,#FF9B63 0%,#FF6A1A 55%,#EE5A0B 100%);color:var(--ink);font-size:15px;line-height:1.7;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fs{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F);--er:var(--error,#FF8A80);color-scheme:dark}}
+:root[data-theme="dark"] .fs{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F);--er:var(--error,#FF8A80);color-scheme:dark}
 .fs *,.fs *::before,.fs *::after{box-sizing:border-box}
 .fs h1,.fs h2,.fs h3{margin:0;line-height:1.3}
 .fs-stack{display:flex;flex-direction:column;gap:1rem}
+/* Desktop: form on one side, live result pinned beside it */
+@media(min-width:960px){
+  .fs-stack{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,380px);align-items:start}
+  .fs-stack>.fs-intro{grid-column:1/-1}
+  .fs-stack>.fs-card:not(.fs-intro){grid-column:1}
+  .fs-stack>.fs-res{grid-column:2;grid-row:2/span 6;position:sticky;top:5rem;max-height:calc(100vh - 6rem);overflow-y:auto;overscroll-behavior:contain}
+  .fs-stack>.fs-res .fs-hero .big{font-size:clamp(1.8rem,3vw,2.4rem)}
+  .fs-stack>.fs-res .fs-hero{padding:1.2rem 1.25rem}
+  .fs-stack>.fs-res .fs-bd{padding:.6rem 1.25rem .9rem}
+  .fs-stack>.fs-res .fs-line{padding-block:.55rem}
+  .fs-stack>.fs-res .fs-line .s{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .fs-stack>.fs-res .fs-line.net{display:none}
+  .fs-stack>.fs-res .fs-acts{padding:.9rem 1.25rem}
+}
 
 /* Cards */
 .fs-card{background:var(--sf);border:1px solid var(--ln);border-radius:26px;padding:1.1rem;display:flex;flex-direction:column;gap:1.1rem;min-width:0}
@@ -57,6 +70,7 @@ const CSS = `
 .fs-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:.75rem}
 .fs-top h1{font-size:clamp(1.35rem,4.6vw,1.9rem);font-weight:800}
 .fs-top p{margin:.4rem 0 0;font-size:.92rem;color:var(--mu)}
+.fs-badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.8rem;padding:0;list-style:none}
 .fs-badge{border:1px solid var(--ln);border-radius:10px;padding:.2rem .65rem;font-size:.76rem;font-weight:800;white-space:nowrap;background:var(--bg)}
 
 /* Section head: number sits in a glossy tile */
@@ -71,12 +85,16 @@ const CSS = `
 .fs-note-s{margin:.4rem 0 0;font-size:.8rem;line-height:1.7;color:var(--mu)}
 .fs-in{width:100%;min-width:0;min-height:52px;padding:.6rem .9rem;font:inherit;font-size:17px;font-weight:700;color:var(--ink);background:var(--sf);border:2px solid var(--ln);border-radius:16px}
 .fs-in:hover{border-color:var(--mu)}
+.fs-in::placeholder{color:var(--mu);opacity:.8;font-weight:600}
+.fs-in[type="date"]{font-size:15px}
 .fs-in[type="number"],.fs-in[type="date"]{direction:ltr;text-align:center;font-variant-numeric:tabular-nums}
 .fs-in:focus-visible,.fs-btn:focus-visible,.fs-tg:focus-visible,.fs-exp:focus-visible,.fs-sbar-b:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 
 /* Toggle buttons */
 .fs-tgrid{display:grid;gap:.6rem;grid-template-columns:1fr 1fr}
 @media(min-width:640px){.fs-t3{grid-template-columns:1fr 1fr 1fr}}
+.fs-t3s{grid-template-columns:repeat(3,minmax(0,1fr))}
+.fs-t3s .fs-tg{padding:.6rem .45rem;text-align:center}
 .fs-tg{border:2px solid var(--ln);border-radius:16px;background:var(--sf);color:var(--ink);padding:.7rem .8rem;text-align:start;font:inherit;font-size:.88rem;font-weight:800;cursor:pointer;min-height:48px;transition:border-color .15s}
 .fs-tg:hover{border-color:var(--ink)}
 .fs-tg small{display:block;font-weight:600;font-size:.74rem;color:var(--mu);margin-top:2px;line-height:1.5}
@@ -92,9 +110,22 @@ const CSS = `
 .fs-row{display:flex;justify-content:space-between;gap:.75rem;align-items:baseline}
 .fs-row b{white-space:nowrap}
 .fs-total{border:2px solid var(--ink);border-radius:16px;padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center;gap:.75rem;font-weight:800}
-.fs-total span:last-child{font-size:1.35rem;font-weight:800}
+.fs-total span:last-child{font-size:clamp(1.1rem,5vw,1.35rem);font-weight:800;white-space:nowrap}
 .fs-sub{font-size:.88rem;font-weight:800;margin:0 0 .6rem}
 .fs-sub.ded{color:var(--er)}
+.fs-stats{display:grid;gap:.6rem;grid-template-columns:1fr 1fr}
+.fs-stats>:first-child{grid-column:1/-1}
+@media(min-width:640px){.fs-stats{grid-template-columns:1fr 1fr 1fr}.fs-stats>:first-child{grid-column:auto}}
+
+/* Optional details for the printable form */
+.fs-opt{border:1px dashed var(--ln);border-radius:18px;background:var(--bg)}
+.fs-opt summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.8rem 1rem;font-size:.9rem;font-weight:800;min-height:48px;border-radius:18px}
+.fs-opt summary::-webkit-details-marker{display:none}
+.fs-opt summary small{display:block;font-size:.76rem;font-weight:600;color:var(--mu)}
+.fs-opt summary::after{content:"+";font-size:1.2rem;font-weight:800;flex:none}
+.fs-opt[open] summary::after{content:"−"}
+.fs-opt summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.fs-opt .fs-grid{padding:0 1rem 1rem}
 
 /* Result: glossy orange hero */
 .fs-res{border:1px solid var(--ln);border-radius:26px;background:var(--sf);overflow:hidden;scroll-margin-top:1rem}
@@ -112,7 +143,9 @@ const CSS = `
 .fs-line.ded .t,.fs-line.ded .a{color:var(--er)}
 .fs-line.net{background:var(--g);color:#0D0D0D;border:2px solid var(--ink);border-radius:16px;padding:.9rem .9rem;margin-top:.6rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
 .fs-line.net .t,.fs-line.net .a{font-size:1.05rem;font-weight:800;color:#0D0D0D}
-.fs-acts{display:flex;flex-wrap:wrap;gap:.6rem;padding:1rem 1.25rem 1.25rem;border-top:1px solid var(--ln)}
+.fs-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem;padding:1rem 1.25rem 1.25rem;border-top:1px solid var(--ln)}
+.fs-acts .fs-btn{padding-inline:.5rem;font-size:.86rem}
+.fs-acts .fs-btn.pri{grid-column:1/-1;font-size:.95rem}
 .fs-btn{border:2px solid var(--ln);border-radius:16px;background:var(--sf);color:var(--ink);padding:.6rem 1.1rem;font:inherit;font-size:.92rem;font-weight:800;cursor:pointer;min-height:48px}
 .fs-btn:hover{border-color:var(--ink)}
 .fs-btn.pri{background:var(--g);color:#0D0D0D;border-color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
@@ -124,10 +157,11 @@ const CSS = `
 .fs-calc p{margin:0}
 .fs-calc .f{font-size:.8rem;margin:.3rem 0;word-break:break-word;direction:rtl}
 .fs-calc .l{font-size:.78rem;color:var(--mu)}
-.fs-disc{margin:0 1.25rem 1rem;border:1px dashed var(--ln);border-radius:16px;padding:.8rem .95rem;font-size:.78rem;line-height:1.8;color:var(--mu)}
+.fs-disc{margin:0 1.25rem 1.25rem;border:1px dashed var(--ln);border-radius:16px;padding:.8rem .95rem;font-size:.78rem;line-height:1.8;color:var(--mu)}
 
 /* Mobile sticky result bar */
-.fs-sbar{position:fixed;inset-inline:0;bottom:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.65rem 1rem calc(.65rem + env(safe-area-inset-bottom,0px));background:var(--sf);border-top:1px solid var(--ln);box-shadow:0 -8px 24px -12px rgba(0,0,0,.25)}
+.fs-sbar{position:fixed;inset-inline:0;bottom:0;z-index:20;display:flex;transition:transform .2s ease;align-items:center;justify-content:space-between;gap:.75rem;padding:.65rem 1rem calc(.65rem + env(safe-area-inset-bottom,0px));background:var(--sf);border-top:1px solid var(--ln);box-shadow:0 -8px 24px -12px rgba(0,0,0,.25)}
+.fs-sbar.off{transform:translateY(110%);visibility:hidden}
 @media(min-width:960px){.fs-sbar{display:none}}
 .fs-sbar-t{display:grid;min-width:0}
 .fs-sbar-t span{font-size:.76rem;font-weight:600;color:var(--mu)}
@@ -167,7 +201,7 @@ function SectionHeader({ num, title }) {
   return (
     <div className="fs-head">
       <div className="fs-num" aria-hidden="true">{num}</div>
-      <h2>{title}</h2>
+      <h2 id={`fs-s${num}`}>{title}</h2>
     </div>
   );
 }
@@ -216,11 +250,11 @@ function DateInput({ label, value, onChange }) {
   );
 }
 
-function ToggleGroup({ label, options, value, onChange, cols3 }) {
+function ToggleGroup({ label, options, value, onChange, cols3, compact }) {
   return (
     <div role="group" aria-label={label}>
       <span className="fs-label">{label}</span>
-      <div className={`fs-tgrid ${cols3 ? "fs-t3" : ""}`}>
+      <div className={`fs-tgrid ${compact ? "fs-t3s" : cols3 ? "fs-t3" : ""}`}>
         {options.map((o) => (
           <button key={o.id} type="button" className="fs-tg" aria-pressed={value === o.id}
             onClick={() => onChange(o.id)}>
@@ -270,6 +304,10 @@ function DocRow({ label, value, cls }) {
 // ─── Main ──────────────────────────────────────────────────────────────────────
 export default function FinalSettlementCalculator() {
   const resultRef = useRef(null);
+  const closeRef = useRef(null);
+  const openerRef = useRef(null);
+  // Mobile bar is only useful while the result is still below the screen.
+  const [barOn, setBarOn] = useState(true);
 
   const [employeeName, setEmployeeName] = useState("");
   const [employerName, setEmployerName] = useState("");
@@ -316,15 +354,31 @@ export default function FinalSettlementCalculator() {
     setCalcDate(new Date().toLocaleDateString("ar-SA-u-nu-latn", { year: "numeric", month: "long", day: "numeric" }));
   }, []);
 
-  // Escape closes the printable document
+  // Escape closes the printable document; focus moves in and back out
   useEffect(() => {
     if (!showDocument) return;
+    const opener = openerRef.current;
+    closeRef.current?.focus();
     const onKey = (e) => {
       if (e.key === "Escape") setShowDocument(false);
     };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      opener?.focus?.();
+    };
   }, [showDocument]);
+
+  // Hide the mobile bar once the result is on screen or already scrolled past
+  useEffect(() => {
+    const el = resultRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => {
+      setBarOn(!entry.isIntersecting && entry.boundingClientRect.top > 0);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const handleTerminationChange = (rId) => {
     setTerminationReason(rId);
@@ -419,26 +473,23 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
       <style>{CSS}</style>
 
       {/* Header */}
-      <div className="fs-card">
+      <div className="fs-card fs-intro">
         <div className="fs-top">
           <div>
             <h1>حاسبة المخالصة النهائية في السعودية</h1>
             <p>تصفية كاملة لجميع مستحقات العامل وفق المواد 75 و84 و85 و111 من نظام العمل</p>
+            <ul className="fs-badges">
+              <li className="fs-badge">محدث 2026 — نظام العمل السعودي</li>
+              <li className="fs-badge">مجانية وبدون تسجيل</li>
+              <li className="fs-badge">نموذج مخالصة للطباعة</li>
+            </ul>
           </div>
-          <span className="fs-badge">محدث 2026 — نظام العمل السعودي</span>
         </div>
       </div>
 
       {/* 1 */}
-      <section className="fs-card" aria-labelledby="s1">
-        <SectionHeader num="1" title="بيانات الموظف والعقد" />
-        <div className="fs-grid fs-g2">
-          <TextInput label="اسم الموظف (للنموذج)" value={employeeName} onChange={setEmployeeName} placeholder="محمد علي الزهراني" />
-          <TextInput label="اسم جهة العمل / الشركة" value={employerName} onChange={setEmployerName} placeholder="شركة الخليج للمقاولات" />
-          <TextInput label="المسمى الوظيفي" value={position} onChange={setPosition} placeholder="مهندس مدني أول" />
-          <TextInput label="رقم الهوية الوطنية / الإقامة" value={employeeId} onChange={setEmployeeId} placeholder="1xxxxxxxxx" />
-        </div>
-
+      <section className="fs-card" aria-labelledby="fs-s1">
+        <SectionHeader num="1" title="العقد ومدة الخدمة" />
         <ToggleGroup
           label="نوع العقد"
           value={contractType}
@@ -477,10 +528,25 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
             </span>
           </div>
         )}
+
+        <details className="fs-opt">
+          <summary>
+            <span>
+              بيانات نموذج المخالصة (اختياري)
+              <small>الاسم وجهة العمل تظهر في النموذج المطبوع فقط ولا تؤثر في الحساب</small>
+            </span>
+          </summary>
+          <div className="fs-grid fs-g2">
+            <TextInput label="اسم الموظف (للنموذج)" value={employeeName} onChange={setEmployeeName} placeholder="محمد علي الزهراني" />
+            <TextInput label="اسم جهة العمل / الشركة" value={employerName} onChange={setEmployerName} placeholder="شركة الخليج للمقاولات" />
+            <TextInput label="المسمى الوظيفي" value={position} onChange={setPosition} placeholder="مهندس مدني أول" />
+            <TextInput label="رقم الهوية الوطنية / الإقامة" value={employeeId} onChange={setEmployeeId} placeholder="1xxxxxxxxx" />
+          </div>
+        </details>
       </section>
 
       {/* 2 */}
-      <section className="fs-card">
+      <section className="fs-card" aria-labelledby="fs-s2">
         <SectionHeader num="2" title="هيكل الراتب والأجر الفعلي" />
         <div className="fs-grid fs-g2">
           <NumInput label="الراتب الأساسي الشهري (ر.س)" value={basicSalary} onChange={setBasicSalary} />
@@ -494,7 +560,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
             label="قاسم الشهر لحساب الأجر اليومي"
             value={monthlyDivisor}
             onChange={setMonthlyDivisor}
-            cols3
+            compact
             options={[
               { id: "30", label: "÷30", desc: "الأشيع بالسعودية" },
               { id: "26", label: "÷26", desc: "بعض العقود" },
@@ -506,7 +572,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
           </p>
         </div>
 
-        <div className="fs-grid fs-g3">
+        <div className="fs-stats">
           {[
             ["الأجر الفعلي الإجمالي", calc.totalWage, true],
             ["الأجر اليومي", calc.daily, false],
@@ -521,7 +587,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
       </section>
 
       {/* 3 */}
-      <section className="fs-card">
+      <section className="fs-card" aria-labelledby="fs-s3">
         <SectionHeader num="3" title="مكافأة نهاية الخدمة — المادتان 84 و 85" />
         <div className="fs-box">
           <div className="fs-row">
@@ -557,7 +623,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
       </section>
 
       {/* 4 */}
-      <section className="fs-card">
+      <section className="fs-card" aria-labelledby="fs-s4">
         <SectionHeader num="4" title="بدل رصيد الإجازة السنوية — المادة 111" />
         <NumInput label="رصيد الإجازة السنوية غير المستنفد (بالأيام)" value={unusedLeaveDays} onChange={setUnusedLeaveDays} />
         <div>
@@ -589,7 +655,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
       </section>
 
       {/* 5 */}
-      <section className="fs-card">
+      <section className="fs-card" aria-labelledby="fs-s5">
         <SectionHeader num="5" title="بدل مهلة الإشعار — المادتان 75 و 76" />
         {contractType === "fixed" ? (
           <div className="fs-note warn">
@@ -637,7 +703,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
       </section>
 
       {/* 6 */}
-      <section className="fs-card">
+      <section className="fs-card" aria-labelledby="fs-s6">
         <SectionHeader num="6" title="مستحقات وخصومات أخرى" />
         <div>
           <p className="fs-sub">إضافات ومستحقات أخرى (+)</p>
@@ -659,8 +725,8 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
       </section>
 
       {/* Results */}
-      <section className="fs-res" ref={resultRef} aria-live="polite" aria-label="النتيجة">
-        <div className="fs-hero">
+      <section className="fs-res" ref={resultRef} aria-label="النتيجة">
+        <div className="fs-hero" aria-live="polite" aria-atomic="true">
           <p style={{ fontSize: 14, fontWeight: 800 }}>إجمالي المخالصة النهائية الصافية</p>
           <p className="big">{fmt(calc.netSettlement)} <span>ر.س</span></p>
         </div>
@@ -684,8 +750,42 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
           <Line label="صافي المخالصة النهائية المستحقة" amount={calc.netSettlement} type="net" />
         </div>
 
+        <div className="fs-acts">
+          <button type="button" className="fs-btn pri" onClick={(e) => {
+            openerRef.current = e.currentTarget;
+            setShowDocument(true);
+            track("print_download_clicked", { tool: "final-settlement", action: "view_document", net_settlement: Math.round(calc.netSettlement) });
+          }}>
+            إنشاء نموذج مخالصة قابل للطباعة
+          </button>
+          <button type="button" className="fs-btn" onClick={(e) => {
+            openerRef.current = e.currentTarget;
+            track("print_download_clicked", { tool: "final-settlement", action: "print_pdf", net_settlement: Math.round(calc.netSettlement) });
+            setShowDocument(true);
+            setTimeout(() => window.print(), 150);
+          }}>
+            طباعة
+          </button>
+          <button type="button" className="fs-btn" onClick={() => {
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
+            track("share_clicked", { tool: "final-settlement", method: "whatsapp" });
+          }}>
+            واتساب
+          </button>
+          <button type="button" className="fs-btn" onClick={() => {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(shareText);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2500);
+              track("share_clicked", { tool: "final-settlement", method: "clipboard" });
+            }
+          }}>
+            {copied ? "✓ تم النسخ" : "نسخ الملخص"}
+          </button>
+        </div>
+
         <button type="button" className="fs-exp" aria-expanded={expandedCalc} onClick={() => setExpandedCalc(!expandedCalc)}>
-          <span>كيف تم الحساب؟ — تفصيل الفورمولا القانونية</span>
+          <span>كيف تم الحساب؟ — المعادلات والمواد النظامية</span>
           <span aria-hidden="true">{expandedCalc ? "−" : "+"}</span>
         </button>
         {expandedCalc && (
@@ -724,43 +824,11 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
         <div className="fs-disc">
           <b>ملاحظة وإخلاء مسؤولية قانوني:</b> هذه الحاسبة تقديرية واسترشادية لتصفية مستحقات العامل وفق المواد (75، 84، 85، 111) من نظام العمل السعودي الصادر بالمرسوم الملكي (م/51) وتعديلاته. ليست بديلاً عن الاستشارة القانونية أو التسوية الرسمية المعتمدة من جهة العمل. للنزاعات العمالية، يُرجى الرجوع لمنصة <b>ودي</b> التابعة لوزارة الموارد البشرية والتنمية الاجتماعية (hrsd.gov.sa). <b>آخر تحديث للمحتوى:</b> 2026م.
         </div>
-
-        <div className="fs-acts">
-          <button type="button" className="fs-btn pri" onClick={() => {
-            setShowDocument(true);
-            track("print_download_clicked", { tool: "final-settlement", action: "view_document", net_settlement: Math.round(calc.netSettlement) });
-          }}>
-            إنشاء نموذج مخالصة نهائية قابل للطباعة
-          </button>
-          <button type="button" className="fs-btn" onClick={() => {
-            track("print_download_clicked", { tool: "final-settlement", action: "print_pdf", net_settlement: Math.round(calc.netSettlement) });
-            setShowDocument(true);
-            setTimeout(() => window.print(), 150);
-          }}>
-            طباعة
-          </button>
-          <button type="button" className="fs-btn" onClick={() => {
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
-            track("share_clicked", { tool: "final-settlement", method: "whatsapp" });
-          }}>
-            مشاركة عبر واتساب
-          </button>
-          <button type="button" className="fs-btn" onClick={() => {
-            if (navigator.clipboard) {
-              navigator.clipboard.writeText(shareText);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2500);
-              track("share_clicked", { tool: "final-settlement", method: "clipboard" });
-            }
-          }}>
-            {copied ? "✓ تم النسخ" : "نسخ الملخص"}
-          </button>
-        </div>
       </section>
 
       {/* Mobile sticky result bar */}
       {!showDocument && (
-        <div className="fs-sbar" role="region" aria-label="ملخص النتيجة">
+        <div className={`fs-sbar ${barOn ? "" : "off"}`} role="region" aria-label="ملخص النتيجة">
           <div className="fs-sbar-t">
             <span>صافي المخالصة</span>
             <b>{fmt(calc.netSettlement)} ر.س</b>
@@ -780,7 +848,7 @@ ${SITE_URL}/ar/sa/final-settlement-calculator`,
                   track("print_download_clicked", { tool: "final-settlement", action: "modal_print_pdf", net_settlement: Math.round(calc.netSettlement) });
                   window.print();
                 }}>طباعة / PDF</button>
-                <button type="button" className="fs-btn" onClick={() => setShowDocument(false)}>إغلاق</button>
+                <button type="button" className="fs-btn" ref={closeRef} onClick={() => setShowDocument(false)}>إغلاق</button>
               </div>
             </div>
 
