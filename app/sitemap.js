@@ -103,7 +103,7 @@ export default function sitemap() {
   // Static / legal / trust pages — lowest crawl priority
   // Note: /disclaimer added 2026-10 (was missing despite having a real page)
   const staticPages = [
-    "/about", "/contact", "/changelog", "/privacy", "/terms", "/disclaimer",
+    "/about", "/contact", "/changelog", "/guides", "/guides/zakat-al-fitr-2027", "/privacy", "/terms", "/disclaimer",
   ].map((route) => ({
     url: `${SITE_URL}${route}`,
     changeFrequency: "yearly",
