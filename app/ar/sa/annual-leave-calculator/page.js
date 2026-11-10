@@ -292,7 +292,7 @@ export default function SaudiAnnualLeavePage() {
                   <span className="text-xl">⏱️</span>
                   <div>
                     <p className="text-sm font-bold text-ink group-hover:text-brand">حاسبة العمل الإضافي</p>
-                    <p className="text-[11px] text-ink-muted">أجر ساعات الأوفر تايم بنسبة 150% (م/107)</p>
+                    <p className="text-[11px] text-ink-muted">أجر الساعة الفعلي + 50% من الأساسي (م/107)</p>
                   </div>
                 </div>
                 <span className="text-brand font-bold">←</span>
