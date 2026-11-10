@@ -10,6 +10,7 @@
  */
 
 import { useState, useMemo, useId, useRef, useEffect } from "react";
+import { toNum, calculateAnnualLeave, leaveBalance } from "../lib/annualLeaveCalc";
 
 // ─── Data (unchanged) ────────────────────────────────────────────────────────
 const COUNTRIES = [
@@ -61,11 +62,6 @@ const COUNTRIES = [
 
 // Short code shown instead of the flag emoji (display only).
 const CODES = { sa: "SA", ae: "AE", kw: "KW", eg: "EG" };
-
-function toNum(v) {
-  const n = parseFloat(v);
-  return isNaN(n) || n < 0 ? 0 : n;
-}
 
 // Western digits (9,000.00). For Arabic-Hindi digits change "en-US" to "ar-EG".
 const fmt = (n) =>
@@ -155,41 +151,52 @@ function SectionHead({ icon, title, hint }) {
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
-export default function AnnualLeaveCalculator() {
+// lockedCountry: show one country only (used by the Saudi page). title/subtitle override the header.
+export default function AnnualLeaveCalculator({ lockedCountry, title, subtitle } = {}) {
   const uid = useId();
   const resultRef = useRef(null);
   const copyTimer = useRef(null);
   const [copied, setCopied] = useState(false);
-  const [countryId, setCountryId] = useState("sa");
+  const [countryId, setCountryId] = useState(lockedCountry || "sa");
   const [salary, setSalary] = useState("9000");
   const [yearsOfService, setYearsOfService] = useState("6");
   const [unusedDays, setUnusedDays] = useState("15");
+  // Optional balance helper
+  const [monthsWorked, setMonthsWorked] = useState("8");
+  const [carriedDays, setCarriedDays] = useState("0");
+  const [takenDays, setTakenDays] = useState("0");
+  // Mobile bar is only useful while the result is still below the screen.
+  const [barOn, setBarOn] = useState(true);
 
   const country = COUNTRIES.find((c) => c.id === countryId) || COUNTRIES[0];
 
-  const results = useMemo(() => {
-    const s = toNum(salary);
-    const y = toNum(yearsOfService);
-    const uDays = toNum(unusedDays);
+  // The math lives in lib/annualLeaveCalc.js so tests exercise the real code.
+  const results = useMemo(
+    () =>
+      calculateAnnualLeave({
+        rule: { ...country, monthDivisor: country.id === "kw" ? 26 : 30 },
+        salary,
+        yearsOfService,
+        unusedDays,
+      }),
+    [salary, yearsOfService, unusedDays, country]
+  );
 
-    const annualEntitlement =
-      country.seniorThresholdYears > 0 && y >= country.seniorThresholdYears
-        ? country.seniorDays
-        : country.standardDays;
+  const helper = useMemo(
+    () => leaveBalance({ entitlement: results.annualEntitlement, monthsWorked, carriedDays, takenDays }),
+    [results.annualEntitlement, monthsWorked, carriedDays, takenDays]
+  );
 
-    const daysInMonth = country.id === "kw" ? 26 : 30;
-    const dailyWage = s > 0 ? s / daysInMonth : 0;
-    const fullAnnualLeavePay = dailyWage * annualEntitlement;
-    const unusedBalanceCompensation = dailyWage * uDays;
-
-    return {
-      annualEntitlement,
-      dailyWage,
-      fullAnnualLeavePay,
-      unusedBalanceCompensation,
-      daysInMonth,
-    };
-  }, [salary, yearsOfService, unusedDays, country]);
+  // Hide the mobile bar once the result is on screen or already scrolled past
+  useEffect(() => {
+    const el = resultRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => {
+      setBarOn(!entry.isIntersecting && entry.boundingClientRect.top > 0);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => () => clearTimeout(copyTimer.current), []);
 
@@ -261,9 +268,9 @@ export default function AnnualLeaveCalculator() {
           <Icon name="calendar" size={26} />
         </span>
         <div className="alc-head-text">
-          <h1 className="alc-title">حاسبة بدل الإجازات السنوية</h1>
+          <h1 className="alc-title">{title || "حاسبة بدل الإجازات السنوية"}</h1>
           <p className="alc-sub">
-            احسب أجر الإجازة السنوية والتعويض النقدي عن رصيد الإجازات غير المستنفدة.
+            {subtitle || "احسب أجر الإجازة السنوية والتعويض النقدي عن رصيد الإجازات غير المستنفدة."}
           </p>
         </div>
       </header>
@@ -271,6 +278,7 @@ export default function AnnualLeaveCalculator() {
       <div className="alc-layout">
         {/* Inputs */}
         <div className="alc-col">
+          {lockedCountry ? null : (
           <section className="alc-card" aria-labelledby={`${uid}-h-country`}>
             <fieldset className="alc-fieldset">
               <legend className="alc-legend" id={`${uid}-h-country`}>
@@ -310,6 +318,7 @@ export default function AnnualLeaveCalculator() {
               </p>
             </fieldset>
           </section>
+          )}
 
           <section className="alc-card" aria-labelledby={`${uid}-h-inputs`}>
             <SectionHead
@@ -381,6 +390,62 @@ export default function AnnualLeaveCalculator() {
                   </div>
                 </div>
               </div>
+
+              <details className="alc-help">
+                <summary>
+                  <span>
+                    لا تعرف رصيدك؟ احسبه
+                    <small>الاستحقاق السنوي × أشهر العمل ÷ 12 + المرحّل − المستخدم</small>
+                  </span>
+                </summary>
+                <div className="alc-help-body">
+                  <div className="alc-grid3">
+                    <div className="alc-field">
+                      <label className="alc-label" htmlFor={`${uid}-months`}>أشهر العمل في السنة الحالية</label>
+                      <div className="alc-input-wrap">
+                        <input id={`${uid}-months`} type="number" inputMode="decimal" min="0" max="12" value={monthsWorked}
+                          onChange={(e) => setMonthsWorked(e.target.value)} onWheel={noWheel} className="alc-input alc-num alc-has-unit" />
+                        <span className="alc-unit" aria-hidden="true">شهر</span>
+                      </div>
+                    </div>
+                    <div className="alc-field">
+                      <label className="alc-label" htmlFor={`${uid}-carried`}>أيام مرحّلة من سنوات سابقة</label>
+                      <div className="alc-input-wrap">
+                        <input id={`${uid}-carried`} type="number" inputMode="decimal" min="0" value={carriedDays}
+                          onChange={(e) => setCarriedDays(e.target.value)} onWheel={noWheel} className="alc-input alc-num alc-has-unit" />
+                        <span className="alc-unit" aria-hidden="true">يوم</span>
+                      </div>
+                    </div>
+                    <div className="alc-field">
+                      <label className="alc-label" htmlFor={`${uid}-taken`}>أيام استخدمتها</label>
+                      <div className="alc-input-wrap">
+                        <input id={`${uid}-taken`} type="number" inputMode="decimal" min="0" value={takenDays}
+                          onChange={(e) => setTakenDays(e.target.value)} onWheel={noWheel} className="alc-input alc-num alc-has-unit" />
+                        <span className="alc-unit" aria-hidden="true">يوم</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="alc-help-out">
+                    <p>
+                      الرصيد التقديري: <strong><span className="alc-num">{fmtShort(Math.round(helper.balance * 100) / 100)}</span> يوماً</strong>
+                      <small>
+                        يتراكم <span className="alc-num">{fmtShort(Math.round(helper.monthlyRate * 100) / 100)}</span> يوم عن كل شهر
+                        (<span className="alc-num">{results.annualEntitlement}</span> ÷ <span className="alc-num">12</span>)
+                      </small>
+                    </p>
+                    <button type="button" className="alc-help-btn" onClick={() => setUnusedDays(String(Math.round(helper.balance * 100) / 100))}>
+                      استخدم هذا الرصيد
+                    </button>
+                  </div>
+                </div>
+              </details>
+
+              {lockedCountry ? (
+                <p className="alc-note">
+                  <span className="alc-note-ic"><Icon name="info" size={16} /></span>
+                  <span>{country.lawNote}</span>
+                </p>
+              ) : null}
             </div>
           </section>
 
@@ -391,14 +456,14 @@ export default function AnnualLeaveCalculator() {
 
         {/* Result */}
         <aside className="alc-side" ref={resultRef} id={`${uid}-result`}>
-          <section className="alc-result" aria-live="polite" aria-label="النتيجة">
+          <section className="alc-result" aria-label="النتيجة">
             <div className="alc-result-top">
               <span className="alc-tile alc-tile-ink">
                 <Icon name="clock" size={20} />
               </span>
               <p className="alc-result-label">التعويض النقدي عن الرصيد المتبقي</p>
             </div>
-            <p className="alc-result-value">
+            <p className="alc-result-value" aria-live="polite" aria-atomic="true">
               <span className="alc-num alc-result-num">{fmtShort(results.unusedBalanceCompensation)}</span>
               <span className="alc-result-cur">{country.currency}</span>
             </p>
@@ -438,7 +503,7 @@ export default function AnnualLeaveCalculator() {
       </div>
 
       {/* Mobile sticky result bar */}
-      <div className="alc-bar" role="region" aria-label="ملخص النتيجة">
+      <div className={`alc-bar${barOn ? "" : " alc-bar-off"}`} role="region" aria-label="ملخص النتيجة">
         <div className="alc-bar-text">
           <span className="alc-bar-label">التعويض عن الرصيد</span>
           <span className="alc-bar-value">
@@ -474,11 +539,10 @@ const CSS = `
 
   max-width: 68rem;
   margin-inline: auto;
-  padding-block-end: 5.5rem;
   color: var(--c-ink);
   font-family: inherit;
+  color-scheme: light;
 }
-@media (min-width: 960px) { .alc { padding-block-end: 0; } }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .alc {
     --c-bg: var(--bg, #0D0D0D);
@@ -487,6 +551,7 @@ const CSS = `
     --c-ink-soft: var(--ink-soft, #B4B4AD);
     --c-line: var(--line, #34342F);
     --c-on-ink: var(--on-ink, #0D0D0D);
+    color-scheme: dark;
   }
 }
 :root[data-theme="dark"] .alc {
@@ -496,6 +561,7 @@ const CSS = `
   --c-ink-soft: var(--ink-soft, #B4B4AD);
   --c-line: var(--line, #34342F);
   --c-on-ink: var(--on-ink, #0D0D0D);
+  color-scheme: dark;
 }
 
 .alc *, .alc *::before, .alc *::after { box-sizing: border-box; }
@@ -536,7 +602,7 @@ const CSS = `
 .alc-col { display: grid; gap: 1rem; min-width: 0; align-content: start; }
 @media (min-width: 960px) {
   .alc-layout { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
-  .alc-side { position: sticky; top: 1rem; }
+  .alc-side { position: sticky; top: 5rem; }
 }
 .alc-side { scroll-margin-top: 1rem; min-width: 0; }
 
@@ -668,6 +734,23 @@ html[dir="rtl"] input.alc-num, .alc input.alc-num { text-align: center; }
 .alc-grid2 { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 @media (min-width: 420px) { .alc-grid2 { grid-template-columns: 1fr 1fr; } }
 
+/* Optional balance helper */
+.alc-help { border: 1px dashed var(--c-line); border-radius: 18px; background: var(--c-bg); }
+.alc-help summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .8rem 1rem; min-height: 48px; font-size: .92rem; font-weight: 800; border-radius: 18px; }
+.alc-help summary::-webkit-details-marker { display: none; }
+.alc-help summary small { display: block; font-size: .76rem; font-weight: 600; color: var(--c-ink-soft); }
+.alc-help summary::after { content: "+"; flex: none; font-size: 1.2rem; font-weight: 800; }
+.alc-help[open] summary::after { content: "−"; }
+.alc-help summary:focus-visible { outline: 3px solid var(--c-ink); outline-offset: 2px; }
+.alc-help-body { display: grid; gap: .9rem; padding: 0 1rem 1rem; }
+.alc-grid3 { display: grid; gap: .9rem; }
+@media (min-width: 640px) { .alc-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; } }
+.alc-help-out { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; padding: .8rem 1rem; background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 14px; }
+.alc-help-out p { margin: 0; font-size: .95rem; }
+.alc-help-out strong { font-weight: 800; }
+.alc-help-out small { display: block; font-size: .76rem; color: var(--c-ink-soft); }
+.alc-help-btn { min-height: 44px; padding: .5rem 1rem; font: inherit; font-size: .88rem; font-weight: 800; color: var(--c-ink); background: var(--c-bg); border: 2px solid var(--c-ink); border-radius: 14px; cursor: pointer; }
+.alc-help-btn:focus-visible { outline: 3px solid var(--c-signal); outline-offset: 2px; }
 .alc-legal { margin: 0; padding-inline: 0.4rem; font-size: 0.8rem; line-height: 1.9; color: var(--c-ink-soft); }
 
 /* Result panel: orange is the background, text stays ink */
@@ -752,6 +835,8 @@ html[dir="rtl"] input.alc-num, .alc input.alc-num { text-align: center; }
   border-block-start: 1px solid var(--c-line);
   box-shadow: 0 -8px 24px -12px rgba(0,0,0,.25);
 }
+.alc-bar { transition: transform .2s ease; }
+.alc-bar-off { transform: translateY(110%); visibility: hidden; }
 @media (min-width: 960px) { .alc-bar { display: none; } }
 .alc-bar-text { display: grid; min-width: 0; }
 .alc-bar-label { font-size: 0.76rem; font-weight: 600; color: var(--c-ink-soft); }
