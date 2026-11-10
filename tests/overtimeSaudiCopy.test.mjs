@@ -21,6 +21,8 @@ test("Saudi overtime page no longer presents 150% of basic as the rule", () => {
   assert.doesNotMatch(page, /بنسبة 150%/);
   assert.doesNotMatch(page, /\(150%\)/);
   assert.doesNotMatch(page, /40 × 1\.5 بموجب/);
+  const guide = readFileSync(new URL("../components/ToolGuideSection.jsx", import.meta.url), "utf8");
+  assert.doesNotMatch(guide, /السعودية وفق المادة \(107\) من نظام العمل بنسبة 150%/);
 });
 
 test("calculator keeps the Article 107 formula and Saudi rate label", () => {
