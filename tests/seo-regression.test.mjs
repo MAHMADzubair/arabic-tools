@@ -22,7 +22,7 @@ async function getUrlsFromSitemap() {
 async function main() {
   const urls = await getUrlsFromSitemap();
   // Expected total URLs (including all tools & static pages)
-  assert.equal(urls.length, 57, `Sitemap should contain 57 URLs, found ${urls.length}`);
+  assert.equal(urls.length, 59, `Sitemap should contain 59 URLs, found ${urls.length}`);
 
   const priority = [
     "/ar/ae/quotation-generator",

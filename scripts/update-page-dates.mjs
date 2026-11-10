@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const sitemap = readFileSync("app/sitemap.js", "utf8");
 const routes = [...new Set([...sitemap.matchAll(/"(\/[a-z0-9\-/]+)"/g)].map((m) => m[1]))].sort();
-const NON_TOOL = new Set(["/about", "/contact", "/changelog", "/privacy", "/terms", "/disclaimer", "/ar/sa", "/ar/ae"]);
+const NON_TOOL = new Set(["/about", "/contact", "/changelog", "/privacy", "/terms", "/disclaimer", "/ar/sa", "/ar/ae", "/guides", "/guides/zakat-al-fitr-2027"]);
 
 const dates = {};
 for (const route of routes) {
