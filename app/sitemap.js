@@ -1,3 +1,4 @@
+import { GUIDES } from "@/lib/guides";
 import { SITE_URL } from "@/lib/siteConfig";
 
 export default function sitemap() {
@@ -103,7 +104,8 @@ export default function sitemap() {
   // Static / legal / trust pages — lowest crawl priority
   // Note: /disclaimer added 2026-10 (was missing despite having a real page)
   const staticPages = [
-    "/about", "/contact", "/changelog", "/guides", "/guides/zakat-al-fitr-2027", "/privacy", "/terms", "/disclaimer",
+    "/about", "/contact", "/changelog", "/guides", "/guides/zakat-al-fitr-2027",
+    ...GUIDES.filter((g) => g.slug !== "zakat-al-fitr-2027").map((g) => g.href), "/privacy", "/terms", "/disclaimer",
   ].map((route) => ({
     url: `${SITE_URL}${route}`,
     changeFrequency: "yearly",

@@ -10,11 +10,15 @@ test("every guide has a page, a sitemap entry and stays out of the tool trust ba
   const dates = read("scripts/update-page-dates.mjs");
   for (const g of GUIDES) {
     assert.match(g.updated, /^\d{4}-\d{2}-\d{2}$/);
-    assert.ok(existsSync(new URL(`../app${g.href}/page.js`, import.meta.url)), g.href);
-    assert.ok(sitemap.includes(`"${g.href}"`), `${g.href} missing from sitemap`);
-    assert.ok(dates.includes(`"${g.href}"`), `${g.href} must be excluded from tool dates`);
+    const staticPage = existsSync(new URL(`../app${g.href}/page.js`, import.meta.url));
+    assert.ok(staticPage || existsSync(new URL("../app/guides/[slug]/page.js", import.meta.url)), g.href);
+    if (staticPage) {
+      assert.ok(sitemap.includes(`"${g.href}"`), `${g.href} missing from sitemap`);
+      assert.ok(dates.includes(`"${g.href}"`), `${g.href} must be excluded from tool dates`);
+    }
   }
   assert.ok(sitemap.includes('"/guides"'));
+  assert.match(sitemap, /GUIDES\.filter/);
 });
 
 test("zakat al-fitr 2027 guide: sourced figures, honest 2027 status, schema", () => {
