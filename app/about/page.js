@@ -67,7 +67,13 @@ const jsonLd = {
         name: "Qemlo",
         url: SITE_URL,
         email: CONTACT_EMAIL,
-        founder: { "@type": "Person", name: "محمد أحمد", alternateName: "Muhammad Ahmad", jobTitle: "مؤسس Qemlo" },
+        founder: {
+          "@type": "Person",
+          name: "محمد أحمد",
+          alternateName: "Muhammad Ahmad",
+          jobTitle: "مؤسس Qemlo",
+          image: `${SITE_URL}/brand/founder-avatar.svg`,
+        },
         publishingPrinciples: `${SITE_URL}/changelog`,
       },
     },
@@ -276,9 +282,14 @@ export default function AboutPage() {
         {/* ── Founder ── */}
         <section aria-labelledby="founder" className={`${gap} flex flex-col gap-9 md:flex-row md:items-start md:gap-[72px]`}>
           <div className="min-w-0 md:w-[260px] md:flex-none">
-            <div aria-hidden="true" className="q-serif flex h-[120px] w-[120px] items-center justify-center rounded-full bg-[var(--text)] text-[40px] font-bold text-[var(--orange)]">
-              م.أ
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element -- static SVG avatar */}
+            <img
+              src="/brand/founder-avatar.svg"
+              alt="صورة رمزية لمحمد أحمد، مؤسس Qemlo"
+              width={136}
+              height={136}
+              className="h-[136px] w-[136px] rounded-full shadow-[0_18px_36px_-18px_rgba(255,106,26,0.7)]"
+            />
             <p className="q-serif m-0 mt-4 text-[28px] font-bold">محمد أحمد</p>
             <p className="m-0 text-[15px] text-[var(--text-2)]">مؤسس Qemlo</p>
             <a href={`mailto:${CONTACT_EMAIL}`} dir="ltr" className="q-mono mt-2 inline-block text-sm text-[var(--text-2)] underline underline-offset-4">
@@ -286,14 +297,21 @@ export default function AboutPage() {
             </a>
           </div>
           <div className="min-w-0 max-w-[680px] flex-1">
-            <p className={`${eyebrow} mb-2.5`}>التزام المؤسس</p>
-            <h2 id="founder" className={h2Cls}>أقرأ كل بلاغ بنفسي.</h2>
+            <p className={`${eyebrow} mb-2.5`}>قصة Qemlo</p>
+            <h2 id="founder" className={h2Cls}>بدأ كل شيء بسؤال: من أين جاء هذا الرقم؟</h2>
             <p className="mt-[18px] text-lg leading-[2.15] [text-wrap:pretty]">
-              Qemlo مشروع صغير، وهذا يعني أن من يبني الأداة هو نفسه من يقرأ رسالتك حين تخبرنا أن رقماً لا يبدو صحيحاً. نراجع بلاغك مقابل النص الرسمي، ونرد عليك خلال 24 ساعة في أيام العمل.
+              درستُ علوم الحاسب، وأول ما تعلّمته أن البرنامج الذي يُخفي منطقه لا يُوثق به. وحين بحثت عن حاسبات عربية لحقوق العمل والضريبة في الخليج، وجدت أرقاماً كثيرة وشرحاً قليلاً: نتيجة بلا معادلة، وبلا مادة نظامية، وبلا تاريخ يقول متى رُوجعت آخر مرة.
+            </p>
+            <p className="mt-[18px] text-lg leading-[2.15] [text-wrap:pretty]">
+              فبنيت Qemlo على قاعدة واحدة: <strong>كل رقم يظهر ومعه طريقه.</strong> أقرأ النظام أو القرار بنفسي، وأكتب المعادلة، وأختبرها بأمثلة محسوبة يدوياً قبل أن تصل إليك.
+            </p>
+            <p className="mt-[18px] text-lg leading-[2.15] [text-wrap:pretty]">
+              وQemlo مشروع صغير، وهذا يعني أن من يبني الأداة هو نفسه من يقرأ رسالتك حين تخبرنا أن رقماً لا يبدو صحيحاً. نراجع بلاغك مقابل النص الرسمي، ونرد عليك خلال 24 ساعة في أيام العمل.
             </p>
             <p className="mt-[18px] text-lg leading-[2.15] [text-wrap:pretty]">
               ونحن نخطئ. منذ {formatArabicMonth(stats.since)} سجّلنا {stats.byType.fix} تصحيحات لأخطاء في أدواتنا وشروحها، وكل واحد منها مكتوب علناً بما كان قبله وما صار بعده. نفضّل أن ترى أخطاءنا مكتوبة على أن تثق بنا ثقة عمياء.
             </p>
+            <p className="q-serif mt-6 text-xl font-semibold text-[var(--text-2)]">— محمد أحمد</p>
           </div>
         </section>
 

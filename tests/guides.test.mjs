@@ -13,12 +13,12 @@ test("every guide has a page, a sitemap entry and stays out of the tool trust ba
     const staticPage = existsSync(new URL(`../app${g.href}/page.js`, import.meta.url));
     assert.ok(staticPage || existsSync(new URL("../app/guides/[slug]/page.js", import.meta.url)), g.href);
     if (staticPage) {
-      assert.ok(sitemap.includes(`"${g.href}"`), `${g.href} missing from sitemap`);
+      assert.ok(sitemap.includes("...GUIDES.map((g) => g.href)") || sitemap.includes(`"${g.href}"`), `${g.href} missing from sitemap`);
       assert.ok(dates.includes(`"${g.href}"`), `${g.href} must be excluded from tool dates`);
     }
   }
   assert.ok(sitemap.includes('"/guides"'));
-  assert.match(sitemap, /GUIDES\.filter/);
+  assert.match(sitemap, /\.\.\.GUIDES\.map\(\(g\) => g\.href\)/);
 });
 
 test("zakat al-fitr 2027 guide: sourced figures, honest 2027 status, schema", () => {
@@ -46,4 +46,11 @@ test("zakat al-fitr calculator matches the guide's sourced figures", () => {
   const page = read("app/zakat-al-fitr/page.js");
   assert.doesNotMatch(page, /13\.5/);
   assert.match(page, /guides\/zakat-al-fitr-2027/);
+});
+
+test("guides get their own sitemap tier (monthly, 0.7)", () => {
+  const sitemap = read("app/sitemap.js");
+  assert.match(sitemap, /const guidePages = \["\/guides", \.\.\.GUIDES\.map\(\(g\) => g\.href\)\]/);
+  assert.match(sitemap, /changeFrequency: "monthly",\s*priority: 0\.7/);
+  assert.match(sitemap, /\.\.\.guidePages,/);
 });
