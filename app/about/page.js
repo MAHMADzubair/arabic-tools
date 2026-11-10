@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FOUNDER, founderSchema } from "@/lib/founder";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 import { editorialFontClass } from "@/lib/editorialFonts";
 import { getChangelogStats, formatArabicDate, formatArabicMonth } from "@/lib/changelog";
@@ -67,13 +68,7 @@ const jsonLd = {
         name: "Qemlo",
         url: SITE_URL,
         email: CONTACT_EMAIL,
-        founder: {
-          "@type": "Person",
-          name: "محمد أحمد",
-          alternateName: "Muhammad Ahmad",
-          jobTitle: "مؤسس Qemlo",
-          image: `${SITE_URL}/brand/founder-avatar.svg`,
-        },
+        founder: founderSchema(SITE_URL),
         publishingPrinciples: `${SITE_URL}/changelog`,
       },
     },
@@ -284,13 +279,14 @@ export default function AboutPage() {
           <div className="min-w-0 md:w-[260px] md:flex-none">
             {/* eslint-disable-next-line @next/next/no-img-element -- static SVG avatar */}
             <img
-              src="/brand/founder-avatar.svg"
-              alt="صورة رمزية لمحمد أحمد، مؤسس Qemlo"
+              src={FOUNDER.avatar}
+              alt={`صورة رمزية لـ${FOUNDER.nameAr}، ${FOUNDER.roleAr}`}
               width={136}
               height={136}
               className="h-[136px] w-[136px] rounded-full shadow-[0_18px_36px_-18px_rgba(255,106,26,0.7)]"
             />
-            <p className="q-serif m-0 mt-4 text-[28px] font-bold">محمد أحمد</p>
+            <p className="q-serif m-0 mt-4 text-[28px] font-bold">{FOUNDER.nameAr}</p>
+            <p dir="ltr" className="m-0 text-left text-sm text-[var(--text-2)] md:text-right">{FOUNDER.nameEn}</p>
             <p className="m-0 text-[15px] text-[var(--text-2)]">مؤسس Qemlo</p>
             <a href={`mailto:${CONTACT_EMAIL}`} dir="ltr" className="q-mono mt-2 inline-block text-sm text-[var(--text-2)] underline underline-offset-4">
               {CONTACT_EMAIL}
@@ -311,7 +307,7 @@ export default function AboutPage() {
             <p className="mt-[18px] text-lg leading-[2.15] [text-wrap:pretty]">
               ونحن نخطئ. منذ {formatArabicMonth(stats.since)} سجّلنا {stats.byType.fix} تصحيحات لأخطاء في أدواتنا وشروحها، وكل واحد منها مكتوب علناً بما كان قبله وما صار بعده. نفضّل أن ترى أخطاءنا مكتوبة على أن تثق بنا ثقة عمياء.
             </p>
-            <p className="q-serif mt-6 text-xl font-semibold text-[var(--text-2)]">— محمد أحمد</p>
+            <p className="q-serif mt-6 text-xl font-semibold text-[var(--text-2)]">— {FOUNDER.nameAr}</p>
           </div>
         </section>
 

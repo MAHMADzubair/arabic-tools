@@ -64,3 +64,14 @@ test("about page: schema, real links, no placeholders", () => {
   // Receipt example must match Article 107: (12000/240) + 0.5*(9600/240) = 70; 70*16 = 1120
   assert.equal((12000 / 240 + 0.5 * (9600 / 240)) * 16, 1120);
 });
+
+test("founder name comes from lib/founder.js everywhere", async () => {
+  const { FOUNDER } = await import("../lib/founder.js");
+  assert.equal(FOUNDER.nameAr, "محمد أحمد زبير");
+  assert.equal(FOUNDER.nameEn, "Muhammad Ahmad Zubair");
+  for (const f of ["app/about/page.js", "app/contact/page.js", "app/guides/zakat-al-fitr-2027/page.js", "components/guides/GuideArticle.jsx"]) {
+    const src = read(f);
+    assert.match(src, /from "@\/lib\/founder"/, f);
+    assert.doesNotMatch(src, /"محمد أحمد"|>محمد أحمد<|م\.أ/, f);
+  }
+});

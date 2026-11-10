@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FOUNDER, founderSchema } from "@/lib/founder";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 import { editorialFontClass } from "@/lib/editorialFonts";
 import { formatArabicDate } from "@/lib/changelog";
@@ -211,7 +212,7 @@ export function guideJsonLd(g) {
         datePublished: g.published,
         dateModified: g.updated,
         mainEntityOfPage: `${SITE_URL}${g.href}`,
-        author: { "@type": "Person", name: "محمد أحمد", alternateName: "Muhammad Ahmad", url: `${SITE_URL}/about` },
+        author: founderSchema(SITE_URL),
         publisher: { "@id": SITE_ORG_ID },
       },
       {
@@ -266,8 +267,9 @@ export default function GuideArticle({ g }) {
               <p className="mt-5 max-w-[600px] text-[17px] leading-[2] text-[var(--text-2)] [text-wrap:pretty] sm:text-[19px]">{g.lead}</p>
               <div className="mt-6 flex flex-wrap items-center gap-x-[18px] gap-y-2 text-sm text-[var(--text-2)]">
                 <span className="inline-flex items-center gap-2.5">
-                  <span aria-hidden="true" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--guide-green)] text-xs font-bold text-[var(--guide-band)]">م.أ</span>
-                  <span>كتبه <Link href="/about" className="font-bold text-[var(--text)] no-underline">محمد أحمد</Link></span>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static SVG avatar */}
+                  <img src={FOUNDER.avatar} alt="" width={36} height={36} className="h-9 w-9 flex-none rounded-full" />
+                  <span>كتبه <Link href="/about" className="font-bold text-[var(--text)] no-underline">{FOUNDER.nameAr}</Link></span>
                 </span>
                 <span>حُدّث في <time dateTime={g.updated} className="q-mono text-[var(--text)]">{formatArabicDate(g.updated)}</time></span>
                 <span>{g.minutes} دقائق قراءة</span>

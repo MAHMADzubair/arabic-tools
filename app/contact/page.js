@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FOUNDER, founderSchema } from "@/lib/founder";
 import ContactForm from "./ContactForm";
 import CopyEmailButton from "./CopyEmailButton";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
@@ -75,7 +76,7 @@ const jsonLd = {
         "@id": SITE_ORG_ID,
         "@type": "Organization",
         email: CONTACT_EMAIL,
-        founder: { "@type": "Person", name: "محمد أحمد", alternateName: "Muhammad Ahmad" },
+        founder: founderSchema(SITE_URL),
         contactPoint: [
           {
             "@type": "ContactPoint",
@@ -236,11 +237,10 @@ export default function ContactPage() {
             <Link href="/changelog" className="text-[var(--accent-text)] underline decoration-1 underline-offset-[6px]">سجل التحديثات</Link>.
           </p>
           <div className="mt-7 flex items-center gap-4">
-            <div aria-hidden="true" className="flex h-[60px] w-[60px] flex-none items-center justify-center rounded-full bg-[var(--border)] text-base font-bold text-[var(--text-2)]">
-              م.أ
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element -- static SVG avatar */}
+            <img src={FOUNDER.avatar} alt="" width={60} height={60} className="h-[60px] w-[60px] flex-none rounded-full" />
             <div>
-              <p className="m-0 text-[17px] font-bold">محمد أحمد</p>
+              <p className="m-0 text-[17px] font-bold">{FOUNDER.nameAr}</p>
               <p className="mt-0.5 text-sm leading-[1.8] text-[var(--text-2)]">مؤسس Qemlo — يقرأ كل بلاغ ويراجعه بنفسه</p>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FOUNDER, founderSchema } from "@/lib/founder";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 import { editorialFontClass } from "@/lib/editorialFonts";
 import { formatArabicDate } from "@/lib/changelog";
@@ -72,7 +73,7 @@ const jsonLd = {
       datePublished: PUBLISHED,
       dateModified: UPDATED,
       mainEntityOfPage: `${SITE_URL}${PATH}`,
-      author: { "@type": "Person", name: "محمد أحمد", alternateName: "Muhammad Ahmad", url: `${SITE_URL}/about` },
+      author: founderSchema(SITE_URL),
       publisher: { "@id": SITE_ORG_ID },
     },
     {
@@ -166,8 +167,9 @@ export default function ZakatAlFitr2027Guide() {
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-x-[18px] gap-y-2 text-sm text-[var(--text-2)]">
                 <span className="inline-flex items-center gap-2.5">
-                  <span aria-hidden="true" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--guide-green)] text-xs font-bold text-[var(--guide-band)]">م.أ</span>
-                  <span>كتبه <strong className="text-[var(--text)]">محمد أحمد</strong></span>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static SVG avatar */}
+                  <img src={FOUNDER.avatar} alt="" width={36} height={36} className="h-9 w-9 flex-none rounded-full" />
+                  <span>كتبه <strong className="text-[var(--text)]">{FOUNDER.nameAr}</strong></span>
                 </span>
                 <span>حُدّث في <time dateTime={UPDATED} className="q-mono text-[var(--text)]">{formatArabicDate(UPDATED)}</time></span>
                 <span>7 دقائق قراءة</span>
