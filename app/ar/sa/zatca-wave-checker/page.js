@@ -297,7 +297,7 @@ export default function ZatcaWaveCheckerPage() {
             PART 1 — Interactive Calculator (above the fold)
         ════════════════════════════════════════════════════════════════════ */}
         <div className="mx-auto max-w-6xl px-4 py-4 sm:py-6">
-          <ZatcaWaveChecker />
+          <ZatcaWaveChecker theme="auto" />
         </div>
 
         {/* ── GEO Answer Summary (AI / snippet extraction) ── */}

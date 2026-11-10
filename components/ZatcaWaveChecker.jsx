@@ -23,7 +23,7 @@ import {
 
    theme="light" (default) → always light, matches a light site
    theme="dark"            → always dark
-   theme="auto"            → follows the OS (only use if the whole page does too)
+   theme="auto"            → follows the site theme toggle (data-theme), falling back to the OS
 ───────────────────────────────────────────────────────────────────────────── */
 const LIGHT = {
   "--zc-panel": "#FBF7F0",
@@ -92,7 +92,8 @@ const vars = (o) => Object.entries(o).map(([k, v]) => `${k}:${v};`).join("");
 const CSS = `
 .zc-root{${vars(LIGHT)}background:var(--zc-panel);color:var(--zc-text);color-scheme:light;border:1px solid var(--zc-line);}
 .zc-root[data-zc-theme="dark"]{${vars(DARK)}color-scheme:dark;}
-@media (prefers-color-scheme: dark){.zc-root[data-zc-theme="auto"]{${vars(DARK)}color-scheme:dark;}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .zc-root[data-zc-theme="auto"]{${vars(DARK)}color-scheme:dark;}}
+:root[data-theme="dark"] .zc-root[data-zc-theme="auto"]{${vars(DARK)}color-scheme:dark;}
 .zc-root :where(h1,h2,h3,p,li,td,th,label,legend,strong,span,div,caption,small){color:inherit;}
 .zc-root .zc-text{color:var(--zc-text);}
 .zc-root .zc-muted{color:var(--zc-muted);}
@@ -796,26 +797,26 @@ export default function ZatcaWaveChecker({ theme = "light", showReferenceTable =
             جدول موجات الفوترة الإلكترونية (المرحلة الثانية)
           </h2>
           <div className="zc-bordered overflow-x-auto rounded-2xl">
-            <table className="min-w-[460px] text-sm">
+            <table className="w-full text-xs sm:min-w-[460px] sm:text-sm">
               <caption className="sr-only">حدود الإيرادات والسنوات المعتمدة ومواعيد الربط لكل موجة</caption>
               <thead>
                 <tr className="zc-head">
-                  <th scope="col" className="zc-muted px-3 py-3 text-start text-xs font-bold">الموجة</th>
-                  <th scope="col" className="zc-muted px-3 py-3 text-start text-xs font-bold">حد الإيرادات</th>
-                  <th scope="col" className="zc-muted px-3 py-3 text-start text-xs font-bold">السنوات المعتمدة</th>
-                  <th scope="col" className="zc-muted px-3 py-3 text-start text-xs font-bold">الربط</th>
+                  <th scope="col" className="zc-muted px-2 py-3 sm:px-3 text-start text-xs font-bold">الموجة</th>
+                  <th scope="col" className="zc-muted px-2 py-3 sm:px-3 text-start text-xs font-bold">حد الإيرادات</th>
+                  <th scope="col" className="zc-muted px-2 py-3 sm:px-3 text-start text-xs font-bold">السنوات</th>
+                  <th scope="col" className="zc-muted px-2 py-3 sm:px-3 text-start text-xs font-bold">الربط</th>
                 </tr>
               </thead>
               <tbody>
                 {WAVES.map((w) => (
                   <tr key={w.id} className="zc-line-t">
-                    <th scope="row" className="zc-text px-3 py-3 text-start font-bold">
+                    <th scope="row" className="zc-text px-2 py-3 sm:px-3 text-start font-bold">
                       {w.nameAr}
                       <span className="zc-muted block text-xs font-normal">الموجة {w.number}</span>
                     </th>
-                    <td className="px-3 py-3 tabular-nums">أكثر من {w.thresholdFormatted} ريال</td>
-                    <td className="px-3 py-3 tabular-nums">{toNums(w.qualifyYears).join("، ")}</td>
-                    <td className="px-3 py-3 text-xs leading-relaxed">
+                    <td className="px-2 py-3 sm:px-3 tabular-nums">أكثر من {w.thresholdFormatted} ريال</td>
+                    <td className="px-2 py-3 sm:px-3 tabular-nums">{toNums(w.qualifyYears).join("، ")}</td>
+                    <td className="px-2 py-3 sm:px-3 text-xs leading-relaxed">
                       {w.mandateLabel} <strong className="tabular-nums">{w.mandateDateAr}</strong>
                     </td>
                   </tr>
