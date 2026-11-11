@@ -180,44 +180,55 @@ describe("SEO Day 10: UAE Contextual Internal Linking", () => {
   }
 });
 
-describe("SEO Day 10: Non-targeted Routes Preservation", () => {
-  test("Generic non-targeted route preserves global allTools recommendation", () => {
+describe("Topic clusters replace the generic 26-link dump", () => {
+  test("/zakat-calculator links its Islamic cluster, including the Zakat al-Fitr 2027 guide", () => {
     const { container } = render(
-      React.createElement(ToolGuideSection, {
-        ...mockGuideBase,
-        currentPath: "/zakat-calculator",
-      })
+      React.createElement(ToolGuideSection, { ...mockGuideBase, currentPath: "/zakat-calculator" })
     );
-
     const navEl = container.querySelector('nav[aria-labelledby="tg-related"]');
     assert.ok(navEl);
-
-    const anchors = Array.from(navEl.querySelectorAll("a.tg-tool"));
-    // allTools has 27 tools, excluding /zakat-calculator leaves 26
-    assert.equal(anchors.length, 26, `Expected 26 global recommendations on /zakat-calculator, got ${anchors.length}`);
-
-    const hrefs = anchors.map((a) => a.getAttribute("href"));
+    const hrefs = Array.from(navEl.querySelectorAll("a.tg-tool")).map((a) => a.getAttribute("href"));
+    assert.equal(hrefs.length, 6);
     assert.ok(!hrefs.includes("/zakat-calculator"), "Should not link to self");
-    assert.ok(hrefs.includes("/inheritance-calculator"), "Should include other global tools");
+    assert.ok(hrefs.includes("/guides/zakat-al-fitr-2027"));
+    assert.ok(hrefs.includes("/zakat-al-fitr"));
+    assert.ok(!hrefs.includes("/bmi-calculator"), "No off-topic tools");
   });
 
-  test("Global salary-calculator preserves global allTools recommendation", () => {
+  test("/vat-calculator links the Saudi tax cluster, led by the ZATCA wave checker", () => {
     const { container } = render(
-      React.createElement(ToolGuideSection, {
-        ...mockGuideBase,
-        currentPath: "/salary-calculator",
-      })
+      React.createElement(ToolGuideSection, { ...mockGuideBase, currentPath: "/vat-calculator" })
     );
+    const hrefs = Array.from(container.querySelectorAll('nav[aria-labelledby="tg-related"] a.tg-tool')).map((a) => a.getAttribute("href"));
+    assert.equal(hrefs[0], "/ar/sa/zatca-wave-checker");
+    assert.equal(hrefs.length, 5);
+  });
 
-    const navEl = container.querySelector('nav[aria-labelledby="tg-related"]');
-    const anchors = Array.from(navEl.querySelectorAll("a.tg-tool"));
-    assert.equal(anchors.length, 26, `Expected 26 global recommendations on /salary-calculator, got ${anchors.length}`);
+  test("/salary-calculator links the labour cluster", () => {
+    const { container } = render(
+      React.createElement(ToolGuideSection, { ...mockGuideBase, currentPath: "/salary-calculator" })
+    );
+    const hrefs = Array.from(container.querySelectorAll('nav[aria-labelledby="tg-related"] a.tg-tool')).map((a) => a.getAttribute("href"));
+    assert.equal(hrefs.length, 5);
+    assert.ok(hrefs.includes("/ar/sa/final-settlement-calculator"));
+  });
+
+  test("an unmapped route still falls back to the global list", () => {
+    const { container } = render(
+      React.createElement(ToolGuideSection, { ...mockGuideBase, currentPath: "/some-new-tool" })
+    );
+    const anchors = container.querySelectorAll('nav[aria-labelledby="tg-related"] a.tg-tool');
+    assert.equal(anchors.length, 27);
   });
 });
 
 describe("SEO Day 10: Destination Route Existence on Disk", () => {
   const allCuratedDestinations = Array.from(
-    new Set([...SAUDI_CLUSTER_HREFS, ...UAE_CLUSTER_HREFS])
+    new Set([
+      ...SAUDI_CLUSTER_HREFS,
+      ...UAE_CLUSTER_HREFS,
+      ...Object.values(TARGETED_GULF_ROUTES).flat().map((t) => t.href),
+    ])
   );
 
   for (const dest of allCuratedDestinations) {

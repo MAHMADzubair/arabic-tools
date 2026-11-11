@@ -377,6 +377,7 @@ export default function VatRegistrationCheckerPage() {
             title="📌 أدوات مالية وضريبية ذات صلة بالمملكة العربية السعودية"
             subtitle="تصفح الحاسبات المتكاملة لمنظومة الأعمال والفوترة والضرائب في السعودية"
             tools={[
+              { href: "/ar/sa/zatca-wave-checker", icon: "📅", title: "هل منشأتك في الموجة 25 من الفوترة الإلكترونية؟", desc: "إن تجاوزت إيراداتك 187,500 ريال في أي سنة من 2022 إلى 2025 فيلزمك الربط مع منصة فاتورة قبل 1 فبراير 2027. تحقق خلال دقيقة.", badge: "الموجة 25", badgeColor: "bg-orange-100 text-orange-800" },
               { href: "/vat-calculator/saudi", icon: "🧾", title: "حاسبة ضريبة القيمة المضافة 15%", desc: "احسب ضريبة الـ 15% أو افصل السعر الأصلي لبيانات منظومة فاتورة والفوترة الإلكترونية.", badge: "ZATCA 15%", badgeColor: "bg-purple-100 text-purple-700" },
               { href: "/ar/sa/e-invoice-generator", icon: "🧾", title: "مولد الفاتورة الإلكترونية السعودية", desc: "هل أصبحت مؤهلاً أو ملزماً بالتسجيل؟ → أنشئ نموذج فاتورة إلكترونية سعودية (B2B أو B2C) مع احتساب VAT 15%.", badge: "ZATCA فاتورة", badgeColor: "bg-indigo-100 text-indigo-700" },
               { href: "/ar/sa/final-settlement-calculator", icon: "📋", title: "حاسبة المخالصة النهائية الشاملة", desc: "تصفية كاملة لمستحقات العامل: نهاية الخدمة، آخر راتب، بدل الإجازات، وبدل الإشعار.", badge: "نظام العمل", badgeColor: "bg-emerald-100 text-emerald-700" },

@@ -124,6 +124,15 @@ const faqJsonLd = {
 
 const relatedTools = [
   {
+    href: "/ar/sa/zatca-wave-checker",
+    icon: "📅",
+    title: "هل منشأتك في الموجة 25 من الفوترة الإلكترونية؟",
+    desc: "إن تجاوزت إيراداتك 187,500 ريال في أي سنة من 2022 إلى 2025 فيلزمك الربط مع منصة فاتورة قبل 1 فبراير 2027.",
+    badge: "الموجة 25",
+    badgeColor: "bg-orange-100 text-orange-800",
+    cta: "تحقق من موجتك →",
+  },
+  {
     href: "/ar/sa/e-invoice-generator",
     icon: "🧾",
     title: "مولد الفاتورة الإلكترونية السعودية",
