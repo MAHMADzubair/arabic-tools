@@ -189,7 +189,7 @@ const css = `
 }
 .zf *,.zf *::before,.zf *::after{box-sizing:border-box}
 .zf h1,.zf h2,.zf h3,.zf p,.zf dl,.zf dd{margin:0;padding:0}
-.zf button,.zf input{font:inherit;color:inherit}
+:where(.zf) :where(button,input){font:inherit;color:inherit}
 .zf :focus-visible{outline:2px solid var(--z-orange);outline-offset:3px}
 .zf bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
 

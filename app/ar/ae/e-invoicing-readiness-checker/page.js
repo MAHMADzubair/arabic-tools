@@ -295,7 +295,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               <span className="text-[11px] font-bold text-[var(--text-3)] block mb-0.5">
                 موعد تعيين ASP (50M+) — انقضى
               </span>
-              <span className="text-sm font-bold text-[var(--orange)]">انقضى: 30 أكتوبر 2026</span>
+              <span className="text-sm font-bold text-[var(--accent-text)]">انقضى: 30 أكتوبر 2026</span>
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3.5 text-center">
               <span className="text-[11px] font-bold text-[var(--text-3)] block mb-0.5">
@@ -340,15 +340,15 @@ export default function UaeEInvoicingReadinessCheckerPage() {
           </article>
 
           {/* 2. هل ملف PDF يعتبر فاتورة إلكترونية؟ */}
-          <article className="rounded-3xl border border-rose-200 bg-rose-50/50 p-6 sm:p-8 space-y-3">
-            <div className="inline-flex items-center gap-2 text-rose-700 font-bold text-xs">
+          <article className="rounded-3xl border border-rose-200 bg-rose-50/50 dark:border-rose-400/30 dark:bg-rose-500/10 p-6 sm:p-8 space-y-3">
+            <div className="inline-flex items-center gap-2 text-rose-700 dark:text-rose-300 font-bold text-xs">
               <span>⚠️</span>
               <span>مفهوم تنظيمي جوهري</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-rose-950">
+            <h2 className="text-xl sm:text-2xl font-bold text-rose-950 dark:text-rose-100">
               هل ملف PDF يعتبر فاتورة إلكترونية في الإمارات؟
             </h2>
-            <div className="text-sm leading-relaxed text-rose-900 space-y-3">
+            <div className="text-sm leading-relaxed text-rose-900 dark:text-rose-200 space-y-3">
               <p>
                 <strong>الجواب القاطع هو: لا.</strong> ملفات PDF والمستندات النصية كـ Word والصور الممسوحة ضوئياً ورسائل البريد الإلكتروني لا تُعد فواتير إلكترونية بموجب التعريف القانوني والتنظيمي المعتمد في دولة الإمارات.
               </p>
@@ -374,7 +374,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   <tr className="border-b border-[var(--border)] bg-[var(--bg)] text-[var(--text)] font-bold">
                     <th className="p-3.5 sm:p-4">فئة المنشأة / الكيان</th>
                     <th className="p-3.5 sm:p-4">معيار الإيرادات السنوية</th>
-                    <th className="p-3.5 sm:p-4 text-[var(--orange)]">الموعد النهائي لاختيار مزود ASP</th>
+                    <th className="p-3.5 sm:p-4 text-[var(--accent-text)]">الموعد النهائي لاختيار مزود ASP</th>
                     <th className="p-3.5 sm:p-4">موعد التطبيق والتشغيل الإلزامي</th>
                   </tr>
                 </thead>
@@ -384,10 +384,10 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                       المنشآت الخاصة الكبرى (المرحلة الأولى)
                     </td>
                     <td className="p-3.5 sm:p-4 font-mono">50,000,000 درهم أو أكثر</td>
-                    <td className="p-3.5 sm:p-4 font-bold text-[var(--orange)]">
+                    <td className="p-3.5 sm:p-4 font-bold text-[var(--accent-text)]">
                       30 أكتوبر 2026 <span className="text-[10px] text-[var(--text-3)] block font-normal">(انقضى الموعد — تمديد رسمي سابقاً من 31 يوليو)</span>
                     </td>
-                    <td className="p-3.5 sm:p-4 font-bold text-emerald-600">1 يناير 2027</td>
+                    <td className="p-3.5 sm:p-4 font-bold text-emerald-600 dark:text-emerald-400">1 يناير 2027</td>
                   </tr>
                   <tr className="hover:bg-[var(--bg)]/50 transition-colors">
                     <td className="p-3.5 sm:p-4 font-bold text-[var(--text)]">
@@ -395,20 +395,20 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                     </td>
                     <td className="p-3.5 sm:p-4 font-mono">أقل من 50,000,000 درهم</td>
                     <td className="p-3.5 sm:p-4 font-bold">31 مارس 2027</td>
-                    <td className="p-3.5 sm:p-4 font-bold text-emerald-600">1 يوليو 2027</td>
+                    <td className="p-3.5 sm:p-4 font-bold text-emerald-600 dark:text-emerald-400">1 يوليو 2027</td>
                   </tr>
                   <tr className="hover:bg-[var(--bg)]/50 transition-colors">
                     <td className="p-3.5 sm:p-4 font-bold text-[var(--text)]">الجهات والمؤسسات الحكومية</td>
                     <td className="p-3.5 sm:p-4">كافة المعاملات الحكومية</td>
                     <td className="p-3.5 sm:p-4 font-bold">31 مارس 2027</td>
-                    <td className="p-3.5 sm:p-4 font-bold text-emerald-600">1 أكتوبر 2027</td>
+                    <td className="p-3.5 sm:p-4 font-bold text-emerald-600 dark:text-emerald-400">1 أكتوبر 2027</td>
                   </tr>
-                  <tr className="hover:bg-[var(--bg)]/50 transition-colors bg-amber-50/30">
+                  <tr className="hover:bg-[var(--bg)]/50 transition-colors bg-amber-50/30 dark:bg-amber-400/10">
                     <td className="p-3.5 sm:p-4 font-bold text-[var(--text)]">
                       مبيعات المستهلكين الأفراد (B2C)
                     </td>
                     <td className="p-3.5 sm:p-4">نقاط البيع والتجزئة المباشرة للأفراد</td>
-                    <td className="p-3.5 sm:p-4 font-bold text-amber-700" colSpan={2}>
+                    <td className="p-3.5 sm:p-4 font-bold text-amber-700 dark:text-amber-300" colSpan={2}>
                       المبيعات نفسها لا تحسم نطاق المنشأة؛ فقد تظل المنشأة ملزمة إذا تلقت سلعاً أو خدمات من منشآت أخرى
                     </td>
                   </tr>
@@ -460,7 +460,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   href={MOF_ASP_DIRECTORY_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 font-bold text-xs text-[var(--orange)] hover:underline"
+                  className="inline-flex items-center gap-1.5 font-bold text-xs text-[var(--accent-text)] hover:underline"
                 >
                   <span>استعراض دليل مزودي الخدمات المعتمدين الرسمي لدى وزارة المالية</span>
                   <span>↗</span>
@@ -613,13 +613,13 @@ export default function UaeEInvoicingReadinessCheckerPage() {
 
             <ul className="space-y-2.5 text-xs text-[var(--text-2)]">
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
                   <a
                     href={MOF_EINVOICING_URL_AR}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4"
+                    className="font-bold text-[var(--text)] hover:text-[var(--accent-text)] transition-colors underline underline-offset-4"
                   >
                     بوابة الفوترة الإلكترونية — وزارة المالية بدولة الإمارات العربية المتحدة (باللغة العربية)
                   </a>
@@ -630,13 +630,13 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </li>
 
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
                   <a
                     href={MOF_ASP_DIRECTORY_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4"
+                    className="font-bold text-[var(--text)] hover:text-[var(--accent-text)] transition-colors underline underline-offset-4"
                   >
                     قائمة مزودي الخدمات المعتمدين (Accredited Service Providers - ASPs) — وزارة المالية
                   </a>
@@ -647,13 +647,13 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </li>
 
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
                   <a
                     href={FTA_PORTAL_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4"
+                    className="font-bold text-[var(--text)] hover:text-[var(--accent-text)] transition-colors underline underline-offset-4"
                   >
                     الهيئة الاتحادية للضرائب (FTA) — البوابة الرسمية
                   </a>
@@ -664,9 +664,9 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </li>
 
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
-                  <a href={FTA_EINVOICING_FAQ_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4">
+                  <a href={FTA_EINVOICING_FAQ_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--accent-text)] transition-colors underline underline-offset-4">
                     الأسئلة الشائعة الرسمية للهيئة الاتحادية للضرائب حول نطاق الفوترة الإلكترونية ومعاملات B2C
                   </a>
                   <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
@@ -676,7 +676,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </li>
 
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
                   <span className="font-bold text-[var(--text)]">
                     القرار الوزاري رقم 244 لسنة 2025 وقرارات التمديد الوزارية الصادرة لعام 2026
@@ -688,9 +688,9 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </li>
 
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
-                  <a href={MOF_ASP_ACCREDITATION_FRAMEWORK_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4">
+                  <a href={MOF_ASP_ACCREDITATION_FRAMEWORK_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--accent-text)] transition-colors underline underline-offset-4">
                     القرار الوزاري رقم 168 لسنة 2026 — اعتماد مزودي خدمات الفوترة الإلكترونية (وزارة المالية)
                   </a>
                   <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
@@ -700,9 +700,9 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </li>
 
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
-                  <a href={MOF_EINVOICING_MD197_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4">
+                  <a href={MOF_EINVOICING_MD197_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--accent-text)] transition-colors underline underline-offset-4">
                     القرار الوزاري رقم 197 لسنة 2026 — استثناء المجموعة الضريبية وتحديث متطلبات السجلات
                   </a>
                   <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
@@ -712,9 +712,9 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </li>
 
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
-                  <a href={MOF_EINVOICING_CD173_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4">
+                  <a href={MOF_EINVOICING_CD173_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--accent-text)] transition-colors underline underline-offset-4">
                     قرار مجلس الوزراء رقم 173 لسنة 2026 — المخالفات والغرامات الإدارية
                   </a>
                   <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
@@ -724,9 +724,9 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               </li>
 
               <li className="flex items-start gap-2">
-                <span className="text-[var(--orange)] font-bold mt-0.5">•</span>
+                <span className="text-[var(--accent-text)] font-bold mt-0.5">•</span>
                 <div>
-                  <a href={FTA_EINVOICING_DEADLINE_NOTICE_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--orange)] transition-colors underline underline-offset-4">
+                  <a href={FTA_EINVOICING_DEADLINE_NOTICE_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-[var(--text)] hover:text-[var(--accent-text)] transition-colors underline underline-offset-4">
                     تنبيه الهيئة الاتحادية للضرائب بشأن المواعيد القانونية للفوترة الإلكترونية — 25 أكتوبر 2026
                   </a>
                   <span className="text-[var(--text-3)] block text-[11px] mt-0.5">
@@ -772,7 +772,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
               <h2 className="text-lg font-bold text-[var(--text)]">
                 أدوات إماراتية ذات صلة في Qemlo
               </h2>
-              <Link href="/ar/ae" className="text-xs font-bold text-[var(--orange)] hover:underline">
+              <Link href="/ar/ae" className="text-xs font-bold text-[var(--accent-text)] hover:underline">
                 تصفح كل أدوات الإمارات ←
               </Link>
             </div>
@@ -789,7 +789,7 @@ export default function UaeEInvoicingReadinessCheckerPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1 mb-1">
-                      <h3 className="text-xs font-bold text-[var(--text)] group-hover:text-[var(--orange)] transition-colors truncate">
+                      <h3 className="text-xs font-bold text-[var(--text)] group-hover:text-[var(--accent-text)] transition-colors truncate">
                         {tool.title}
                       </h3>
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${tool.badgeColor}`}>

@@ -6,7 +6,7 @@ import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
-  title: "حاسبة التسجيل في ضريبة القيمة المضافة الإمارات | VAT Registration UAE 2026",
+  title: "حاسبة التسجيل في ضريبة القيمة المضافة الإمارات 2026",
   description:
     "تحقق مما إذا كان نشاطك في الإمارات ملزماً أو مؤهلاً للتسجيل في VAT وفق حدود FTA: 375,000 درهم للتسجيل الإلزامي و187,500 درهم للتسجيل الاختياري.",
   keywords: [
@@ -28,7 +28,7 @@ export const metadata = {
     },
   },
   openGraph: {
-    title: "حاسبة التسجيل في ضريبة القيمة المضافة الإمارات | VAT Registration UAE 2026",
+    title: "حاسبة التسجيل في ضريبة القيمة المضافة الإمارات 2026",
     description:
       "تحقق من التزام نشاطك بالتسجيل في ضريبة القيمة المضافة في الإمارات: 375,000 درهم إلزامي و187,500 درهم اختياري وفق الهيئة الاتحادية للضرائب FTA.",
     url: `${SITE_URL}/ar/ae/vat-registration-checker`,
@@ -204,14 +204,14 @@ export default function UaeVatRegistrationCheckerPage() {
 
         {/* ── Page Hero — H1 ──────────────────────────────────────────────── */}
         <div className="mx-auto max-w-3xl px-4 pt-4 pb-2">
-          <div className="rounded-2xl bg-gradient-to-br from-indigo-700 to-blue-800 px-6 py-7 text-white shadow-lg">
+          <div className="rounded-2xl bg-gradient-to-br from-[#1C1917] to-[#0D0D0D] ring-1 ring-white/10 px-6 py-7 text-white shadow-lg">
             <div className="flex items-start gap-3">
               <span className="text-4xl shrink-0 mt-0.5">🏢</span>
               <div>
                 <h1 className="text-2xl font-bold leading-snug sm:text-3xl">
                   حاسبة التسجيل في ضريبة القيمة المضافة في الإمارات
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed text-indigo-100 max-w-xl">
+                <p className="mt-2 text-sm leading-relaxed text-[#D4D4CE] max-w-xl">
                   تحقق مما إذا كان نشاطك ملزماً أو مؤهلاً للتسجيل في VAT وفق حدود الهيئة الاتحادية
                   للضرائب — 375,000 درهم للتسجيل الإلزامي و187,500 درهم للاختياري.
                 </p>
@@ -490,7 +490,7 @@ export default function UaeVatRegistrationCheckerPage() {
                 </div>
               </div>
               <Link href="/ar/ae/purchase-order-generator"
-                className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 transition-colors">
+                className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-[#FF5B04] hover:bg-[#E64F00] text-[#0D0D0D] text-xs font-bold px-4 py-2 transition-colors">
                 <span>📦</span><span>مولد نموذج LPO ←</span>
               </Link>
             </div>
@@ -517,7 +517,7 @@ export default function UaeVatRegistrationCheckerPage() {
                 { n: "٧", title: "تقديم الطلب ومتابعته",              desc: "قدّم الطلب وراقب حالته عبر البوابة. تتولى FTA مراجعة الطلب وقد تطلب معلومات إضافية." },
               ].map((step) => (
                 <li key={step.n} className="flex items-start gap-3">
-                  <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-7 h-7 rounded-full bg-[#FF5B04] text-[#0D0D0D] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {step.n}
                   </span>
                   <div>
@@ -533,7 +533,7 @@ export default function UaeVatRegistrationCheckerPage() {
                 يُمكّنك ذلك من إصدار الفواتير الضريبية، وتحصيل VAT، واسترداد ضريبة المدخلات، وتقديم الإقرارات الدورية.
               </p>
               <a href="https://tax.gov.ae/en/services/vat.registration.aspx" target="_blank" rel="noopener noreferrer"
-                className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 transition-colors">
+                className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-[#FF5B04] hover:bg-[#E64F00] text-[#0D0D0D] text-xs font-bold px-4 py-2 transition-colors">
                 <span>🔗</span><span>بوابة FTA للتسجيل ←</span>
               </a>
             </div>

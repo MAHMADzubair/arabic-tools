@@ -72,7 +72,7 @@ function HeroSection({ onCTAClick }) {
         {/* Headline */}
         <h1 className="text-3xl sm:text-5xl font-bold leading-tight text-white">
           اكتشف أين تضيع<br />
-          <span className="text-amber-300">مبيعاتك على واتساب</span>
+          <span className="text-[#0D0D0D]">مبيعاتك على واتساب</span>
         </h1>
 
         {/* Subheadline */}
@@ -88,7 +88,7 @@ function HeroSection({ onCTAClick }) {
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <button onClick={() => { track("pilot_cta_click", { location: "hero" }); onCTAClick(); }}
-            className="rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-8 py-4 text-base shadow-result transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto">
+            className="rounded-2xl bg-[#0D0D0D] hover:bg-black text-white font-bold px-8 py-4 text-base shadow-result transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto">
             انضم إلى البرنامج التجريبي ←
           </button>
           <a href="#how-it-works"
@@ -275,19 +275,19 @@ function DemoDashboard() {
             <p className="text-3xl font-bold text-rose-700">31%</p>
             <p className="text-xs font-bold text-rose-900">أكثر سبب لخسارة المبيعات</p>
             <p className="text-xs text-rose-700">اعتراض السعر</p>
-            <p className="text-[10px] text-rose-500/70 mt-1">بيانات نموذجية</p>
+            <p className="text-[10px] text-rose-700 mt-1">بيانات نموذجية</p>
           </div>
           <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 space-y-2 text-center">
             <p className="text-3xl font-bold text-amber-700">37</p>
             <p className="text-xs font-bold text-amber-900">عميل جاهز للشراء</p>
             <p className="text-xs text-amber-700">لم يحصل على متابعة</p>
-            <p className="text-[10px] text-amber-500/70 mt-1">بيانات نموذجية</p>
+            <p className="text-[10px] text-amber-700 mt-1">بيانات نموذجية</p>
           </div>
           <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-5 space-y-2 text-center">
             <p className="text-3xl font-bold text-emerald-700">54</p>
             <p className="text-xs font-bold text-emerald-900">فرصة قابلة للاستعادة</p>
             <p className="text-xs text-emerald-700">مثال تقديري فقط</p>
-            <p className="text-[10px] text-emerald-500/70 mt-1">بيانات نموذجية</p>
+            <p className="text-[10px] text-emerald-700 mt-1">بيانات نموذجية</p>
           </div>
         </div>
 
@@ -536,12 +536,12 @@ function PilotOfferSection({ onCTAClick }) {
             "أماكن محدودة جداً",
           ].map(b => (
             <div key={b} className="flex items-start gap-2 text-xs text-white/85">
-              <span className="text-emerald-400 font-bold mt-0.5 shrink-0">✓</span>{b}
+              <span className="text-white font-bold mt-0.5 shrink-0">✓</span>{b}
             </div>
           ))}
         </div>
         <button onClick={() => { track("pilot_cta_click", { location: "pilot_section" }); onCTAClick(); }}
-          className="rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-8 py-4 text-base shadow-result transition-all hover:scale-[1.02] inline-block">
+          className="rounded-2xl bg-[#0D0D0D] hover:bg-black text-white font-bold px-8 py-4 text-base shadow-result transition-all hover:scale-[1.02] inline-block">
           اطلب الوصول المبكر ←
         </button>
       </div>

@@ -577,7 +577,7 @@ const css = `
 }
 .mg *{box-sizing:border-box}
 .mg h1,.mg h2,.mg p,.mg dl,.mg dd{margin:0;padding:0}
-.mg button,.mg input,.mg select{font:inherit;color:inherit}
+:where(.mg) :where(button,input,select){font:inherit;color:inherit}
 .mg :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
 .mg bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
 

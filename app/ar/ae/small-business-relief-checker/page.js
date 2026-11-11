@@ -4,7 +4,7 @@ import GeoAnswerSummary from "@/components/GeoAnswerSummary";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 export const metadata = {
-  title: "حاسبة تسهيلات الأعمال الصغيرة الإمارات 2026–2029 | حد 3 ملايين درهم",
+  title: "تسهيلات الأعمال الصغيرة الإمارات حتى 2029 | حد 3 ملايين",
   description:
     "تحقق من الأهلية التقديرية لتسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية: حد 3,000,000 درهم، الإيرادات السابقة، QFZP، المجموعات متعددة الجنسيات، وامتداد الأهلية الزمنية للفترات المنتهية حتى 31 ديسمبر 2029 وفق القرار الوزاري 131/2026.",
   keywords: [
@@ -19,7 +19,7 @@ export const metadata = {
   ],
   alternates: { canonical: "/ar/ae/small-business-relief-checker" },
   openGraph: {
-    title: "حاسبة تسهيلات الأعمال الصغيرة الإمارات 2026–2029 | حد 3 ملايين درهم",
+    title: "تسهيلات الأعمال الصغيرة الإمارات حتى 2029 | حد 3 ملايين",
     description: "تحقق من أهليتك التقديرية لتسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية وفق FTA.",
     url: `${SITE_URL}/ar/ae/small-business-relief-checker`,
     type: "website",

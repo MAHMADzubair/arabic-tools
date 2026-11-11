@@ -421,7 +421,7 @@ export default function UaeQuotationGenerator() {
         {/* Draft controls */}
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <button onClick={saveDraft}
-            className="rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--orange)] text-xs font-bold px-3 py-1.5 hover:bg-[var(--surface-2)] transition-all">
+            className="rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[var(--accent-text)] text-xs font-bold px-3 py-1.5 hover:bg-[var(--surface-2)] transition-all">
             حفظ المسودة
           </button>
           <button onClick={restoreDraft}
@@ -647,7 +647,7 @@ export default function UaeQuotationGenerator() {
                       <span className="text-xs font-bold text-[var(--text-2)]">بند {idx + 1}</span>
                       <div className="flex gap-2">
                         <button onClick={() => duplicateLine(line.id)}
-                          className="text-[var(--text-2)] hover:text-[var(--orange)] text-xs font-bold transition-colors">
+                          className="text-[var(--text-2)] hover:text-[var(--accent-text)] text-xs font-bold transition-colors">
                           ⧉ تكرار
                         </button>
                         {lines.length > 1 && (
@@ -712,7 +712,7 @@ export default function UaeQuotationGenerator() {
                               {fmt(calc?.vatAmount)}
                             </span>
                           )}
-                          <span className="rounded-full text-[11px] font-bold bg-[var(--surface-2)] text-[var(--orange)] px-2.5 py-0.5">
+                          <span className="rounded-full text-[11px] font-bold bg-[var(--surface-2)] text-[var(--accent-text)] px-2.5 py-0.5">
                             {fmt(calc?.lineTotal)}
                           </span>
                         </div>
@@ -724,7 +724,7 @@ export default function UaeQuotationGenerator() {
             </div>
 
             <button onClick={addLine}
-              className="mt-3 w-full rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--orange)] font-bold text-xs py-3 hover:border-[var(--text)] hover:bg-[var(--surface-2)]/50 transition-all">
+              className="mt-3 w-full rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--accent-text)] font-bold text-xs py-3 hover:border-[var(--text)] hover:bg-[var(--surface-2)]/50 transition-all">
               + إضافة بند جديد
             </button>
           </div>
@@ -788,14 +788,14 @@ export default function UaeQuotationGenerator() {
               ].filter(Boolean).filter(r => r && r.show).map((row, i) => (
                 <div key={i} className={`flex justify-between items-center py-1 ${row.bold ? "border-t border-[var(--border)] pt-2" : ""}`}>
                   <span className={`text-xs ${row.bold ? "font-bold" : "font-medium"} text-[var(--text-2)]`}>{row.label}</span>
-                  <span className={`text-sm font-bold ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--orange)]" : "text-[var(--text)]"}`} dir="ltr">
+                  <span className={`text-sm font-bold ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--accent-text)]" : "text-[var(--text)]"}`} dir="ltr">
                     {row.neg ? "-" : ""}{fmt(Math.abs(row.val))} {details.currency}
                   </span>
                 </div>
               ))}
               <div className="flex justify-between items-center border-t-2 border-[var(--border)] pt-3 mt-2">
                 <span className="text-base font-bold text-[var(--text)]">الإجمالي النهائي</span>
-                <span className="text-xl font-bold text-[var(--orange)]" dir="ltr">
+                <span className="text-xl font-bold text-[var(--accent-text)]" dir="ltr">
                   {fmt(totals.grandTotal)} {details.currency}
                 </span>
               </div>
@@ -854,7 +854,7 @@ export default function UaeQuotationGenerator() {
               معاينة عرض السعر
             </button>
             <button onClick={handlePrint}
-              className="flex-1 rounded-xl border border-[var(--border)] text-[var(--orange)] hover:bg-[var(--surface-2)] font-bold text-sm py-3 transition-all">
+              className="flex-1 rounded-xl border border-[var(--border)] text-[var(--accent-text)] hover:bg-[var(--surface-2)] font-bold text-sm py-3 transition-all">
               طباعة / PDF
             </button>
             <button onClick={handleConvertToInvoice}
@@ -862,7 +862,7 @@ export default function UaeQuotationGenerator() {
               تحويل إلى فاتورة
             </button>
             <button onClick={handleConvertToPO}
-              className="rounded-xl border border-[var(--border)] text-[var(--orange)] hover:bg-[var(--surface-2)] font-bold text-sm px-5 py-3 transition-all whitespace-nowrap">
+              className="rounded-xl border border-[var(--border)] text-[var(--accent-text)] hover:bg-[var(--surface-2)] font-bold text-sm px-5 py-3 transition-all whitespace-nowrap">
               تحويل إلى أمر شراء
             </button>
           </div>
@@ -932,14 +932,14 @@ export default function UaeQuotationGenerator() {
               {/* Seller + Customer */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
-                  <p className="text-[10px] font-bold text-[var(--orange)] uppercase tracking-wide mb-2">إعداد · Prepared By</p>
+                  <p className="text-[10px] font-bold text-[var(--accent-text)] uppercase tracking-wide mb-2">إعداد · Prepared By</p>
                   <p className="font-bold text-[var(--text)] text-sm">{seller.name || "—"}</p>
                   {seller.contactPerson && <p className="text-xs text-[var(--text-2)] mt-0.5">{seller.contactPerson}</p>}
                   {seller.address && <p className="text-xs text-[var(--text-2)]">{seller.address}</p>}
                   {seller.emirate && <p className="text-xs text-[var(--text-2)]">{seller.emirate}، الإمارات</p>}
                   {seller.phone && <p className="text-xs text-[var(--text-2)]" dir="ltr">{seller.phone}</p>}
                   {seller.email && <p className="text-xs text-[var(--text-2)]" dir="ltr">{seller.email}</p>}
-                  {seller.website && <p className="text-xs text-[var(--orange)]" dir="ltr">{seller.website}</p>}
+                  {seller.website && <p className="text-xs text-[var(--accent-text)]" dir="ltr">{seller.website}</p>}
                   {seller.trn && <p className="text-[10px] text-[var(--text-3)] mt-1">TRN: <span dir="ltr">{seller.trn}</span></p>}
                 </div>
                 <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
@@ -1020,8 +1020,8 @@ export default function UaeQuotationGenerator() {
                     totals.totalFees > 0 && { label: "رسوم إضافية / Fees", val: totals.totalFees },
                   ].filter(Boolean).map((row, i) => (
                     <div key={i} className={`flex justify-between px-4 py-2 text-xs ${row.bold ? "bg-[var(--surface-2)] border-t border-[var(--border)]" : "border-t border-[var(--border)] first:border-t-0"}`}>
-                      <span className={row.bold ? "font-bold text-[var(--orange)]" : "text-[var(--text-2)]"}>{row.label}</span>
-                      <span className={`font-bold ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--orange)]" : "text-[var(--text)]"}`} dir="ltr">
+                      <span className={row.bold ? "font-bold text-[var(--accent-text)]" : "text-[var(--text-2)]"}>{row.label}</span>
+                      <span className={`font-bold ${row.neg ? "text-[var(--error)]" : row.bold ? "text-[var(--accent-text)]" : "text-[var(--text)]"}`} dir="ltr">
                         {row.neg ? "-" : ""}{fmt(Math.abs(row.val))} {details.currency}
                       </span>
                     </div>

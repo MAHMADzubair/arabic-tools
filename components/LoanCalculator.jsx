@@ -453,7 +453,7 @@ const css = `
 }
 .ln *{box-sizing:border-box}
 .ln h1,.ln h2,.ln p,.ln dl,.ln dd{margin:0;padding:0}
-.ln button,.ln input,.ln select{font:inherit;color:inherit}
+:where(.ln) :where(button,input,select){font:inherit;color:inherit}
 .ln :focus-visible{outline:3px solid var(--i-ink);outline-offset:2px}
 .ln bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
 

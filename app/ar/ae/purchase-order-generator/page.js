@@ -190,14 +190,14 @@ export default function UaePurchaseOrderGeneratorPage() {
 
         {/* ── Page Hero — H1 ─────────────────────────────────────────────── */}
         <div className="mx-auto max-w-3xl px-4 pt-4 pb-2">
-          <div className="rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-800 px-6 py-7 text-white shadow-lg">
+          <div className="rounded-2xl bg-gradient-to-br from-[#1C1917] to-[#0D0D0D] ring-1 ring-white/10 px-6 py-7 text-white shadow-lg">
             <div className="flex items-start gap-3">
               <span className="text-4xl shrink-0 mt-0.5">📦</span>
               <div>
                 <h1 className="text-2xl font-bold leading-snug sm:text-3xl">
                   مولد نموذج أمر شراء في الإمارات — LPO جاهز للطباعة
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed text-indigo-100 max-w-xl">
+                <p className="mt-2 text-sm leading-relaxed text-[#D4D4CE] max-w-xl">
                   أنشئ نموذج أمر شراء (Purchase Order / LPO) بالدرهم الإماراتي مع بيانات المورد والأصناف
                   وضريبة القيمة المضافة وشروط التسليم — اطبعه أو احفظه PDF مجاناً وبدون تسجيل.
                 </p>
@@ -214,7 +214,7 @@ export default function UaePurchaseOrderGeneratorPage() {
         {/* ── GEO Answer Block ───────────────────────────────────────────── */}
         <div className="mx-auto max-w-3xl px-4 pb-2">
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4 text-xs leading-relaxed shadow-sm" dir="rtl">
-            <p className="text-[11px] font-bold text-indigo-600 uppercase tracking-wider mb-2">ملخص الأداة</p>
+            <p className="text-[11px] font-bold text-[var(--accent-text)] uppercase tracking-wider mb-2">ملخص الأداة</p>
             <div className="grid gap-2 sm:grid-cols-2">
               <div className="flex gap-2">
                 <span className="shrink-0 font-bold text-indigo-700 w-36">ماذا تقدم هذه الأداة؟</span>
@@ -490,11 +490,11 @@ export default function UaePurchaseOrderGeneratorPage() {
 
               <p>
                 للتحقق من وضع مورديك في VAT أو لحساب ضريبة القيمة المضافة على أي مبلغ، استخدم:{" "}
-                <Link href="/ar/ae/vat-registration-checker" className="text-indigo-600 font-bold hover:underline">
+                <Link href="/ar/ae/vat-registration-checker" className="text-[var(--accent-text)] font-bold hover:underline">
                   حاسبة أهلية التسجيل في VAT ←
                 </Link>
                 {" "}أو{" "}
-                <Link href="/vat-calculator/uae" className="text-indigo-600 font-bold hover:underline">
+                <Link href="/vat-calculator/uae" className="text-[var(--accent-text)] font-bold hover:underline">
                   حاسبة ضريبة القيمة المضافة الإمارات ←
                 </Link>
               </p>
@@ -710,7 +710,7 @@ export default function UaePurchaseOrderGeneratorPage() {
 
               <div className="mt-2">
                 <Link href="/ar/ae/vat-registration-checker"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 transition-colors">
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#FF5B04] hover:bg-[#E64F00] text-[#0D0D0D] text-xs font-bold px-4 py-2 transition-colors">
                   <span>🏢</span>
                   <span>تحقق من أهليتك للتسجيل في VAT ←</span>
                 </Link>

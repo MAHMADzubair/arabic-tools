@@ -609,7 +609,8 @@ fieldset.bmi-card > legend + *{ clear:both; }
 .bmi-field{ display:grid; gap:.75rem; min-width:0; }
 .bmi-line{ display:flex; justify-content:space-between; align-items:center; gap:.5rem; }
 .bmi-val{ padding:.125rem .75rem; border-radius:999px; background:#0D0D0D; color:#FF9A52; font-size:.8125rem; font-weight:800; }
-@media (prefers-color-scheme:dark){ .bmi-val{ background:#2A2A27; } }
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bmi-val{ background:#2A2A27; }}
+:root[data-theme="dark"] .bmi-val{ background:#2A2A27; }
 .bmi-grid2{ display:grid; gap:1.5rem; grid-template-columns:minmax(0,1fr); }
 @media (min-width:560px){ .bmi-grid2{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.25rem; } }
 

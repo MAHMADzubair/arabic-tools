@@ -768,7 +768,7 @@ export default function UaeSbrChecker() {
 
             <button type="button" onClick={() => setPriorPeriods([...priorPeriods, { label: "", revenue: "0" }])}
 
-              className="text-xs font-bold text-[var(--orange)] hover:underline">+ إضافة فترة سابقة أخرى</button>
+              className="text-xs font-bold text-[var(--accent-text)] hover:underline">+ إضافة فترة سابقة أخرى</button>
 
             {highestPriorRevenue > 0 && (
 
@@ -934,7 +934,7 @@ export default function UaeSbrChecker() {
 
       <div className="rounded-2xl border-2 border-[var(--orange)] bg-[var(--surface)]  overflow-hidden">
 
-        <div className={`p-6 text-[var(--card-text)] ${rc.gradient}`}>
+        <div className={`p-6 text-[var(--card-text)] ${rc.tone}`}>
 
           <div className="flex items-center gap-3.5">
 
@@ -1068,7 +1068,7 @@ export default function UaeSbrChecker() {
 
               <button type="button" onClick={() => setShowTradeoff(!showTradeoff)}
 
-                className="text-xs font-bold text-[var(--orange)] hover:underline flex items-center gap-1.5">
+                className="text-xs font-bold text-[var(--accent-text)] hover:underline flex items-center gap-1.5">
 
                 <span className="sbr-kicker-mark" aria-hidden="true">!</span><span>قبل اختيار التسهيل — تنبيهات مهمة</span><span>{showTradeoff ? "▲" : "▼"}</span>
 
@@ -1140,7 +1140,7 @@ export default function UaeSbrChecker() {
 
             <button type="button" onClick={handleReset}
 
-              className="rounded-xl border border-[var(--border)] px-4 py-2 text-xs font-bold text-[var(--text-2)] hover:border-[var(--orange)] hover:text-[var(--orange)] transition-all">
+              className="rounded-xl border border-[var(--border)] px-4 py-2 text-xs font-bold text-[var(--text-2)] hover:border-[var(--orange)] hover:text-[var(--accent-text)] transition-all">
 
               ↺ إعادة تعيين
 
@@ -1162,7 +1162,7 @@ export default function UaeSbrChecker() {
 
           <h3 className="text-sm font-bold text-[var(--text)] flex items-center gap-2"><span className="sbr-kicker-mark" aria-hidden="true">↧</span><span>ملخص أهلية التسهيلات قابل للطباعة</span></h3>
 
-          <button type="button" onClick={() => setShowPrint(!showPrint)} className="text-xs font-bold text-[var(--orange)] hover:underline">{showPrint ? "إخفاء" : "إنشاء الملخص"}</button>
+          <button type="button" onClick={() => setShowPrint(!showPrint)} className="text-xs font-bold text-[var(--accent-text)] hover:underline">{showPrint ? "إخفاء" : "إنشاء الملخص"}</button>
 
         </div>
 
@@ -1240,7 +1240,7 @@ export default function UaeSbrChecker() {
 
         <p className="text-[11px] text-[var(--text-2)] leading-relaxed">تسهيلات الأعمال الصغيرة تخضع لشروط وفترات محددة، كما أن اختيار التسهيل يتم ضمن إجراءات ضريبة الشركات.</p>
 
-        <p className="text-[11px] text-[var(--text-2)] leading-relaxed">يرجى الرجوع إلى <a href={FTA_SBR_URL} target="_blank" rel="noopener noreferrer" className="text-[var(--orange)] underline font-bold">الهيئة الاتحادية للضرائب</a> أو مستشار ضريبي مؤهل عند الحاجة إلى تحديد رسمي.</p>
+        <p className="text-[11px] text-[var(--text-2)] leading-relaxed">يرجى الرجوع إلى <a href={FTA_SBR_URL} target="_blank" rel="noopener noreferrer" className="text-[var(--accent-text)] underline font-bold">الهيئة الاتحادية للضرائب</a> أو مستشار ضريبي مؤهل عند الحاجة إلى تحديد رسمي.</p>
 
       </div>
 
@@ -1254,9 +1254,9 @@ export default function UaeSbrChecker() {
 
         <div className="flex gap-3 text-[11px]">
 
-          <a href={FTA_SBR_URL} target="_blank" rel="noopener noreferrer" className="text-[var(--orange)] underline font-bold">تسهيلات الأعمال الصغيرة ↗</a>
+          <a href={FTA_SBR_URL} target="_blank" rel="noopener noreferrer" className="text-[var(--accent-text)] underline font-bold">تسهيلات الأعمال الصغيرة ↗</a>
 
-          <a href={FTA_CT_URL} target="_blank" rel="noopener noreferrer" className="text-[var(--orange)] underline font-bold">ضريبة الشركات — FTA ↗</a>
+          <a href={FTA_CT_URL} target="_blank" rel="noopener noreferrer" className="text-[var(--accent-text)] underline font-bold">ضريبة الشركات — FTA ↗</a>
 
         </div>
 

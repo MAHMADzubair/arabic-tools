@@ -124,7 +124,8 @@ const RELATED = [
 
 const CSS = `
 .fp{--bg:var(--c-bg,#F5F5F2);--ink:var(--c-ink,#0D0D0D);--ac:var(--c-accent,#FF5B04);--sf:var(--c-surface,#FFFFFF);--mu:var(--c-muted,#55554F);--ln:var(--c-line,#D9D9D3);background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.75}
-@media (prefers-color-scheme:dark){.fp{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fp{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F)}}
+:root[data-theme="dark"] .fp{--bg:var(--c-bg,#0D0D0D);--ink:var(--c-ink,#F5F5F2);--sf:var(--c-surface,#181816);--mu:var(--c-muted,#B4B4AD);--ln:var(--c-line,#34342F)}
 .fp *{box-sizing:border-box}
 .fp h2,.fp h3,.fp p,.fp ol,.fp ul{margin:0;padding:0}
 .fp-wrap{max-width:48rem;margin:0 auto;padding-inline:16px}

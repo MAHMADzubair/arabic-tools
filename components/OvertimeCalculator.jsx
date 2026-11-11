@@ -248,7 +248,7 @@ const css = `
 @media (min-width:640px){ .ot{ padding:3rem 1.5rem 4rem; } }
 .ot *{box-sizing:border-box}
 .ot h1,.ot p,.ot dl,.ot dd{margin:0;padding:0}
-.ot button,.ot input{font:inherit;color:inherit}
+:where(.ot) :where(button,input){font:inherit;color:inherit}
 .ot :focus-visible{outline:3px solid var(--i-orange);outline-offset:2px}
 .ot bdi{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
 

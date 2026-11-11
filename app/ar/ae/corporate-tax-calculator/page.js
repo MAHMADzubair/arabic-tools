@@ -5,7 +5,7 @@ import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata = {
-  title: "حاسبة ضريبة الشركات الإمارات 2026 | Corporate Tax Calculator UAE",
+  title: "حاسبة ضريبة الشركات الإمارات 2026 | Corporate Tax UAE",
   description:
     "احسب ضريبة الشركات التقديرية في الإمارات وفق معدل 0% حتى 375,000 درهم و9% على الدخل الخاضع للضريبة فوق هذا الحد، مع شرح Small Business Relief وتحديث 2029.",
   keywords: [
@@ -21,7 +21,7 @@ export const metadata = {
   ],
   alternates: { canonical: "/ar/ae/corporate-tax-calculator" },
   openGraph: {
-    title: "حاسبة ضريبة الشركات الإمارات 2026 | Corporate Tax Calculator UAE",
+    title: "حاسبة ضريبة الشركات الإمارات 2026 | Corporate Tax UAE",
     description:
       "احسب ضريبة الشركات 0% و9% مع تسهيلات الأعمال الصغيرة (ممتدة حتى 2029) وقواعد المناطق الحرة وفق FTA.",
     url: `${SITE_URL}/ar/ae/corporate-tax-calculator`,
@@ -196,7 +196,7 @@ export default function UaeCorporateTaxPage() {
 
         {/* ── Page Hero — H1 ──────────────────────────────────────────────── */}
         <div className="mx-auto max-w-3xl px-4 pt-4 pb-2">
-          <div className="rounded-2xl bg-gradient-to-br from-slate-700 to-indigo-800 px-6 py-7 text-white shadow-lg">
+          <div className="rounded-2xl bg-gradient-to-br from-[#1C1917] to-[#0D0D0D] ring-1 ring-white/10 px-6 py-7 text-white shadow-lg">
             <div className="flex items-start gap-3">
               <span className="text-4xl shrink-0 mt-0.5">🏛️</span>
               <div>
@@ -697,7 +697,7 @@ export default function UaeCorporateTaxPage() {
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${tool.badgeColor}`}>{tool.badge}</span>
                     </div>
                     <p className="text-xs text-ink-muted leading-relaxed">{tool.desc}</p>
-                    {tool.cta && <p className="text-xs font-bold text-indigo-600 mt-1">{tool.cta}</p>}
+                    {tool.cta && <p className="text-xs font-bold text-[var(--accent-text)] mt-1">{tool.cta}</p>}
                   </div>
                 </Link>
               ))}
