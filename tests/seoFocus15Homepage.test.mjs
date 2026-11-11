@@ -74,3 +74,12 @@ test("two page-specific CTR experiments remain descriptive, non-spammy and canon
   assert.match(vat, /استخرج قيمتها من الإجمالي الشامل/);
   assert.match(vat, /canonical: "\/vat-calculator"/);
 });
+
+test("kaffara page carries real reference tables behind its 'جدول' title", () => {
+  const page = read("app/kaffara-calculator/page.js");
+  assert.match(page, /جدول الكفارات وقيمتها 2026/);
+  assert.match(page, /<KaffaraTables \/>/);
+  assert.match(page, /kaffaraTypes\.map/);
+  assert.match(page, /countryMealPresets\.map/);
+  assert.match(read("components/KaffaraCalculator.jsx"), /from "@\/lib\/kaffaraData"/);
+});

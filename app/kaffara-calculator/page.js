@@ -1,8 +1,9 @@
 import KaffaraCalculator from "@/components/KaffaraCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
+import { kaffaraTypes, countryMealPresets } from "@/lib/kaffaraData";
 
 export const metadata = {
-  title: "حاسبة الكفارات والفدية | كفارة اليمين وفدية الصيام",
+  title: "جدول الكفارات وقيمتها 2026 | كفارة اليمين وفدية الصيام",
   description:
     "احسب مقدار كفارة اليمين، فدية صيام رمضان للمريض وكبير السن، كفارة النذر، وفدية محظورات الإحرام بدقة سواء عيناً بالطعام والأرز أو نقداً بالريال والعملات.",
   alternates: { canonical: "/kaffara-calculator" },
@@ -78,11 +79,100 @@ const guideData = {
   ],
 };
 
+const KT_CSS = `
+.kt{max-width:64rem;margin:2.5rem auto 0;padding:0 1rem;display:grid;gap:1.5rem}
+.kt h2{margin:0;font-size:1.35rem;font-weight:800;color:var(--text)}
+.kt p{margin:0;color:var(--text-2);font-size:.92rem;line-height:1.8}
+.kt-wrap{border:1px solid var(--border);border-radius:1.25rem;overflow:hidden;background:var(--surface)}
+.kt table{width:100%;border-collapse:collapse;font-size:.88rem;color:var(--text)}
+.kt th{background:var(--bg);color:var(--text-2);font-weight:700;font-size:.78rem;text-align:start;padding:.7rem .75rem;border-bottom:1px solid var(--border)}
+.kt td{padding:.75rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.65}
+.kt tr:last-child td{border-bottom:0}
+.kt td strong{font-weight:800}
+.kt .kt-num{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:700}
+.kt .kt-src{color:var(--text-3);font-size:.75rem}
+@media (max-width:639px){
+  .kt-stack thead{display:none}
+  .kt-stack tr{display:grid;gap:.15rem;padding:.75rem;border-bottom:1px solid var(--border)}
+  .kt-stack tr:last-child{border-bottom:0}
+  .kt-stack td{padding:0;border:0}
+  .kt-stack td[data-l]::before{content:attr(data-l) ": ";color:var(--text-2);font-weight:600}
+}
+`;
+
+const fmt = (n) => (Number.isInteger(n) ? n.toLocaleString("en-US") : n.toFixed(1));
+
+function KaffaraTables() {
+  const ksa = countryMealPresets.find((c) => c.code === "KSA");
+  return (
+    <section className="kt" aria-labelledby="kt-title">
+      <style>{KT_CSS}</style>
+      <div>
+        <h2 id="kt-title">جدول الكفارات والفدية ومقاديرها</h2>
+        <p>
+          كل كفارة بالإطعام تُقدّر بعدد المساكين، ولكل مسكين نصف صاع (نحو 1.5 كغ) من قوت البلد أو قيمة وجبة.
+          القيمة بالريال تقريبية على أساس {ksa.cost} ريالاً للمسكين، وتختلف حسب ما تعلنه الجهة المفتية في بلدك.
+        </p>
+      </div>
+      <div className="kt-wrap">
+        <table className="kt-stack">
+          <thead>
+            <tr><th scope="col">الكفارة</th><th scope="col">الواجب</th><th scope="col">عدد المساكين</th><th scope="col">عند العجز</th><th scope="col">تقريباً بالريال</th></tr>
+          </thead>
+          <tbody>
+            {kaffaraTypes.map((k) => (
+              <tr key={k.id}>
+                <td><strong>{k.title}</strong></td>
+                <td data-l="الواجب">{k.shortDesc}</td>
+                <td data-l="عدد المساكين" className="kt-num">
+                  {k.ruleType === "taam_per_day" ? "1 عن كل يوم" : k.personsPerUnit}
+                </td>
+                <td data-l="عند العجز">{k.fastingAlternative || "لا بديل بالصيام (العاجز يطعم)"}</td>
+                <td data-l="تقريباً بالريال" className="kt-num">
+                  {k.ruleType === "taam_per_day"
+                    ? `${fmt(ksa.cost)} ر.س لليوم`
+                    : `${fmt(k.personsPerUnit * ksa.cost)} ر.س`}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <h2 id="kt-countries">قيمة الكفارة حسب الدولة</h2>
+        <p>قيمة إطعام مسكين واحد كما تعلنها الجهات المختصة أو المتعارف عليها، ومنها تُحسب كفارة اليمين (10 مساكين) وفدية رمضان كاملاً (30 يوماً).</p>
+      </div>
+      <div className="kt-wrap">
+        <table className="kt-stack">
+          <thead>
+            <tr><th scope="col">الدولة</th><th scope="col">إطعام مسكين</th><th scope="col">كفارة اليمين</th><th scope="col">فدية 30 يوماً</th><th scope="col">المصدر</th></tr>
+          </thead>
+          <tbody>
+            {countryMealPresets.map((c) => (
+              <tr key={c.code}>
+                <td><strong>{c.country}</strong></td>
+                <td data-l="إطعام مسكين" className="kt-num">{fmt(c.cost)} {c.currency}</td>
+                <td data-l="كفارة اليمين" className="kt-num">{fmt(c.cost * 10)} {c.currency}</td>
+                <td data-l="فدية 30 يوماً" className="kt-num">{fmt(c.cost * 30)} {c.currency}</td>
+                <td data-l="المصدر" className="kt-src">{c.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 export default function KaffaraPage() {
   return (
     <div className="py-6 sm:py-10">
       {/* 1. Calculator on top */}
       <KaffaraCalculator />
+
+      {/* 2. Reference tables (answers "جدول الكفارات") */}
+      <KaffaraTables />
 
       {/* 2. Standardized Guide, FAQs, and Related Tools */}
       <ToolGuideSection {...guideData} />

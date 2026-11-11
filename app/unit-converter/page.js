@@ -2,7 +2,7 @@ import UnitConverter from "../../components/UnitConverter";
 import ToolGuideSection from "../../components/ToolGuideSection";
 
 export const metadata = {
-  title: "محول الوحدات الشامل | الطول والوزن والحرارة والمساحة",
+  title: "محول الوحدات | قدم كم متر، بوصة كم سم، رطل كم كيلو",
   description:
     "محول وحدات القياس الفوري: تحويل الطول (متر، كم، ميل، قدم، إنش)، الوزن والكتلة (كجم، باوند، جرام، أونصة)، درجة الحرارة (مئوية، فهرنهايت)، والمساحة والحجم.",
   alternates: { canonical: "/unit-converter" },

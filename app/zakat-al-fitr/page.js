@@ -3,9 +3,9 @@ import ZakatFitrCalculator from "@/components/ZakatFitrCalculator";
 import ToolGuideSection from "@/components/ToolGuideSection";
 
 export const metadata = {
-  title: "حاسبة زكاة الفطر | مقدار الصاع بالكيلو أو نقداً للأسرة",
+  title: "زكاة الفطر 1448هـ | كم مقدارها بالكيلو والريال للفرد؟",
   description:
-    "احسب زكاة الفطر عنك وعن أسرتك سواء عيناً بالأرز والحبوب (بالصاع والكيلوجرام) أو نقداً بقيم استرشادية، وفق تقدير اللجنة الدائمة للإفتاء (3 كغ) ومجلس الإمارات للإفتاء الشرعي (25 درهماً في 2026).",
+    "احسب زكاة الفطر لك ولأسرتك: صاع بالكيلو (3 كغ في السعودية، 2.5 كغ في الإمارات) أو نقداً بالقيم المعلنة لكل دولة. مجاناً وبدون تسجيل.",
   alternates: { canonical: "/zakat-al-fitr" },
 };
 
