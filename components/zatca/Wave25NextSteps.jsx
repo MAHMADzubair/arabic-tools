@@ -96,7 +96,7 @@ export default function Wave25NextSteps({ triggerYears = [] }) {
           ) : (
             <form onSubmit={submit} noValidate className="mt-2 space-y-5">
               <p className="zc-muted text-sm leading-relaxed">
-                مجاني وبلا التزام. اترك بياناتك ونوصلك بمزوّد حلول معتمد أو مستشار ضريبي يناسب حجم منشأتك.
+                مجاني وبلا التزام. اترك بياناتك ونوصلك بمزوّد حلول معتمد أو مستشار ضريبي يناسب حجم منشأتك، والقرار في الاختيار لك وحدك.
               </p>
               <input type="text" tabIndex={-1} autoComplete="off" value={form._honey} onChange={set("_honey")} className="hidden" aria-hidden="true" />
               <div className="grid gap-5 sm:grid-cols-2">
@@ -152,6 +152,10 @@ export default function Wave25NextSteps({ triggerYears = [] }) {
                 </button>
                 <span className="zc-muted min-w-[220px] flex-1 text-xs leading-relaxed">لا نطلب رقمك الضريبي ولا بيانات بنكية. لن نرسل لك رسائل تسويقية.</span>
               </div>
+              <p id="w25-disclosure" className="zc-muted m-0 border-t pt-3 text-xs leading-relaxed" style={{ borderColor: "var(--zc-line)" }}>
+                <strong className="zc-text">إفصاح:</strong> Qemlo منصة مستقلة وليست تابعة لهيئة الزكاة والضريبة والجمارك. إن اشتركت لاحقاً في حل عن طريق مزوّد عرّفناك به، قد نحصل منه على عمولة إحالة دون أي تكلفة إضافية عليك، ولا يؤثر ذلك على النتيجة التي تعرضها الأداة. يمكنك دائماً اختيار أي مزوّد من{" "}
+                <a href={ZATCA_SOLUTION_PROVIDERS_URL} target="_blank" rel="noopener noreferrer" className="zc-link">الدليل الرسمي</a>.
+              </p>
             </form>
           )}
         </Step>
