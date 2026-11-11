@@ -6,6 +6,7 @@
 import { NextResponse } from "next/server";
 import { writeFile, readFile } from "fs/promises";
 import { join } from "path";
+import { saveLead } from "@/lib/pilotLeads";
 
 const IS_PROD = process.env.NODE_ENV === "production";
 
@@ -60,6 +61,7 @@ function getSB() {
     return _sb;
   } catch (err) { console.error("[PILOT] SB init:", err.message); return null; }
 }
+
 
 export async function POST(request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
@@ -140,19 +142,19 @@ export async function POST(request) {
       console.error("[PILOT] FATAL: Supabase not configured in production.");
       return NextResponse.json({ success:false, error:"service_unavailable", message:"تعذر حفظ طلبك حالياً. يرجى المحاولة لاحقاً." }, { status:503 });
     }
-    const { error } = await sb.from("pilot_leads").insert(lead);
-    if (error) {
-      console.error("[PILOT] Supabase insert error:", error.message);
+    const saved = await saveLead(sb, lead);
+    if (!saved.ok) {
+      console.error("[PILOT] Supabase insert error:", saved.error.message);
       return NextResponse.json({ success:false, error:"database_error", message:"تعذر حفظ طلبك حالياً. يرجى المحاولة لاحقاً." }, { status:503 });
     }
-    return NextResponse.json({ success:true, leadId: lead.id }, { status:201 });
+    return NextResponse.json({ success:true, leadId: saved.leadId, ...(saved.duplicate ? { duplicate:true } : {}) }, { status:saved.status });
   }
 
   // ── DEV: try Supabase, fallback to /tmp ──────────────────────────────────
   if (sb) {
-    const { error } = await sb.from("pilot_leads").insert(lead);
-    if (!error) return NextResponse.json({ success:true, leadId: lead.id }, { status:201 });
-    console.warn("[PILOT] SB insert failed, using /tmp fallback:", error.message);
+    const saved = await saveLead(sb, lead);
+    if (saved.ok) return NextResponse.json({ success:true, leadId: saved.leadId, ...(saved.duplicate ? { duplicate:true } : {}) }, { status:saved.status });
+    console.warn("[PILOT] SB insert failed, using /tmp fallback:", saved.error.message);
   } else {
     console.warn("[PILOT] Supabase not configured — using /tmp fallback (dev only).");
   }
