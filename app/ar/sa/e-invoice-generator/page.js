@@ -360,6 +360,14 @@ export default function EInvoiceGeneratorPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 {
+                  href: "/ar/sa/zatca-wave-checker",
+                  icon: "📅",
+                  title: "هل منشأتك في الموجة 25؟",
+                  desc: "قبل اختيار نظام الفوترة: تحقق إن كان يلزمك الربط مع منصة فاتورة قبل 1 فبراير 2027 (حد 187,500 ريال).",
+                  badge: "الموجة 25",
+                  badgeColor: "bg-orange-100 text-orange-800",
+                },
+                {
                   href: "/ar/sa/quotation-generator",
                   icon: "📋",
                   title: "مولد عرض السعر في السعودية",

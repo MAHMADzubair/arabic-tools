@@ -61,7 +61,64 @@ const uaeCuratedTools = [
   { href: "/ar/ae/notice-period-calculator", title: "حاسبة فترة الإنذار وبدل الإشعار", desc: "احسب مدة الإنذار وتاريخ آخر يوم عمل والأيام غير المنفذة وبدل الإنذار التقديري وفق المادة (43) من قانون العمل الإماراتي." },
 ];
 
+// Topic clusters: every page links to its own topic instead of one generic list.
+// Pages that rank (zakat-al-fitr, kaffara, inheritance) feed the pages that earn
+// (ZATCA wave checker) and the seasonal guide, and vice versa.
+const T = Object.fromEntries(allTools.map((t) => [t.href, t]));
+const EXTRA = {
+  "/guides/zakat-al-fitr-2027": { href: "/guides/zakat-al-fitr-2027", title: "دليل زكاة الفطر 1448هـ / 2027", desc: "مقدارها ووقتها وقيمتها النقدية في كل دولة، بإجابات مختصرة ومصادر رسمية." },
+  "/ar/sa/zatca-wave-checker": { href: "/ar/sa/zatca-wave-checker", title: "هل منشأتك في الموجة 25 من الفوترة الإلكترونية؟", desc: "تحقق خلال دقيقة إن كان يلزمك الربط مع منصة فاتورة قبل 1 فبراير 2027." },
+  "/ar/sa/annual-leave-calculator": { href: "/ar/sa/annual-leave-calculator", title: "حاسبة بدل الإجازات السنوية بالسعودية", desc: "احسب رصيد إجازتك وبدلها النقدي وفق المادة 109 و111 من نظام العمل." },
+  "/ar/sa/article-77-calculator": { href: "/ar/sa/article-77-calculator", title: "حاسبة تعويض المادة 77", desc: "احسب التعويض عند إنهاء العقد لسبب غير مشروع في السعودية." },
+  "/ar/sa/quotation-generator": { href: "/ar/sa/quotation-generator", title: "مولد عرض السعر في السعودية", desc: "أنشئ عرض سعر احترافي بضريبة 15% وحمّله PDF مجاناً." },
+  "/annual-leave-calculator": { href: "/annual-leave-calculator", title: "حاسبة الإجازة السنوية للدول العربية", desc: "احسب بدل الإجازة السنوية في السعودية والإمارات ومصر وغيرها." },
+  "/ar/ae/vat-registration-checker": { href: "/ar/ae/vat-registration-checker", title: "التسجيل في ضريبة القيمة المضافة الإمارات", desc: "تحقق من حد 375,000 درهم للتسجيل الإلزامي و187,500 للاختياري." },
+  "/ar/ae/corporate-tax-calculator": { href: "/ar/ae/corporate-tax-calculator", title: "حاسبة ضريبة الشركات الإمارات", desc: "احسب ضريبة الشركات 9% فوق 375,000 درهم مع حالات الإعفاء." },
+  "/ar/ae/vat-invoice-generator": { href: "/ar/ae/vat-invoice-generator", title: "مولد الفاتورة الضريبية الإمارات", desc: "أنشئ فاتورة ضريبية 5% متوافقة مع الهيئة الاتحادية للضرائب." },
+};
+Object.assign(EXTRA, {
+  "/vat-calculator/uae": { href: "/vat-calculator/uae", title: "حاسبة ضريبة القيمة المضافة الإمارات 5%", desc: "أضف ضريبة 5% أو استخرجها من السعر الشامل بالدرهم." },
+  "/overtime-calculator": { href: "/overtime-calculator", title: "حاسبة العمل الإضافي (الأوفر تايم)", desc: "احسب أجر الساعات الإضافية في السعودية والإمارات والكويت وقطر ومصر." },
+});
+const pick = (...hrefs) =>
+  hrefs.map((h) => {
+    const tool = T[h] || EXTRA[h];
+    if (!tool) throw new Error(`ToolGuideSection cluster: unknown route ${h}`);
+    return tool;
+  });
+
+const islamicCluster = pick("/zakat-al-fitr", "/guides/zakat-al-fitr-2027", "/zakat-calculator", "/kaffara-calculator", "/inheritance-calculator", "/umrah-calculator", "/hijri-age-calculator");
+const saudiTaxCluster = pick("/ar/sa/zatca-wave-checker", "/vat-calculator", "/ar/sa/vat-registration-checker", "/ar/sa/e-invoice-generator", "/ar/sa/quotation-generator", "/profit-margin-calculator");
+const uaeTaxCluster = pick("/vat-calculator/uae", "/ar/ae/vat-registration-checker", "/ar/ae/corporate-tax-calculator", "/ar/ae/vat-invoice-generator", "/profit-margin-calculator", "/salary-calculator/uae");
+const financeCluster = pick("/loan-calculator", "/mortgage-calculator", "/compound-interest", "/roi-calculator", "/profit-margin-calculator", "/currency-converter", "/zakat-calculator");
+const everydayCluster = pick("/unit-converter", "/bmi-calculator", "/currency-converter", "/date-converter", "/hijri-age-calculator", "/umrah-calculator");
+const labourCluster = pick("/ar/sa/final-settlement-calculator", "/salary-calculator", "/gratuity-calculator", "/overtime-calculator", "/annual-leave-calculator", "/ar/sa/article-77-calculator");
+
 export const TARGETED_GULF_ROUTES = {
+  "/zakat-al-fitr": islamicCluster,
+  "/zakat-calculator": islamicCluster,
+  "/kaffara-calculator": islamicCluster,
+  "/inheritance-calculator": islamicCluster,
+  "/hijri-age-calculator": islamicCluster,
+  "/vat-calculator": saudiTaxCluster,
+  "/vat-calculator/saudi": saudiTaxCluster,
+  "/profit-margin-calculator": saudiTaxCluster,
+  "/vat-calculator/uae": uaeTaxCluster,
+  "/loan-calculator": financeCluster,
+  "/mortgage-calculator": financeCluster,
+  "/compound-interest": financeCluster,
+  "/roi-calculator": financeCluster,
+  "/currency-converter": everydayCluster,
+  "/unit-converter": everydayCluster,
+  "/bmi-calculator": everydayCluster,
+  "/date-converter": everydayCluster,
+  "/salary-calculator": labourCluster,
+  "/salary-calculator/egypt": labourCluster,
+  "/gratuity-calculator": labourCluster,
+  "/gratuity-calculator/egypt": labourCluster,
+  "/gratuity-calculator/kuwait": labourCluster,
+  "/gratuity-calculator/qatar": labourCluster,
+  "/overtime-calculator": labourCluster,
   "/salary-calculator/saudi": saudiCuratedTools,
   "/gratuity-calculator/saudi": saudiCuratedTools,
   "/overtime-calculator/saudi": saudiCuratedTools,

@@ -342,6 +342,25 @@ export default function ZakatAlFitr2027Guide() {
             </dl>
           </Section>
 
+          <nav aria-labelledby="related-title" className="mt-14 max-w-[700px] md:mt-20">
+            <h2 id="related-title" className="m-0 text-lg font-bold text-[var(--text)]">حاسبات مرتبطة برمضان والعيد</h2>
+            <ul className="mt-4 grid gap-3 p-0 sm:grid-cols-2" style={{ listStyle: "none" }}>
+              {[
+                { href: "/zakat-calculator", title: "حاسبة زكاة المال", desc: "نصاب الذهب والفضة وزكاة النقد والمدخرات." },
+                { href: "/kaffara-calculator", title: "فدية الصيام والكفارات", desc: "فدية العاجز عن الصيام وكفارة اليمين بقيمتها في بلدك." },
+                { href: "/date-converter", title: "محول التاريخ الهجري", desc: "اعرف موافقة 1 رمضان وعيد الفطر 1448هـ بالميلادي." },
+                { href: "/umrah-calculator", title: "حاسبة تكلفة العمرة", desc: "قدّر ميزانية عمرة رمضان: طيران وفندق وتأشيرة." },
+              ].map((t) => (
+                <li key={t.href}>
+                  <Link href={t.href} className="block rounded-xl border border-[var(--guide-line)] p-4 no-underline">
+                    <strong className="block text-[15px] text-[var(--text)]">{t.title}</strong>
+                    <span className="mt-1 block text-sm leading-relaxed text-[var(--text-2)]">{t.desc}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
           <section id="sources" aria-labelledby="sources-title" className="mt-14 max-w-[700px] scroll-mt-24 border-t-2 border-[var(--guide-green)] pt-[26px] md:mt-20">
             <h2 id="sources-title" className={`m-0 text-[15px] font-bold ${green}`}>المصادر</h2>
             <ol className="mt-3 list-decimal ps-[22px] text-sm leading-[2.05] text-[var(--text-2)]">
