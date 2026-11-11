@@ -5,6 +5,14 @@ export const metadata = {
   alternates: { canonical: "/privacy" },
 };
 
+// Edit by hand whenever the policy actually changes (a render-time date always claims "just updated").
+const LAST_UPDATED = "نوفمبر 2026";
+
+const A = "text-brand font-bold underline";
+const BOX = "rounded-2xl border border-brand-border/60 bg-brand-surface/30 p-4 text-xs sm:text-sm text-ink-secondary space-y-2";
+const P = "text-sm sm:text-base leading-relaxed text-ink-secondary";
+const H2 = "text-lg font-bold text-ink flex items-center gap-2";
+
 export default function PrivacyPage() {
   return (
     <div className="py-10 sm:py-16">
@@ -18,7 +26,7 @@ export default function PrivacyPage() {
             سياسة الخصوصية
           </h1>
           <p className="mt-2 text-xs text-ink-muted">
-            آخر تحديث: {new Date().toLocaleDateString("ar-SA", { year: "numeric", month: "long" })}
+            آخر تحديث: {LAST_UPDATED}
           </p>
         </div>
 
@@ -50,24 +58,62 @@ export default function PrivacyPage() {
             </div>
           </section>
 
-          <section className="space-y-3">
-            <h2 className="text-lg font-bold text-ink flex items-center gap-2">
+          <section id="cookies-ads" className="space-y-3 scroll-mt-24">
+            <h2 className={H2}>
               <span>🍪</span>
-              <span>2. ملفات تعريف الارتباط (Cookies) والشراكات الإعلانية</span>
+              <span>2. ملفات تعريف الارتباط (Cookies) والإعلانات</span>
             </h2>
-            <p className="text-sm sm:text-base leading-relaxed text-ink-secondary">
-              مثل معظم المواقع على الإنترنت، قد يستخدم موقعنا ملفات تعريف الارتباط (Cookies) لتحسين تجربة المستخدم وتحليل حركة الزوار. قد يستخدم شركاؤنا من شبكات الإعلانات (مثل Google AdSense) ملفات تعريف الارتباط لتقديم إعلانات ملائمة بناءً على زيارات المستخدمين السابقة لموقعنا أو مواقع أخرى على الإنترنت.
+            <p className={P}>
+              نعرض إعلانات من Google AdSense لتغطية تكاليف تشغيل الموقع وإبقاء الأدوات مجانية. تستخدم Google وشركاؤها من الموردين
+              الخارجيين ملفات تعريف الارتباط لعرض الإعلانات بناءً على زياراتك السابقة لهذا الموقع أو لمواقع أخرى على الإنترنت.
             </p>
-            <div className="rounded-2xl border border-brand-border/60 bg-brand-surface/30 p-4 text-xs sm:text-sm text-ink-secondary space-y-2">
-              <p>• تستخدم Google ملف تعريف الارتباط DART لعرض الإعلانات للمستخدمين استناداً إلى زيارتهم للمواقع عبر الإنترنت.</p>
-              <p>• يمكن للمستخدمين إلغاء الاشتراك في استخدام ملف تعريف الارتباط DART عبر زيارة <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-brand font-bold underline">إعدادات الإعلانات في Google</a>.</p>
+            <div className={BOX}>
+              <p>• تتيح ملفات تعريف الارتباط الإعلانية لـ Google وشركائها عرض إعلانات لك استناداً إلى زياراتك لهذا الموقع و/أو لمواقع أخرى.</p>
+              <p>
+                • يمكنك إيقاف الإعلانات المخصّصة من{" "}
+                <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className={A}>إعدادات الإعلانات في Google</a>،
+                أو إيقاف ملفات تعريف الارتباط لدى موردين آخرين من{" "}
+                <a href="https://www.aboutads.info/choices" target="_blank" rel="noopener noreferrer" className={A}>www.aboutads.info</a>.
+              </p>
+              <p>
+                • لمعرفة كيف تستخدم Google البيانات عند استخدامك لمواقع شركائها راجع{" "}
+                <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" className={A}>صفحة Google عن مواقع الشركاء</a>.
+              </p>
+              <p>• يمكنك أيضاً حذف ملفات تعريف الارتباط أو حظرها من إعدادات متصفحك في أي وقت؛ ستعمل الحاسبات كلها دونها.</p>
+            </div>
+          </section>
+
+          <section id="consent" className="space-y-3 scroll-mt-24">
+            <h2 className={H2}>
+              <span>✅</span>
+              <span>3. الموافقة للزوار من أوروبا والمملكة المتحدة</span>
+            </h2>
+            <p className={P}>
+              إذا كنت تزورنا من المنطقة الاقتصادية الأوروبية أو المملكة المتحدة أو سويسرا، تعرض لك Google رسالة موافقة معتمدة قبل
+              استخدام ملفات تعريف الارتباط الإعلانية، ويمكنك القبول أو الرفض أو تغيير اختيارك لاحقاً. إذا رفضت قد تظهر لك إعلانات غير مخصّصة.
+            </p>
+          </section>
+
+          <section id="analytics" className="space-y-3 scroll-mt-24">
+            <h2 className={H2}>
+              <span>📈</span>
+              <span>4. التحليلات والاستضافة</span>
+            </h2>
+            <div className={BOX}>
+              <p>
+                • نستخدم Google Analytics 4 لمعرفة الصفحات الأكثر زيارة ومصادر الزوار بشكل إجمالي. لا نرسل إليه المبالغ أو الأرقام التي تكتبها في الحاسبات، بل أحداثاً عامة فقط مثل استخدام أداة ونوع النتيجة.
+                لإيقافه يمكنك استخدام{" "}
+                <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className={A}>إضافة إيقاف Google Analytics</a>.
+              </p>
+              <p>• يُستضاف الموقع على Vercel التي تسجل بيانات تقنية قياسية (عنوان IP، نوع المتصفح، الصفحة المطلوبة) لأغراض الأمان والتشغيل.</p>
+              <p>• بيانات نموذج المساعدة في الموجة 25 ونموذج التسجيل في البرنامج التجريبي لمساعد المبيعات (الاسم والبريد ورقم واتساب واسم المتجر) تُحفظ في قاعدة بيانات Supabase مشفّرة ولا يطّلع عليها إلا فريق Qemlo، وتُستخدم للتواصل بخصوص طلبك فقط.</p>
             </div>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-ink flex items-center gap-2">
               <span>📊</span>
-              <span>3. بيانات السجلات والتحليلات (Log Data)</span>
+              <span>5. بيانات السجلات (Log Data)</span>
             </h2>
             <p className="text-sm sm:text-base leading-relaxed text-ink-secondary">
               عند زيارة الموقع، قد نقوم تلقائياً بجمع معلومات قياسية مجهولة الهوية يرسلها متصفحك، مثل: نوع المتصفح، نظام التشغيل، الصفحات التي قمت بزيارتها، وقت وتاريخ الزيارة. نستخدم هذه المعلومات حصراً لأغراض إحصائية وتحسين أداء الموقع وسرعة استجابته.
@@ -77,17 +123,29 @@ export default function PrivacyPage() {
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-ink flex items-center gap-2">
               <span>🔗</span>
-              <span>4. الروابط الخارجية</span>
+              <span>6. الروابط الخارجية</span>
             </h2>
             <p className="text-sm sm:text-base leading-relaxed text-ink-secondary">
               قد يحتوي موقعنا على روابط لمواقع خارجية لأغراض المراجع أو الإسناد القانوني والشرعي. نحن لسنا مسؤولين عن ممارسات الخصوصية أو محتوى تلك المواقع الخارجية، وننصح دائماً بمراجعة سياسات الخصوصية الخاصة بها.
             </p>
           </section>
 
+          <section id="children-retention" className="space-y-3 scroll-mt-24">
+            <h2 className={H2}>
+              <span>👨‍👩‍👧</span>
+              <span>7. الأطفال ومدة الاحتفاظ بالبيانات</span>
+            </h2>
+            <div className={BOX}>
+              <p>• الموقع غير موجّه للأطفال دون 13 عاماً، ولا نجمع عن قصد أي بيانات شخصية منهم.</p>
+              <p>• نحتفظ ببيانات النماذج حتى انتهاء الغرض منها أو 12 شهراً كحد أقصى، ثم نحذفها. ويمكنك طلب حذفها قبل ذلك في أي وقت.</p>
+              <p>• إذا غيّرنا هذه السياسة تغييراً جوهرياً نحدّث تاريخ «آخر تحديث» أعلى الصفحة ونسجّل التغيير في <a href="/changelog" className={A}>سجل التحديثات</a>.</p>
+            </div>
+          </section>
+
           <section className="space-y-3">
             <h2 className="text-lg font-bold text-ink flex items-center gap-2">
               <span>🛡️</span>
-              <span>5. حقوق المستخدم والتواصل</span>
+              <span>8. حقوق المستخدم والتواصل</span>
             </h2>
             <p className="text-sm sm:text-base leading-relaxed text-ink-secondary">
               إذا كان لديك أي أسئلة أو استفسارات بخصوص سياسة الخصوصية هذه أو كيفية التعامل مع بياناتك، يسعدنا تواصلك معنا عبر صفحة <a href="/contact" className="text-brand font-bold underline">اتصل بنا</a> وسنقوم بالرد في أقرب وقت ممكن.
