@@ -32,3 +32,14 @@ test("lead API requires contact consent, keeps share consent separate, never fak
   assert.match(form, /res\.ok && data\.success/);
   assert.match(read("app/privacy/page.js"), /id="help-requests"/);
 });
+
+test("referral model is disclosed: independence from ZATCA, possible referral fee, user's free choice", () => {
+  const form = read("components/zatca/Wave25NextSteps.jsx");
+  assert.match(form, /id="w25-disclosure"/);
+  assert.match(form, /ليست تابعة لهيئة الزكاة والضريبة والجمارك/);
+  assert.match(form, /عمولة إحالة/);
+  assert.match(form, /الدليل الرسمي/);
+  const privacy = read("app/privacy/page.js");
+  assert.match(privacy, /عمولة إحالة/);
+  assert.match(privacy, /وليست مقابل بياناتك/);
+});
