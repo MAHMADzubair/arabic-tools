@@ -2,7 +2,7 @@ import BmiCalculator from "../../components/BmiCalculator";
 import ToolGuideSection from "../../components/ToolGuideSection";
 
 export const metadata = {
-  title: "حاسبة مؤشر كتلة الجسم BMI والوزن المثالي | منظمة الصحة العالمية",
+  title: "حاسبة الوزن المثالي ومؤشر كتلة الجسم BMI حسب الطول",
   description:
     "احسب مؤشر كتلة جسمك (BMI) بدقة واكتشف وزنك المثالي ونطاق السعرات الحرارية اليومية واحتياج الماء وفق معايير منظمة الصحة العالمية الرسمية للرجال والنساء.",
   alternates: { canonical: "/bmi-calculator" },
