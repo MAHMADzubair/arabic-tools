@@ -59,8 +59,16 @@ const softwareAppJsonLd = {
   url: `${SITE_URL}/ar/ae/purchase-order-generator`,
 };
 
-// 8 FAQs — visible on page and mirrored in schema
+// FAQs — visible on page and mirrored in schema
 const faqs = [
+  {
+    q: "ما الفرق بين LPO وPO؟",
+    a: "لا فرق في الوظيفة: كلاهما أمر شراء رسمي يصدره المشتري للمورد ويحدد الأصناف والكميات والأسعار وشروط التسليم والدفع. LPO (Local Purchase Order) هو التسمية الشائعة في الإمارات والخليج لأمر الشراء الموجّه لمورد محلي داخل الدولة، فلا يتضمن عادةً رسوماً جمركية أو شحناً دولياً، بينما PO مصطلح عام يشمل الطلبات المحلية والدولية.",
+  },
+  {
+    q: "ماذا يحدث بعد إرسال LPO للمورد؟",
+    a: "بعد موافقة المورد يصبح LPO المرجع التجاري للصفقة: يورّد المورد البضاعة مع إشعار تسليم (Delivery Note) يحمل رقم LPO، ويسجل المشتري الاستلام (GRN)، ثم يصدر المورد فاتورة ضريبية تشير إلى رقم LPO. قبل الدفع تطابق الحسابات بين أمر الشراء وإشعار الاستلام والفاتورة (المطابقة الثلاثية)، فإذا تطابقت الكميات والأسعار يُصرف المبلغ حسب شروط الدفع.",
+  },
   {
     q: "ما معنى LPO وما اختصاره في الإمارات؟",
     a: "LPO اختصار لـ Local Purchase Order، أي أمر الشراء المحلي. يُستخدم هذا المصطلح على نطاق واسع في بيئة الأعمال الإماراتية والخليجية للإشارة إلى وثيقة الشراء الرسمية التي يُصدرها المشتري للمورد المحلي. لا يختلف في جوهره عن مصطلح Purchase Order (PO)، لكنه يُعني تحديداً التوريد داخل الدولة.",
@@ -594,6 +602,47 @@ export default function UaePurchaseOrderGeneratorPage() {
               التسليم في مقر المشتري بدبي — الضمان وفق اتفاق الطرفين.
               <br />
               <span className="font-bold text-ink">⚠️ مثال توضيحي فقط — لا يمثل أي شركة حقيقية.</span>
+            </div>
+          </section>
+
+          {/* ── Section: LPO vs PO and the LPO cycle ── */}
+          <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card" aria-labelledby="lpo-vs-po">
+            <h2 id="lpo-vs-po" className="text-xl font-bold text-ink mb-4 flex items-center gap-2">
+              <span className="text-2xl">🔁</span>
+              ما الفرق بين LPO وPO؟ ودورة أمر الشراء حتى الدفع
+            </h2>
+            <div className="space-y-3 text-sm leading-relaxed text-ink-secondary">
+              <p>
+                <strong className="text-ink">LPO وPO وجهان لمستند واحد.</strong> كلاهما أمر شراء ملزم يصدره المشتري للمورد.
+                الفرق في الاستخدام فقط: LPO (أمر الشراء المحلي) هو المصطلح المتداول في الإمارات والخليج للطلب من مورد داخل الدولة،
+                بينما PO مصطلح عام يشمل الطلبات المحلية والدولية التي قد تتضمن شحناً وجمارك.
+              </p>
+              <div className="overflow-x-auto rounded-xl border border-brand-border">
+                <table className="w-full text-xs sm:text-sm">
+                  <thead className="bg-[var(--bg)] text-[var(--text)]">
+                    <tr><th className="p-2.5 text-start">المرحلة</th><th className="p-2.5 text-start">المستند</th><th className="p-2.5 text-start">من يصدره</th></tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ["1. الطلب الداخلي", "طلب شراء (Purchase Requisition)", "القسم الطالب داخل الشركة"],
+                      ["2. التسعير", "عرض سعر (Quotation)", "المورد"],
+                      ["3. الالتزام بالشراء", "أمر شراء LPO / PO برقم مرجعي", "المشتري"],
+                      ["4. التوريد", "إشعار تسليم (Delivery Note)", "المورد"],
+                      ["5. الاستلام", "إشعار استلام بضاعة (GRN)", "مستودع المشتري"],
+                      ["6. المطالبة", "فاتورة ضريبية 5% تشير لرقم LPO", "المورد"],
+                      ["7. الدفع", "مطابقة ثلاثية: LPO + GRN + الفاتورة", "حسابات المشتري"],
+                    ].map(([a, b, c]) => (
+                      <tr key={a} className="border-t border-brand-border">
+                        <td className="p-2.5 font-semibold text-ink">{a}</td><td className="p-2.5">{b}</td><td className="p-2.5">{c}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p>
+                لذلك احرص على أن يحمل أمر الشراء رقماً فريداً (مثل LPO-2026-0042) وأن يطلب المورد ذكره في إشعار التسليم والفاتورة،
+                فهذا ما يسرّع اعتماد الدفع ويمنع الخلاف على الكميات والأسعار.
+              </p>
             </div>
           </section>
 
