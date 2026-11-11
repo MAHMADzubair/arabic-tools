@@ -40,6 +40,11 @@ const faqJsonLd = {
   mainEntity: [
     {
       "@type": "Question",
+      name: "ما هي فاتورة B2B في السعودية وما الذي يميزها؟",
+      acceptedAnswer: { "@type": "Answer", text: "فاتورة B2B هي الفاتورة الضريبية (القياسية) التي تصدرها منشأة لمنشأة أخرى أو لجهة حكومية (B2G). يميزها أن الرقم الضريبي للمشتري واسمه وعنوانه إلزامية، وأن نوعها يبدأ بالرمز 01 (مقابل 02 للمبسطة)، وأنها في المرحلة الثانية تمر بالمقاصة (Clearance) عبر منصة فاتورة قبل تسليمها للمشتري، بينما تُبلَّغ الفاتورة المبسطة B2C للهيئة خلال 24 ساعة من إصدارها. وتسمح فاتورة B2B للمشتري بخصم ضريبة المدخلات." },
+    },
+    {
+      "@type": "Question",
       name: "ما هي الفاتورة الإلكترونية في السعودية ومتى أصبحت إلزامية؟",
       acceptedAnswer: {
         "@type": "Answer",
@@ -313,6 +318,41 @@ export default function EInvoiceGeneratorPage() {
         </section>
 
         {/* ── PART 3: FAQ ──────────────────────────────────────────────────────── */}
+        {/* ── B2B vs B2C (answers "فاتورة b2b") ── */}
+        <section className="mx-auto max-w-3xl px-4 py-4 no-print print:hidden" aria-labelledby="b2b-vs-b2c">
+          <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
+            <div className="border-b border-brand-border pb-4 mb-5">
+              <h2 id="b2b-vs-b2c" className="text-xl font-bold text-ink">🏢 فاتورة B2B أم فاتورة مبسطة B2C؟</h2>
+              <p className="mt-1 text-sm text-ink-secondary">الفيصل هو هوية المشتري، لا قيمة الفاتورة ولا نوع النشاط: إن كان منشأة مسجلة تريد خصم ضريبة المدخلات فهي B2B.</p>
+            </div>
+            <div className="overflow-x-auto rounded-xl border border-brand-border">
+              <table className="w-full text-xs sm:text-sm">
+                <thead className="bg-[var(--bg)] text-[var(--text)]">
+                  <tr><th className="p-2.5 text-start">البند</th><th className="p-2.5 text-start">الفاتورة الضريبية B2B / B2G</th><th className="p-2.5 text-start">الفاتورة المبسطة B2C</th></tr>
+                </thead>
+                <tbody className="text-ink-secondary">
+                  {[
+                    ["المشتري", "منشأة أو جهة حكومية", "مستهلك فرد"],
+                    ["رمز نوع الفاتورة", "يبدأ بـ 01", "يبدأ بـ 02"],
+                    ["الرقم الضريبي وعنوان المشتري", "إلزامي", "غير مطلوب"],
+                    ["المرحلة الثانية (الربط)", "مقاصة عبر منصة فاتورة قبل التسليم", "إبلاغ الهيئة خلال 24 ساعة"],
+                    ["رمز QR", "يُضاف للفاتورة بعد المقاصة", "إلزامي على الفاتورة"],
+                    ["خصم ضريبة المدخلات", "يحق للمشتري", "لا ينطبق"],
+                  ].map(([a, b, c]) => (
+                    <tr key={a} className="border-t border-brand-border">
+                      <td className="p-2.5 font-semibold text-ink">{a}</td><td className="p-2.5">{b}</td><td className="p-2.5">{c}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-4 text-sm leading-relaxed text-ink-secondary">
+              هل يلزمك الربط مع منصة فاتورة الآن؟{" "}
+              <Link href="/ar/sa/zatca-wave-checker" className="font-bold text-[var(--accent-text)] underline">تحقق من موجتك (الموجة 25: حد 187,500 ريال)</Link>
+            </p>
+          </div>
+        </section>
+
         <section className="mx-auto max-w-3xl px-4 py-4 no-print print:hidden">
           <div className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
             <div className="border-b border-brand-border pb-4 mb-6">
@@ -320,6 +360,10 @@ export default function EInvoiceGeneratorPage() {
             </div>
             <div className="space-y-5">
               {[
+                {
+                  q: "ما هي فاتورة B2B في السعودية وما الذي يميزها؟",
+                  a: "فاتورة B2B هي الفاتورة الضريبية (القياسية) التي تصدرها منشأة لمنشأة أخرى أو لجهة حكومية (B2G). يميزها أن الرقم الضريبي للمشتري واسمه وعنوانه إلزامية، وأن نوعها يبدأ بالرمز 01 (مقابل 02 للمبسطة)، وأنها في المرحلة الثانية تمر بالمقاصة (Clearance) عبر منصة فاتورة قبل تسليمها للمشتري، بينما تُبلَّغ الفاتورة المبسطة B2C للهيئة خلال 24 ساعة من إصدارها. وتسمح فاتورة B2B للمشتري بخصم ضريبة المدخلات.",
+                },
                 {
                   q: "ما هي الفاتورة الإلكترونية في السعودية ومتى أصبحت إلزامية؟",
                   a: "الفاتورة الإلكترونية هي فاتورة تُنشأ وتُخزن وتُرسل بصيغة رقمية منظمة وفق اشتراطات ZATCA. أصبحت إلزامية للمرحلة الأولى في ديسمبر 2021 لجميع الخاضعين لضريبة القيمة المضافة في المملكة.",
