@@ -67,7 +67,7 @@ const uaeCuratedTools = [
 const T = Object.fromEntries(allTools.map((t) => [t.href, t]));
 const EXTRA = {
   "/guides/zakat-al-fitr-2027": { href: "/guides/zakat-al-fitr-2027", title: "دليل زكاة الفطر 1448هـ / 2027", desc: "مقدارها ووقتها وقيمتها النقدية في كل دولة، بإجابات مختصرة ومصادر رسمية." },
-  "/ar/sa/zatca-wave-checker": { href: "/ar/sa/zatca-wave-checker", title: "هل منشأتك في الموجة 25 من الفوترة الإلكترونية؟", desc: "تحقق خلال دقيقة إن كان يلزمك الربط مع منصة فاتورة قبل 1 فبراير 2027." },
+  "/ar/sa/zatca-wave-checker": { href: "/ar/sa/zatca-wave-checker", title: "هل منشأتك في الموجة 25 من الفوترة الإلكترونية؟", desc: "تحقق خلال دقيقة إن كان يلزمك الربط مع منصة فاتورة ابتداءً من 1 فبراير 2027." },
   "/ar/sa/annual-leave-calculator": { href: "/ar/sa/annual-leave-calculator", title: "حاسبة بدل الإجازات السنوية بالسعودية", desc: "احسب رصيد إجازتك وبدلها النقدي وفق المادة 109 و111 من نظام العمل." },
   "/ar/sa/article-77-calculator": { href: "/ar/sa/article-77-calculator", title: "حاسبة تعويض المادة 77", desc: "احسب التعويض عند إنهاء العقد لسبب غير مشروع في السعودية." },
   "/ar/sa/quotation-generator": { href: "/ar/sa/quotation-generator", title: "مولد عرض السعر في السعودية", desc: "أنشئ عرض سعر احترافي بضريبة 15% وحمّله PDF مجاناً." },
