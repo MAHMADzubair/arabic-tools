@@ -1,5 +1,32 @@
 import DateConverter from "../../components/DateConverter";
 import ToolGuideSection from "../../components/ToolGuideSection";
+import RamadanCountdown from "@/components/RamadanCountdown";
+import { ramadanSeason, daysUntil, formatGregorianAr } from "@/lib/hijriEvents";
+
+// Computed at build (every deploy) from the Umm al-Qura calendar.
+const SEASON = ramadanSeason();
+const HY = SEASON.hijriYear;
+const GY = SEASON.ramadanStart.getUTCFullYear();
+const EVENTS = [
+  { label: `1 رمضان ${HY}هـ`, note: "أول أيام الصيام", date: SEASON.ramadanStart },
+  { label: `27 رمضان ${HY}هـ (ليلته مساء اليوم السابق)`, note: "اليوم السابع والعشرون", date: SEASON.laylat27 },
+  { label: `1 شوال ${HY}هـ`, note: "عيد الفطر", date: SEASON.eidFitr },
+  { label: `9 ذو الحجة ${HY}هـ`, note: "يوم عرفة", date: SEASON.arafah },
+  { label: `10 ذو الحجة ${HY}هـ`, note: "عيد الأضحى", date: SEASON.eidAdha },
+];
+const RC_CSS = `
+.rc{max-width:42rem;margin:1.5rem auto 0;padding:0 1rem}
+.rc-card{border:1px solid var(--border);background:var(--surface);border-radius:1.25rem;padding:1.25rem}
+.rc h2{margin:0 0 .25rem;font-size:1.25rem;font-weight:800;color:var(--text)}
+.rc p{margin:0;color:var(--text-2);font-size:.9rem;line-height:1.8}
+.rc .rc-big{margin:.75rem 0 1rem;font-size:1.15rem;color:var(--text)}
+.rc .rc-num{font-size:2.25rem;font-weight:800;color:var(--accent-text);font-variant-numeric:tabular-nums}
+.rc table{width:100%;border-collapse:collapse;font-size:.88rem;color:var(--text)}
+.rc th{background:var(--bg);color:var(--text-2);font-weight:700;font-size:.78rem;text-align:start;padding:.55rem .6rem}
+.rc td{padding:.6rem;border-top:1px solid var(--border);vertical-align:top}
+.rc td small{display:block;color:var(--text-3);font-size:.75rem}
+.rc .rc-note{margin-top:.75rem;font-size:.78rem;color:var(--text-3)}
+`;
 
 export const metadata = {
   title: "تحويل التاريخ الهجري والميلادي | تقويم أم القرى وتاريخ اليوم",
@@ -12,6 +39,9 @@ export const metadata = {
     "تحويل التاريخ من ميلادي لهجري",
     "تقويم أم القرى",
     "تاريخ اليوم هجري",
+    "كم باقي على رمضان",
+    "موعد رمضان 2027",
+    "موعد عيد الفطر 2027",
     "التقويم الهجري اليوم",
     "Date converter hijri gregorian",
   ],
@@ -64,6 +94,18 @@ const guideData = {
   },
   faqs: [
     {
+      question: `متى يبدأ رمضان ${HY}هـ / ${GY}؟`,
+      answer: `وفق تقويم أم القرى يوافق 1 رمضان ${HY}هـ يوم ${formatGregorianAr(SEASON.ramadanStart)}. الإعلان الرسمي يعتمد على تحري الهلال مساء 29 شعبان، وقد يتقدم الموعد أو يتأخر يوماً واحداً، وقد يختلف بين الدول.`,
+    },
+    {
+      question: `متى عيد الفطر ${GY}؟`,
+      answer: `يوافق 1 شوال ${HY}هـ في تقويم أم القرى ${formatGregorianAr(SEASON.eidFitr)}، ويحدد الموعد النهائي ثبوت رؤية هلال شوال. أخرج زكاة الفطر قبل صلاة العيد، ويمكنك حساب مقدارها من حاسبة زكاة الفطر.`,
+    },
+    {
+      question: "كم باقي على رمضان؟",
+      answer: `يظهر العدّاد أعلى هذه الصفحة عدد الأيام المتبقية حتى 1 رمضان ${HY}هـ محسوباً بتوقيت مكة المكرمة ويتحدّث تلقائياً كل يوم.`,
+    },
+    {
       question: "ما هو الأساس المعتمد في تحويل التاريخ في هذا الموقع؟",
       answer: "تعتمد الأداة على تقويم أم القرى الرسمي بالمملكة العربية السعودية، الصادر برعاية مدينة الملك عبد العزيز للعلوم والتقنية. وهو التقويم المرجعي الأكثر دقة والمستخدم رسمياً في الوزارات والمحاكم والمعاملات المصرفية في دول الخليج.",
     },
@@ -90,6 +132,33 @@ export default function DateConverterPage() {
   return (
     <>
       <DateConverter />
+      <section className="rc" aria-labelledby="rc-title">
+        <style>{RC_CSS}</style>
+        <div className="rc-card">
+          <h2 id="rc-title">كم باقي على رمضان {HY}هـ؟</h2>
+          <p>مواعيد رمضان والعيدين {HY}هـ / {GY}م وفق تقويم أم القرى.</p>
+          <RamadanCountdown
+            startIso={SEASON.ramadanStart.toISOString()}
+            endIso={SEASON.eidFitr.toISOString()}
+            initialDays={daysUntil(SEASON.ramadanStart)}
+          />
+          <table>
+            <thead><tr><th scope="col">المناسبة</th><th scope="col">التاريخ الميلادي المتوقع</th></tr></thead>
+            <tbody>
+              {EVENTS.map((e) => (
+                <tr key={e.label}>
+                  <td><strong>{e.note}</strong><small>{e.label}</small></td>
+                  <td>{formatGregorianAr(e.date)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="rc-note">
+            التواريخ حسب تقويم أم القرى، والمعتمد إعلان رؤية الهلال في كل بلد وقد يختلف بيوم.{" "}
+            <a href="/zakat-al-fitr" style={{ color: "var(--accent-text)", fontWeight: 700 }}>احسب زكاة الفطر</a>
+          </p>
+        </div>
+      </section>
       <ToolGuideSection {...guideData} />
     </>
   );
