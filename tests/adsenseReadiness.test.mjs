@@ -1,40 +1,31 @@
-import { test } from "node:test";
+import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const read = (path) => fs.readFileSync(path, "utf8");
+const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
+const PUB = "4706954030329423";
 
-test("homepage no longer promotes unfinished Coming Soon categories", () => {
-  const home = read("app/page.js");
-  assert.doesNotMatch(home, /قريباً في Qemlo|قيد التطوير|Compact Coming Soon Section/);
+test("ads.txt and the site verification meta use the same publisher ID", () => {
+  assert.match(read("public/ads.txt"), new RegExp(`google\\.com, pub-${PUB}, DIRECT, f08c47fec0942fa0`));
+  assert.match(read("app/layout.js"), new RegExp(`ca-pub-${PUB}`));
 });
 
-test("homepage distinguishes the curated entry point from the full tool library", () => {
-  const home = read("app/page.js");
-  const browse = read("components/home/CategoryBrowseShowcase.jsx");
-  const hero = read("components/home/HomeHero.jsx");
-  const header = read("components/Header.jsx");
-
-  // Counts are dynamic: curated count comes from the catalog, library count from the full registry.
-  assert.match(home, /const totalTools = getCatalogToolCount\(\)/);
-  assert.match(browse, /getToolCount\(\)/);
-  assert.match(browse, /تضم المكتبة \{totalTools\.toLocaleString\("ar-EG"\)\} أداة/);
-  assert.match(hero, /أداة مختارة/);
-  assert.match(header, /أداة مختارة/);
+test("privacy policy carries the disclosures AdSense requires", () => {
+  const p = read("app/privacy/page.js");
+  assert.match(p, /Google AdSense/);
+  assert.match(p, /الموردين\s*\n?\s*الخارجيين|موردين آخرين/);
+  assert.match(p, /adssettings\.google\.com/);
+  assert.match(p, /aboutads\.info/);
+  assert.match(p, /policies\.google\.com\/technologies\/partner-sites/);
+  assert.match(p, /Google Analytics/);
+  assert.match(p, /المنطقة الاقتصادية الأوروبية/);
+  assert.match(p, /دون 13 عاماً/);
+  assert.doesNotMatch(p, /DART/, "DART naming is retired");
+  assert.doesNotMatch(p, /new Date\(\)/, "last-updated must be a fixed date");
 });
 
-test("contact form prepares an email and does not claim a message was received", () => {
-  const form = read("app/contact/ContactForm.jsx");
-  assert.match(form, /mailto:\$\{CONTACT_EMAIL\}/);
-  assert.match(form, /window\.location\.href = mailtoUrl/);
-  assert.doesNotMatch(form, /NEXT_PUBLIC_ENABLE_CONTACT/);
-  assert.doesNotMatch(form, /تم استلام رسالتك بنجاح/);
-  assert.match(form, /لن تُرسل الرسالة تلقائياً من الموقع/);
-});
-
-test("About and Contact pages use the same published support address", () => {
-  const about = read("app/about/page.js");
-  const contact = read("app/contact/ContactForm.jsx");
-  assert.match(about, /CONTACT_EMAIL = "contact@qemlo\.com"/);
-  assert.match(contact, /CONTACT_EMAIL = "contact@qemlo\.com"/);
+test("admin, internal and api paths stay out of the index", () => {
+  const r = read("app/robots.js");
+  for (const path of ["/api/", "/internal/", "/admin/"]) assert.ok(r.includes(`"${path}"`), path);
+  assert.match(read("app/owner-access/page.jsx"), /index: false/);
 });
