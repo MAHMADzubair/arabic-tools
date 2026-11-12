@@ -338,6 +338,9 @@ tbody tr:hover {
 :root[data-theme="light"] .qemlo-country-arrow {
   color: rgba(13, 13, 13, 0.6) !important;
 }
+:root[data-theme="light"] .qemlo-header-action-btn .qemlo-country-globe svg {
+  color: #C2410C;
+}
 
 :root[data-theme="light"] .qemlo-hero-title {
   color: #0D0D0D !important;
