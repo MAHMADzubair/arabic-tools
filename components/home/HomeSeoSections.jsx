@@ -11,6 +11,7 @@
 
 import Link from "next/link";
 import { SITE_URL, SITE_ORG_ID } from "@/lib/siteConfig";
+import { HOME_LOWER_CSS } from "@/components/home/homeLowerStyles";
 
 // ─── FAQ data ─────────────────────────────────────────────────────────────────
 const FAQS = [
@@ -37,22 +38,23 @@ const FAQS = [
 ];
 
 // ─── Link groups ───────────────────────────────────────────────────────────────
+// `label` is the visible anchor text; `note` is a muted qualifier shown after it.
 const SA_LINKS = [
-  { href: "/ar/sa/final-settlement-calculator", label: "حاسبة المخالصة النهائية — السعودية" },
-  { href: "/salary-calculator/saudi",           label: "حاسبة الراتب الصافي — GOSI وساند" },
-  { href: "/ar/sa/annual-leave-calculator",     label: "حاسبة بدل الإجازات السنوية — السعودية" },
-  { href: "/overtime-calculator/saudi",         label: "حاسبة العمل الإضافي — المادة 107" },
-  { href: "/vat-calculator/saudi",              label: "حاسبة ضريبة القيمة المضافة 15% — السعودية" },
-  { href: "/ar/sa/article-77-calculator",       label: "حاسبة المادة 77 — تعويض الفصل التعسفي" },
+  { href: "/ar/sa/final-settlement-calculator", label: "حاسبة المخالصة النهائية" },
+  { href: "/salary-calculator/saudi",           label: "حاسبة الراتب الصافي", note: "GOSI وساند" },
+  { href: "/ar/sa/annual-leave-calculator",     label: "حاسبة بدل الإجازات السنوية" },
+  { href: "/overtime-calculator/saudi",         label: "حاسبة العمل الإضافي", note: "المادة 107" },
+  { href: "/vat-calculator/saudi",              label: "حاسبة ضريبة القيمة المضافة", note: "15%" },
+  { href: "/ar/sa/article-77-calculator",       label: "حاسبة المادة 77", note: "الفصل التعسفي" },
 ];
 
 const AE_LINKS = [
-  { href: "/ar/ae/final-settlement-calculator",   label: "حاسبة المخالصة النهائية — الإمارات" },
-  { href: "/ar/ae/notice-period-calculator",      label: "حاسبة فترة الإنذار — قانون العمل 33" },
-  { href: "/salary-calculator/uae",               label: "حاسبة الراتب بالدرهم — الإمارات" },
-  { href: "/vat-calculator/uae",                  label: "حاسبة ضريبة القيمة المضافة 5% — الإمارات" },
-  { href: "/ar/ae/corporate-tax-calculator",      label: "حاسبة ضريبة الشركات 9% — الإمارات" },
-  { href: "/ar/ae/purchase-order-generator",      label: "نموذج أمر الشراء LPO" },
+  { href: "/ar/ae/final-settlement-calculator", label: "حاسبة المخالصة النهائية" },
+  { href: "/ar/ae/notice-period-calculator",    label: "حاسبة فترة الإنذار", note: "قانون العمل 33" },
+  { href: "/salary-calculator/uae",             label: "حاسبة الراتب بالدرهم" },
+  { href: "/vat-calculator/uae",                label: "حاسبة ضريبة القيمة المضافة", note: "5%" },
+  { href: "/ar/ae/corporate-tax-calculator",    label: "حاسبة ضريبة الشركات", note: "9%" },
+  { href: "/ar/ae/purchase-order-generator",    label: "نموذج أمر الشراء", note: "LPO" },
 ];
 
 const ISLAMIC_LINKS = [
@@ -63,13 +65,19 @@ const ISLAMIC_LINKS = [
   { href: "/zakat-al-fitr",          label: "حاسبة زكاة الفطر" },
 ];
 
+const GROUPS = [
+  { flag: "🇸🇦", title: "أدوات السعودية", sub: "نظام العمل · ZATCA · GOSI", hub: "/ar/sa", links: SA_LINKS },
+  { flag: "🇦🇪", title: "أدوات الإمارات", sub: "قانون العمل 33 · FTA", hub: "/ar/ae", links: AE_LINKS },
+  { flag: "☪️", title: "أدوات إسلامية", sub: "الميراث · الزكاة · الكفارات", links: ISLAMIC_LINKS },
+];
+
 // ─── Official sources ──────────────────────────────────────────────────────────
 const OFFICIAL_SOURCES = [
-  { label: "وزارة الموارد البشرية — السعودية",           href: "https://hrsd.gov.sa" },
-  { label: "هيئة الزكاة والضريبة والجمارك (ZATCA)",       href: "https://zatca.gov.sa" },
-  { label: "وزارة الموارد البشرية والتوطين — الإمارات",  href: "https://mohre.gov.ae" },
-  { label: "الهيئة الاتحادية للضرائب (FTA)",              href: "https://tax.gov.ae" },
-  { label: "هيئة الأوراق المالية والسلع (SCA)",           href: "https://sca.gov.ae" },
+  { label: "وزارة الموارد البشرية — السعودية",          href: "https://hrsd.gov.sa",  domain: "hrsd.gov.sa" },
+  { label: "هيئة الزكاة والضريبة والجمارك",             href: "https://zatca.gov.sa", domain: "zatca.gov.sa" },
+  { label: "وزارة الموارد البشرية والتوطين — الإمارات", href: "https://mohre.gov.ae", domain: "mohre.gov.ae" },
+  { label: "الهيئة الاتحادية للضرائب",                  href: "https://tax.gov.ae",   domain: "tax.gov.ae" },
+  { label: "هيئة الأوراق المالية والسلع",               href: "https://sca.gov.ae",   domain: "sca.gov.ae" },
 ];
 
 // ─── JSON-LD ───────────────────────────────────────────────────────────────────
@@ -83,154 +91,176 @@ const faqJsonLd = {
   })),
 };
 
+// ─── Icons ────────────────────────────────────────────────────────────────────
+function Ico({ children, size = 22, sw = 1.8 }) {
+  return (
+    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
+const Chevron = () => (
+  <span className="hl-arr"><Ico size={16} sw={2}><path d="M15 6l-6 6 6 6" /></Ico></span>
+);
+
+const FEATURES = [
+  { title: "سريع وفوري", desc: "النتائج تظهر فور الإدخال، بدون انتظار أو إعادة تحميل.", icon: <path d="M13 2 4 14h7l-1 8 9-12h-7z" /> },
+  { title: "أمان وسرية الحسابات", desc: "تتم جميع العمليات الحسابية محلياً داخل متصفحك لحماية سرية أرقامك.", icon: <><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></> },
+  { title: "يعمل على كل الأجهزة", desc: "متوافق مع الجوال والتابلت والحاسوب، دون تطبيق منفصل.", icon: <><rect x="2" y="4" width="14" height="10" rx="1.5" /><path d="M6 18h6M9 14v4" /><rect x="17.5" y="8" width="4.5" height="10" rx="1.2" /></> },
+];
+
 // ─── Component ────────────────────────────────────────────────────────────────
-export default function HomeSeoSections() {
+export default function HomeSeoSections({ toolCount }) {
   return (
     <section
       aria-label="دليل أدوات Qemlo والأسئلة الشائعة"
       dir="rtl"
-      className="w-full bg-[var(--bg)] text-[var(--text)]"
+      className="hl w-full bg-[var(--bg)] text-[var(--text)]"
     >
+      <style dangerouslySetInnerHTML={{ __html: HOME_LOWER_CSS }} />
       {/* FAQPage JSON-LD — no duplicate of Organization/WebSite (those are in layout.js) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:py-14 space-y-14">
-
-        {/* ── Intro paragraph (answer-first for AEO/GEO) ── */}
-        <div className="max-w-3xl">
-          <h2 className="text-2xl font-bold leading-snug mb-4 sm:text-3xl">
-            ما هي أدوات Qemlo؟
-          </h2>
-          <p className="text-base leading-relaxed text-[var(--text-2)] sm:text-lg">
-            Qemlo مكتبة أدوات وحاسبات عربية مجانية موجّهة للموظفين وأصحاب الأعمال في{" "}
-            <strong>السعودية والإمارات</strong> وسائر دول الخليج. تشمل المكتبة الحالية
-            حاسبات الرواتب ومكافأة نهاية الخدمة والمخالصة النهائية وفترة الإنذار
-            والعمل الإضافي والإجازات السنوية وضرائب الشركات والقيمة المضافة،
-            فضلاً عن أدوات إسلامية كالميراث والزكاة والكفارات وتكلفة العمرة.
-            جميع الأدوات مبنية على المصادر الرسمية، تعمل داخل المتصفح،{" "}
-            <strong>بدون تسجيل وبدون رسوم</strong>.
-          </p>
-        </div>
-
-        {/* ── Link groups ── */}
-        <div className="grid gap-10 sm:grid-cols-3">
-
-          {/* Saudi */}
-          <div>
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <span aria-hidden="true">🇸🇦</span> أدوات السعودية
-            </h3>
-            <ul className="space-y-2.5 list-none p-0">
-              {SA_LINKS.map((l) => (
-                <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="text-sm font-medium text-[var(--text-2)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--orange)] hover:decoration-[var(--orange)] transition-colors leading-snug"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* UAE */}
-          <div>
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <span aria-hidden="true">🇦🇪</span> أدوات الإمارات
-            </h3>
-            <ul className="space-y-2.5 list-none p-0">
-              {AE_LINKS.map((l) => (
-                <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="text-sm font-medium text-[var(--text-2)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--orange)] hover:decoration-[var(--orange)] transition-colors leading-snug"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Islamic */}
-          <div>
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <span aria-hidden="true">☪️</span> أدوات إسلامية
-            </h3>
-            <ul className="space-y-2.5 list-none p-0">
-              {ISLAMIC_LINKS.map((l) => (
-                <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="text-sm font-medium text-[var(--text-2)] underline decoration-[var(--border)] underline-offset-4 hover:text-[var(--orange)] hover:decoration-[var(--orange)] transition-colors leading-snug"
-                  >
-                    {l.label}
-                  </Link>
+      {/* ── Why Qemlo ── */}
+      <div className="hl-sec" style={{ paddingTop: 40 }}>
+        <div className="hl-why" aria-labelledby="features-title">
+          <div className="hl-wrap">
+            <div className="hl-why-head">
+              <div>
+                <span className="hl-eyebrow">لماذا Qemlo؟</span>
+                <h2 id="features-title" className="hl-h2">
+                  حسابات دقيقة في ثوانٍ —<br className="hl-br" /> بلا تسجيل، وبلا رسوم.
+                </h2>
+                <p className="hl-lead">كل أداة مبنية على النص الرسمي للنظام، وتعمل بالكامل داخل متصفحك.</p>
+              </div>
+              <ul className="hl-stats">
+                {toolCount ? (
+                  <li className="hl-stat"><b dir="ltr">{toolCount}+</b><span>أداة مجانية</span></li>
+                ) : null}
+                <li className="hl-stat"><b>2</b><span>السعودية والإمارات</span></li>
+                <li className="hl-stat"><b>0</b><span>تسجيل مطلوب</span></li>
+              </ul>
+            </div>
+            <ul className="hl-feats">
+              {FEATURES.map((f) => (
+                <li key={f.title} className="hl-feat">
+                  <span className="hl-feat-ic"><Ico>{f.icon}</Ico></span>
+                  <div>
+                    <h3>{f.title}</h3>
+                    <p>{f.desc}</p>
+                  </div>
                 </li>
               ))}
             </ul>
           </div>
         </div>
+      </div>
 
-        {/* ── Official sources ── */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
-          <h3 className="text-base font-bold mb-4 text-[var(--text)]">
-            المصادر الرسمية التي تستند إليها الأدوات
-          </h3>
-          <ul className="grid gap-2 sm:grid-cols-2 list-none p-0">
-            {OFFICIAL_SOURCES.map((s) => (
-              <li key={s.href} className="flex items-center gap-2">
-                <span aria-hidden="true" className="text-[var(--orange)] text-xs">●</span>
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[var(--text-2)] hover:text-[var(--orange)] transition-colors"
-                >
-                  {s.label}
-                </a>
-              </li>
+      {/* ── Tools directory + official sources ── */}
+      <div className="hl-sec" style={{ paddingTop: 8 }}>
+        <div className="hl-wrap">
+          {/* Intro paragraph (answer-first for AEO/GEO) */}
+          <div className="hl-intro">
+            <span className="hl-eyebrow">دليل الأدوات</span>
+            <h2 className="hl-h2">ما هي أدوات Qemlo؟</h2>
+            <p className="hl-lead">
+              Qemlo مكتبة أدوات وحاسبات عربية مجانية موجّهة للموظفين وأصحاب الأعمال في{" "}
+              <strong>السعودية والإمارات</strong> وسائر دول الخليج. تشمل المكتبة الحالية
+              حاسبات الرواتب ومكافأة نهاية الخدمة والمخالصة النهائية وفترة الإنذار
+              والعمل الإضافي والإجازات السنوية وضرائب الشركات والقيمة المضافة،
+              فضلاً عن أدوات إسلامية كالميراث والزكاة والكفارات وتكلفة العمرة.
+              جميع الأدوات مبنية على المصادر الرسمية، تعمل داخل المتصفح،{" "}
+              <strong>بدون تسجيل وبدون رسوم</strong>.
+            </p>
+          </div>
+
+          <div className="hl-groups">
+            {GROUPS.map((g) => (
+              <div key={g.title} className="hl-group">
+                <div className="hl-g-head">
+                  <span className="hl-flag" aria-hidden="true">{g.flag}</span>
+                  <div>
+                    <h3>{g.title}</h3>
+                    <small>{g.sub}</small>
+                  </div>
+                  {g.hub ? (
+                    <Link href={g.hub} className="hl-g-all" aria-label={`عرض كل ${g.title}`}>
+                      عرض الكل ←
+                    </Link>
+                  ) : null}
+                </div>
+                <ul className="hl-list">
+                  {g.links.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href}>
+                        <span className="hl-t">
+                          {l.label}
+                          {l.note ? <em> · {l.note}</em> : null}
+                        </span>
+                        <Chevron />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
-          <p className="mt-4 text-xs text-[var(--text-3)] leading-relaxed">
-            تعتمد حاسبات Qemlo على النصوص الرسمية المنشورة من وزارات العمل والهيئات الضريبية في دول الخليج. النتائج تقديرية ولا تُغني عن الاستشارة القانونية أو مراجعة جهة العمل.
-          </p>
-        </div>
+          </div>
 
-        {/* ── FAQ ── */}
-        <div>
-          <h2 className="text-2xl font-bold leading-snug mb-6 sm:text-3xl" id="faq">
-            الأسئلة الشائعة
-          </h2>
-          <div className="space-y-4">
+          {/* Official sources */}
+          <div className="hl-trust">
+            <div className="hl-trust-h">
+              <span className="hl-shield">
+                <Ico size={20} sw={1.9}><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z" /><path d="m9 12 2 2 4-4" /></Ico>
+              </span>
+              <div>
+                <h3>المصادر الرسمية التي تستند إليها الأدوات</h3>
+                <p>النصوص المنشورة من وزارات العمل والهيئات الضريبية</p>
+              </div>
+            </div>
+            <ul className="hl-chips">
+              {OFFICIAL_SOURCES.map((s) => (
+                <li key={s.href}>
+                  <a href={s.href} target="_blank" rel="noopener noreferrer" className="hl-chip">
+                    {s.label} <span className="hl-chip-d">{s.domain}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="hl-disc">
+              تعتمد حاسبات Qemlo على النصوص الرسمية المنشورة من وزارات العمل والهيئات الضريبية في دول الخليج. النتائج تقديرية ولا تُغني عن الاستشارة القانونية أو مراجعة جهة العمل.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── FAQ ── */}
+      <div className="hl-sec" style={{ paddingTop: 8 }}>
+        <div className="hl-wrap hl-faq-grid">
+          <div className="hl-faq-side">
+            <span className="hl-eyebrow">لديك سؤال؟</span>
+            <h2 className="hl-h2" id="faq">الأسئلة الشائعة</h2>
+            <p>إجابات مختصرة عن Qemlo وأكثر الحسابات استخداماً في السعودية والإمارات.</p>
+            <Link href="/contact" className="hl-faq-cta">تواصل معنا ←</Link>
+          </div>
+          <div className="hl-faq-list">
             {FAQS.map((faq, i) => (
-              <details
-                key={i}
-                className="group rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden"
-              >
-                <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 font-semibold text-[var(--text)] list-none select-none hover:bg-[var(--bg)] transition-colors">
-                  <span className="text-sm leading-snug sm:text-base">{faq.q}</span>
-                  <span
-                    aria-hidden="true"
-                    className="shrink-0 text-[var(--orange)] transition-transform group-open:rotate-45 text-xl leading-none"
-                  >
-                    +
+              <details key={i}>
+                <summary>
+                  <span className="hl-n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="hl-q">{faq.q}</span>
+                  <span className="hl-pm" aria-hidden="true">
+                    <Ico size={14} sw={2.4}><path d="M12 5v14M5 12h14" /></Ico>
                   </span>
                 </summary>
-                <div className="px-5 pb-5 pt-1 text-sm leading-relaxed text-[var(--text-2)] border-t border-[var(--border)]">
-                  {faq.a}
-                </div>
+                <div className="hl-a">{faq.a}</div>
               </details>
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );
 }
-
