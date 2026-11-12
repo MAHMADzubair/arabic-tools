@@ -358,16 +358,16 @@ export default function HomeHeader() {
               className="qemlo-header-action-btn flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-bold text-white transition-transform active:scale-95"
               aria-label={`تغيير الدولة: حالياً ${currentCountryObj.name}`}
             >
-              <span className="flex h-4 w-4 items-center justify-center text-[#FF5B04]">
+              <span className="qemlo-country-globe flex h-4 w-4 items-center justify-center text-[#FF5B04]">
                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20" />
                 </svg>
               </span>
-              <span className="text-[13px] font-bold text-[#F5F5F2]">
+              <span className="qemlo-country-name text-[13px] font-bold text-[#F5F5F2]">
                 {currentCountryObj.name}
               </span>
-              <svg className="h-3 w-3 text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="qemlo-country-arrow h-3 w-3 text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
