@@ -30,7 +30,7 @@ test("lead API requires contact consent, keeps share consent separate, never fak
   assert.ok(existsSync(new URL("../supabase/migrations/003_wave25_leads.sql", import.meta.url)));
   const form = read("components/zatca/Wave25NextSteps.jsx");
   assert.match(form, /res\.ok && data\.success/);
-  assert.match(read("app/privacy/page.js"), /id="help-requests"/);
+  assert.match(read("app/privacy/page.js"), /id[=:] *"help-requests"/);
 });
 
 test("referral model is disclosed: independence from ZATCA, possible referral fee, user's free choice", () => {
