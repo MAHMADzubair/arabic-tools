@@ -130,12 +130,6 @@ html{scroll-behavior:smooth}
   .hero-h1 { font-size: 1.75rem; line-height: 1.3; }
 }
 
-/* Features strip: faint ruled-paper texture + hover lift (decorative only) */
-.feat-strip{background-image:repeating-linear-gradient(0deg,transparent 0 31px,color-mix(in srgb,var(--text) 5%,transparent) 31px 32px)}
-.feat-card{transition:border-color .2s,transform .2s}
-.feat-card:hover{transform:translateY(-4px)}
-.feat-card:hover .feat-plate{transform:rotate(-6deg) scale(1.06)}
-.feat-plate{transition:transform .2s}
 `;
 
 // 1) Measures the site header height -> --hd-h (for scroll offset when you jump to a section).
@@ -240,26 +234,8 @@ export default function HomePage() {
 
       </div>
 
-      {/* ── Country hubs strip — crawlable links to SA and UAE tool collections ── */}
-      {/* These links ensure Googlebot can reach the hub pages from the homepage   */}
-      <div className="mx-auto max-w-5xl px-4 pb-4 pt-2">
-        <div className="flex flex-wrap gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm">
-          <span className="font-bold text-[var(--text-2)]">أدوات دول الخليج:</span>
-          <a href="/ar/sa" className="font-semibold text-[var(--text)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--orange)] transition-colors">
-            🇸🇦 أدوات السعودية
-          </a>
-          <span aria-hidden="true" className="text-[var(--border)]">·</span>
-          <a href="/ar/ae" className="font-semibold text-[var(--text)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--orange)] transition-colors">
-            🇦🇪 أدوات الإمارات
-          </a>
-        </div>
-      </div>
-
-      {/* ── Features Strip ── */}
-      <FeaturesStrip />
-
       {/* ── SEO Answer-First, Curated Links & FAQ ── */}
-      <HomeSeoSections />
+      <HomeSeoSections toolCount={totalTools} />
 
       <Script id="cat-strip" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: STRIP_SCRIPT }} />
     </div>
@@ -311,105 +287,5 @@ function ToolItem({ tool }) {
         </svg>
       </a>
     </li>
-  );
-}
-
-// ─── Features strip ───────────────────────────────────────────────────────────
-// Light mode: white strip, light cards. Dark mode: black strip, dark cards.
-// Orange is used only as fills (icon plate, top bar, hover border), never as text.
-
-const FEATURES = [
-  {
-    title: "سريع وفوري",
-    desc: "النتائج تظهر فور الإدخال وبدون انتظار",
-    tag: "بدون انتظار",
-    icon: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />,
-  },
-  {
-    title: "أمان وسرية الحسابات",
-    desc: "تتم جميع العمليات الحسابية محلياً داخل متصفحك لحماية سرية أرقامك",
-    tag: "داخل متصفحك",
-    icon: (
-      <>
-        <rect x="4" y="10" width="16" height="11" rx="2" />
-        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-        <path d="M12 14.5v2.5" />
-      </>
-    ),
-  },
-  {
-    title: "يعمل على كل الأجهزة",
-    desc: "متوافق مع الجوال والتابلت والحاسوب",
-    tag: "جوال · تابلت · حاسوب",
-    icon: (
-      <>
-        <rect x="2" y="4" width="14" height="10" rx="1.5" />
-        <path d="M6 18h6M9 14v4" />
-        <rect x="17.5" y="8" width="4.5" height="10" rx="1.2" />
-      </>
-    ),
-  },
-];
-
-function FeaturesStrip() {
-  return (
-    <section
-      aria-labelledby="features-title"
-      className="feat-strip w-full max-w-full overflow-hidden border-t-4 border-[var(--orange)] bg-[var(--surface)] px-4 py-12 text-[var(--text)] sm:py-16"
-    >
-      <div className="mx-auto max-w-5xl min-w-0">
-        <h2
-          id="features-title"
-          className="mb-8 text-center text-2xl font-bold leading-snug sm:mb-10 sm:text-3xl"
-        >
-          لماذا{" "}
-          <span className="underline decoration-[var(--orange)] decoration-4 underline-offset-[8px] sm:decoration-[5px] sm:underline-offset-[10px]">
-            Qemlo؟
-          </span>
-        </h2>
-
-        <ul className="grid list-none min-w-0 gap-4 p-0 sm:grid-cols-3 sm:gap-5">
-          {FEATURES.map((f) => (
-            <li
-              key={f.title}
-              className="feat-card group relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border-2 border-[var(--border)] bg-[var(--bg)] p-5 text-[var(--text)] hover:border-[var(--orange)] sm:p-6"
-            >
-              {/* Orange corner bar */}
-              <span
-                className="absolute inset-x-0 top-0 h-1.5 bg-[var(--orange)]"
-                aria-hidden="true"
-              />
-
-              {/* Orange icon plate with ink icon */}
-              <span
-                className="feat-plate mt-1 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--orange)] text-[var(--on-orange)]"
-                aria-hidden="true"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="28"
-                  height="28"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.9"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  {f.icon}
-                </svg>
-              </span>
-
-              <h3 className="text-lg font-bold leading-snug sm:text-xl">{f.title}</h3>
-              <p className="flex-1 text-sm leading-relaxed text-[var(--text-2)]">{f.desc}</p>
-
-              {/* Tag */}
-              <span className="mt-1 inline-block self-start rounded-full border border-[var(--text-3)] px-3 py-1 text-xs font-semibold text-[var(--text-2)]">
-                {f.tag}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
   );
 }
