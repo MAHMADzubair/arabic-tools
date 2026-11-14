@@ -510,7 +510,7 @@ export default function UaePurchaseOrderGeneratorPage() {
           </section>
 
           {/* ── Section 6: Realistic Example ── */}
-          <section className="rounded-2xl border border-brand-border bg-white p-6 sm:p-8 shadow-card">
+          <section className="rounded-2xl border border-brand-border bg-white p-4 sm:p-8 shadow-card">
             <h2 className="text-xl font-bold text-ink mb-1 flex items-center gap-2">
               <span className="text-2xl">🔢</span>
               مثال عملي على أمر شراء في الإمارات
@@ -521,30 +521,30 @@ export default function UaePurchaseOrderGeneratorPage() {
 
             {/* PO header */}
             <div className="rounded-xl border border-indigo-200 bg-indigo-50/40 p-4 mb-4">
-              <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
-                <div className="flex gap-2">
-                  <span className="font-bold text-ink w-28 shrink-0">رقم أمر الشراء:</span>
-                  <span className="text-ink-secondary" dir="ltr">LPO-2026-0147</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs">
+                <div className="flex gap-2 min-w-0">
+                  <span className="font-bold text-ink w-24 shrink-0">رقم أمر الشراء:</span>
+                  <span className="text-ink-secondary min-w-0 break-words" dir="ltr">LPO-2026-0147</span>
                 </div>
-                <div className="flex gap-2">
-                  <span className="font-bold text-ink w-28 shrink-0">تاريخ الإصدار:</span>
-                  <span className="text-ink-secondary" dir="ltr">15 أكتوبر 2026</span>
+                <div className="flex gap-2 min-w-0">
+                  <span className="font-bold text-ink w-24 shrink-0">تاريخ الإصدار:</span>
+                  <span className="text-ink-secondary min-w-0 break-words">15 أكتوبر 2026</span>
                 </div>
-                <div className="flex gap-2">
-                  <span className="font-bold text-ink w-28 shrink-0">المشتري:</span>
-                  <span className="text-ink-secondary">شركة الأفق للتقنية ذ.م.م — دبي</span>
+                <div className="flex gap-2 min-w-0">
+                  <span className="font-bold text-ink w-24 shrink-0">المشتري:</span>
+                  <span className="text-ink-secondary min-w-0 break-words">شركة الأفق للتقنية ذ.م.م — دبي</span>
                 </div>
-                <div className="flex gap-2">
-                  <span className="font-bold text-ink w-28 shrink-0">المورد:</span>
-                  <span className="text-ink-secondary">مؤسسة التوريدات المكتبية — أبوظبي</span>
+                <div className="flex gap-2 min-w-0">
+                  <span className="font-bold text-ink w-24 shrink-0">المورد:</span>
+                  <span className="text-ink-secondary min-w-0 break-words">مؤسسة التوريدات المكتبية — أبوظبي</span>
                 </div>
-                <div className="flex gap-2">
-                  <span className="font-bold text-ink w-28 shrink-0">تاريخ التسليم:</span>
-                  <span className="text-ink-secondary" dir="ltr">22 أكتوبر 2026</span>
+                <div className="flex gap-2 min-w-0">
+                  <span className="font-bold text-ink w-24 shrink-0">تاريخ التسليم:</span>
+                  <span className="text-ink-secondary min-w-0 break-words">22 أكتوبر 2026</span>
                 </div>
-                <div className="flex gap-2">
-                  <span className="font-bold text-ink w-28 shrink-0">العملة:</span>
-                  <span className="text-ink-secondary">AED — درهم إماراتي</span>
+                <div className="flex gap-2 min-w-0">
+                  <span className="font-bold text-ink w-24 shrink-0">العملة:</span>
+                  <span className="text-ink-secondary min-w-0 break-words">AED — درهم إماراتي</span>
                 </div>
               </div>
             </div>
