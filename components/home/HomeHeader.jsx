@@ -145,8 +145,12 @@ export default function HomeHeader() {
     setSearchOpen(false);
   }, [pathname]);
 
+  // Country whose hub (or one of its tools) is open right now, e.g. "qa" on /ar/qa
+  const activeCountry =
+    GCC_COUNTRIES.find((c) => pathname === c.href || pathname?.startsWith(c.href + "/"))?.code || null;
+
   const currentCountryObj =
-    GCC_COUNTRIES.find((c) => c.code === selectedCountry) || GCC_COUNTRIES[0];
+    GCC_COUNTRIES.find((c) => c.code === (activeCountry || selectedCountry)) || GCC_COUNTRIES[0];
 
   // ── "جميع الأدوات" target:
   //    On homepage → scroll to #tools section
@@ -213,19 +217,17 @@ export default function HomeHeader() {
               الرئيسية
             </Link>
 
-            {/* Country links:
-                Click on desktop opens search pre-filtered by that country
-                (holding the link href so it still navigates on right-click/middle-click) */}
+            {/* Country links: go straight to that country's tools page (/ar/<code>).
+                On a country page only that country is highlighted; elsewhere the saved one is. */}
             {GCC_COUNTRIES.map((c) => {
-              const isActive =
-                pathname === c.href || pathname?.startsWith(c.href + "/");
+              const highlighted = activeCountry ? activeCountry === c.code : selectedCountry === c.code;
               return (
-                <button
+                <Link
                   key={c.code}
-                  type="button"
-                  onClick={() => openSearchForCountry(c.code)}
-                  className={`qemlo-header-nav-link py-1 transition-colors bg-transparent border-none cursor-pointer ${
-                    isActive || selectedCountry === c.code
+                  href={c.href}
+                  onClick={() => handleCountrySelect(c.code)}
+                  className={`qemlo-header-nav-link py-1 transition-colors ${
+                    highlighted
                       ? "text-[#FF5B04] font-bold border-b-2 border-[#FF5B04]"
                       : "text-[#F5F5F2]/90 hover:text-[#FF5B04]"
                   }`}
@@ -233,7 +235,7 @@ export default function HomeHeader() {
                   title={`عرض أدوات ${c.name}`}
                 >
                   {c.name}
-                </button>
+                </Link>
               );
             })}
 
@@ -415,7 +417,7 @@ export default function HomeHeader() {
             <div className="flex items-center justify-between border-b border-white/10 pb-3.5">
               <div>
                 <h3 className="text-base font-bold text-[#F5F5F2]">اختر دولتك</h3>
-                <p className="text-xs text-[#8E8E89] mt-0.5">لتصفية الأدوات حسب الدولة</p>
+                <p className="text-xs text-[#8E8E89] mt-0.5">لفتح صفحة أدوات الدولة</p>
               </div>
               <button
                 type="button"
@@ -445,15 +447,12 @@ export default function HomeHeader() {
               </button>
 
               {GCC_COUNTRIES.map((c) => {
-                const isSelected = selectedCountry === c.code;
+                const isSelected = (activeCountry || selectedCountry) === c.code;
                 return (
-                  <button
+                  <Link
                     key={c.code}
-                    type="button"
-                    onClick={() => {
-                      handleCountrySelect(c.code);
-                      openSearchForCountry(c.code);
-                    }}
+                    href={c.href}
+                    onClick={() => handleCountrySelect(c.code)}
                     className={`flex items-center justify-between rounded-2xl border p-3 transition-all text-start w-full ${
                       isSelected
                         ? "border-[#FF5B04] bg-[#FF5B04]/15 text-white shadow-sm shadow-orange-500/20"
@@ -480,7 +479,7 @@ export default function HomeHeader() {
                     ) : (
                       <span className="text-xs text-white/40 uppercase font-mono font-bold">{c.code.toUpperCase()}</span>
                     )}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -562,17 +561,17 @@ export default function HomeHeader() {
               </button>
             </div>
 
-            {/* Country grid — clicking opens search filtered by that country */}
+            {/* Country grid — each opens that country's tools page */}
             <div className="mt-5">
               <p className="mb-2.5 text-xs font-bold text-[#8E8E89]">أدوات دول الخليج</p>
               <div className="grid grid-cols-2 gap-2">
                 {GCC_COUNTRIES.map((c) => {
-                  const isSelected = selectedCountry === c.code;
+                  const isSelected = (activeCountry || selectedCountry) === c.code;
                   return (
-                    <button
+                    <Link
                       key={c.code}
-                      type="button"
-                      onClick={() => { handleCountrySelect(c.code); openSearchForCountry(c.code); }}
+                      href={c.href}
+                      onClick={() => handleCountrySelect(c.code)}
                       className={`flex items-center gap-2 rounded-xl border p-2 text-xs font-bold transition-colors ${
                         isSelected
                           ? "border-[#FF5B04] bg-[#FF5B04]/10 text-white"
@@ -581,7 +580,7 @@ export default function HomeHeader() {
                     >
                       <span>{c.flag}</span>
                       <span>{c.name}</span>
-                    </button>
+                    </Link>
                   );
                 })}
               </div>

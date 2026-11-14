@@ -71,3 +71,13 @@ test("Homepage Semantics: No nested <main> tag in app/page.js", () => {
     "app/page.js must have id='tools' container for in-page anchors"
   );
 });
+
+test("Homepage Header: a country click opens its tools page, not the search dialog", () => {
+  const code = fs.readFileSync(path.join(rootDir, "components/home/HomeHeader.jsx"), "utf8");
+  // Desktop nav, mobile country modal and mobile drawer each render a <Link href={c.href}>
+  const countryLinks = code.match(/href=\{c\.href\}/g) || [];
+  assert.equal(countryLinks.length, 3, "all three country lists must link to the country hub");
+  assert.doesNotMatch(code, /openSearchForCountry\(c\.code\)/, "country clicks must not open search");
+  // "All tools" in the mobile country modal still opens the unfiltered search
+  assert.match(code, /openSearchForCountry\(null\)/);
+});
