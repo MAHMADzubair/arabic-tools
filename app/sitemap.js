@@ -1,4 +1,5 @@
 import { GUIDES } from "@/lib/guides";
+import { withChangelogLastmod } from "@/lib/changelog";
 import { SITE_URL } from "@/lib/siteConfig";
 
 export default function sitemap() {
@@ -120,15 +121,20 @@ export default function sitemap() {
 
   // Priority order: home → country hubs → Saudi tools → UAE tools
   //   → country tool sub-pages → business → general tools → static
-  return [
-    homePage,
-    ...countryPages,
-    ...saudiDeepRoutes,
-    ...uaeDeepRoutes,
-    ...countryToolRoutes,
-    ...businessRoutes,
-    ...toolPages,
-    ...guidePages,
-    ...staticPages,
-  ];
+  // lastmod comes only from the public changelog (lib/changelog.js): a page gets a date
+  // when we logged a real change to its result, wording or scope; otherwise it gets none.
+  return withChangelogLastmod(
+    [
+      homePage,
+      ...countryPages,
+      ...saudiDeepRoutes,
+      ...uaeDeepRoutes,
+      ...countryToolRoutes,
+      ...businessRoutes,
+      ...toolPages,
+      ...guidePages,
+      ...staticPages,
+    ],
+    SITE_URL
+  );
 }
