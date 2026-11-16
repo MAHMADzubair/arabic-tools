@@ -290,6 +290,7 @@ describe("UAE country hub legal and tax freshness", () => {
     assert.ok(hubContent.includes("https://mof.gov.ae/ar/about-us/initiatives/einvoicing/einvoicing-accredited-service-providers-asps/"));
     assert.ok(hubContent.includes("https://tax.gov.ae/ar/media.centre/News/federal.tax.authority.calls.on.persons.subject.to.einvoicing.to.comply.wit.the.prescribed.legal.deadlines.and.avoid.administrative.penalties.aspx"));
     assert.ok(hubContent.includes("https://www.mohre.gov.ae/assets/download/4bde9a71/labour-law-en.aspx"));
+    assert.ok(hubContent.includes("https://u.ae/en/information-and-services/jobs/employment-in-the-private-sector/working-hours"));
   });
 
   test("UAE hub review date and public changelog reflect the November 16 refresh", () => {
