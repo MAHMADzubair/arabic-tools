@@ -287,6 +287,7 @@ describe("UAE country hub legal and tax freshness", () => {
   test("UAE hub links to official MoF, FTA and MoHRE sources", () => {
     assert.ok(hubContent.includes("https://mof.gov.ae/ar/news/ministry-of-finance-announces-extension-of-small-business-relief-for-corporate-tax-purposes-until-31-december-2029/"));
     assert.ok(hubContent.includes("https://mof.gov.ae/ar/about-us/initiatives/einvoicing/"));
+    assert.ok(hubContent.includes("https://mof.gov.ae/ar/about-us/initiatives/einvoicing/einvoicing-accredited-service-providers-asps/"));
     assert.ok(hubContent.includes("https://tax.gov.ae/ar/media.centre/News/federal.tax.authority.calls.on.persons.subject.to.einvoicing.to.comply.wit.the.prescribed.legal.deadlines.and.avoid.administrative.penalties.aspx"));
     assert.ok(hubContent.includes("https://www.mohre.gov.ae/assets/download/4bde9a71/labour-law-en.aspx"));
   });
