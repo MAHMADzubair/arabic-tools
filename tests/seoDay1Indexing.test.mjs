@@ -305,3 +305,14 @@ describe("UAE country hub legal and tax freshness", () => {
     assert.ok(changelog.includes('href: "/guides/uae-small-business-relief"'));
   });
 });
+
+
+describe("UAE SBR structured-data freshness", () => {
+  const sbrPage = fs.readFileSync(path.join(process.cwd(), "app/ar/ae/small-business-relief-checker/page.js"), "utf8");
+
+  test("SoftwareApplication JSON-LD matches the 2029 SBR extension", () => {
+    assert.ok(sbrPage.includes('name: "حاسبة أهلية تسهيلات الأعمال الصغيرة في الإمارات حتى 2029"'));
+    assert.ok(sbrPage.includes("الفترات الضريبية المنتهية في أو قبل 31 ديسمبر 2029"));
+    assert.equal(sbrPage.includes('name: "حاسبة أهلية تسهيلات الأعمال الصغيرة في الإمارات 2026"'), false);
+  });
+});
