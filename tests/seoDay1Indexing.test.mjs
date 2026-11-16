@@ -292,7 +292,7 @@ describe("UAE country hub legal and tax freshness", () => {
   });
 
   test("UAE hub review date and public changelog reflect the November 16 refresh", () => {
-    assert.ok(hubContent.includes('authorityUrl: "https://tax.gov.ae",\n      lastReviewed: "نوفمبر 2026"'));
+    assert.match(hubContent, /authorityUrl: "https:\/\/tax\.gov\.ae",\s+lastReviewed: "نوفمبر 2026"/);
     const changelog = fs.readFileSync(path.join(process.cwd(), "lib/changelog.js"), "utf8");
     assert.ok(changelog.includes('id: "ae-hub-overtime-sbr-einvoicing-refresh"'));
     assert.ok(changelog.includes('date: "2026-11-16"'));
