@@ -221,3 +221,98 @@ describe("Theme & Brand Color Consistency", () => {
     );
   });
 });
+
+
+describe("Saudi country hub GOSI legal freshness", () => {
+  const hubFile = path.join(process.cwd(), "app/ar/[country]/page.js");
+  const hubContent = fs.readFileSync(hubFile, "utf8");
+
+  test("Saudi GOSI FAQ distinguishes legacy and new-system 2026 employee rates", () => {
+    assert.ok(hubContent.includes("كم تبلغ نسبة خصم التأمينات الاجتماعية من راتب الموظف السعودي في 2026؟"));
+    assert.ok(hubContent.includes("9.75%"));
+    assert.ok(hubContent.includes("10.75%"));
+    assert.ok(hubContent.includes("1 يوليو 2026"));
+    assert.ok(hubContent.includes("3 يوليو 2024"));
+  });
+
+  test("new-system contributory wage base includes official GOSI wage components", () => {
+    assert.ok(hubContent.includes("العمولات والنسب من المبيعات أو الأرباح"));
+    assert.ok(hubContent.includes("بدل السكن النقدي أو العيني"));
+    assert.ok(hubContent.includes("45,000 ريال شهرياً"));
+  });
+
+  test("Saudi hub renders official GOSI and HRSD sources in a dedicated section", () => {
+    assert.ok(hubContent.includes('href: "https://awareness.gosi.gov.sa/businessJourney.html"'));
+    assert.ok(hubContent.includes('href: "https://awareness.gosi.gov.sa/journey1.html"'));
+    assert.ok(hubContent.includes('href: "https://www.hrsd.gov.sa/knowledge-centre/articles/313"'));
+    assert.ok(hubContent.includes("hub.guideSources?.length > 0"));
+    assert.ok(hubContent.includes('target="_blank" rel="noopener noreferrer"'));
+  });
+
+  test("Saudi hub review date and public changelog reflect the November 16 refresh", () => {
+    assert.ok(hubContent.includes('lastReviewed: "نوفمبر 2026"'));
+    const changelog = fs.readFileSync(path.join(process.cwd(), "lib/changelog.js"), "utf8");
+    assert.ok(changelog.includes('id: "sa-gosi-2026-hub-clarification"'));
+    assert.ok(changelog.includes('date: "2026-11-16"'));
+    assert.ok(changelog.includes('href: "/ar/sa"'));
+  });
+});
+
+
+describe("UAE country hub legal and tax freshness", () => {
+  const hubFile = path.join(process.cwd(), "app/ar/[country]/page.js");
+  const hubContent = fs.readFileSync(hubFile, "utf8");
+
+  test("UAE hub corrects night-work and weekly-rest-day overtime treatment", () => {
+    assert.ok(hubContent.includes("استثناء العاملين بنظام الورديات"));
+    assert.ok(hubContent.includes("يوم راحة بديل"));
+    assert.ok(hubContent.includes("زيادة لا تقل عن 50% من الأجر الأساسي"));
+    assert.equal(hubContent.includes("أو في أيام الراحة الأسبوعية والعطل الرسمية"), false);
+  });
+
+  test("UAE hub includes the SBR 2029 extension and direct eligibility tool link", () => {
+    assert.ok(hubContent.includes('href: "/ar/ae/small-business-relief-checker"'));
+    assert.ok(hubContent.includes("3,000,000 درهم"));
+    assert.ok(hubContent.includes("31 ديسمبر 2029"));
+  });
+
+  test("UAE hub includes the official phased e-invoicing dates", () => {
+    assert.ok(hubContent.includes("30 أكتوبر 2026"));
+    assert.ok(hubContent.includes("1 يناير 2027"));
+    assert.ok(hubContent.includes("31 مارس 2027"));
+    assert.ok(hubContent.includes("1 يوليو 2027"));
+    assert.ok(hubContent.includes("1 أكتوبر 2027"));
+  });
+
+  test("UAE hub links to official MoF, FTA and MoHRE sources", () => {
+    assert.ok(hubContent.includes("https://mof.gov.ae/ar/news/ministry-of-finance-announces-extension-of-small-business-relief-for-corporate-tax-purposes-until-31-december-2029/"));
+    assert.ok(hubContent.includes("https://mof.gov.ae/ar/about-us/initiatives/einvoicing/"));
+    assert.ok(hubContent.includes("https://mof.gov.ae/ar/about-us/initiatives/einvoicing/einvoicing-accredited-service-providers-asps/"));
+    assert.ok(hubContent.includes("https://tax.gov.ae/ar/media.centre/News/federal.tax.authority.calls.on.persons.subject.to.einvoicing.to.comply.wit.the.prescribed.legal.deadlines.and.avoid.administrative.penalties.aspx"));
+    assert.ok(hubContent.includes("https://www.mohre.gov.ae/assets/download/4bde9a71/labour-law-en.aspx"));
+    assert.ok(hubContent.includes("https://u.ae/en/information-and-services/jobs/employment-in-the-private-sector/working-hours"));
+  });
+
+  test("UAE hub review date and public changelog reflect the November 16 refresh", () => {
+    assert.match(hubContent, /authorityUrl: "https:\/\/tax\.gov\.ae",\s+lastReviewed: "نوفمبر 2026"/);
+    const changelog = fs.readFileSync(path.join(process.cwd(), "lib/changelog.js"), "utf8");
+    assert.ok(changelog.includes('id: "ae-hub-overtime-sbr-einvoicing-refresh"'));
+    assert.ok(changelog.includes('date: "2026-11-16"'));
+    assert.ok(changelog.includes('href: "/ar/ae"'));
+    assert.ok(changelog.includes('id: "uae-einvoicing-guide-2026-11-10"'));
+    assert.ok(changelog.includes('href: "/guides/uae-einvoicing-2027"'));
+    assert.ok(changelog.includes('id: "uae-small-business-relief-guide-2026-11-10"'));
+    assert.ok(changelog.includes('href: "/guides/uae-small-business-relief"'));
+  });
+});
+
+
+describe("UAE SBR structured-data freshness", () => {
+  const sbrPage = fs.readFileSync(path.join(process.cwd(), "app/ar/ae/small-business-relief-checker/page.js"), "utf8");
+
+  test("SoftwareApplication JSON-LD matches the 2029 SBR extension", () => {
+    assert.ok(sbrPage.includes('name: "حاسبة أهلية تسهيلات الأعمال الصغيرة في الإمارات حتى 2029"'));
+    assert.ok(sbrPage.includes("الفترات الضريبية المنتهية في أو قبل 31 ديسمبر 2029"));
+    assert.equal(sbrPage.includes('name: "حاسبة أهلية تسهيلات الأعمال الصغيرة في الإمارات 2026"'), false);
+  });
+});
