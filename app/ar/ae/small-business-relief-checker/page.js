@@ -82,12 +82,12 @@ const breadcrumbJsonLd = {
 const softwareAppJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "حاسبة أهلية تسهيلات الأعمال الصغيرة في الإمارات 2026",
+  name: "حاسبة أهلية تسهيلات الأعمال الصغيرة في الإمارات حتى 2029",
   operatingSystem: "All",
   applicationCategory: "BusinessApplication",
   offers: { "@type": "Offer", price: "0", priceCurrency: "AED" },
   publisher: { "@id": SITE_ORG_ID },
-  description: "أداة تقديرية للتحقق من أهلية تسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية وفق FTA — حد 3,000,000 درهم.",
+  description: "أداة تقديرية للتحقق من أهلية تسهيلات الأعمال الصغيرة في ضريبة الشركات الإماراتية وفق القرار الوزاري 131/2026 — حد 3,000,000 درهم والفترات الضريبية المنتهية في أو قبل 31 ديسمبر 2029.",
 };
 
 export default function UaeSbrPage() {
