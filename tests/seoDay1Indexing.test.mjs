@@ -257,3 +257,45 @@ describe("Saudi country hub GOSI legal freshness", () => {
     assert.ok(changelog.includes('href: "/ar/sa"'));
   });
 });
+
+
+describe("UAE country hub legal and tax freshness", () => {
+  const hubFile = path.join(process.cwd(), "app/ar/[country]/page.js");
+  const hubContent = fs.readFileSync(hubFile, "utf8");
+
+  test("UAE hub corrects night-work and weekly-rest-day overtime treatment", () => {
+    assert.ok(hubContent.includes("استثناء العاملين بنظام الورديات"));
+    assert.ok(hubContent.includes("يوم راحة بديل"));
+    assert.ok(hubContent.includes("زيادة لا تقل عن 50% من الأجر الأساسي"));
+    assert.equal(hubContent.includes("أو في أيام الراحة الأسبوعية والعطل الرسمية"), false);
+  });
+
+  test("UAE hub includes the SBR 2029 extension and direct eligibility tool link", () => {
+    assert.ok(hubContent.includes('href: "/ar/ae/small-business-relief-checker"'));
+    assert.ok(hubContent.includes("3,000,000 درهم"));
+    assert.ok(hubContent.includes("31 ديسمبر 2029"));
+  });
+
+  test("UAE hub includes the official phased e-invoicing dates", () => {
+    assert.ok(hubContent.includes("30 أكتوبر 2026"));
+    assert.ok(hubContent.includes("1 يناير 2027"));
+    assert.ok(hubContent.includes("31 مارس 2027"));
+    assert.ok(hubContent.includes("1 يوليو 2027"));
+    assert.ok(hubContent.includes("1 أكتوبر 2027"));
+  });
+
+  test("UAE hub links to official MoF, FTA and MoHRE sources", () => {
+    assert.ok(hubContent.includes("https://mof.gov.ae/ar/news/ministry-of-finance-announces-extension-of-small-business-relief-for-corporate-tax-purposes-until-31-december-2029/"));
+    assert.ok(hubContent.includes("https://mof.gov.ae/ar/about-us/initiatives/einvoicing/"));
+    assert.ok(hubContent.includes("https://tax.gov.ae/ar/media.centre/News/federal.tax.authority.calls.on.persons.subject.to.einvoicing.to.comply.wit.the.prescribed.legal.deadlines.and.avoid.administrative.penalties.aspx"));
+    assert.ok(hubContent.includes("https://www.mohre.gov.ae/assets/download/4bde9a71/labour-law-en.aspx"));
+  });
+
+  test("UAE hub review date and public changelog reflect the November 16 refresh", () => {
+    assert.ok(hubContent.includes('authorityUrl: "https://tax.gov.ae",\n      lastReviewed: "نوفمبر 2026"'));
+    const changelog = fs.readFileSync(path.join(process.cwd(), "lib/changelog.js"), "utf8");
+    assert.ok(changelog.includes('id: "ae-hub-overtime-sbr-einvoicing-refresh"'));
+    assert.ok(changelog.includes('date: "2026-11-16"'));
+    assert.ok(changelog.includes('href: "/ar/ae"'));
+  });
+});
