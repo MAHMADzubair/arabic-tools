@@ -2,10 +2,11 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { CHANGELOG, CHANGE_TYPES, COUNTRY_LABELS, getChangelogStats, getChangelogByMonth, formatArabicDate } from "../lib/changelog.js";
+import { GUIDE_CONTENT } from "../lib/guideContent/index.js";
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
-test("changelog entries are complete, newest first, and point to real tool routes", () => {
+test("changelog entries are complete, newest first, and point to real tool or guide routes", () => {
   assert.ok(CHANGELOG.length > 0);
   const ids = new Set();
   for (const [i, e] of CHANGELOG.entries()) {
@@ -19,8 +20,15 @@ test("changelog entries are complete, newest first, and point to real tool route
     ids.add(e.id);
     assert.equal(Boolean(e.before), Boolean(e.after), `${e.id} must have both before and after, or neither`);
     if (i > 0) assert.ok(CHANGELOG[i - 1].date >= e.date, `${e.id} is out of order`);
-    const file = /^\/ar\/(sa|ae)$/.test(e.href) ? "../app/ar/[country]/page.js" : `../app${e.href}/page.js`;
+    const isCountryHub = /^\/ar\/(sa|ae)$/.test(e.href);
+    const isGuide = e.href.startsWith("/guides/") && GUIDE_CONTENT.some((guide) => guide.href === e.href);
+    const file = isCountryHub
+      ? "../app/ar/[country]/page.js"
+      : isGuide
+        ? "../app/guides/[slug]/page.js"
+        : `../app${e.href}/page.js`;
     assert.ok(existsSync(new URL(file, import.meta.url)), `${e.id} links to missing route ${e.href}`);
+    if (e.href.startsWith("/guides/")) assert.ok(isGuide, `${e.id} links to an unregistered guide ${e.href}`);
   }
 });
 
