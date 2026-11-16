@@ -581,7 +581,12 @@ const COUNTRY_HUBS = {
       {
         href: "https://mof.gov.ae/ar/about-us/initiatives/einvoicing/",
         title: "وزارة المالية — بوابة الفوترة الإلكترونية",
-        desc: "البوابة الرسمية للمواعيد والتشريعات ونموذج تبادل الفواتير ومزودي الخدمة المعتمدين.",
+        desc: "البوابة الرسمية للمواعيد والتشريعات ونموذج تبادل الفواتير.",
+      },
+      {
+        href: "https://mof.gov.ae/ar/about-us/initiatives/einvoicing/einvoicing-accredited-service-providers-asps/",
+        title: "وزارة المالية — قائمة مزودي الخدمة المعتمدين",
+        desc: "تحقق من حالة اعتماد مزودي ASP وبيانات التواصل المنشورة رسمياً قبل التعاقد.",
       },
       {
         href: "https://tax.gov.ae/ar/media.centre/News/federal.tax.authority.calls.on.persons.subject.to.einvoicing.to.comply.wit.the.prescribed.legal.deadlines.and.avoid.administrative.penalties.aspx",
