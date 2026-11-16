@@ -299,5 +299,9 @@ describe("UAE country hub legal and tax freshness", () => {
     assert.ok(changelog.includes('id: "ae-hub-overtime-sbr-einvoicing-refresh"'));
     assert.ok(changelog.includes('date: "2026-11-16"'));
     assert.ok(changelog.includes('href: "/ar/ae"'));
+    assert.ok(changelog.includes('id: "uae-einvoicing-guide-2026-11-10"'));
+    assert.ok(changelog.includes('href: "/guides/uae-einvoicing-2027"'));
+    assert.ok(changelog.includes('id: "uae-small-business-relief-guide-2026-11-10"'));
+    assert.ok(changelog.includes('href: "/guides/uae-small-business-relief"'));
   });
 });
