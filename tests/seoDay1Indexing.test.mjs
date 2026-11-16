@@ -221,3 +221,39 @@ describe("Theme & Brand Color Consistency", () => {
     );
   });
 });
+
+
+describe("Saudi country hub GOSI legal freshness", () => {
+  const hubFile = path.join(process.cwd(), "app/ar/[country]/page.js");
+  const hubContent = fs.readFileSync(hubFile, "utf8");
+
+  test("Saudi GOSI FAQ distinguishes legacy and new-system 2026 employee rates", () => {
+    assert.ok(hubContent.includes("كم تبلغ نسبة خصم التأمينات الاجتماعية من راتب الموظف السعودي في 2026؟"));
+    assert.ok(hubContent.includes("9.75%"));
+    assert.ok(hubContent.includes("10.75%"));
+    assert.ok(hubContent.includes("1 يوليو 2026"));
+    assert.ok(hubContent.includes("3 يوليو 2024"));
+  });
+
+  test("new-system contributory wage base includes official GOSI wage components", () => {
+    assert.ok(hubContent.includes("العمولات والنسب من المبيعات أو الأرباح"));
+    assert.ok(hubContent.includes("بدل السكن النقدي أو العيني"));
+    assert.ok(hubContent.includes("45,000 ريال شهرياً"));
+  });
+
+  test("Saudi hub renders official GOSI and HRSD sources in a dedicated section", () => {
+    assert.ok(hubContent.includes('href: "https://awareness.gosi.gov.sa/businessJourney.html"'));
+    assert.ok(hubContent.includes('href: "https://awareness.gosi.gov.sa/journey1.html"'));
+    assert.ok(hubContent.includes('href: "https://www.hrsd.gov.sa/knowledge-centre/articles/313"'));
+    assert.ok(hubContent.includes("hub.guideSources?.length > 0"));
+    assert.ok(hubContent.includes('target="_blank" rel="noopener noreferrer"'));
+  });
+
+  test("Saudi hub review date and public changelog reflect the November 16 refresh", () => {
+    assert.ok(hubContent.includes('lastReviewed: "نوفمبر 2026"'));
+    const changelog = fs.readFileSync(path.join(process.cwd(), "lib/changelog.js"), "utf8");
+    assert.ok(changelog.includes('id: "sa-gosi-2026-hub-clarification"'));
+    assert.ok(changelog.includes('date: "2026-11-16"'));
+    assert.ok(changelog.includes('href: "/ar/sa"'));
+  });
+});
